@@ -27,8 +27,10 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "ce",#アプリ
+    "exdisplay",#アプリ
     "django_bootstrap5", # 追加
-    'import_export',
+    'import_export',#front側で処理ができるならタイミングみてuninstall
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
