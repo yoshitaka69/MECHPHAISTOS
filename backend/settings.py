@@ -3,15 +3,11 @@ import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 SECRET_KEY = "django-insecure-i3fjf!xhl1z7wg&1unw4!a_bx&bc(e-l$4%1ucunk&zlonx3(r"
-
 
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
-
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -21,11 +17,12 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     'rest_framework',
+    "login",
+    "jobs",
+    'webpack_loader',
     'ce',
 
 ]
-
-
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -62,9 +59,13 @@ WSGI_APPLICATION = "backend.wsgi.application"
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+     'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'MECHPHAISTOS_db',
+        'USER': 'yoshitaka69',
+        'PASSWORD': 'professor69',
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
     }
 }
 
@@ -87,7 +88,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
@@ -99,16 +99,26 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
-
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+REST_FRAMEWORK = {
+    'PAGE_SIZE': 4,
+    'DEFAULT_PAGENATION_CLASS': 'rest_framework.pagenation.PageNumberPagination' 
+}
+
+WEBPACK_LOADER = {
+    'DEFAULT' : {
+        'BUNDLE_DIR_NAME' : 'dist/',
+        'STATS_FILE' : os.path.join(BASE_DIR,'frontend','webpack-stats.json'),
+    }
+}

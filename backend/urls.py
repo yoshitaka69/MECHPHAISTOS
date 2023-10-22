@@ -1,9 +1,11 @@
 from django.contrib import admin
-from django.urls import path, include, re_path
+from django.urls import path, include #re_path
 from ce.views import IndexView
 
 urlpatterns = [
     path('admin/', admin.site.urls), #adminサイト
+    path('api/',include('jobs.api.urls')),#API求人情報サイト
+    path('',include('jobs.urls')),
     path('api/v1/', include('ce.urls')), #API表示
     path('ce/', include('ce.urls')), #重要機器リスト表示
 

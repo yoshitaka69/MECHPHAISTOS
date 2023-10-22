@@ -1,22 +1,53 @@
-<!doctype html>
-<html lang="ja">
+<!DOCTYPE html>
+<html>
 <head>
-<title>Jspreadsheet Example</title>
-</head>
-<body>
-<div id="mytable"></div>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta charset="utf-8">
+<title>travel expense with jexcel spreadsheet</title>
+
 <script src="https://bossanova.uk/jspreadsheet/v4/jexcel.js"></script>
 <script src="https://jsuites.net/v4/jsuites.js"></script>
 <link rel="stylesheet" href="https://jsuites.net/v4/jsuites.css" type="text/css">
 <link rel="stylesheet" href="https://bossanova.uk/jspreadsheet/v4/jexcel.css" type="text/css">
 <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Material+Icons" />
+</head>
+
+
+
+
+<body>
+<h1>旅費明細</h1>
+
+
+<button id="download">ダウンロード</button>
+<button id="load">インポート</button><br/>
+<br>
+<div id="mytable"></div>
+<div id="spreadsheet" style="height: 200px;"></div>
+
+
+
+
 <script>
 const myTable = jspreadsheet(document.getElementById('mytable'), {
+  
+  
+    data: [
+    ['2022/10/24', '文房具', 420],
+    ['2022/10/26', '外食費', 1300]
 
-  url: 'http://127.0.0.1:8000/api/v1/ce-api/application/json%22'
+
+  ],
+
+
+
+
+  
+  style: {
+    A1: 'color:red; font-weight:bold'
+  },
 
   toolbar: [
-    
     { type: 'i', content: 'undo', onclick: function() { myTable.undo(); } },
     { type: 'i', content: 'redo', onclick: function() { myTable.redo(); } },
     { type: 'i', content: 'save', onclick: function () { myTable.download(); } },
@@ -28,10 +59,18 @@ const myTable = jspreadsheet(document.getElementById('mytable'), {
     { type: 'i', content: 'format_bold', k: 'font-weight', v: 'bold' },
     { type: 'color', content: 'format_color_text', k: 'color' },
     { type: 'color', content: 'format_color_fill', k: 'background-color' },
-
   ],
+
+  
+  columns: [
+    { type: 'calendar', title: '日付', width: 120, options: { format: 'YYYY/MM/DD' } },
+    { type: 'text', title: '項目', width: 300 },
+    { type: 'numeric', title: '出金', width: 200, mask:'#,##' },
+  ]
 });
+
 
 </script>
 </body>
 </html>
+
