@@ -4,18 +4,6 @@ from ce.API.serializers import CeSerializer
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 class ListView(generics.ListCreateAPIView):
     queryset = CeList.objects.all().order_by('-id')
     serializer_class = CeSerializer
