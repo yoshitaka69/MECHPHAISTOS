@@ -17,9 +17,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     'rest_framework',
-    "login",
     "jobs",
-    'webpack_loader',
     'ce',
 
 ]
@@ -112,13 +110,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 REST_FRAMEWORK = {
-    'PAGE_SIZE': 4,
+    #'PAGE_SIZE': 4,
     'DEFAULT_PAGENATION_CLASS': 'rest_framework.pagenation.PageNumberPagination' 
 }
 
-WEBPACK_LOADER = {
-    'DEFAULT' : {
-        'BUNDLE_DIR_NAME' : 'dist/',
-        'STATS_FILE' : os.path.join(BASE_DIR,'frontend','webpack-stats.json',)
-    }
-}
