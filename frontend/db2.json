@@ -1,0 +1,75 @@
+{
+  "CeList": [
+    {
+      "id": "001",
+      "name": "Paul",
+      "mail": "paul@mail.com",
+      "department": "Marketing",
+      "position": "Manager"
+    },
+    {
+      "id": "002",
+      "name": "Tom",
+      "mail": "tom@mail.com",
+      "department": "Engineering",
+      "position": "Manager"
+    },
+    {
+      "id": "003",
+      "name": "Ethan",
+      "mail": "Ethan@mail.com",
+      "department": "Engineering",
+      "position": "Manager"
+    },
+    {
+      "id": "004",
+      "name": "Tom",
+      "mail": "tom@mail.com",
+      "department": "Engineering",
+      "position": "Manager"
+    },
+    {
+      "id": "005",
+      "name": "Tom",
+      "mail": "tom@mail.com",
+      "department": "Engineering",
+      "position": "Manager"
+    },
+    {
+      "id": "006",
+      "name": "Tom",
+      "mail": "tom@mail.com",
+      "department": "Engineering",
+      "position": "Manager"
+    },
+    {
+      "id": "007",
+      "name": "Tom",
+      "mail": "tom@mail.com",
+      "department": "Engineering",
+      "position": "Manager"
+    },
+    {
+      "id": "008",
+      "name": "Tom",
+      "mail": "tom@mail.com",
+      "department": "Engineering",
+      "position": "Manager"
+    },
+    {
+      "id": "009",
+      "name": "Tom",
+      "mail": "tom@mail.com",
+      "department": "Engineering",
+      "position": "Manager"
+    },
+    {
+      "id": "010",
+      "name": "Michel",
+      "mail": "paul@mail.com",
+      "department": "Marketing",
+      "position": "Manager"
+    }
+  ],
+  "NearMiss": ["Marketing", "Engineering", "Accounting"]
+}

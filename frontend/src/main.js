@@ -1,7 +1,4 @@
-/*
- * Bootstraps Vuetify and other plugins then mounts the App`
- 
- */
+//Bootstraps Vuetify and other plugins then mounts the App
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
@@ -79,6 +76,18 @@ import TabPanel from 'primevue/tabpanel';
 import Vue3EasyDataTable from 'vue3-easy-data-table';
 import 'vue3-easy-data-table/dist/style.css';
 
+//handsontable
+import Handsontable from 'handsontable/base';
+
+import {
+    registerCellType,
+    NumericCellType,
+  } from 'handsontable/cellTypes';
+  
+  import {
+    registerPlugin,
+    UndoRedo,
+  } from 'handsontable/plugins';
 
 
 loadFonts()
@@ -100,6 +109,7 @@ app.component("ColumnGroup", ColumnGroup);
 app.component("Row", Row);
 app.component("Card", Card);
 app.component("Menu", Menu);
+
 // FORM
 app.component("AutoComplete", AutoComplete);
 app.component("InputText", InputText);
@@ -124,9 +134,10 @@ app.component("TabPanel", TabPanel);
 app.directive("Tooltip", Tooltip);
 
 //vue3-easy-data-table
-
 app.component('EasyDataTable', Vue3EasyDataTable);
 
+registerCellType(NumericCellType);
+registerPlugin(UndoRedo);
 
 app.use(PrimeVue,{ripple : true})
 app.use(VueAxios, axios)

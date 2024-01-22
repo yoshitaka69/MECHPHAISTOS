@@ -5,8 +5,10 @@
   />
 </template>
 
+
 <script lang="ts" setup>
 import type { Header, Item } from "vue3-easy-data-table";
+
 
 const headers: Header[] = [
   { text: "ID No.", value: "id_No" },
@@ -24,8 +26,6 @@ const headers: Header[] = [
   { text: "Affect of quality", value: "affect_of_quality"},
   { text: "Measures", value: "measures"},
   
-
-
 ];
 
 const items: Item[] = [
@@ -36,7 +36,7 @@ const items: Item[] = [
   { id_No: "ex.)3", name: "Lee", department: "LogisticG", date: '2023/12/15', area: "wastewater treatment facility", type_of_accident: "Leakage", context: "Because person forgot to close the valve at the bottom of the tank, the acid inside spilled out and flowed into the river.",factor: 'Person', injured_lv: "E", equipment_damage_level: "C", affect_of_enviroment: "A", news_coverage: "B", affect_of_quality: "E", measures: "B",},
 
   { id_No: "ex.)4", name: "Jon", department: "OfficeStaff", date: '2023/12/20', area: "Office", type_of_accident: "Cut", context: "When I was cutting cardboard with a utility knife at my office, the blade of the knife was still sticking out, so I cut my finger.",factor: 'Rule', injured_lv: "D", equipment_damage_level: "E", affect_of_enviroment: "E", news_coverage: "E", affect_of_quality: "E", measures: "D",},
-
-
 ];
+
+
 </script>

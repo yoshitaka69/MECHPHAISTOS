@@ -28,6 +28,7 @@
 					<TabPanel header="Repairing cost">
 						<p class="line-height-3 m-0">
                             <Graph :data="data" />
+							
                             <PM02_planned/>
                             <PM02_actual/>
                             <PM03/>

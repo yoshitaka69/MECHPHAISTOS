@@ -1,94 +1,96 @@
-<template>
-	<router-view class="content-wrapper"></router-view>
-	<Toast position="bottom-left"/>
-</template>
+<EasyDataTable
+class="table-dark table-striped"
+show-index
+must-sort
+:headers="headers"
+:items="items"
+v-model:server-options="serverOptions"
+:server-items-length="serverItemsLength"
+:loading="loading"
+> </EasyDataTable>
 
 <script setup>
+import { ref, onMounted, watch } from 'vue'
 
-import Toast from "primevue/toast";
+
+
+import request from '@/helpers/index' // this costum helper, axios
+const ApiUrl = "http://localhost:3000" // this my enpoind API base URI
+
+const users = ref({})
+const isFetching = ref(false)
+const { get, deleteOption } = request()
+
+const headers = [
+  { text: 'Avatar', value: 'img' },
+  { text: 'Nama', value: 'name' },
+  { text: 'Email', value: 'email' },
+  { text: 'Nomor Telepon', value: 'phone' },
+  { text: 'Saldo', value: 'balance' },
+  { text: 'Role', value: 'roles', width: 25 },
+  { text: 'action', value: 'action' }
+]
+const items = ref([])
+const loading = ref(false)
+const serverItemsLength = ref(0)
+const keyword = ref('')
+
+const serverOptions = ref({
+  page: 1,
+  rowsPerPage: 10,
+  sortBy: '',
+  sortType: 'desc'
+})
+
+const fetchUsers = () => {
+  if (isFetching.value) {
+    return
+  }
+
+  isFetching.value = true
+  loading.value = true
+
+  const fetchData = async () => {
+    try {
+      const params = {
+        page: serverOptions.value.page,
+        limit: serverOptions.value.rowsPerPage,
+        keyword: keyword.value, // this my costum param
+        sortBy: serverOptions.value.sortBy,
+        sortType: serverOptions.value.sortType,
+        status: 3  // this my costum param
+      }
+      const API_URL = `${ApiUrl}/data${new URLSearchParams(params)}`
+      const response = await get(API_URL)
+      // console.log(response.data)
+      users.value = response.data
+      serverItemsLength.value = response.meta.total
+      items.value = response.data
+      loading.value = false
+    } catch (error) {
+      console.error(error)
+    } finally {
+      isFetching.value = false
+    }
+  }
+
+  fetchData()
+}
+
+onMounted(() => {
+  fetchUsers()
+})
+const cari = () => {
+  //page
+  serverOptions.value.page = 1
+  fetchUsers()
+}
+watch(
+  [serverOptions],
+  () => {
+    fetchUsers()
+  },
+  { deep: true }
+)
 
 </script>
-
-
-
-<style>
-/* Box sizing rules */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-/* Remove default margin */
-body,
-h1,
-h2,
-h3,
-h4,
-p,
-figure,
-blockquote,
-dl,
-dd {
-  margin: 0;
-}
-
-/* Remove list styles on ul, ol elements with a list role, which suggests default styling will be removed */
-ul[role="list"],
-ol[role="list"] {
-  list-style: none;
-}
-
-/* Set core root defaults */
-html:focus-within {
-  scroll-behavior: smooth;
-}
-
-/* Set core body defaults */
-body {
-  min-height: 100vh;
-  text-rendering: optimizeSpeed;
-  line-height: 1.5;
-  background-image: linear-gradient(to right top, #051937, #004d7a, #008793, #00bf72, #a8eb12);
-}
-
-/* A elements that don't have a class get default styles */
-a:not([class]) {
-  text-decoration-skip-ink: auto;
-}
-
-/* Make images easier to work with */
-img,
-picture {
-  max-width: 100%;
-  display: block;
-}
-
-/* Inherit fonts for inputs and buttons */
-input,
-button,
-textarea,
-select {
-  font: inherit;
-}
-
-/* Remove all animations, transitions and smooth scroll for people that prefer not to see them */
-@media (prefers-reduced-motion: reduce) {
-  html:focus-within {
-    scroll-behavior: auto;
-  }
-
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-}
-
-.content-wrapper{
-  max-width: 1200px;
-}
-</style>
