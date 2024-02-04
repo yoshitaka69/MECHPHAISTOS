@@ -57,128 +57,28 @@
     <div class="TypeOfAccIdentGroup">
         <div id="TypeOfAccIdent">
             <label class="TypeOfAccIdentGroup__label" for="TypeOfAccIdent">Type of AccIdent:</label>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="TypeOfAccIdent" value="fall down" v-model="val_TypeOfAccIdent" tabindex="0">
-                    <label>fall down</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="TypeOfAccIdent" value="fall/slip" v-model="val_TypeOfAccIdent" tabindex="1">
-                    <label>fall/slip</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="TypeOfAccIdent" value="collision" v-model="val_TypeOfAccIdent" tabindex="2">
-                    <label>collision</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="TypeOfAccIdent" value="accIdental fall" v-model="val_TypeOfAccIdent" tabindex="3">
-                    <label>accIdental fall</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="TypeOfAccIdent" value="collapse" v-model="val_TypeOfAccIdent" tabindex="4">
-                    <label>collapse</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="TypeOfAccIdent" value="hit by something" v-model="val_TypeOfAccIdent" tabindex="5">
-                    <label>hit by something</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="TypeOfAccIdent" value="got caught up in" v-model="val_TypeOfAccIdent" tabindex="6">
-                    <label>got caught up in</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="TypeOfAccIdent" value="cut/Rubbing" v-model="val_TypeOfAccIdent" tabindex="7">
-                    <label>cut/Rubbing</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="TypeOfAccIdent" value="treading on something sharp" v-model="val_TypeOfAccIdent" tabindex="8">
-                    <label>treading on something sharp</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="TypeOfAccIdent" value="drown" v-model="val_TypeOfAccIdent" tabindex="9">
-                    <label>drown</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="TypeOfAccIdent" value="contact with hot or cold objects" v-model="val_TypeOfAccIdent" tabindex="10">
-                    <label>contact with hot or cold
-            objects</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="TypeOfAccIdent" value="contact with organic matter" v-model="val_TypeOfAccIdent" tabindex="11">
-                    <label>contact with organic matter</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="TypeOfAccIdent" value="electric shock" v-model="val_TypeOfAccIdent" tabindex="12">
-                    <label>electric shock</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="TypeOfAccIdent" value="explosion" v-model="val_TypeOfAccIdent" tabindex="13">
-                    <label>explosion</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="TypeOfAccIdent" value="rupture" v-model="val_TypeOfAccIdent" tabindex="14">
-                    <label>rupture</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="TypeOfAccIdent" value="conflagration" v-model="val_TypeOfAccIdent" tabindex="15">
-                    <label>conflagration</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="TypeOfAccIdent" value="traffic accIdent" v-model="val_TypeOfAccIdent" tabindex="16">
-                    <label>traffic accIdent</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="TypeOfAccIdent" value="impossible movement" v-model="val_TypeOfAccIdent" tabindex="17">
-                    <label>impossible movement</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="TypeOfAccIdent" value="protective equipment violation" v-model="val_TypeOfAccIdent" tabindex="18">
-                    <label>protective equipment
-            violation</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="TypeOfAccIdent" value="others" v-model="val_TypeOfAccIdent" tabindex="19">
-                    <label>others</label>
-                </div>
-            </div>
+            <input type="checkbox" v-model="checkValue" value="fall down">fall down
+            <input type="checkbox" v-model="checkValue" value="fall/slip">fall/slip
+            <input type="checkbox" v-model="checkValue" value="collision">collision
+            <input type="checkbox" v-model="checkValue" value="accIdental fall">accIdental fall
+            <input type="checkbox" v-model="checkValue" value="collapse">collapse
+            <input type="checkbox" v-model="checkValue" value="hit by something">hit by something
+            <input type="checkbox" v-model="checkValue" value="got caught up in">got caught up in
+            <input type="checkbox" v-model="checkValue" value="cut/Rubbing">cut/Rubbing
+            <input type="checkbox" v-model="checkValue" value="treading on something sharp">treading on something sharp
+            <input type="checkbox" v-model="checkValue" value="drown">drown
+            <input type="checkbox" v-model="checkValue" value="contact with hot or cold objects">contact with hot or cold
+            objects
+            <input type="checkbox" v-model="checkValue" value="contact with organic matter">contact with organic matter
+            <input type="checkbox" v-model="checkValue" value="electric shock">electric shock
+            <input type="checkbox" v-model="checkValue" value="explosion">explosion
+            <input type="checkbox" v-model="checkValue" value="rupture">rupture
+            <input type="checkbox" v-model="checkValue" value="conflagration">conflagration
+            <input type="checkbox" v-model="checkValue" value="traffic accIdent">traffic accIdent
+            <input type="checkbox" v-model="checkValue" value="impossible movement">impossible movement
+            <input type="checkbox" v-model="checkValue" value="protective equipment violation">protective equipment
+            violation
+            <input type="checkbox" v-model="checkValue" value="others">others
         </div>
     </div>
 

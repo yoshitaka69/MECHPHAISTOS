@@ -1,39 +1,52 @@
 <template>
-  <Handsontable :members="members" :department="department" @getTableContents="getTableContents"/>
+	<div>
+		<v-flex>
+			<v-card>
+				<v-card-title></v-card-title>
+				<div id="TRmap"></div>
+			</v-card>
+		</v-flex>
+	</div>
 </template>
+  
 <script>
-import api from "axios";
-import Handsontable from "@/views/pages/Handsontable.vue";
+import Plotly from "plotly.js-dist-min";
+import axios from "axios";
 
 export default {
-  name: "TableIndex",
-  components: {
-    Handsontable
-  },
-  data: function() {
-    return {
-      members: [],
-      department: []
-    };
-  },
-  computed: {
-    getUrl: () => "http://localhost:3000"
-  },
- methods: {
-    getMembers: function() {
-      return api.get(`${this.getUrl}/members`);
-    },
-    getDepartment: function() {
-      return api.get(`${this.getUrl}/department`);
-    },
-    getTableContents: async function() {
-      const getData = await api.all([this.getMembers(), this.getDepartment()]);
-      const membersData = getData[0].data;
-      const departmentData = getData[1].data;
-this.members = membersData;
-      this.department = departmentData;
-    }
-  }
-};
+	mounted() {
+		let map = {
+			type: 'scattermapbox',
+			mode: 'markers',
+			locations: ['FRA', 'DEU', 'RUS', 'ESP'],
+			marker: {
+				size: [20, 30, 15, 10],
+				color: [10, 20, 40, 50],
+				cmin: 0,
+				cmax: 50,
+				colorscale: 'Greens',
+				colorbar: {
+					title: 'Some rate',
+					ticksuffix: '%',
+					showticksuffix: 'last'
+				},
+				line: {
+					color: 'black'
+				}
+			},
+			name: 'europe data'
+		};
+
+
+
+		const layout = { mapbox: { style: 'light', center: { lat: 20 } }, width: 600, height: 500 };
+		const config = {
+			mapboxAccessToken: "pk.eyJ1IjoieW9zaGl0YWthNjkiLCJhIjoiY2xyd2hjNmFoMDNwajJrbnU5NWV4ODh2ZiJ9.4QE8gwFBapcj7kO3_gtkNw"
+		};
+
+
+		Plotly.newPlot('TRmap', [map], layout,config)
+	}
+}
+
 </script>
-<style></style>

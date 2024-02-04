@@ -32,7 +32,9 @@
 					</TabPanel>
 					<TabPanel header="Analyze">
 							<Safety_indicator />
-							<Safety_rate />
+							<Safety_factor_rate />
+							<Safety_AccidentType_rate />
+							<Safety_Measure_rate />
 					</TabPanel>
 				</TabView>
 			</div>
@@ -43,16 +45,19 @@
 
 
 <script>
-import Near_miss_list from '@/components/Near_miss/near_miss_list'
+import Near_miss_list from '@/components/Safety/Near_miss/near_miss_list'
 import Safety_indicator from '@/components/Safety/Safety_indicator'
-import Safety_rate from '@/components/Safety/Safety_rate'
-
+import Safety_factor_rate from '@/components/Safety/Safety_factor_rate'
+import Safety_AccidentType_rate from '@/components/Safety/Safety_AccidentType_rate.vue'
+import Safety_Measure_rate from '@/components/Safety/Safety_Measure_rate.vue'
 
 export default {
 	components: {
 		Near_miss_list,
 		Safety_indicator,
-		Safety_rate
+		Safety_factor_rate,
+		Safety_AccidentType_rate,
+		Safety_Measure_rate
 	},
 }
 

@@ -271,7 +271,7 @@ import Repairing_cost_trend from '@/components/Repairing_cost/Graph.vue'
 import Trend_map from '@/components/Trend_map/Trend_map.vue'
 import Safety_indicator from '@/components/Safety/Safety_indicator'
 import RadarCharts from '@/components/Critical_equipment_list/Radar_charts.vue'
-import Safety_rate from '@/components/Safety/Safety_rate.vue'
+import Safety_rate from '@/components/Safety/Safety_factor_rate.vue'
 import Safety_parallel from '@/components/Safety/Safety_parallel.vue'
 import Energy_waterfall from '@/components/Energy/Energy_waterfall.vue'
 
