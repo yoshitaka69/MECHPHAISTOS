@@ -1,548 +1,253 @@
 <template>
-    <div class="IdGroup">
-        <p>最新のId: {{ lastId }}</p>
-    </div>
-    <!--日付-->
-    <div class="DateGroup">
-        <label class="DateGroup_label" for="Date">Date</label>
-        <input type="Date" v-model="formState.Date" id="Date" />
-    </div>
-
-    <!--名前-->
-    <div class="NameGroup">
-        <label class="NameGroup__label" for="Name">Name:</label>
-        <input :class="[
-            'NameGroup__input',
-            { 'NameGroup__input-error': errorMessagesState.Name.length },
-        ]" type="text" id="Name" placeholder="write your Name" :value="formState.Name"
-            @input="onInputForm('Name', $event.target.value)" />
-        <ul class="NameGroup__errorMessages">
-            <li v-for="message in errorMessagesState.Name" :key="message">
-                {{ message }}
-            </li>
-        </ul>
-    </div>
-
-    <!--部署 -->
-    <div class="DepartmentGroup">
-        <label class="DepartmentGroup__label" for="Department">Department:</label>
-        <input :class="[
-            'DepartmentGroup__input',
-            { 'DepartmentGroup__input-error': errorMessagesState.Department.length },
-        ]" type="text" id="Department" placeholder="5文字以上で入力" :value="formState.Department"
-            @input="onInputForm('Department', $event.target.value)" />
-        <ul class="DepartmentGroup__errorMessages">
-            <li v-for="message in errorMessagesState.Department" :key="message">
-                {{ message }}
-            </li>
-        </ul>
-    </div>
-
-    <!--場所-->
-    <div class="WhereGroup">
-        <label class="WhereGroup__label" for="Where">Where?:</label>
-        <input :class="[
-            'WhereGroup__input',
-            { 'WhereGroup__input-error': errorMessagesState.Where.length },
-        ]" type="text" id="Where" placeholder="5文字以上で入力" :value="formState.Where"
-            @input="onInputForm('Where', $event.target.value)" />
-        <ul class="WhereGroup__errorMessages">
-            <li v-for="message in errorMessagesState.Where" :key="message">
-                {{ message }}
-            </li>
-        </ul>
-    </div>
-
-    <!--事故のタイプ-->
-    <div class="TypeOfAccIdentGroup">
-        <div id="TypeOfAccIdent">
-            <label class="TypeOfAccIdentGroup__label" for="TypeOfAccIdent">Type of AccIdent:</label>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="TypeOfAccIdent" value="fall down" v-model="val_TypeOfAccIdent" tabindex="0">
-                    <label>fall down</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="TypeOfAccIdent" value="fall/slip" v-model="val_TypeOfAccIdent" tabindex="1">
-                    <label>fall/slip</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="TypeOfAccIdent" value="collision" v-model="val_TypeOfAccIdent" tabindex="2">
-                    <label>collision</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="TypeOfAccIdent" value="accIdental fall" v-model="val_TypeOfAccIdent" tabindex="3">
-                    <label>accIdental fall</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="TypeOfAccIdent" value="collapse" v-model="val_TypeOfAccIdent" tabindex="4">
-                    <label>collapse</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="TypeOfAccIdent" value="hit by something" v-model="val_TypeOfAccIdent" tabindex="5">
-                    <label>hit by something</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="TypeOfAccIdent" value="got caught up in" v-model="val_TypeOfAccIdent" tabindex="6">
-                    <label>got caught up in</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="TypeOfAccIdent" value="cut/Rubbing" v-model="val_TypeOfAccIdent" tabindex="7">
-                    <label>cut/Rubbing</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="TypeOfAccIdent" value="treading on something sharp" v-model="val_TypeOfAccIdent" tabindex="8">
-                    <label>treading on something sharp</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="TypeOfAccIdent" value="drown" v-model="val_TypeOfAccIdent" tabindex="9">
-                    <label>drown</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="TypeOfAccIdent" value="contact with hot or cold objects" v-model="val_TypeOfAccIdent" tabindex="10">
-                    <label>contact with hot or cold
-            objects</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="TypeOfAccIdent" value="contact with organic matter" v-model="val_TypeOfAccIdent" tabindex="11">
-                    <label>contact with organic matter</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="TypeOfAccIdent" value="electric shock" v-model="val_TypeOfAccIdent" tabindex="12">
-                    <label>electric shock</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="TypeOfAccIdent" value="explosion" v-model="val_TypeOfAccIdent" tabindex="13">
-                    <label>explosion</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="TypeOfAccIdent" value="rupture" v-model="val_TypeOfAccIdent" tabindex="14">
-                    <label>rupture</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="TypeOfAccIdent" value="conflagration" v-model="val_TypeOfAccIdent" tabindex="15">
-                    <label>conflagration</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="TypeOfAccIdent" value="traffic accIdent" v-model="val_TypeOfAccIdent" tabindex="16">
-                    <label>traffic accIdent</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="TypeOfAccIdent" value="impossible movement" v-model="val_TypeOfAccIdent" tabindex="17">
-                    <label>impossible movement</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="TypeOfAccIdent" value="protective equipment violation" v-model="val_TypeOfAccIdent" tabindex="18">
-                    <label>protective equipment
-            violation</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="TypeOfAccIdent" value="others" v-model="val_TypeOfAccIdent" tabindex="19">
-                    <label>others</label>
-                </div>
-            </div>
+    <div id="app" class="watch-body">
+        <!-- 時刻 -->
+        <div class="number">
+            <div class="letter-wrapper"><span>12</span></div>
+            <div class="letter-wrapper"><span>1</span></div>
+            <div class="letter-wrapper"><span>2</span></div>
+            <div class="letter-wrapper"><span>3</span></div>
+            <div class="letter-wrapper"><span>4</span></div>
+            <div class="letter-wrapper"><span>5</span></div>
+            <div class="letter-wrapper"><span>6</span></div>
+            <div class="letter-wrapper"><span>7</span></div>
+            <div class="letter-wrapper"><span>8</span></div>
+            <div class="letter-wrapper"><span>9</span></div>
+            <div class="letter-wrapper"><span>10</span></div>
+            <div class="letter-wrapper"><span>11</span></div>
         </div>
-    </div>
 
-
-    <!--要素-->
-    <div class="FactorGroup">
-        <div id="Factor">
-            <label>Factor</label>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="Factor" value="Person" v-model="val_Factor" tabindex="0">
-                    <label>Person</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="Factor" value="Rule" v-model="val_Factor" tabindex="1">
-                    <label>Rule</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="Factor" value="Equipment" v-model="val_Factor" tabindex="2">
-                    <label>Equipment</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="Factor" value="Methods" v-model="val_Factor" tabindex="3">
-                    <label>Methods</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="Factor" value="Others" v-model="val_Factor" tabindex="4">
-                    <label>Others</label>
-                </div>
-            </div>
+        <!-- 針 -->
+        <div class="hands">
+            <span class="dot"></span>
+            <span class="hour-hand-wrapper" :style="{ transform: 'rotate(' + calcHourHandAngle + 'deg)' }">
+                <span class="hour-hand"></span>
+            </span>
+            <span class="minute-hand-wrapper" :style="{ transform: 'rotate(' + calcMinuteHandAngle + 'deg)' }">
+                <span class="minute-hand"></span>
+            </span>
+            <span class="second-hand-wrapper" :style="{ transform: 'rotate(' + calcSecondHandAngle + 'deg)' }">
+                <span class="second-hand"></span>
+            </span>
         </div>
-    </div>
-    <!--ケガのレベル-->
-    <div class="InjuredLvGroup">
-        <div id="InjuredLv">
-            <label>Injured Lv</label>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="InjuredLv" value="A" v-model="val_InjuredLv" tabindex="0">
-                    <label>A</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="InjuredLv" value="B" v-model="val_InjuredLv" tabindex="1">
-                    <label>B</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="InjuredLv" value="C" v-model="val_InjuredLv" tabindex="2">
-                    <label>C</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="InjuredLv" value="D" v-model="val_InjuredLv" tabindex="3">
-                    <label>D</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="InjuredLv" value="E" v-model="val_InjuredLv" tabindex="4">
-                    <label>E</label>
-                </div>
-            </div>
-            <h2 class="ui gray header">{{ val_InjuredLv }}</h2>
-        </div>
-    </div>
-
-    <!--設備損傷のレベル-->
-    <div class="EquipmentDamageLvGroup">
-        <div id="EquipmentDamageLv">
-            <label>Equipment Damage Lv</label>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="EquipmentDamageLv" value="A" v-model="val_EDlv" tabindex="0">
-                    <label>A</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="EquipmentDamageLv" value="B" v-model="val_EDlv" tabindex="1">
-                    <label>B</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="EquipmentDamageLv" value="C" v-model="val_EDlv" tabindex="2">
-                    <label>C</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="EquipmentDamageLv" value="D" v-model="val_EDlv" tabindex="3">
-                    <label>D</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="EquipmentDamageLv" value="E" v-model="val_EDlv" tabindex="4">
-                    <label>E</label>
-                </div>
-            </div>
-            <h2 class="ui gray header">{{ val_EDlv }}</h2>
-        </div>
-    </div>
-
-    <!--環境への影響-->
-    <div class="AffectOfEnviromentGroup">
-        <div id="AffectOfEnviroment">
-            <label>Affect Of Enviroment</label>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="AffectOfEnviroment" value="A" v-model="val_AElv" tabindex="0">
-                    <label>A</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="AffectOfEnviroment" value="B" v-model="val_AElv" tabindex="1">
-                    <label>B</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="AffectOfEnviroment" value="C" v-model="val_AElv" tabindex="2">
-                    <label>C</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="AffectOfEnviroment" value="D" v-model="val_AElv" tabindex="3">
-                    <label>D</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="AffectOfEnviroment" value="E" v-model="val_AElv" tabindex="4">
-                    <label>E</label>
-                </div>
-            </div>
-            <h2 class="ui gray header">{{ val_AElv }}</h2>
-        </div>
-    </div>
-
-    <!--メディアへの影響-->
-    <div class="NewsCoverageGroup">
-        <div id="NewsCoverage">
-            <label>News Coverage</label>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="NewsCoverage" value="A" v-model="val_NC" tabindex="0">
-                    <label>A</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="NewsCoverage" value="B" v-model="val_NC" tabindex="1">
-                    <label>B</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="NewsCoverage" value="C" v-model="val_NC" tabindex="2">
-                    <label>C</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="NewsCoverage" value="D" v-model="val_NC" tabindex="3">
-                    <label>D</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="NewsCoverage" value="E" v-model="val_NC" tabindex="4">
-                    <label>E</label>
-                </div>
-            </div>
-            <h2 class="ui gray header">{{ val_NC }}</h2>
-            <h2 class="ui gray header">{{ calculateCategory() }}</h2>
-            <button @click="submitForm">更新</button>
-        </div>
-    </div>
-
-    <!--詳細記入フォーム-->
-    <div class="DiscriptionGroup">
-        <label for="Discription-input">Discription</label>
-        <textarea v-model="formState.Discription" rows="4" cols="40" id="Discription"></textarea>
     </div>
 </template>
-  
+
 <script>
-import { ref, reactive, onMounted } from "vue";
-import { notBlank, atLeast } from "./validatorOptions";
-import axios from 'axios';
 
-export default {
-    setup() {
-        const lastId = ref(0);
-
-        const getLastId = async () => {
-            try {
-                const response = await axios.get("http://localhost:3000/NearMiss");
-                const data = response.data;
-
-                if (data.length > 0) {
-                    // データがある場合、Idの最大値を取得
-                    const maxId = Math.max(...data.map(entry => entry.id));
-                    return maxId;
-                } else {
-                    // データがない場合は0を返すか、適切な初期値を考える
-                    return 0;
-                }
-            } catch (error) {
-                console.error("Error getting last Id:", error);
-                throw error;
-            }
-        };
-
-        getLastId().then(Id => {
-            lastId.value = Id + 1; // 新しいIdを表示するため、+1する
-        });
-
-
-        const val_InjuredLv = ref("");
-        const val_EDlv = ref("");
-        const val_AElv = ref("");
-        const val_NC = ref("");
-
-        const calculateCategory = () => {
-            const valueMapping = { A: 1, B: 2, C: 4, D: 5, E: 6 };
-            const total =
-                valueMapping[val_InjuredLv.value] +
-                valueMapping[val_EDlv.value] +
-                valueMapping[val_AElv.value] +
-                valueMapping[val_NC.value];
-
-            if (total >= 6) {
-                return "E";
-            } else if (total >= 5) {
-                return "D";
-            } else if (total >= 4) {
-                return "C";
-            } else if (total >= 3) {
-                return "B";
-            } else {
-                return "A";
-            }
-        };
-
-        const checkValue = reactive({});
-
-        const formState = reactive({
-            Id: 0,
-            Date: "",
-            Name: "",
-            Department: "",
-            Where: "",
-            TypeOfAccIdent: "",
-            Factor: "",
-            InjuredLv: "",
-            EquipmentDamageLv: "",
-            AffectOfEnviroment: "",
-            NewsCoverage: "",
-            Description: "",
-        });
-
-        const errorMessagesState = reactive({
-            Date: [],
-            Name: [],
-            Department: [],
-            Where: [],
-            TypeOfAccIdent: [],
-            Factor: [],
-            InjuredLv: [],
-            EquipmentDamageLv: [],
-            AffectOfEnviroment: [],
-            NewsCoverage: [],
-            Description: [],
-        });
-
-        const validatorsState = {
-            Date: [],
-            Name: [notBlank()],
-            Department: [atLeast(5)],
-            Where: [],
-            TypeOfAccIdent: [],
-            Factor: [],
-            InjuredLv: [],
-            EquipmentDamageLv: [],
-            AffectOfEnviroment: [],
-            NewsCoverage: [],
-            Description: [],
-        };
-
-        const onInputForm = (id, value) => {
-            formState[id] = value;
-            errorMessagesState[id] = validatorsState[id]
-                .map((valiDate) => valiDate(value))
-                .filter((msg) => msg !== "");
-        };
-
-        const submitForm = async () => {
-            try {
-                // 最後のIdを取得
-                const lastIdValue = lastId.value;
-
-
-                // 送信するデータの作成
-                const postData = {
-                    id: lastIdValue,
-                    name: formState.Name,
-                    department: formState.Department,
-                    date: formState.Date,
-                    where: formState.Where,
-                    typeOfAccIdent: formState.TypeOfAccIdent,
-                    description: formState.Description,
-                    factor: formState.Factor,
-                    injuredLv: formState.InjuredLv,
-                    equipmentDamageLv: formState.EquipmentDamageLv,
-                    affectOfEnviroment: formState.AffectOfEnviroment,
-                    newsCoverage: formState.NewsCoverage,
-                    measures: calculateCategory(),
-                    // 他のフォームフィールド ...
-                };
-
-                console.log("postData:", postData);  // この行を追加
-                console.log("postData before axios.post:", postData);
-                // Axiosを使用してPOSTリクエストを送信
-                const response = await axios.post("http://localhost:3000/NearMiss", postData);
-
-                // レスポンスの処理（成功時の処理）
-                console.log(response.data);
-            } catch (error) {
-                console.error("Error submitting form:", error.response ? error.response.data : error.message);
-            }
-        };
-
-        return {
-            val_InjuredLv,
-            val_EDlv,
-            val_AElv,
-            val_NC,
-            calculateCategory,
-            checkValue,
-            formState,
-            errorMessagesState,
-            validatorsState,
-            onInputForm,
-            submitForm,
-            lastId,
-        };
-    },
-};
 
 
 </script>
+
+
+<style>
+* {
+        margin:0;
+        box-sizing:border-box;
+        font-family: 'Signika Negative', sans-serif;
+    }
+
+    html {
+        height: 100%;
+    }
+    body {
+        padding:50px;
+        height:100%;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        background:#444;
+    }
+
+    /* 時計本体 */
+    .watch-body {
+        border:10px solid #444;
+        border-radius:100%;
+        display:block;
+        position:relative;
+        height:300px;
+        aspect-ratio:1/1;
+        background:#fff;
+    }
+
+    /* 盤面文字 */
+    .watch-body .number {
+        position:absolute;
+        left:0;
+        top:0;
+        border-radius:100%;
+        width:100%;
+        height:100%;
+    }
+
+    .watch-body .number div.letter-wrapper {
+        position:absolute;
+        width:2em;
+        height:2em;
+        font-weight:bold;
+        display:inline-flex;
+        align-items:flex-start;
+        justify-content:center;
+        font-size:20px;
+        height:100%;
+        padding:10px 0;
+        top:0;
+        left:calc((100% - 2em) / 2);
+    }
+    
+    .watch-body .number div.letter-wrapper:nth-of-type(2) {
+        transform:rotate(30deg);
+    }
+
+    .watch-body .number div.letter-wrapper:nth-of-type(2) span {
+        transform:rotate(-30deg);
+    }
+
+    .watch-body .number div.letter-wrapper:nth-of-type(3) {
+
+        transform:rotate(60deg);
+    }
+
+    .watch-body .number div.letter-wrapper:nth-of-type(3) span {
+        transform:rotate(-60deg);
+    }
+
+    .watch-body .number div.letter-wrapper:nth-of-type(4) {
+        transform:rotate(90deg);
+    }
+
+    .watch-body .number div.letter-wrapper:nth-of-type(4) span {
+        transform:rotate(-90deg);
+    }
+
+    .watch-body .number div.letter-wrapper:nth-of-type(5) {
+        transform:rotate(120deg);
+    }
+
+    .watch-body .number div.letter-wrapper:nth-of-type(5) span {
+        transform:rotate(-120deg);
+    }
+
+    .watch-body .number div.letter-wrapper:nth-of-type(6) {
+        transform:rotate(150deg);
+    }
+
+    .watch-body .number div.letter-wrapper:nth-of-type(6) span {
+        transform:rotate(-150deg);
+    }
+
+    .watch-body .number div.letter-wrapper:nth-of-type(7) {
+        transform:rotate(180deg);
+    }
+
+    .watch-body .number div.letter-wrapper:nth-of-type(7) span {
+        transform:rotate(-180deg);
+    }
+
+    .watch-body .number div.letter-wrapper:nth-of-type(8) {
+        transform:rotate(210deg);
+    }
+
+    .watch-body .number div.letter-wrapper:nth-of-type(8) span {
+        transform:rotate(-210deg);
+    }
+
+    .watch-body .number div.letter-wrapper:nth-of-type(9) {
+        transform:rotate(240deg);
+    }
+
+    .watch-body .number div.letter-wrapper:nth-of-type(9) span {
+        transform:rotate(-240deg);
+    }
+
+    .watch-body .number div.letter-wrapper:nth-of-type(10) {
+        transform:rotate(270deg);
+    }
+
+    .watch-body .number div.letter-wrapper:nth-of-type(10) span {
+        transform:rotate(-270deg);
+    }
+
+    .watch-body .number div.letter-wrapper:nth-of-type(11) {
+        transform:rotate(300deg);
+    }
+
+    .watch-body .number div.letter-wrapper:nth-of-type(11) span {
+        transform:rotate(-300deg);
+    }
+
+    .watch-body .number div.letter-wrapper:nth-of-type(12) {
+        transform:rotate(330deg);
+    }
+
+    .watch-body .number div.letter-wrapper:nth-of-type(12) span {
+        transform:rotate(-330deg);
+    }
+
+    /* 針 */
+    .watch-body .dot {
+        display: block;
+        width: 8px;
+        height: 8px;
+        background: #fff;
+        border-radius: 100%;
+        position: absolute;
+        left: calc((100% - 8px) / 2);
+        top: calc((100% - 8px) / 2);
+        z-index: 999;
+    }
+
+    .watch-body .hour-hand-wrapper {
+        position:absolute;
+        height:100%;
+        width:15px;
+        left:calc((100% - 15px) / 2);
+        top:0;
+    }
+
+    .watch-body .hour-hand-wrapper .hour-hand {
+        background: #444;
+        width: 100%;
+        height: 35%;
+        position: absolute;
+        left: 0;
+        top: 20%;
+        border-radius: 100px;
+    }
+
+    .watch-body .minute-hand-wrapper {
+        position: absolute;
+        height: 100%;
+        width: 10px;
+        left: calc((100% - 10px) / 2);
+        top: 0;
+    }
+
+    .watch-body .minute-hand-wrapper .minute-hand {
+        background: #444;
+        width: 100%;
+        height: 45%;
+        position: absolute;
+        left: 0;
+        top: 10%;
+        border-radius: 100px;
+    }
+
+    .watch-body .second-hand-wrapper {
+        position: absolute;
+        height: 100%;
+        width: 5px;
+        left: calc((100% - 5px) / 2);
+        top: 0;
+    }
+
+    .watch-body .second-hand-wrapper .second-hand {
+        background: #444;
+        width: 100%;
+        height: 45%;
+        position: absolute;
+        left: 0;
+        top: 10%;
+        border-radius: 100px;
+    }
+
+</style>

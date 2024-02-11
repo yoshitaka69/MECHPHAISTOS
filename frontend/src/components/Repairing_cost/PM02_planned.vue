@@ -1,200 +1,118 @@
 <template>
-    <div class="wrapper">
-      <p>Maintenance cost planned vs Actual</p>
-      <h1>Planned PM02 </h1>
-      <div id="HeadSetSpreadSheet" ref="refspreadsheet"></div>
-      <br>
-      <input type="button" value="行を追加" @click="jspreadsheetObj.insertRow()" /><br />
-      <input type="button" value="csvをダウンロード" @click="jspreadsheetObj.download()" /><br />
-    </div>
+  <div id="example1">
+    <h2>PM02 Repairing cost</h2>
+    <HotTable ref="hotTableComponent" :settings="hotSettings"></HotTable>
+  </div>
 </template>
 
+
 <script>
-import "jsuites/dist/jsuites.js"
-import "jsuites/dist/jsuites.css"
-import "jspreadsheet-ce/dist/jspreadsheet.css"
-import jSpreadSheet from "jspreadsheet-ce"
+import { HotTable } from "@handsontable/vue3";
+import axios from "axios";
+import 'handsontable/dist/handsontable.full.css';
+
+
+const URL = "http://localhost:3000/PlannedPM02";
+
 
 export default {
-name: "sheet",
-data() {
-  return {
-    //表の初期値を入れておく
-    //画像なども可能
-    VRHeadSets: [
-      [
-        "PlantA",
-        "450000",
-        "500000",
-        "450000",
-        "450000",
-        "800000",
-        "50000",
-        "450000",
-        "900000",
-        "1350000",
-        "500000",
-        "200000",
-        "150000",
-        "1820000",
-        "2256000",
-        "2256000",
-      ],
-      [
-        "PlantB",
-        "450000",
-        "500000",
-        "450000",
-        "40000",
-        "800000",
-        "50000",
-        "450000",
-        "900000",
-        "2350000",
-        "500000",
-        "200000",
-        "150000",
-        "1820000",
-        "2256000",
-        "2256000",
-      ],
-      [
-        "PlantC",
-        "450000",
-        "500000",
-        "450000",
-        "450000",
-        "800000",
-        "50000",
-        "450000",
-        "900000",
-        "1350000",
-        "500000",
-        "200000",
-        "150000",
-        "1820000",
-        "2256000",
-        "2256000",
-      ],
-      [
-        "PlantD",
-        "450000",
-        "500000",
-        "450000",
-        "450000",
-        "800000",
-        "50000",
-        "450000",
-        "900000",
-        "1350000",
-        "500000",
-        "200000",
-        "150000",
-        "1820000",
-        "2256000",
-        "2256000",
-      ],
-      [
-        "PlantE",
-        "450000",
-        "500000",
-        "450000",
-        "450000",
-        "800000",
-        "50000",
-        "450000",
-        "900000",
-        "1350000",
-        "500000",
-        "200000",
-        "150000",
-        "1820000",
-        "2256000",
-        "1820000",
-      ],
-      [
-        "Total",
-        "450000",
-        "500000",
-        "450000",
-        "450000",
-        "800000",
-        "50000",
-        "450000",
-        "900000",
-        "1350000",
-        "500000",
-        "200000",
-        "150000",
-        "1820000",
-        "2256000",
-        "2256000",
-      ],
-    ],
-  };
-},
-
-computed: {
-  
-  //表の初期値
-  jSpreadSheetOptins() {
-    return {
-      //表の設定等
-      //チェックボックスやカレンダー、プルダウンメニューも可能
-      data: this.VRHeadSets,
-      index:[
-        {type:"Text", title:"PM02"}
-
-      ],      
-      columns: [
-
-        {
-          type: "text",
-          title: "Plant",
-          width: "100px",},
-
-        { type: "numeric'", title: "Jan.", width: "100px",mask:'$ #.##,00', decimal:',' },
-        { type: "numeric'", title: "Feb.", width: "100px",mask:'$ #.##,00', decimal:',' },
-        { type: "numeric'", title: "Mar.", width: "100px",mask:'$ #.##,00', decimal:',' },
-        { type: "numeric'", title: "Apr.", width: "100px",mask:'$ #.##,00', decimal:',' },
-        { type: "numeric'", title: "May.", width: "100px",mask:'$ #.##,00', decimal:',' },
-        { type: "numeric'", title: "Jun.", width: "100px",mask:'$ #.##,00', decimal:',' },
-        { type: "numeric'", title: "Jul.", width: "100px",mask:'$ #.##,00', decimal:',' },
-        { type: "numeric'", title: "Aug.", width: "100px",mask:'$ #.##,00', decimal:',' },
-        { type: "numeric'", title: "Sep.", width: "100px",mask:'$ #.##,00', decimal:',' },
-        { type: "numeric'", title: "Oct.", width: "100px",mask:'$ #.##,00', decimal:',' },
-        { type: "numeric'", title: "Nov.", width: "100px",mask:'$ #.##,00', decimal:',' },
-        { type: "numeric'", title: "Dec.", width: "100px",mask:'$ #.##,00', decimal:',' },
-        { type: "numeric'", title: "Commitment", width: "100px",mask:'$ #.##,00', decimal:',' },
-        { type: "numeric'", title: "Total", width: "100px",mask:'$ #.##,00', decimal:',' },
-        { type: "numeric'", title: "PM02(target)", width: "100px",mask:'$ #.##,00', decimal:',' },
-
-        //{ type: "calendar", title: "Release date", width: "250px" },
-        //{ type: "Text", title: "Resolution", width: "250px"},
-        //{ type: "checkbox", title: "Get?", width: "80px" },
-      ],
-      //INITIALIZATIONはここに書く https://bossanova.uk/jspreadsheet/v4/docs/quick-reference
-      csvFileName: "HeadSetsData" // ダウンロード時のファイル名
-
-    };
+  created() {
+    this.getDataAxios();
   },
-},
-methods: {
-  //メソッドの使用例 https://bossanova.uk/jspreadsheet/v4/docs/programmatically-changes
-},
 
-mounted: function () {
-  //インスタンス化
-  const jspreadsheetObj = jSpreadSheet(
-    //DOM参照
-    this.$refs["refspreadsheet"],
-    //表の設定データ
-    this.jSpreadSheetOptins
-  );
-  //オブジェクトから thisに対してコピー
-  Object.assign(this, { jspreadsheetObj });
-},
+  methods: {
+    getDataAxios() {
+      axios
+        .get(URL, {
+          method: "GET",
+          mode: "no-cors",
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json"
+          },
+          withCredentials: true,
+          credentials: "same-origin"
+        })
+        .then(response => {
+          const data = response.data
+          const plant = data.plant;
+          const jan = data.jan;
+          const feb = data.feb;
+          const mar = data.mar;
+          const apr = data.apr;
+          const may = data.may;
+          const jun = data.jun;
+          const jul = data.jul;
+          const aug = data.aug;
+          const sep = data.sep;
+          const oct = data.oct;
+          const nov = data.nov;
+          const dec = data.dec;
+          const total = data.total;
 
+
+          this.$refs.hotTableComponent.hotInstance.updateSettings({
+            data: data,
+            columns: [{ data: "plant" }, { data: "jan" },{data:"feb"},{data:"mar"},{data:"apr"}, { data: "may" },{data:"jun"},{data:"jul"},{data:"aug"}, { data: "sep" },{data:"oct"},{data:"nov"},{data:"dec"},{data:"total"}]
+          });
+        })
+        .catch(error => console.log("error"));
+    }
+  },
+
+  data: () => ({
+    data: null,
+    hotSettings: {
+      data: null,
+      colHeaders: [
+        "Plant",//1
+        "Jan",//2
+        "Feb",//3
+        "Mar",//4
+        "Apr",//5
+        "May",//6
+        "Jun",//7
+        "Jul",//8
+        "Aug",//9
+        "Sep",//10
+        "Oct",//11
+        "Nov",//12
+        "Dec",//13
+        "Total"//14
+      ],
+
+      columns: [
+        { type: "text" },//1
+        { type: "text" },//2
+        { type: "text" },//3
+        { type: "text" },//4
+        { type: "text" },//5
+        { type: "text" },//6
+        { type: "text" },//7
+        { type: "text" },//8
+        { type: "text" },//9
+        { type: "text" },//10
+        { type: "text" },//11
+        { type: "text" },//12
+        { type: "text" },//13
+        { type: "text" },//14
+      ],
+      rowHeaders: true,
+      manualRowMove: true,
+      contextMenu: true,
+      manualColumnMove: true,//カラムのドラッグ＆ドロップ
+      fixedColumnsStart: 1,//1列目の固定
+      manualColumnFreeze: true,//手動でのカラムの固定
+      manualColumnResize: true,//手動での列幅固定
+      stretchH: 'all', // 'none' is default
+      dropdownMenu: true,//dropdownメニュー
+      licenseKey: 'non-commercial-and-evaluation',
+    }
+  }),
+
+  components: {
+    HotTable
+  }
 };
 
 </script>

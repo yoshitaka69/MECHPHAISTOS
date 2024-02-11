@@ -1,291 +1,194 @@
 <template>
-    <div class="IdGroup">
-        <p>最新のId: {{ lastId }}</p>
-    </div>
-    <!--日付-->
-    <div class="DateGroup">
-        <label class="DateGroup_label" for="Date">Date</label>
-        <input type="Date" v-model="formState.Date" id="Date" />
-    </div>
+    <Button label="Show" @click="visible = true" />
 
-    <!--名前-->
-    <div class="NameGroup">
-        <label class="NameGroup__label" for="Name">Name:</label>
-        <input :class="[
-            'NameGroup__input',
-            { 'NameGroup__input-error': errorMessagesState.Name.length },
-        ]" type="text" id="Name" placeholder="write your Name" :value="formState.Name"
-            @input="onInputForm('Name', $event.target.value)" />
-        <ul class="NameGroup__errorMessages">
-            <li v-for="message in errorMessagesState.Name" :key="message">
-                {{ message }}
-            </li>
-        </ul>
-    </div>
+    <Dialog v-model:visible="visible" modal header="NearMiss Form" :style="{ width: '100rem' }">
+        <span class="p-text-secondary block mb-5">Please input your NearMiss. Let's share, to save everyone's life</span>
 
-    <!--部署 -->
-    <div class="DepartmentGroup">
-        <label class="DepartmentGroup__label" for="Department">Department:</label>
-        <input :class="[
-            'DepartmentGroup__input',
-            { 'DepartmentGroup__input-error': errorMessagesState.Department.length },
-        ]" type="text" id="Department" placeholder="5文字以上で入力" :value="formState.Department"
-            @input="onInputForm('Department', $event.target.value)" />
-        <ul class="DepartmentGroup__errorMessages">
-            <li v-for="message in errorMessagesState.Department" :key="message">
-                {{ message }}
-            </li>
-        </ul>
-    </div>
-
-    <!--場所-->
-    <div class="WhereGroup">
-        <label class="WhereGroup__label" for="Where">Where?:</label>
-        <input :class="[
-            'WhereGroup__input',
-            { 'WhereGroup__input-error': errorMessagesState.Where.length },
-        ]" type="text" id="Where" placeholder="5文字以上で入力" :value="formState.Where"
-            @input="onInputForm('Where', $event.target.value)" />
-        <ul class="WhereGroup__errorMessages">
-            <li v-for="message in errorMessagesState.Where" :key="message">
-                {{ message }}
-            </li>
-        </ul>
-    </div>
-
-    <!--事故のタイプ-->
-    <div class="TypeOfAccIdentGroup">
-        <div id="TypeOfAccIdent">
-            <label class="TypeOfAccIdentGroup__label" for="TypeOfAccIdent">Type of AccIdent:</label>
-            <input type="checkbox" v-model="checkValue" value="fall down">fall down
-            <input type="checkbox" v-model="checkValue" value="fall/slip">fall/slip
-            <input type="checkbox" v-model="checkValue" value="collision">collision
-            <input type="checkbox" v-model="checkValue" value="accIdental fall">accIdental fall
-            <input type="checkbox" v-model="checkValue" value="collapse">collapse
-            <input type="checkbox" v-model="checkValue" value="hit by something">hit by something
-            <input type="checkbox" v-model="checkValue" value="got caught up in">got caught up in
-            <input type="checkbox" v-model="checkValue" value="cut/Rubbing">cut/Rubbing
-            <input type="checkbox" v-model="checkValue" value="treading on something sharp">treading on something sharp
-            <input type="checkbox" v-model="checkValue" value="drown">drown
-            <input type="checkbox" v-model="checkValue" value="contact with hot or cold objects">contact with hot or cold
-            objects
-            <input type="checkbox" v-model="checkValue" value="contact with organic matter">contact with organic matter
-            <input type="checkbox" v-model="checkValue" value="electric shock">electric shock
-            <input type="checkbox" v-model="checkValue" value="explosion">explosion
-            <input type="checkbox" v-model="checkValue" value="rupture">rupture
-            <input type="checkbox" v-model="checkValue" value="conflagration">conflagration
-            <input type="checkbox" v-model="checkValue" value="traffic accIdent">traffic accIdent
-            <input type="checkbox" v-model="checkValue" value="impossible movement">impossible movement
-            <input type="checkbox" v-model="checkValue" value="protective equipment violation">protective equipment
-            violation
-            <input type="checkbox" v-model="checkValue" value="others">others
+        <div class="IdGroup flex align-items-center gap-3 mb-5">
+            <label>NearMiss No: {{ lastId }}</label>
         </div>
-    </div>
 
+        <!--日付-->
+        <div class="DateGroup flex align-items-center gap-3 mb-5">
+            <label class="DateGroup_label" for="Date">Date :</label>
+            <input type="Date" v-model="formState.Date" id="Date" />
+        </div>
 
-    <!--要素-->
-    <div class="FactorGroup">
-        <div id="Factor">
-            <label>Factor</label>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="Factor" value="Person" v-model="val_Factor" tabindex="0">
-                    <label>Person</label>
-                </div>
+        <!--名前、部署、場所を横並びにする -->
+        <div class="flex gap-3">
+            <!--名前-->
+            <div class="NameGroup flex align-items-center gap-3 mb-5">
+                <label class="NameGroup__label" for="Name">Name :</label>
+                <InputText :class="[
+                    'NameGroup__input',
+                    { 'NameGroup__input-error': errorMessagesState.Name.length },
+                ]" type="text" id="Name" placeholder="write your Name" :value="formState.Name"
+                    @input="onInputForm('Name', $event.target.value)" />
+                <ul class="NameGroup__errorMessages">
+                    <li v-for="message in errorMessagesState.Name" :key="message">
+                        {{ message }}
+                    </li>
+                </ul>
             </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="Factor" value="Rule" v-model="val_Factor" tabindex="1">
-                    <label>Rule</label>
-                </div>
+
+            <!--部署 -->
+            <div class="DepartmentGroup flex align-items-center gap-3 mb-5">
+                <label class="DepartmentGroup__label" for="Department">Department :</label>
+                <InputText :class="[
+                    'DepartmentGroup__input',
+                    { 'DepartmentGroup__input-error': errorMessagesState.Department.length },
+                ]" type="text" id="Department" placeholder="write your department" :value="formState.Department"
+                    @input="onInputForm('Department', $event.target.value)" />
+                <ul class="DepartmentGroup__errorMessages">
+                    <li v-for="message in errorMessagesState.Department" :key="message">
+                        {{ message }}
+                    </li>
+                </ul>
             </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="Factor" value="Equipment" v-model="val_Factor" tabindex="2">
-                    <label>Equipment</label>
-                </div>
+
+            <!--場所-->
+            <div class="WhereGroup flex align-items-center gap-3 mb-5">
+                <label class="WhereGroup__label" for="Where">Where? :</label>
+                <InputText :class="[
+                    'WhereGroup__input',
+                    { 'WhereGroup__input-error': errorMessagesState.Where.length },
+                ]" type="text" id="Where" placeholder="white place" :value="formState.Where"
+                    @input="onInputForm('Where', $event.target.value)" />
+                <ul class="WhereGroup__errorMessages">
+                    <li v-for="message in errorMessagesState.Where" :key="message">
+                        {{ message }}
+                    </li>
+                </ul>
             </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="Factor" value="Methods" v-model="val_Factor" tabindex="3">
-                    <label>Methods</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="Factor" value="Others" v-model="val_Factor" tabindex="4">
-                    <label>Others</label>
+        </div>
+
+        <!--事故のタイプ-->
+        <div class="TypeOfAccIdentGroup flex flex-wrap gap-3 align-items-center">
+            <label class="TypeOfAccIdentGroup__label" for="TypeOfAccIdent">Type of AccIdent :</label>
+            <div id="TypeOfAccIdent" class="flex flex-wrap gap-3 mb-5 align-items-center">
+                <div v-for="(type, index) in accidentTypes" :key="index" class="field">
+                    <div class="ui radio checkbox d-flex gap-1 align-items-center">
+                        <RadioButton :name="type" :value="type" v-model="formState.TypeOfAccIdent" :tabindex="index" />
+                        <label>{{ type }}</label>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <!--ケガのレベル-->
-    <div class="InjuredLvGroup">
-        <div id="InjuredLv">
-            <label>Injured Lv</label>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="InjuredLv" value="A" v-model="val_InjuredLv" tabindex="0">
-                    <label>A</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="InjuredLv" value="B" v-model="val_InjuredLv" tabindex="1">
-                    <label>B</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="InjuredLv" value="C" v-model="val_InjuredLv" tabindex="2">
-                    <label>C</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="InjuredLv" value="D" v-model="val_InjuredLv" tabindex="3">
-                    <label>D</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="InjuredLv" value="E" v-model="val_InjuredLv" tabindex="4">
-                    <label>E</label>
-                </div>
-            </div>
-            <h2 class="ui gray header">{{ val_InjuredLv }}</h2>
-        </div>
-    </div>
 
-    <!--設備損傷のレベル-->
-    <div class="EquipmentDamageLvGroup">
-        <div id="EquipmentDamageLv">
-            <label>Equipment Damage Lv</label>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="EquipmentDamageLv" value="A" v-model="val_EDlv" tabindex="0">
-                    <label>A</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="EquipmentDamageLv" value="B" v-model="val_EDlv" tabindex="1">
-                    <label>B</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="EquipmentDamageLv" value="C" v-model="val_EDlv" tabindex="2">
-                    <label>C</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="EquipmentDamageLv" value="D" v-model="val_EDlv" tabindex="3">
-                    <label>D</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="EquipmentDamageLv" value="E" v-model="val_EDlv" tabindex="4">
-                    <label>E</label>
-                </div>
-            </div>
-            <h2 class="ui gray header">{{ val_EDlv }}</h2>
-        </div>
-    </div>
 
-    <!--環境への影響-->
-    <div class="AffectOfEnviromentGroup">
-        <div id="AffectOfEnviroment">
-            <label>Affect Of Enviroment</label>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="AffectOfEnviroment" value="A" v-model="val_AElv" tabindex="0">
-                    <label>A</label>
+        <!--要素-->
+        <div class="FactorGroup flex flex-wrap gap-3">
+            <label>Factor :</label>
+            <div id="Factor" class="flex flex-wrap gap-3 mb-2">
+                <div v-for="(factor, index) in factors" :key="index" class="field">
+                    <div class="ui radio checkbox d-flex gap-1 align-items-center">
+                        <RadioButton :name="factor" :value="factor" v-model="formState.Factor" :tabindex="index" />
+                        <label>{{ factor }}</label>
+                    </div>
                 </div>
             </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="AffectOfEnviroment" value="B" v-model="val_AElv" tabindex="1">
-                    <label>B</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="AffectOfEnviroment" value="C" v-model="val_AElv" tabindex="2">
-                    <label>C</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="AffectOfEnviroment" value="D" v-model="val_AElv" tabindex="3">
-                    <label>D</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="AffectOfEnviroment" value="E" v-model="val_AElv" tabindex="4">
-                    <label>E</label>
-                </div>
-            </div>
-            <h2 class="ui gray header">{{ val_AElv }}</h2>
         </div>
-    </div>
 
-    <!--メディアへの影響-->
-    <div class="NewsCoverageGroup">
-        <div id="NewsCoverage">
-            <label>News Coverage</label>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="NewsCoverage" value="A" v-model="val_NC" tabindex="0">
-                    <label>A</label>
+
+        <!--設備損傷のレベル-->
+        <div class="EquipmentDamageLvGroup flex flex-wrap gap-3">
+            <label>Equipment Damage Lv :</label>
+            <div id="EquipmentDamageLv" class="flex flex-wrap gap-3 mb-2">
+                <div v-for="(level, index) in equipmentDamageLevels" :key="index" class="field">
+                    <div class="ui radio checkbox d-flex gap-1 align-items-center">
+                        <RadioButton :name="level" :value="level" v-model="formState.EquipmentDamageLv" :tabindex="index" />
+                        <label>{{ level }}</label>
+                    </div>
                 </div>
+                <h2 class="ui gray header">{{ formState.EquipmentDamageLv }}</h2>
             </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="NewsCoverage" value="B" v-model="val_NC" tabindex="1">
-                    <label>B</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="NewsCoverage" value="C" v-model="val_NC" tabindex="2">
-                    <label>C</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="NewsCoverage" value="D" v-model="val_NC" tabindex="3">
-                    <label>D</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" Name="NewsCoverage" value="E" v-model="val_NC" tabindex="4">
-                    <label>E</label>
-                </div>
-            </div>
-            <h2 class="ui gray header">{{ val_NC }}</h2>
-            <h2 class="ui gray header">{{ calculateCategory() }}</h2>
-            <button @click="submitForm">更新</button>
         </div>
-    </div>
 
-    <!--詳細記入フォーム-->
-    <div class="DiscriptionGroup">
-        <label for="Discription-input">Discription</label>
-        <textarea v-model="formState.Discription" rows="4" cols="40" id="Discription"></textarea>
-    </div>
+
+        <!--環境への影響-->
+        <div class="AffectOfEnviromentGroup flex flex-wrap gap-3">
+            <label>Affect Of Enviroment :</label>
+            <div id="AffectOfEnviroment" class="flex flex-wrap gap-3 mb-2">
+                <div v-for="(level, index) in affectOfEnviromentLevels" :key="index" class="field">
+                    <div class="ui radio checkbox d-flex gap-1 align-items-center">
+                        <RadioButton :name="level" :value="level" v-model="formState.AffectOfEnviroment"
+                            :tabindex="index" />
+                        <label>{{ level }}</label>
+                    </div>
+                </div>
+                <h2 class="ui gray header">{{ formState.AffectOfEnviroment }}</h2>
+            </div>
+        </div>
+
+        <!--メディアへの影響-->
+        <div class="NewsCoverageGroup flex flex-wrap gap-3">
+            <label>News Coverage :</label>
+            <div id="NewsCoverage" class="flex flex-wrap gap-3 mb-2">
+                <div v-for="(level, index) in newsCoverageLevels" :key="index" class="field">
+                    <div class="ui radio checkbox d-flex gap-1 align-items-center">
+                        <RadioButton :name="level" :value="level" v-model="formState.NewsCoverage" :tabindex="index" />
+                        <label>{{ level }}</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <Level_description />
+        <h2 class="ui gray header">{{ formState.NewsCoverage }}</h2>
+        <h2 class="ui gray header">{{ calculateCategory() }}</h2>
+
+
+        <!--詳細記入フォーム-->
+        <div class="DiscriptionGroup">
+            <label for="Discription-input">Description :</label>
+            <textarea v-model="formState.Description" rows="4" cols="40" id="Discription"></textarea>
+        </div>
+
+        <div class="flex justify-content-end gap-2">
+            <Button type="button" label="Cancel" severity="secondary" @click="visible = false"></Button>
+            <Button type="button" label="Save" @click="visible = false"></Button>
+        </div>
+    </Dialog>
 </template>
-  
+
 <script>
-import { ref, reactive, onMounted } from "vue";
+import { ref, reactive, } from "vue";
 import { notBlank, atLeast } from "./validatorOptions";
 import axios from 'axios';
+import Level_description from '@/components/Safety/Near_miss/Level_description.vue'
+
 
 export default {
+
+    components: {
+        Level_description,
+    },
+
+
+    data() {
+        return {
+            accidentTypes: [
+                'fall down', 'fall/slip', 'collision', 'accidental fall', 'collapse',
+                'hit by something', 'got caught up in', 'cut/Rubbing', 'treading on something sharp',
+                'drown', 'contact with hot or cold objects', 'contact with organic matter',
+                'electric shock', 'explosion', 'rupture', 'conflagration', 'traffic accident',
+                'impossible movement', 'protective equipment violation', 'others'
+            ],
+            factors: ['Person', 'Rule', 'Equipment', 'Methods', 'Others'],
+            injuredLevels: ['A', 'B', 'C', 'D', 'E'],
+            equipmentDamageLevels: ['A', 'B', 'C', 'D', 'E'],
+            affectOfEnviromentLevels: ['A', 'B', 'C', 'D', 'E'],
+            newsCoverageLevels: ['A', 'B', 'C', 'D', 'E'],
+            formState: {
+                TypeOfAccIdent: '',
+                Factor: '',
+                InjuredLv: '',
+                EquipmentDamageLv: '',
+                AffectOfEnviroment: '',
+                NewsCoverage: ''
+            }
+        };
+    },
+
     setup() {
         const lastId = ref(0);
 
@@ -294,54 +197,25 @@ export default {
                 const response = await axios.get("http://localhost:3000/NearMiss");
                 const data = response.data;
 
-                if (data.length > 0) {
-                    // データがある場合、Idの最大値を取得
-                    const maxId = Math.max(...data.map(entry => entry.id));
-                    return maxId;
-                } else {
-                    // データがない場合は0を返すか、適切な初期値を考える
-                    return 0;
-                }
+                return data.length > 0 ? Math.max(...data.map(entry => entry.id)) : 0;
             } catch (error) {
                 console.error("Error getting last Id:", error);
                 throw error;
             }
         };
 
-        getLastId().then(Id => {
-            lastId.value = Id + 1; // 新しいIdを表示するため、+1する
-        });
-
-
-        const val_InjuredLv = ref("");
-        const val_EDlv = ref("");
-        const val_AElv = ref("");
-        const val_NC = ref("");
+        getLastId().then(id => lastId.value = id + 1);
 
         const calculateCategory = () => {
             const valueMapping = { A: 1, B: 2, C: 4, D: 5, E: 6 };
-            const total =
-                valueMapping[val_InjuredLv.value] +
-                valueMapping[val_EDlv.value] +
-                valueMapping[val_AElv.value] +
-                valueMapping[val_NC.value];
+            const total = ['InjuredLv', 'EquipmentDamageLv', 'AffectOfEnviroment', 'NewsCoverage']
+                .reduce((acc, key) => acc + valueMapping[formState[key]], 0);
 
-            if (total >= 6) {
-                return "E";
-            } else if (total >= 5) {
-                return "D";
-            } else if (total >= 4) {
-                return "C";
-            } else if (total >= 3) {
-                return "B";
-            } else {
-                return "A";
-            }
+            return total >= 6 ? 'E' : total >= 5 ? 'D' : total >= 4 ? 'C' : total >= 3 ? 'B' : 'A';
         };
 
         const checkValue = reactive({});
-
-        const formState = reactive({
+        const initialFormState = reactive({
             Id: 0,
             Date: "",
             Name: "",
@@ -355,6 +229,11 @@ export default {
             NewsCoverage: "",
             Description: "",
         });
+
+        const formState = reactive({ ...initialFormState });
+        const resetForm = () => {
+            Object.assign(formState, initialFormState);
+        };
 
         const errorMessagesState = reactive({
             Date: [],
@@ -391,6 +270,7 @@ export default {
                 .filter((msg) => msg !== "");
         };
 
+        //axios postの用methods
         const submitForm = async () => {
             try {
                 // 最後のIdを取得
@@ -422,16 +302,18 @@ export default {
 
                 // レスポンスの処理（成功時の処理）
                 console.log(response.data);
+
+                // lastIdを更新
+                lastId.value += 1;
+
+                // フォームを初期化
+                resetForm();
             } catch (error) {
                 console.error("Error submitting form:", error.response ? error.response.data : error.message);
             }
         };
 
         return {
-            val_InjuredLv,
-            val_EDlv,
-            val_AElv,
-            val_NC,
             calculateCategory,
             checkValue,
             formState,
@@ -446,3 +328,4 @@ export default {
 
 
 </script>
+<style></style>

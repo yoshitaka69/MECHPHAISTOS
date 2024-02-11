@@ -29,6 +29,7 @@ export default {
 
 		let data = {
 			type: 'table',
+			columnwidth: [150,400,400,400,400],
 			header: {
 				values:[["<b>Level</b>"],
 						["<b>Injured Lv</b>"],
@@ -43,10 +44,9 @@ export default {
 			},
 			cells: {
 				values: values,
-				align: "center",
-				line: {color: 'black', width: 1},
+				align: ["center","left"],
 				fill: {color: [rowOddColor, rowEventColor, rowOddColor, rowEventColor, rowOddColor]},
-				font: {family: "Arial", size: 11, color: ["black"]}
+				font: {family: "Arial", size: 12, color: ["black"]}
 			}
 		};
 

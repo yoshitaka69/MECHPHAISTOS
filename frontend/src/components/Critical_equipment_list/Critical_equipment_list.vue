@@ -1,6 +1,6 @@
 <template>
   <div id="example1">
-    <h>test</h>
+    <h2>Critical Equipment List</h2>
     <HotTable ref="hotTableComponent" :settings="hotSettings"></HotTable>
   </div>
 </template>
@@ -35,25 +35,25 @@ export default {
         })
         .then(response => {
           const data = response.data;
-          const id = data.Id;
-          const plant = data.Plant;
-          const location_No = data.LocationNo;
-          const function_code = data.Function;
-          const equipment = data.Equipment;
-          const parts = data.Parts;
-          const value_impact = data.ValueImpact;
-          const construction_period = data.ConstructionPeriod;
-          const parts_delivery_date = data.PartsDeliveryDate;
-          const mttr = data.MTTR;
-          const count_of_PM02 = data.CountOfPM02;
-          const latest_PM02 = data.LatestPM02;
-          const count_of_PM03 = data.CountOfPM03;
-          const latest_PM03 = data.LatestPM03;
-          const count_of_PM04 = data.CountOfPM04;
+          const id = data.id;
+          const plant = data.plant;
+          const location_No = data.locationNo;
+          const function_code = data.function;
+          const equipment = data.equipment;
+          const parts = data.parts;
+          const value_impact = data.valueImpact;
+          const construction_period = data.constructionPeriod;
+          const parts_delivery_date = data.partsDeliveryYear;
+          const mttr = data.mttr;
+          const count_of_PM02 = data.countOfPM02;
+          const latest_PM02 = data.latestPM02;
+          const count_of_PM03 = data.countOfPM03;
+          const latest_PM03 = data.latestPM03;
+          const count_of_PM04 = data.countOfPM04;
 
           this.$refs.hotTableComponent.hotInstance.updateSettings({
             data: data,
-            columns: [{ data: "Id" }, { data: "Plant" },{data:"LocationNo"},{data:"Function"},{data:"Equipment"}, { data: "Parts" },{data:"ValueImpact"},{data:"ConstructionPeriod"},{data:"PartsDeliveryDate"}, { data: "MTTR" },{data:"CountOfPM02"},{data:"LatestPM02"},{data:"CountOfPM03"},{data:"LatestPM03"},{data:"CountOfPM04"}]
+            columns: [{ data: "id" }, { data: "plant" },{data:"locationNo"},{data:"function"},{data:"equipment"}, { data: "parts" },{data:"valueImpact"},{data:"constructionPeriod"},{data:"partsDeliveryYear"}, { data: "mttr" },{data:"countOfPM02"},{data:"latestPM02"},{data:"countOfPM03"},{data:"latestPM03"},{data:"countOfPM04"}]
           });
         })
         .catch(error => console.log("error"));

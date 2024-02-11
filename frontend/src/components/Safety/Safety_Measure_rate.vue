@@ -24,10 +24,10 @@
     mounted() {
         axios.get("http://localhost:3000/NearMiss")
     .then(response => {
-        const measuresArray = response.data.map(item => item['Measures']);
+        const measuresArray = response.data.map(item => item['measures']);
 
-        this.values = measuresArray.reduce((accumulator, Measures) => {
-            accumulator[Measures] = (accumulator[Measures] || 0) + 1;
+        this.values = measuresArray.reduce((accumulator, measures) => {
+            accumulator[measures] = (accumulator[measures] || 0) + 1;
             return accumulator;
         }, {});
   

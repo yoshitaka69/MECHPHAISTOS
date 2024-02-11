@@ -1,55 +1,52 @@
 <template>
-	<div>
-		<v-flex>
-			<v-card>
-				<v-card-title>Safety Measure trend</v-card-title>
-				<div id="smt"></div>
-			</v-card>
-		</v-flex>
-	</div>
-</template>
+    <div>
+      <v-flex>
+        <v-card>
+          <v-card-title>Safety Measure trend</v-card-title>
+          <div id="smt"></div>
+        </v-card>
+      </v-flex>
+    </div>
+  </template>
   
-<script>
-import Plotly from "plotly.js-dist-min";
-
-export default {
-	data(){
-		return {
-			x:{},
-			y:{},
-		};
-	},
-
-
-	mounted() {
-        axios.get("http://localhost:3000/NearMiss")
-    .then(response => {
-        const measureArray = response.data.map(item => item['Measure']);
-
-        this.values = measureArray.reduce((accumulator, measure) => {
-            accumulator[measure] = (accumulator[measure] || 0) + 1;
-            return accumulator;
+  <script>
+  import Plotly from "plotly.js-dist-min";
+  import axios from "axios";
+  
+  export default {
+    data() {
+      return {
+        x: [],
+        y: [],
+      };
+    },
+  
+    mounted() {
+      axios.get("http://localhost:3000/NearMiss").then((response) => {
+        // データから年ごとの measures のカウントを抽出
+        const dataByYear = response.data.reduce((acc, item) => {
+          const year = new Date(item.date).getFullYear();
+  
+          // measures の要素数をカウント
+          acc[year] = acc[year] || { A: 0, B: 0, C: 0, D: 0, E: 0 };
+          acc[year][item.measures]++;
+  
+          return acc;
         }, {});
-
-
-		let trace1 = {
-			x: ['giraffes', 'orangutans', 'monkeys'],
-			y: [20, 14, 23],
-			name: 'SF Zoo',
-			type: 'bar'
-		};
-
-		let trace2 = {
-			x: ['giraffes', 'orangutans', 'monkeys'],
-			y: [12, 18, 29],
-			name: 'LA Zoo',
-			type: 'bar'
-		};
-
-		const layout = { barmode: 'stack' };
-
-		Plotly.newPlot('smt', [trace1, trace2], layout)
-
-	}
-}
-</script>
+  
+        // データをPlotlyのtraceに変換
+        const measures = ["A", "B", "C", "D", "E"];
+        const traces = measures.map((measure) => ({
+          x: Object.keys(dataByYear),
+          y: Object.values(dataByYear).map((count) => count[measure]),
+          type: "bar",
+          name: measure,
+        }));
+  
+        const layout = { barmode: "stack" };
+  
+        Plotly.newPlot("smt", traces, layout);
+      });
+    },
+  };
+  </script>

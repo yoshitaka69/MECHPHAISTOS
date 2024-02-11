@@ -189,7 +189,7 @@
 
             <div class="card">
                 <h5>NearMiss Rate</h5>
-                <Safety_parallel />
+                <Safety_correlation_diagram />
             </div>
 
             
@@ -267,12 +267,12 @@
 
 <script>
 
-import Repairing_cost_trend from '@/components/Repairing_cost/Graph.vue'
+import Repairing_cost_trend from '@/components/Repairing_cost/Repairing_cost_graph.vue'
 import Trend_map from '@/components/Trend_map/Trend_map.vue'
 import Safety_indicator from '@/components/Safety/Safety_indicator'
 import RadarCharts from '@/components/Critical_equipment_list/Radar_charts.vue'
 import Safety_rate from '@/components/Safety/Safety_factor_rate.vue'
-import Safety_parallel from '@/components/Safety/Safety_parallel.vue'
+import Safety_correlation_diagram from '@/components/Safety/Safety_correlation_diagram.vue'
 import Energy_waterfall from '@/components/Energy/Energy_waterfall.vue'
 
 
@@ -283,7 +283,7 @@ export default {
         Safety_indicator,
         RadarCharts,
         Safety_rate,
-        Safety_parallel,
+        Safety_correlation_diagram,
         Energy_waterfall
 	},
 }

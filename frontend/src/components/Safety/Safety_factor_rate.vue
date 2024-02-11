@@ -22,9 +22,9 @@
     },
   
     mounted() {
-        axios.get("http://localhost:3000/NearMiss")
+    axios.get("http://localhost:3000/NearMiss")
     .then(response => {
-        const factorArray = response.data.map(item => item['Factor']);
+        const factorArray = response.data.map(item => item['factor']);
 
         this.values = factorArray.reduce((accumulator, factor) => {
             accumulator[factor] = (accumulator[factor] || 0) + 1;

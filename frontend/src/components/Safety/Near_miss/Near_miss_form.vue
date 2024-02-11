@@ -1,167 +1,353 @@
 <template>
-    <!--参考記事　https://qiita.com/naganagu/items/1e011819212c3ec6051f-->
-  <v-container>
-    <v-row justify="center">
-      <v-col cols="10">
-        <v-card>
-          <v-card-title>Near miss form</v-card-title>
-          <v-card-text>
-            <v-row>
-              <v-col cols="2">
-                <v-subheader>代表者</v-subheader>
-              </v-col>
-              <v-col cols="5">
-                <v-text-field
-                  label="名前"
-                  v-model="repName"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="3">
-                <v-text-field
-                  label="年齢"
-                  v-model="repAge"
-                  suffix="歳"
-                ></v-text-field>
-              </v-col>
-            </v-row>
-        
-            <v-row>
-              <v-col cols="2">
-                <v-subheader>電話番号</v-subheader>
-              </v-col>
-              <v-col cols="8">
-                <v-text-field
-                  label="電話番号"
-                  v-model="tel"
-                ></v-text-field>
-              </v-col>
-            </v-row>
-        
-            <v-row>
-              <v-col cols="2">
-                <v-subheader>メールアドレス</v-subheader>
-              </v-col>
-              <v-col cols="8">
-                <v-text-field
-                  label="メールアドレス"
-                  v-model="mail"
-                ></v-text-field>
-              </v-col>
-            </v-row>
-        
-            <v-row v-if="memberList.length == 0">
-              <v-col cols="2">
-                <v-subheader>同行者</v-subheader>
-              </v-col>
-              <v-col cols="8">
-                同行者なし
-              </v-col>
-              <v-col cols="2">
-                <v-btn 
-                  dark 
-                  small 
-                  color="grey" 
-                  class="ma-2" 
-                  @click="addInput(0)"
-                >
-                  <v-icon dark>mdi-plus</v-icon>
-                </v-btn>
-              </v-col>
-            </v-row>
+    <div class="IdGroup">
+        <p>最新のId: {{ lastId }}</p>
+    </div>
+    <!--日付-->
+    <div class="DateGroup">
+        <label class="DateGroup_label" for="Date">Date</label>
+        <input type="Date" v-model="formState.Date" id="Date" />
+    </div>
 
-            <v-row v-for="member in memberList" :key="member.id">
-              <v-col cols="2">
-                <v-subheader>同行者 {{member.id + 1}}人目</v-subheader>
-              </v-col>
-              <v-col cols="5">
-                <v-text-field
-                  label="名前"
-                  v-model="member.name"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="3">
-                <v-text-field
-                  label="年齢"
-                  v-model="member.age"
-                  suffix="歳"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="2">
-                <v-btn 
-                  dark 
-                  small 
-                  color="grey" 
-                  class="ma-2" 
-                  @click="addInput(member.id)"
-                  v-if="memberList.length < 4"
-                >
-                  <v-icon dark>mdi-plus</v-icon>
-                </v-btn>
-                <v-btn 
-                  dark 
-                  small 
-                  color="grey" 
-                  class="ma-2" 
-                  @click="removeInput(member.id)"
-                >
-                  <v-icon dark>mdi-minus</v-icon>
-                </v-btn>
-              </v-col>
-            </v-row>
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn
-              color="blue"
-              dark
-            >
-              登録
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-col>
-    </v-row>
-  </v-container>
+    <!--名前-->
+    <div class="NameGroup">
+        <label class="NameGroup__label" for="Name">Name:</label>
+        <input :class="[
+            'NameGroup__input',
+            { 'NameGroup__input-error': errorMessagesState.Name.length },
+        ]" type="text" id="Name" placeholder="write your Name" :value="formState.Name"
+            @input="onInputForm('Name', $event.target.value)" />
+        <ul class="NameGroup__errorMessages">
+            <li v-for="message in errorMessagesState.Name" :key="message">
+                {{ message }}
+            </li>
+        </ul>
+    </div>
+
+    <!--部署 -->
+    <div class="DepartmentGroup">
+        <label class="DepartmentGroup__label" for="Department">Department:</label>
+        <input :class="[
+            'DepartmentGroup__input',
+            { 'DepartmentGroup__input-error': errorMessagesState.Department.length },
+        ]" type="text" id="Department" placeholder="5文字以上で入力" :value="formState.Department"
+            @input="onInputForm('Department', $event.target.value)" />
+        <ul class="DepartmentGroup__errorMessages">
+            <li v-for="message in errorMessagesState.Department" :key="message">
+                {{ message }}
+            </li>
+        </ul>
+    </div>
+
+    <!--場所-->
+    <div class="WhereGroup">
+        <label class="WhereGroup__label" for="Where">Where?:</label>
+        <input :class="[
+            'WhereGroup__input',
+            { 'WhereGroup__input-error': errorMessagesState.Where.length },
+        ]" type="text" id="Where" placeholder="5文字以上で入力" :value="formState.Where"
+            @input="onInputForm('Where', $event.target.value)" />
+        <ul class="WhereGroup__errorMessages">
+            <li v-for="message in errorMessagesState.Where" :key="message">
+                {{ message }}
+            </li>
+        </ul>
+    </div>
+
+    <!--事故のタイプ-->
+    <div class="TypeOfAccIdentGroup">
+    <label class="TypeOfAccIdentGroup__label" for="TypeOfAccIdent">Type of AccIdent:</label>
+    <div id="TypeOfAccIdent">
+      <div v-for="(type, index) in accidentTypes" :key="index" class="field">
+        <div class="ui radio checkbox">
+          <input
+            type="radio"
+            :name="type"
+            :value="type"
+            v-model="formState.TypeOfAccIdent"
+            :tabindex="index"
+          />
+          <label>{{ type }}</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+    <!--要素-->
+    <div class="FactorGroup">
+    <label>Factor</label>
+    <div id="Factor">
+      <div v-for="(factor, index) in factors" :key="index" class="field">
+        <div class="ui radio checkbox">
+          <input
+            type="radio"
+            :name="factor"
+            :value="factor"
+            v-model="formState.Factor"
+            :tabindex="index"
+          />
+          <label>{{ factor }}</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!--ケガのレベル-->
+    <div class="InjuredLvGroup">
+    <label>Injured Lv</label>
+    <div id="InjuredLv">
+      <div v-for="(level, index) in injuredLevels" :key="index" class="field">
+        <div class="ui radio checkbox">
+          <input
+            type="radio"
+            :name="level"
+            :value="level"
+            v-model="formState.InjuredLv"
+            :tabindex="index"
+          />
+          <label>{{ level }}</label>
+        </div>
+      </div>
+      <h2 class="ui gray header">{{ formState.InjuredLv }}</h2>
+    </div>
+  </div>
+
+    <!--設備損傷のレベル-->
+    <div class="EquipmentDamageLvGroup">
+    <label>Equipment Damage Lv</label>
+    <div id="EquipmentDamageLv">
+      <div v-for="(level, index) in equipmentDamageLevels" :key="index" class="field">
+        <div class="ui radio checkbox">
+          <input
+            type="radio"
+            :name="level"
+            :value="level"
+            v-model="formState.EquipmentDamageLv"
+            :tabindex="index"
+          />
+          <label>{{ level }}</label>
+        </div>
+      </div>
+      <h2 class="ui gray header">{{ formState.EquipmentDamageLv }}</h2>
+    </div>
+  </div>
+
+    <!--環境への影響-->
+    <div class="AffectOfEnviromentGroup">
+    <label>Affect Of Enviroment</label>
+    <div id="AffectOfEnviroment">
+      <div v-for="(level, index) in affectOfEnviromentLevels" :key="index" class="field">
+        <div class="ui radio checkbox">
+          <input
+            type="radio"
+            :name="level"
+            :value="level"
+            v-model="formState.AffectOfEnviroment"
+            :tabindex="index"
+          />
+          <label>{{ level }}</label>
+        </div>
+      </div>
+      <h2 class="ui gray header">{{ formState.AffectOfEnviroment }}</h2>
+    </div>
+  </div>
+
+    <!--メディアへの影響-->
+    <div class="NewsCoverageGroup">
+    <label>News Coverage</label>
+    <div id="NewsCoverage">
+      <div v-for="(level, index) in newsCoverageLevels" :key="index" class="field">
+        <div class="ui radio checkbox">
+          <input
+            type="radio"
+            :name="level"
+            :value="level"
+            v-model="formState.NewsCoverage"
+            :tabindex="index"
+          />
+          <label>{{ level }}</label>
+        </div>
+      </div>
+      <h2 class="ui gray header">{{ formState.NewsCoverage }}</h2>
+      <h2 class="ui gray header">{{ calculateCategory() }}</h2>
+      <button @click="submitForm">更新</button>
+    </div>
+  </div>
+
+    <!--詳細記入フォーム-->
+    <div class="DiscriptionGroup">
+        <label for="Discription-input">Description</label>
+        <textarea v-model="formState.Description" rows="4" cols="40" id="Discription"></textarea>
+    </div>
 </template>
 
 <script>
-  export default {
-    name: 'Sample',
-    data: () => ({
-      repName: "田中太郎",
-      repAge: 25,
-      tel: "000-0000-0000",
-      mail: "example@gmail.com",
-      memberList: [{id: 0, name: "", age: null}]
-    }),
+import { ref, reactive, } from "vue";
+import { notBlank, atLeast } from "./validatorOptions";
+import axios from 'axios';
 
-    methods: {
-      // 入力欄追加
-      addInput (id) {
-        let inputList = this.memberList;
-        inputList.splice(id+1, 0, {id: null, name: "", age: null});
-        this.memberList = this.makeNewInput(inputList);
-      },
-
-      // 入力欄削除
-      removeInput (id) {
-        let inputList = this.memberList;
-        inputList = inputList.filter((input) => { return input.id !== id;});
-        this.memberList = this.makeNewInput(inputList);
-      },
-
-      // ID振り直し
-      makeNewInput (inputList) {
-        let newInputList = [];
-        for (let i = 0; i < inputList.length; i++) {
-          newInputList.push ({
-            id: i,
-            name: inputList[i].name,
-            age: inputList[i].age
-          });
-        }
-        return newInputList;
+export default {
+    data() {
+    return {
+      accidentTypes: [
+        'fall down', 'fall/slip', 'collision', 'accidental fall', 'collapse',
+        'hit by something', 'got caught up in', 'cut/Rubbing', 'treading on something sharp',
+        'drown', 'contact with hot or cold objects', 'contact with organic matter',
+        'electric shock', 'explosion', 'rupture', 'conflagration', 'traffic accident',
+        'impossible movement', 'protective equipment violation', 'others'
+      ],
+      factors: ['Person', 'Rule', 'Equipment', 'Methods', 'Others'],
+      injuredLevels: ['A', 'B', 'C', 'D', 'E'],
+      equipmentDamageLevels: ['A', 'B', 'C', 'D', 'E'],
+      affectOfEnviromentLevels: ['A', 'B', 'C', 'D', 'E'],
+      newsCoverageLevels: ['A', 'B', 'C', 'D', 'E'],
+      formState: {
+        TypeOfAccIdent: '',
+        Factor: '',
+        InjuredLv: '',
+        EquipmentDamageLv: '',
+        AffectOfEnviroment: '',
+        NewsCoverage: ''
       }
-    }
-  }
+    };
+  },
+
+  setup() {
+        const lastId = ref(0);
+
+        const getLastId = async () => {
+            try {
+                const response = await axios.get("http://localhost:3000/NearMiss");
+                const data = response.data;
+
+                return data.length > 0 ? Math.max(...data.map(entry => entry.id)) : 0;
+            } catch (error) {
+                console.error("Error getting last Id:", error);
+                throw error;
+            }
+        };
+
+        getLastId().then(id => lastId.value = id + 1);
+
+        const calculateCategory = () => {
+            const valueMapping = { A: 1, B: 2, C: 4, D: 5, E: 6 };
+            const total = ['InjuredLv', 'EquipmentDamageLv', 'AffectOfEnviroment', 'NewsCoverage']
+                .reduce((acc, key) => acc + valueMapping[formState[key]], 0);
+
+            return total >= 6 ? 'E' : total >= 5 ? 'D' : total >= 4 ? 'C' : total >= 3 ? 'B' : 'A';
+        };
+
+        const checkValue = reactive({});
+        const initialFormState = reactive({
+            Id: 0,
+            Date: "",
+            Name: "",
+            Department: "",
+            Where: "",
+            TypeOfAccIdent: "",
+            Factor: "",
+            InjuredLv: "",
+            EquipmentDamageLv: "",
+            AffectOfEnviroment: "",
+            NewsCoverage: "",
+            Description: "",
+        });
+
+        const formState = reactive({ ...initialFormState });
+        const resetForm = () => {
+            Object.assign(formState, initialFormState);
+        };
+
+        const errorMessagesState = reactive({
+            Date: [],
+            Name: [],
+            Department: [],
+            Where: [],
+            TypeOfAccIdent: [],
+            Factor: [],
+            InjuredLv: [],
+            EquipmentDamageLv: [],
+            AffectOfEnviroment: [],
+            NewsCoverage: [],
+            Description: [],
+        });
+
+        const validatorsState = {
+            Date: [],
+            Name: [notBlank()],
+            Department: [atLeast(5)],
+            Where: [],
+            TypeOfAccIdent: [],
+            Factor: [],
+            InjuredLv: [],
+            EquipmentDamageLv: [],
+            AffectOfEnviroment: [],
+            NewsCoverage: [],
+            Description: [],
+        };
+
+        const onInputForm = (id, value) => {
+            formState[id] = value;
+            errorMessagesState[id] = validatorsState[id]
+                .map((valiDate) => valiDate(value))
+                .filter((msg) => msg !== "");
+        };
+
+        //axios postの用methods
+        const submitForm = async () => {
+            try {
+                // 最後のIdを取得
+                const lastIdValue = lastId.value;
+
+
+                // 送信するデータの作成
+                const postData = {
+                    id: lastIdValue,
+                    name: formState.Name,
+                    department: formState.Department,
+                    date: formState.Date,
+                    where: formState.Where,
+                    typeOfAccIdent: formState.TypeOfAccIdent,
+                    description: formState.Description,
+                    factor: formState.Factor,
+                    injuredLv: formState.InjuredLv,
+                    equipmentDamageLv: formState.EquipmentDamageLv,
+                    affectOfEnviroment: formState.AffectOfEnviroment,
+                    newsCoverage: formState.NewsCoverage,
+                    measures: calculateCategory(),
+                    // 他のフォームフィールド ...
+                };
+
+                console.log("postData:", postData);  // この行を追加
+                console.log("postData before axios.post:", postData);
+                // Axiosを使用してPOSTリクエストを送信
+                const response = await axios.post("http://localhost:3000/NearMiss", postData);
+
+                // レスポンスの処理（成功時の処理）
+                console.log(response.data);
+
+                // lastIdを更新
+                lastId.value += 1;
+
+                // フォームを初期化
+                resetForm();
+            } catch (error) {
+                console.error("Error submitting form:", error.response ? error.response.data : error.message);
+            }
+        };
+
+        return {
+            calculateCategory,
+            checkValue,
+            formState,
+            errorMessagesState,
+            validatorsState,
+            onInputForm,
+            submitForm,
+            lastId,
+        };
+    },
+};
+
+
 </script>

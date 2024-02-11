@@ -2,6 +2,7 @@
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
+//axios
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 
@@ -76,18 +77,100 @@ import TabPanel from 'primevue/tabpanel';
 import Vue3EasyDataTable from 'vue3-easy-data-table';
 import 'vue3-easy-data-table/dist/style.css';
 
-//handsontable
-import Handsontable from 'handsontable/base';
 
+
+//handsontable
+// the base module
+import Handsontable from 'handsontable/base';
+// cell type modules
 import {
-    registerCellType,
-    NumericCellType,
-  } from 'handsontable/cellTypes';
-  
-  import {
-    registerPlugin,
-    UndoRedo,
-  } from 'handsontable/plugins';
+  AutocompleteCellType,
+  CheckboxCellType,
+  DateCellType,
+  DropdownCellType,
+  HandsontableCellType,
+  NumericCellType,
+  PasswordCellType,
+  TextCellType,
+  TimeCellType,
+} from 'handsontable/cellTypes';
+// renderer modules
+import {
+  baseRenderer,
+  autocompleteRenderer,
+  checkboxRenderer,
+  htmlRenderer,
+  numericRenderer,
+  passwordRenderer,
+  textRenderer,
+} from 'handsontable/renderers';
+// editor modules
+import {
+  AutocompleteEditor,
+  BaseEditor,
+  CheckboxEditor,
+  DateEditor,
+  DropdownEditor,
+  HandsontableEditor,
+  NumericEditor,
+  PasswordEditor,
+  SelectEditor,
+  TextEditor,
+} from 'handsontable/editors';
+// validator modules
+import {
+  autocompleteValidator,
+  dateValidator,
+  numericValidator,
+  timeValidator,
+} from 'handsontable/validators';
+// plugin modules
+import {
+  AutoColumnSize,
+  AutoRowSize,
+  Autofill,
+  BasePlugin,
+  BindRowsWithHeaders,
+  CollapsibleColumns,
+  ColumnSorting,
+  ColumnSummary,
+  Comments,
+  ContextMenu,
+  CopyPaste,
+  CustomBorders,
+  DragToScroll,
+  DropdownMenu,
+  ExportFile,
+  Filters,
+  Formulas,
+  HiddenColumns,
+  HiddenRows,
+  ManualColumnFreeze,
+  ManualColumnMove,
+  ManualColumnResize,
+  ManualRowMove,
+  ManualRowResize,
+  MergeCells,
+  MultiColumnSorting,
+  MultipleSelectionHandles,
+  NestedHeaders,
+  NestedRows,
+  PersistentState,
+  Search,
+  TouchScroll,
+  TrimRows,
+  UndoRedo,
+} from 'handsontable/plugins';
+
+// registering functions that let you quickly register all modules at once
+import {
+  registerAllCellTypes,
+  registerAllRenderers,
+  registerAllEditors,
+  registerAllValidators,
+  registerAllPlugins,
+  registerAllModules,
+} from 'handsontable/registry'
 
 
 loadFonts()
@@ -136,8 +219,21 @@ app.directive("Tooltip", Tooltip);
 //vue3-easy-data-table
 app.component('EasyDataTable', Vue3EasyDataTable);
 
-registerCellType(NumericCellType);
-registerPlugin(UndoRedo);
+
+//Handsontable
+// register all cell types at once
+registerAllCellTypes();
+// register all renderers at once
+registerAllRenderers();
+// register all editors at once
+registerAllEditors();
+// register all validators at once
+registerAllValidators();
+// register all plugins at once
+registerAllPlugins();
+
+// or, register all of Handsontable's modules at once
+registerAllModules();
 
 app.use(PrimeVue,{ripple : true})
 app.use(VueAxios, axios)

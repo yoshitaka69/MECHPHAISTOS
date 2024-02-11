@@ -34,7 +34,8 @@
 							<Safety_indicator />
 							<Safety_factor_rate />
 							<Safety_AccidentType_rate />
-							<Safety_Measure_rate />
+							<Safety_correlation_diagram />
+							<Safety_Measure_trend />
 					</TabPanel>
 				</TabView>
 			</div>
@@ -49,7 +50,8 @@ import Near_miss_list from '@/components/Safety/Near_miss/near_miss_list'
 import Safety_indicator from '@/components/Safety/Safety_indicator'
 import Safety_factor_rate from '@/components/Safety/Safety_factor_rate'
 import Safety_AccidentType_rate from '@/components/Safety/Safety_AccidentType_rate.vue'
-import Safety_Measure_rate from '@/components/Safety/Safety_Measure_rate.vue'
+import Safety_correlation_diagram from '@/components/Safety/Safety_correlation_diagram.vue'
+import Safety_Measure_trend from '@/components/Safety/Safety_Measure_trend.vue'
 
 export default {
 	components: {
@@ -57,7 +59,9 @@ export default {
 		Safety_indicator,
 		Safety_factor_rate,
 		Safety_AccidentType_rate,
-		Safety_Measure_rate
+		Safety_correlation_diagram,
+		Safety_Measure_trend
+
 	},
 }
 

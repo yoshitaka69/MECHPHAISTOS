@@ -24,12 +24,12 @@
     mounted() {
         axios.get("http://localhost:3000/NearMiss")
     .then(response => {
-        const typeArray = response.data.map(item => item['TypeOfAccident']);
+        const typeArray = response.data.map(item => item['typeOfAccident']);
 
         console.log("typeArray:", typeArray);  // 追加
 
-        this.values = typeArray.reduce((accumulator, TypeOfAccident) => {
-            accumulator[TypeOfAccident] = (accumulator[TypeOfAccident] || 0) + 1;
+        this.values = typeArray.reduce((accumulator, typeOfAccident) => {
+            accumulator[typeOfAccident] = (accumulator[typeOfAccident] || 0) + 1;
             return accumulator;
         }, {});
   

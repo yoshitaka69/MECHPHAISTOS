@@ -1,41 +1,48 @@
 <template>
-    <div ref="graph"></div>
+  <div>
+      <v-flex>
+          <v-card>
+              <v-card-title>Repairing Cost</v-card-title>
+              <div id="rpc"></div>
+          </v-card>
+      </v-flex>
+  </div>
 </template>
-  
-  <script lang="ts">
-    import { defineComponent, onMounted, reactive, ref, watch } from "vue";
-    import Plotly from "plotly.js-dist-min";
 
-  
-    export default defineComponent({
-      setup() {
-        const graph = ref<HTMLDivElement>();
-  
-        const data = reactive([
-          {
-            x: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-            y: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-          },
-        ]);
-  
-        onMounted(() => {
-          if (!graph.value) return;
-          Plotly.newPlot(graph.value, data);
-        });
-  
-        setInterval(() => {
-          data[0].y[3] += 1;
-          for (let i = 0; i < data[0].y.length; i++) {
-            data[0].y[i] = Math.random();
-          }
-        }, 2000);
-  
-        watch(data, () => {
-          if (!graph.value) return;
-          Plotly.redraw(graph.value);
-        });
-  
-        return { graph };
-      },
-    });
-  </script>
+<script>
+import Plotly from "plotly.js-dist-min";
+import axios from "axios";
+
+export default {
+  data() {
+      return {
+          y: [],
+          error: null,
+          message: null,
+      };
+  },
+
+  mounted() {
+      axios
+          .get("http://localhost:3000/PlannedPM02")
+          .then(response => {
+              this.y = response.data.PlantA.cost;
+              let trace1 = {
+                  x: ["Jan.", "Feb.", "Mar.", "Apr.", "May.", "Jun.", "Jul.", "Aug.", "Sep.", "Oct.", "Nov.", "Dec."],
+                  y: this.y
+              };
+
+              const layout = {
+                  height: 500,
+                  width: 600
+              };
+
+              Plotly.newPlot('rpc', [trace1], layout);
+          })
+          .catch(error => {
+              this.error = error;
+          });
+  },
+
+};
+</script>

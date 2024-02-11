@@ -38,7 +38,7 @@
 
 
 <script>
-import BOM from '@/components/Spare_parts/Spare_parts';
+import BOM from '@/components/Spare_parts/Spare_parts_list';
 
 export default {
     components: {
