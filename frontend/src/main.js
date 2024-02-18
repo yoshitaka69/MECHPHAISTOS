@@ -34,8 +34,7 @@ import "primeicons/primeicons.css";
 //いつかグローバルcssの統一が必要かも…
 import "@/assets/global.scss";
 
-
-// Table
+// prime vue Table
 import Button from "primevue/button";
 import TieredMenu from "primevue/tieredmenu";
 import DataTable from "primevue/datatable";
@@ -49,14 +48,15 @@ import ProgressSpinner from "primevue/progressspinner";
 import Tooltip from "primevue/tooltip";
 
 
-// FORM
+// prime vue FORM
 import AutoComplete from "primevue/autocomplete";
 import InputText from "primevue/inputtext";
 import Password from "primevue/password";
 import Textarea from "primevue/textarea";
 import Checkbox from "primevue/checkbox";
+import Message from 'primevue/message';
 
-// Modal
+// prime vue Modal
 import Dialog from "primevue/dialog";
 import OverlayPanel from "primevue/overlaypanel";
 import ToggleButton from "primevue/togglebutton";
@@ -69,7 +69,7 @@ import TriStateCheckbox from "primevue/tristatecheckbox";
 import SplitButton from "primevue/splitbutton";
 import SelectButton from "primevue/selectbutton";
 import Calendar from "primevue/calendar";
-// System Guide View
+// prime vue System Guide View
 import TabView from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
 
@@ -77,7 +77,8 @@ import TabPanel from 'primevue/tabpanel';
 import Vue3EasyDataTable from 'vue3-easy-data-table';
 import 'vue3-easy-data-table/dist/style.css';
 
-
+//vue-ganttastic
+import ganttastic from '@infectoone/vue-ganttastic';
 
 //handsontable
 // the base module
@@ -192,6 +193,7 @@ app.component("ColumnGroup", ColumnGroup);
 app.component("Row", Row);
 app.component("Card", Card);
 app.component("Menu", Menu);
+app.component("Message", Message);
 
 // FORM
 app.component("AutoComplete", AutoComplete);
@@ -219,7 +221,6 @@ app.directive("Tooltip", Tooltip);
 //vue3-easy-data-table
 app.component('EasyDataTable', Vue3EasyDataTable);
 
-
 //Handsontable
 // register all cell types at once
 registerAllCellTypes();
@@ -231,10 +232,11 @@ registerAllEditors();
 registerAllValidators();
 // register all plugins at once
 registerAllPlugins();
-
 // or, register all of Handsontable's modules at once
 registerAllModules();
 
+
+app.use(ganttastic)
 app.use(PrimeVue,{ripple : true})
 app.use(VueAxios, axios)
 app.mount('#app')

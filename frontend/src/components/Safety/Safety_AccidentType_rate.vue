@@ -1,11 +1,9 @@
 <template>
     <div>
-      <v-flex>
         <v-card>
           <v-card-title>Safety Accident type</v-card-title>
           <div id="SafeAccidentRate"></div>
         </v-card>
-      </v-flex>
     </div>
   </template>
   
@@ -43,14 +41,17 @@
           };
   
           const layout = {
-            height: 500,
-            width: 500,
+            height: 550,
+            width: 550,
+            automargin: true,
           };
+
+          const config = { responsive: true }
   
           // SafeRate 要素が存在することを確認してからグラフを描画
           if (document.getElementById('SafeAccidentRate')) {
             console.log("Before plotting");  // 追加
-            Plotly.newPlot('SafeAccidentRate', [data], layout);
+            Plotly.newPlot('SafeAccidentRate', [data], layout,config);
 
             console.log("After plotting"); // 追加
           } else {

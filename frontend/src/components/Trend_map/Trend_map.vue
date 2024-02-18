@@ -1,11 +1,7 @@
 <template>
 	<div>
-		<v-flex>
-			<v-card>
-				<v-card-title></v-card-title>
-				<div id="TRmap"></div>
-			</v-card>
-		</v-flex>
+		<v-card-title></v-card-title>
+		<div id="TRmap"></div>
 	</div>
 </template>
   
@@ -39,13 +35,21 @@ export default {
 
 
 
-		const layout = { mapbox: { style: 'light', center: { lat: 20 } }, width: 600, height: 500 };
+		const layout = {
+			mapbox: { style: 'light', center: { lat: 20 } }, width: 1200, height: 600, margin: {
+				l: 50, // 左側のマージン
+				r: 50, // 右側のマージン
+				b: 50, // 下側のマージン
+				t: 50, // 上側のマージン
+				pad: 4, // グラフ領域と軸の周りの余白
+			},
+		};
 		const config = {
 			mapboxAccessToken: "pk.eyJ1IjoieW9zaGl0YWthNjkiLCJhIjoiY2xyd2hjNmFoMDNwajJrbnU5NWV4ODh2ZiJ9.4QE8gwFBapcj7kO3_gtkNw"
 		};
 
 
-		Plotly.newPlot('TRmap', [map], layout,config)
+		Plotly.newPlot('TRmap', [map], layout, config)
 	}
 }
 

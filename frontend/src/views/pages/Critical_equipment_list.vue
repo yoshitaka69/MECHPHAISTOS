@@ -32,15 +32,14 @@
 					</TabPanel>
 					<TabPanel header="Priority Tasks">
 						<p class="line-height-3 m-0">
-							<Task_of_maintenance />
 						</p>
 					</TabPanel>
 					<TabPanel header="Risk-Matrix">
 						<p class="line-height-3 m-0">
 							<Risk_matrix />
 						</p>
-							<Description />
-							<Description_impact />
+						<Impact_for_production />
+						<Probability_of_failure />
 					</TabPanel>
 				</TabView>
 			</div>
@@ -52,19 +51,18 @@
 
 <script>
 import Critical_equipment_list from '@/components/Critical_equipment_list/Critical_equipment_list.vue'
-import Task_of_maintenance from '@/components/Task_of_maintenance/Task_of_maintenance.vue'
 import Risk_matrix from '@/components/Risk_Matrix/Risk_matrix.vue'
-import Description from '@/components/Risk_Matrix/Description.vue'
-import Description_impact from '@/components/Risk_Matrix/Description_impact.vue'
+import Impact_for_production from '@/components/Risk_Matrix/Impact_for_production.vue'
+import Probability_of_failure from '@/components/Risk_Matrix/Probability_of_failure.vue'
 
 
 export default {
 	components: {
 		Critical_equipment_list,
-		Task_of_maintenance,
 		Risk_matrix,
-		Description,
-		Description_impact
+		Impact_for_production,
+		Probability_of_failure
+
 	},
 }
 </script>
