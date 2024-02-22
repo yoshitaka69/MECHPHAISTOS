@@ -1,6 +1,6 @@
 <template>
 	<div>
-		  <div id="LvDescription" style="width: 800px; margin-left: auto;"></div>
+		  <div id="LvDescription"></div>
 	</div>
 </template>
 

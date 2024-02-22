@@ -27,12 +27,24 @@
 				<TabView>
 					<TabPanel header="Critical equipment list">
 						<p class="line-height-3 m-0">
+							Critical Equipment List. This data is sample.
+							<br>
+							<br>
 							<Critical_equipment_list />
 						</p>
 					</TabPanel>
 					<TabPanel header="Priority Tasks">
-						<p class="line-height-3 m-0">
-						</p>
+						<div class="row">
+							<div class="col-12 xl:col-8">
+								<div class="card" style="background-color: #f2f2f2;">
+								</div>
+							</div>
+							<div class="col-12 xl:col-4">
+								<div class="card" style="background-color: #f2f2f2;">
+									<Assessment_rate />
+								</div>
+							</div>
+						</div>
 					</TabPanel>
 					<TabPanel header="Risk-Matrix">
 						<p class="line-height-3 m-0">
@@ -51,6 +63,9 @@
 
 <script>
 import Critical_equipment_list from '@/components/Critical_equipment_list/Critical_equipment_list.vue'
+
+import Assessment_rate from '@/components/Critical_equipment_list/Assessment_rate.vue'
+
 import Risk_matrix from '@/components/Risk_Matrix/Risk_matrix.vue'
 import Impact_for_production from '@/components/Risk_Matrix/Impact_for_production.vue'
 import Probability_of_failure from '@/components/Risk_Matrix/Probability_of_failure.vue'
@@ -59,6 +74,9 @@ import Probability_of_failure from '@/components/Risk_Matrix/Probability_of_fail
 export default {
 	components: {
 		Critical_equipment_list,
+
+		Assessment_rate,
+
 		Risk_matrix,
 		Impact_for_production,
 		Probability_of_failure

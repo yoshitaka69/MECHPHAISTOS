@@ -77,12 +77,36 @@
 						</div>
 						<!-- </p>-->
 					</TabPanel>
-					<TabPanel header="Simulations">
-						<p class="line-height-3 m-0">
-						</p>
-					</TabPanel>
 					<TabPanel header="Task list">
 						<div class="row">
+							<div class="col-12 lg:col-6 xl:col-6">
+								<div class="card mb-0">
+									<div class="flex justify-content-between mb-3" style="height: 20px;">
+										<div>
+											<span class="block text-500 font-medium mb-3">Predict years cost</span>
+											<div class="text-900 font-medium text-xl">$2.100</div>
+										</div>
+										<div class="flex align-items-center justify-content-center bg-orange-100 border-round"
+											style="width: 2.5rem; height: 2.5rem">
+											<i class="pi pi-map-marker text-orange-500 text-xl"></i>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="col-12 lg:col-6 xl:col-6">
+								<div class="card mb-0">
+									<div class="flex justify-content-between mb-3" style="height: 20px;">
+										<div>
+											<span class="block text-500 font-medium mb-3">Next month task event</span>
+											<div class="text-900 font-medium text-xl">28441</div>
+										</div>
+										<div class="flex align-items-center justify-content-center bg-cyan-100 border-round"
+											style="width: 2.5rem; height: 2.5rem">
+											<i class="pi pi-inbox text-cyan-500 text-xl"></i>
+										</div>
+									</div>
+								</div>
+							</div>
 							<div class="col-12 xl:col-6">
 								<div class="card" style="background-color: #f2f2f2;">
 										<Planned_vs_actual />
@@ -101,6 +125,10 @@
 							</div>
 							<Task_list />
 						</div>
+					</TabPanel>
+					<TabPanel header="Simulations">
+						<p class="line-height-3 m-0">
+						</p>
 					</TabPanel>
 				</TabView>
 			</div>

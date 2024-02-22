@@ -1,4 +1,11 @@
+
 <template>
+    <button id="show-modal" @click="showModal = true">Show Modal</button>
+    <Teleport to="body">
+        <!-- use the modal component, pass in the prop -->
+        <modal :show="showModal" @close="showModal = false">
+        </modal>
+    </Teleport>
     <div>
         <span>search field:</span>
         <select v-model="searchField">
@@ -13,7 +20,7 @@
         <span>&nbsp;&nbsp;</span> <!-- ここに空白を挿入 -->
         <span>search value:</span>
         <input type="text" v-model="searchValue">
-        
+
         <br><br>
         <EasyDataTable buttons-pagination :headers="headers" :items="items" alternating :search-field="searchField"
             :search-value="searchValue" :sort-by="sortBy" :sort-type="sortType" multi-sort>
@@ -28,13 +35,6 @@
                     {{ item.user.name }}
                 </span>
             </template>
-            <template #item-operation="item">
-                <div class="operation-wrapper">
-                    <img src="./images/delete.png" class="operation-icon" @click="deleteItem(item)" />
-                    <img src="./images/edit.png" class="operation-icon" @click="editItem(item)" />
-                </div>
-            </template>
-
         </EasyDataTable>
     </div>
 </template>
@@ -43,14 +43,15 @@
 import type { Header, Item, SortType } from "vue3-easy-data-table";
 import { onMounted, ref } from "vue";
 import axios from "axios";
+import Modal from '@/components/Safety/Near_miss/Near_miss_form.vue'
+
+const showModal = ref(false)
 
 const searchField = ref('');
 const searchValue = ref('');
 
 const sortBy: string[] = ["ID No.", "Name", "Department", "Date", "where?", "Type of accident", "Description/Learning", "Factor", "Injured lv", "Equipment damage lv", "Affect of enviroment", "News coverage", "Affect of quality", "Measures",];
 const sortType: SortType[] = ["desc", "asc"];
-
-
 
 const NearMiss = ref([]);
 

@@ -277,7 +277,6 @@
 <script>
 import Trend_map from '@/components/Trend_map/Trend_map.vue'
 import Safety_indicator from '@/components/Safety/Safety_indicator'
-import RadarCharts from '@/components/Critical_equipment_list/Radar_charts.vue'
 import Safety_rate from '@/components/Safety/Safety_factor_rate.vue'
 import Safety_correlation_diagram from '@/components/Safety/Safety_correlation_diagram.vue'
 
@@ -286,7 +285,6 @@ export default {
 	components: {
         Trend_map,
         Safety_indicator,
-        RadarCharts,
         Safety_rate,
         Safety_correlation_diagram,
 	},

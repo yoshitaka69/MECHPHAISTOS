@@ -47,7 +47,6 @@ import Paginator from "primevue/paginator";
 import ProgressSpinner from "primevue/progressspinner";
 import Tooltip from "primevue/tooltip";
 
-
 // prime vue FORM
 import AutoComplete from "primevue/autocomplete";
 import InputText from "primevue/inputtext";
@@ -55,6 +54,8 @@ import Password from "primevue/password";
 import Textarea from "primevue/textarea";
 import Checkbox from "primevue/checkbox";
 import Message from 'primevue/message';
+import DataView from 'primevue/dataview';
+import DataViewLayoutOptions from 'primevue/dataviewlayoutoptions'   // optional
 
 // prime vue Modal
 import Dialog from "primevue/dialog";
@@ -69,6 +70,10 @@ import TriStateCheckbox from "primevue/tristatecheckbox";
 import SplitButton from "primevue/splitbutton";
 import SelectButton from "primevue/selectbutton";
 import Calendar from "primevue/calendar";
+
+//prime vue misc
+import Tag from 'primevue/tag';
+
 // prime vue System Guide View
 import TabView from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
@@ -217,6 +222,9 @@ app.component("Checkbox", Checkbox);
 app.component("TabView", TabView);
 app.component("TabPanel", TabPanel);
 app.directive("Tooltip", Tooltip);
+app.component("DataView",DataView);
+app.component("DataViewLayoutOptions",DataViewLayoutOptions);
+app.component("Tag",Tag);
 
 //vue3-easy-data-table
 app.component('EasyDataTable', Vue3EasyDataTable);

@@ -142,8 +142,12 @@
 			  }
 			]
 		  };
+
+		  const layout ={
+			width:1000,
+		  }
   
-		  Plotly.newPlot('scd', [data]);
+		  Plotly.newPlot('scd', [data],layout);
 		})
 		.catch(error => {
 		  console.error('データの取得に失敗しました', error);

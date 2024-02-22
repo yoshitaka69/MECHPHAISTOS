@@ -77,6 +77,15 @@
 									<span class="text-500">responded</span>
 								</div>
 							</div>
+							<div class="col-12 xl:col-12">
+								<div class="card" style="background-color: #f2f2f2">
+									<Safety_indicator />
+									<Message :closable="false">AI recommendation
+										<br />
+										Now developing
+									</Message>
+								</div>
+							</div>
 							<div class="col-12 xl:col-6">
 								<div class="card" style="background-color: #f2f2f2">
 									<Safety_factor_rate />
@@ -96,7 +105,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="col-12 xl:col-4">
+						<div class="col-12 xl:col-12">
 							<div class="card" style="background-color: #f2f2f2">
 								<Safety_Measure_trend />
 								<Message :closable="false">AI recommendation
@@ -134,6 +143,7 @@ import Safety_AccidentType_rate from '@/components/Safety/Safety_AccidentType_ra
 import Safety_correlation_diagram from '@/components/Safety/Safety_correlation_diagram.vue';
 import Safety_Measure_trend from '@/components/Safety/Safety_Measure_trend.vue';
 import NearMiss_form from '@/components/Safety/Near_miss/Near_miss_form.vue';
+import Safety_indicator from '@/components/Safety/Safety_indicator.vue'
 
 export default {
 	components: {
@@ -142,7 +152,8 @@ export default {
 		Safety_AccidentType_rate,
 		Safety_correlation_diagram,
 		Safety_Measure_trend,
-		NearMiss_form
+		NearMiss_form,
+		Safety_indicator
 	}
 };
 </script>
