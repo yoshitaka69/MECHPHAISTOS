@@ -1,8 +1,9 @@
-from django.urls import path,include
-from celist import views
+from django.urls import path
+from ceList import views
 
 
 urlpatterns = [
-    path('latest-celist/', views.LatestCeList.as_view()),
+    path('ceList/', views.CeListView.as_view()),
+    path('ceList/sparePartsList', views.SparePartsListView.as_view()),
+    path('ceList/taskList', views.TaskListView.as_view()),
 ]
-

@@ -1,111 +1,123 @@
-from io import BytesIO
-from PIL import Image
-
-from django.core.files import File
 from django.db import models
-
-
-
-class Company(models.Model):
-   company_name = models.CharField(max_length=255)
-   company_code = models.CharField(max_length=100)
-   slug = models.SlugField()
-
-   class Meta:
-      ordering = ('company_name',)
-
-
-   def __str__(self):
-     return self.company_name
-
-   def get_absolute_url(self):
-      return f'/{self.slug}/'
-
-
+from django.utils import timezone
 
 class CeList(models.Model):
-    company = models.ForeignKey(Company, related_name='celist', on_delete=models.CASCADE)
-
-    company_code = models.CharField(max_length=100)
     slug = models.SlugField()
 
+    ceListNo = models.IntegerField(verbose_name='ceListNo', default=0)
+    companyCode = models.CharField(verbose_name='companyCode', max_length=200)
+    plant = models.CharField(verbose_name='plant', max_length=200)
+    locationNo = models.CharField(verbose_name='locationNo', max_length=200)
+    function = models.CharField(verbose_name='function', max_length=200)
+    equipment = models.CharField(verbose_name='equipment', max_length=200)
+    bomNo = models.CharField(verbose_name='bomNo', max_length=200)
+    totalBomCost = models.CharField(verbose_name='totalBomCost', max_length=200)
+    valueImpact = models.CharField(verbose_name='valueImpact', max_length=200)
+    constructionPeriod = models.CharField(verbose_name='constructionPeriod', max_length=200)
+    partsDeliveryTime = models.CharField(verbose_name='partsDeliveryTime', max_length=200)
+    mttr = models.CharField(verbose_name='mttr', max_length=200)
 
-    plant = models.CharField(verbose_name='プラント名', max_length=200)
-    equipment = models.CharField(verbose_name='設備名称', max_length=200)
-    function = models.CharField(verbose_name='機能場所', max_length=200)
-    setting_value_impact = models.CharField(verbose_name='impactへの設定値', max_length=200)
-    construction_period = models.CharField(verbose_name='工期', max_length=200)
-    parts_deliver_date = models.CharField(verbose_name='部品納期', max_length=200)
-    mttr = models.CharField(verbose_name='MTTR', max_length=200)
+    # PM02
+    countOfPM02 = models.CharField(verbose_name='countOfPM02', max_length=200)
+    latestPM02 = models.CharField(verbose_name='latestPM02', max_length=200)
+    taskOfPM02 = models.CharField(verbose_name='taskOfPM02', max_length=200)
+    # PM03
+    countOfPM03 = models.CharField(verbose_name='countOfPM03', max_length=200)
+    latestPM03 = models.CharField(verbose_name='latestPM03', max_length=200)
+    taskOfPM03 = models.CharField(verbose_name='taskOfPM03', max_length=200)
+    # PM04
+    countOfPM04 = models.CharField(verbose_name='countOfPM04', max_length=200)
+    latestPM04 = models.CharField(verbose_name='latestPM04', max_length=200)
+    taskOfPM04 = models.CharField(verbose_name='taskOfPM04', max_length=200)
+    # PM005
+    countOfPM05 = models.CharField(verbose_name='countOfPM05', max_length=200)
+    latestPM05 = models.CharField(verbose_name='latestPM05', max_length=200)
+    taskOfPM05 = models.CharField(verbose_name='taskOfPM05', max_length=200)
 
+    nextEventDate = models.CharField(verbose_name='nextEventDate', max_length=200)
+    situation = models.CharField(verbose_name='situation', max_length=200)
+    ceDescription = models.CharField(verbose_name='ceDescription', max_length=200)
 
-    number_pm02 = models.CharField(verbose_name='PM02回数', max_length=200,blank=True, null=True)
-    latest_pm02 = models.CharField(verbose_name='直近のPM02', max_length=200,blank=True, null=True)
-    number_pm03 = models.CharField(verbose_name='PM03回数', max_length=200,blank=True, null=True)
-    latest_pm03 = models.CharField(verbose_name='直剣のPM03', max_length=200,blank=True, null=True)
-    number_pm04 = models.CharField(verbose_name='PM04回数', max_length=200,blank=True, null=True)
-    latest_pm04 = models.CharField(verbose_name='直近のPM04', max_length=200,blank=True, null=True)
-
-
-    impact_production = models.CharField(verbose_name='生産へのimpact', max_length=200)
-    possibility_of_failure = models.CharField(verbose_name='故障の可能性', max_length=200)
-    assessment = models.CharField(verbose_name='評価', max_length=200)
-
-
-    task_pm02 = models.CharField(verbose_name='PM02タスク名称', max_length=200)
-    cost_of_task = models.CharField(verbose_name='推定コスト', max_length=200)
-    period_of_task = models.CharField(verbose_name='周期', max_length=200)
-    next_event = models.CharField(verbose_name='次回の発生日', max_length=200)
-    situation_for_pm02 = models.CharField(verbose_name='周期超過の有無', max_length=200)
-
-
-    """test用でimage挿入"""
-    image = models.ImageField(upload_to='uploads/', blank=True, null=True)
-    thumbnail = models.ImageField(upload_to='uploads/', blank=True, null=True)
-
+    thisYear10ago = models.CharField(verbose_name='thisYear10ago', max_length=200)
+    thisYear9ago = models.CharField(verbose_name='thisYear9ago', max_length=200)
+    thisYear8ago = models.CharField(verbose_name='thisYear8ago', max_length=200)
+    thisYear7ago = models.CharField(verbose_name='thisYear7ago', max_length=200)
+    thisYear6ago = models.CharField(verbose_name='thisYear6ago', max_length=200)
+    thisYear5ago = models.CharField(verbose_name='thisYear5ago', max_length=200)
+    thisYear4ago = models.CharField(verbose_name='thisYear4ago', max_length=200)
+    thisYear3ago = models.CharField(verbose_name='thisYear3ago', max_length=200)
+    thisYear2ago = models.CharField(verbose_name='thisYear2ago', max_length=200)
+    thisYear1ago = models.CharField(verbose_name='thisYear1ago', max_length=200)
+    thisYear = models.CharField(verbose_name='thisYear', max_length=200)
+    thisYear1later = models.CharField(verbose_name='thisYear1later', max_length=200)
+    thisYear2later = models.CharField(verbose_name='thisYear2later', max_length=200)
+    thisYear3later = models.CharField(verbose_name='thisYear3later', max_length=200)
+    thisYear4later = models.CharField(verbose_name='thisYear4later', max_length=200)
+    thisYear5later = models.CharField(verbose_name='thisYear5later', max_length=200)
+    thisYear6later = models.CharField(verbose_name='thisYear6later', max_length=200)
+    thisYear7later = models.CharField(verbose_name='thisYear7later', max_length=200)
+    thisYear8later = models.CharField(verbose_name='thisYear8later', max_length=200)
+    thisYear9later = models.CharField(verbose_name='thisYear9later', max_length=200)
+    thisYear10later = models.CharField(verbose_name='thisYear10later', max_length=200)
 
     """記入した日付を記入してくれる"""
-    date_added = models.DateTimeField(auto_now_add=True)
-
-
+    createdDay = models.DateTimeField(auto_now_add=True) 
+    updateDay = models.DateTimeField(auto_now_add=True) 
 
 class Meta:
-    verbose_name_plural = 'Critical Equipment'
+    verbose_name_plural = 'Critical equipment list'
     ordering = ('-date_added',)
 
-def __str__(self):
-    return self.company_name
+class SparePartsList(models.Model):
+    slug = models.SlugField()
 
-#一旦コメントアウト　companyには2つの項目がある。20240108 y.noto
-#def get_absolute_url(self):
-    #return f'/{self.company.slug}/{self.slug}/'
-
-def get_image(self):
-   if self.image:
-      return 'http://127.0.0.1:8000' + self.image.url
-   return ''
-
-def get_thumbnail(self):
-   if self.thumbnail:
-      return 'http://127.0.0.1:8000' + self.thumbnail.url
-   else:
-      if self.image:
-         self.thumbnail = self.make_thumbnail(self.image)
-         self.save()
-
-         return 'http://127.0.0.1:8000' + self.thumbnail.url
-      else:
-         return ''
-    
-def make_thumbnail(self, image, size=(300,200)):
-   img = Image.open(image)
-   img.convert('RGB')
-   img.thumbnail(size)
+    image = models.ImageField(verbose_name='image',)
+    partsName = models.CharField(verbose_name='partsName', max_length=200)
+    category = models.CharField(verbose_name='category', max_length=200)
+    partsModel = models.IntegerField(verbose_name='partsModel', default=0)
+    serialNumber = models.CharField(verbose_name='serialNumber', max_length=200)
+    taskListNo = models.CharField(verbose_name='taskListNo', max_length=200)
+    partsCost = models.IntegerField(verbose_name='partsCost', default=0)
+    numberOf = models.CharField(verbose_name='numberOf', max_length=200)
+    unit = models.CharField(verbose_name='unit', max_length=200)
+    location = models.IntegerField(verbose_name='location', default=0)
+    partsDeliveryTime = models.CharField(verbose_name='partsDeliveryTime', max_length=200)
+    partsDescription = models.CharField(verbose_name='partsDescription', max_length=200)
 
 
-   thumb_io = BytesIO()
-   img.save(thumb_io, 'JPEG', quality=85)
+class TaskList(models.Model):
+    slug = models.SlugField()
 
-   thumbnail = File(thumb_io, name=image.name)
-
-   return thumbnail
+    plant = models.ImageField(verbose_name='plant',)
+    equipment = models.CharField(verbose_name='equipment', max_length=200)
+    function = models.CharField(verbose_name='function', max_length=200)
+    latestPM02 = models.IntegerField(verbose_name='latestPM02', default=0)
+    latestPM03 = models.CharField(verbose_name='latestPM03', max_length=200)
+    latestPM04 = models.CharField(verbose_name='latestPM04', max_length=200)
+    taskOfPM02 = models.IntegerField(verbose_name='taskOfPM02', default=0)
+    laborCost = models.CharField(verbose_name='laborCost', max_length=200)
+    partsName = models.CharField(verbose_name='partsName', max_length=200)
+    constructionPeriod = models.IntegerField(verbose_name='constructionPeriod', default=0)
+    nextEventDate = models.CharField(verbose_name='nextEventDate', max_length=200)
+    situation = models.CharField(verbose_name='situation', max_length=200)
+    thisYear10ago = models.CharField(verbose_name='thisYear10ago', max_length=200)
+    thisYear9ago = models.CharField(verbose_name='thisYear9ago', max_length=200)
+    thisYear8ago = models.CharField(verbose_name='thisYear8ago', max_length=200)
+    thisYear7ago = models.CharField(verbose_name='thisYear7ago', max_length=200)
+    thisYear6ago = models.CharField(verbose_name='thisYear6ago', max_length=200)
+    thisYear5ago = models.CharField(verbose_name='thisYear5ago', max_length=200)
+    thisYear4ago = models.CharField(verbose_name='thisYear4ago', max_length=200)
+    thisYear3ago = models.CharField(verbose_name='thisYear3ago', max_length=200)
+    thisYear2ago = models.CharField(verbose_name='thisYear2ago', max_length=200)
+    thisYear1ago = models.CharField(verbose_name='thisYear1ago', max_length=200)
+    thisYear = models.CharField(verbose_name='thisYear', max_length=200)
+    thisYear1later = models.CharField(verbose_name='thisYear1later', max_length=200)
+    thisYear2later = models.CharField(verbose_name='thisYear2later', max_length=200)
+    thisYear3later = models.CharField(verbose_name='thisYear3later', max_length=200)
+    thisYear4later = models.CharField(verbose_name='thisYear4later', max_length=200)
+    thisYear5later = models.CharField(verbose_name='thisYear5later', max_length=200)
+    thisYear6later = models.CharField(verbose_name='thisYear6later', max_length=200)
+    thisYear7later = models.CharField(verbose_name='thisYear7later', max_length=200)
+    thisYear8later = models.CharField(verbose_name='thisYear8later', max_length=200)
+    thisYear9later = models.CharField(verbose_name='thisYear9later', max_length=200)
+    thisYear10later = models.CharField(verbose_name='thisYear10later', max_length=200)
