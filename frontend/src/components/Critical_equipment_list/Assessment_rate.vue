@@ -20,7 +20,7 @@
     },
   
     mounted() {
-        axios.get("http://localhost:3000/CeList")
+        axios.get("http://127.0.0.1:8000/api/v1/ceList/")
     .then(response => {
         const typeArray = response.data.map(item => item['assessment']);
 

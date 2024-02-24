@@ -186,7 +186,7 @@
   
       const getLastId = async () => {
         try {
-          const response = await axios.get("http://localhost:3000/NearMiss");
+          const response = await axios.get("http://127.0.0.1:8000/api/v1/nearMiss/");
           const data = response.data;
           return data.length > 0 ? Math.max(...data.map(entry => entry.id)) : 0;
         } catch (error) {
@@ -289,7 +289,7 @@
           console.log("postData:", postData);  // この行を追加
           console.log("postData before axios.post:", postData);
           // Axiosを使用してPOSTリクエストを送信
-          const response = await axios.post("http://localhost:3000/NearMiss", postData);
+          const response = await axios.post("http://127.0.0.1:8000/api/v1/nearMiss/", postData);
   
           // レスポンスの処理（成功時の処理）
           console.log(response.data);

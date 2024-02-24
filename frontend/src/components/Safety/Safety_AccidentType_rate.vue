@@ -20,7 +20,7 @@
     },
   
     mounted() {
-        axios.get("http://localhost:3000/NearMiss")
+        axios.get("http://127.0.0.1:8000/api/v1/nearMiss/")
     .then(response => {
         const typeArray = response.data.map(item => item['typeOfAccident']);
 

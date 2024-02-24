@@ -1,11 +1,9 @@
 <template>
     <div>
-      <v-flex>
         <v-card>
           <v-card-title>Safety Measure trend</v-card-title>
           <div id="smt"></div>
         </v-card>
-      </v-flex>
     </div>
   </template>
   
@@ -22,7 +20,7 @@
     },
   
     mounted() {
-      axios.get("http://localhost:3000/NearMiss").then((response) => {
+      axios.get("http://127.0.0.1:8000/api/v1/nearMiss/").then((response) => {
         // データから年ごとの measures のカウントを抽出
         const dataByYear = response.data.reduce((acc, item) => {
           const year = new Date(item.date).getFullYear();

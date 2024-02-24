@@ -12,4 +12,5 @@ urlpatterns = [
     path("api/v1/", include('ceList.urls')),
     path("api/v1/", include('nearMiss.urls')),
     path("api/v1/", include('sustainability.urls')),
+    path("api/v1/", include('repairingCost.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

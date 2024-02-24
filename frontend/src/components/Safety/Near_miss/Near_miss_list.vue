@@ -56,11 +56,11 @@ const sortType: SortType[] = ["desc", "asc"];
 const NearMiss = ref([]);
 
 const headers: Header[] = [
-    { text: "ID No.", value: "id", sortable: true },
-    { text: "Name", value: "name", sortable: true },
+    { text: "ID No.", value: "nearMissListNo", sortable: true },
+    { text: "Name", value: "userName", sortable: true },
     { text: "Department", value: "department", sortable: true },
-    { text: "Date", value: "date", sortable: true },
-    { text: "Where?", value: "where", sortable: true },
+    { text: "Date", value: "dateOfOccurrence", sortable: true },
+    { text: "Where?", value: "placeOfOccurrence", sortable: true },
     { text: "Type of accident", value: "typeOfAccident", sortable: true },
     { text: "Description/Learning", value: "description", sortable: true },
     { text: "Factor", value: "factor", sortable: true },
@@ -76,7 +76,7 @@ const items: Item[] = NearMiss.value;
 
 onMounted(async () => {
     try {
-        const response = await axios.get('http://localhost:3000/NearMiss');
+        const response = await axios.get('http://127.0.0.1:8000/api/v1/nearMiss/');
         NearMiss.value.push(...response.data);
         console.log(response.data);
     } catch (error) {

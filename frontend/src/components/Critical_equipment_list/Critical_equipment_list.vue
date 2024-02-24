@@ -358,7 +358,7 @@ const CriticalEquipmentComponent = defineComponent({
       const jsonData = this.$refs.hotTableComponent.hotInstance.getData();
       
       // ここでバックエンドのURLを設定
-      const backendUrl = 'http://localhost:3000/Celist2';
+      const backendUrl = 'http://127.0.0.1:8000/api/v1/ceList/';
 
       // Axiosを使用してJSONデータをPOST
       axios.post(backendUrl, jsonData)

@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'ceList',
     'nearMiss',
     'sustainability',
+    'repairingCost',
 ]
 
 
