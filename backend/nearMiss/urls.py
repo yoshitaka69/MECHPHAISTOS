@@ -1,7 +1,10 @@
-from django.urls import path
-from nearMiss import views
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import NearMissViewSet 
 
+router = DefaultRouter()
+router.register(r'nearMiss', NearMissViewSet, basename='nearMiss')
 
 urlpatterns = [
-    path('nearMiss/', views.NearMissListView.as_view()),
+    path('', include(router.urls)),
 ]

@@ -2,7 +2,7 @@ from django.db import models
 from django.utils import timezone
 
 #Co2リスト
-class Co2List(models.Model):
+class Co2(models.Model):
     slug = models.SlugField()
 
     plant = models.IntegerField(verbose_name='plant', default=0)
@@ -13,7 +13,7 @@ class Co2List(models.Model):
 
 
 #STMリスト
-class StmList(models.Model):
+class Stm(models.Model):
     slug = models.SlugField()
 
     plant = models.IntegerField(verbose_name='plant', default=0)
@@ -84,6 +84,5 @@ class ExhaustGas(models.Model):
 
     plant = models.IntegerField(verbose_name='plant', default=0)
     date = models.IntegerField(verbose_name='date', default=0)
-    exhaustGasCost = models.IntegerField(verbose_name='exhaustGasCost', default=0)
     createdDay = models.DateTimeField(auto_now_add=True) 
     updateDay = models.DateTimeField(auto_now_add=True)

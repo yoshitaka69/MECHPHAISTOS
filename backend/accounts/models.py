@@ -2,7 +2,7 @@ from django.db import models
 from django.utils import timezone
 
 #企業情報リスト
-class CompanyList(models.Model):
+class Company(models.Model):
     slug = models.SlugField()
 
     companyListNo = models.IntegerField(verbose_name='companyListNo', default=0)
@@ -20,7 +20,7 @@ class Meta:
 
 
 #ユーザーリスト
-class UserList(models.Model):
+class User(models.Model):
     slug = models.SlugField()
 
     userName = models.IntegerField(verbose_name='userName', default=0)
@@ -33,7 +33,7 @@ class UserList(models.Model):
     updateDay = models.DateTimeField(auto_now_add=True) 
 
 
-class PaymentsList(models.Model):
+class Payment(models.Model):
     slug = models.SlugField()
 
     companyCode = models.IntegerField(verbose_name='companyCode', default=0)

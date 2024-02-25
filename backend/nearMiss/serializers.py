@@ -1,10 +1,10 @@
 from rest_framework import serializers
-from .models import NearMissList
+from .models import NearMiss
 
 
-class NearMissListSerializer(serializers.ModelSerializer):
+class NearMissSerializer(serializers.ModelSerializer):
     class Meta:
-        model = NearMissList # 呼び出すモデル
+        model = NearMiss # 呼び出すモデル
         fields = [
             "nearMissListNo",
             "userName",

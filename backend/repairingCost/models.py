@@ -51,7 +51,7 @@ class Pm04(models.Model):
     actualCost = models.DecimalField(verbose_name='actualCost', max_digits=12, decimal_places=2,default=0)
     totalActualPM04 = models.DecimalField(verbose_name='totalActualPM04', max_digits=12, decimal_places=2,default=0)
 
-    no1ActualPM03 = models.DecimalField(verbose_name='no1ActualPM04', max_digits=12, decimal_places=2,default=0)
+    no1ActualPM04 = models.DecimalField(verbose_name='no1ActualPM04', max_digits=12, decimal_places=2,default=0)
 
 class Pm05(models.Model):
     slug = models.SlugField()

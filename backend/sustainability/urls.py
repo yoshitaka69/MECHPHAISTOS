@@ -1,14 +1,17 @@
-from django.urls import path
-from sustainability import views
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import Co2ViewSet, StmViewSet, ElectricityUsageViewSet, CompressedAirViewSet,WellWaterViewSet,PureWaterViewSet,WwtViewSet,ExhaustGasViewSet
 
+router = DefaultRouter()
+router.register(r'co2', Co2ViewSet, basename='co2')
+router.register(r'stm', StmViewSet, basename='stm')
+router.register(r'electricityUsage', ElectricityUsageViewSet, basename='electricityUsage')
+router.register(r'compressedAir', CompressedAirViewSet, basename='compressedAir')
+router.register(r'wellWater', WellWaterViewSet, basename='wellWater')
+router.register(r'pureWater', PureWaterViewSet, basename='pureWater')
+router.register(r'wwt', WwtViewSet, basename='wwt')
+router.register(r'exhaustGas', ExhaustGasViewSet, basename='exhaustGas')
 
 urlpatterns = [
-    path('sustainability/co2List', views.Co2ListView.as_view()),
-    path('sustainability/stmList', views.StmListView.as_view()),
-    path('sustainability/electricityUsage', views.StmListView.as_view()),
-    path('sustainability/compressedAir', views.CompressedAirView.as_view()),
-    path('sustainability/wellWater', views.WellWaterView.as_view()),
-    path('sustainability/pureWater', views.PureWaterView.as_view()),
-    path('sustainability/wwt', views.WwtView.as_view()),
-    path('sustainability/exhaustGas', views.ExhaustGasView.as_view()),
+    path('sustainability/', include(router.urls)),
 ]

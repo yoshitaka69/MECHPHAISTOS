@@ -1,28 +1,53 @@
 from django.shortcuts import render
-
-from rest_framework.views import APIView
+from rest_framework import viewsets
+from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
+from rest_framework.request import Request
 
-from .models import CompanyList,UserList,PaymentsList
-from .serializers import CompanyListSerializer,UserListSerializer,PaymentsListSerializer
+from .models import Company,User,Payment
+from .serializers import CompanySerializer,UserSerializer,PaymentSerializer
 
 
-class CompanyListView(APIView):
-    def get(self, request, format=None):
-        companyList = CompanyList.objects.all()[0:4] 
-        serializer = CompanyListSerializer(companyList, many=True)
+class CompanyViewSet(viewsets.ModelViewSet):
+    queryset = Company.objects.all()
+    serializer_class = CompanySerializer
+
+    def list(self, request):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+    
+    def retrieve(self, request, pk=None):
+        company = get_object_or_404(self.get_queryset(), pk=pk)
+        serializer = self.get_serializer(company)
         return Response(serializer.data)
     
 
-class UserListView(APIView):
-    def get(self, request, format=None):
-        userList = UserList.objects.all()[0:4] 
-        serializer = UserListSerializer(userList, many=True)
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+    def list(self, request):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+    
+    def retrieve(self, request, pk=None):
+        user = get_object_or_404(self.get_queryset(), pk=pk)
+        serializer = self.get_serializer(user)
         return Response(serializer.data)
     
 
-class PaymentsListView(APIView):
-    def get(self, request, format=None):
-        paymentsList = PaymentsList.objects.all()[0:4] 
-        serializer = PaymentsListSerializer(paymentsList, many=True)
+class PaymentViewSet(viewsets.ModelViewSet):
+    queryset = Payment.objects.all()
+    serializer_class = PaymentSerializer
+
+    def list(self, request):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+    
+    def retrieve(self, request, pk=None):
+        payment = get_object_or_404(self.get_queryset(), pk=pk)
+        serializer = self.get_serializer(payment)
         return Response(serializer.data)

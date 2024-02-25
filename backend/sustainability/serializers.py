@@ -1,10 +1,10 @@
 from rest_framework import serializers
-from .models import Co2List,StmList,ElectricityUsage,CompressedAir,WellWater,PureWater,Wwt,ExhaustGas
+from .models import Co2,Stm,ElectricityUsage,CompressedAir,WellWater,PureWater,Wwt,ExhaustGas
 
 
-class Co2ListSerializer(serializers.ModelSerializer):
+class Co2Serializer(serializers.ModelSerializer):
     class Meta:
-        model = Co2List # 呼び出すモデル
+        model = Co2 # 呼び出すモデル
         fields = [
             "plant",
             "date",
@@ -13,9 +13,9 @@ class Co2ListSerializer(serializers.ModelSerializer):
             'updateDay',
         ] # API上に表示するモデルのデータ項目
 
-class StmListSerializer(serializers.ModelSerializer):
+class StmSerializer(serializers.ModelSerializer):
     class Meta:
-        model = StmList # 呼び出すモデル
+        model = Stm # 呼び出すモデル
         fields = [
             "plant",
             "date",
@@ -90,7 +90,6 @@ class ExhaustGasSerializer(serializers.ModelSerializer):
         fields = [
             "plant",
             "date",
-            'ExhaustGasCost',
             'createdDay',
             'updateDay',
         ] # API上に表示するモデルのデータ項目

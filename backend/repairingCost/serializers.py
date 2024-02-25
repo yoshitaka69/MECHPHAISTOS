@@ -20,6 +20,7 @@ class Pm02Serializer(serializers.ModelSerializer):
             'no1ActualPM02'
         ] # API上に表示するモデルのデータ項目
 
+
 class Pm03Serializer(serializers.ModelSerializer):
     class Meta:
         model = Pm03 # 呼び出すモデル

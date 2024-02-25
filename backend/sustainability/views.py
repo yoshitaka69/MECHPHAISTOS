@@ -1,62 +1,121 @@
 from django.shortcuts import render
-
-from rest_framework.views import APIView
+from rest_framework import viewsets
+from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
+from rest_framework.request import Request
 
-from .models import Co2List,StmList,ElectricityUsage,CompressedAir,WellWater,PureWater,Wwt,ExhaustGas
-from .serializers import Co2ListSerializer,StmListSerializer,ElectricityUsageSerializer,CompressedAirSerializer,WellWaterSerializer,PureWaterSerializer,WwtSerializer,ExhaustGasSerializer
+from .models import Co2,Stm,ElectricityUsage,CompressedAir,WellWater,PureWater,Wwt,ExhaustGas
+from .serializers import Co2Serializer,StmSerializer,ElectricityUsageSerializer,CompressedAirSerializer,WellWaterSerializer,PureWaterSerializer,WwtSerializer,ExhaustGasSerializer
 
-class Co2ListView(APIView):
-    def get(self, request, format=None):
-        co2List = Co2List.objects.all()[0:4] 
-        serializer = Co2ListSerializer(co2List, many=True)
-        return Response(serializer.data)
+    
+class Co2ViewSet(viewsets.ModelViewSet):
+    queryset = Co2.objects.all()
+    serializer_class = Co2Serializer
 
-
-class StmListView(APIView):
-    def get(self, request, format=None):
-        stmList = StmList.objects.all()[0:4] 
-        serializer = StmListSerializer(stmList, many=True)
-        return Response(serializer.data)
-
-
-class ElectricityUsageView(APIView):
-    def get(self, request, format=None):
-        electricityUsage = ElectricityUsage.objects.all()[0:4] 
-        serializer = ElectricityUsageSerializer(electricityUsage, many=True)
+    def list(self, request):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
     
-    
-class CompressedAirView(APIView):
-    def get(self, request, format=None):
-        compressedAir = CompressedAir.objects.all()[0:4] 
-        serializer = CompressedAirSerializer(compressedAir, many=True)
-        return Response(serializer.data)
-
-
-class WellWaterView(APIView):
-    def get(self, request, format=None):
-        wellWater = WellWater.objects.all()[0:4] 
-        serializer = WellWaterSerializer(wellWater, many=True)
+    def retrieve(self, request, pk=None):
+        co2 = get_object_or_404(self.get_queryset(), pk=pk)
+        serializer = self.get_serializer(co2)
         return Response(serializer.data)
     
+class StmViewSet(viewsets.ModelViewSet):
+    queryset = Stm.objects.all()
+    serializer_class = StmSerializer
 
-class PureWaterView(APIView):
-    def get(self, request, format=None):
-        pureWater = PureWater.objects.all()[0:4] 
-        serializer = PureWaterSerializer(pureWater, many=True)
+    def list(self, request):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
     
-
-class WwtView(APIView):
-    def get(self, request, format=None):
-        wwt = Wwt.objects.all()[0:4] 
-        serializer = WwtSerializer(wwt, many=True)
+    def retrieve(self, request, pk=None):
+        stm = get_object_or_404(self.get_queryset(), pk=pk)
+        serializer = self.get_serializer(stm)
         return Response(serializer.data)
-        
 
-class ExhaustGasView(APIView):
-    def get(self, request, format=None):
-        exhaustGas = ExhaustGas.objects.all()[0:4] 
-        serializer = ExhaustGasSerializer(exhaustGas, many=True)
+class ElectricityUsageViewSet(viewsets.ModelViewSet):
+    queryset = ElectricityUsage.objects.all()
+    serializer_class = ElectricityUsageSerializer
+
+    def list(self, request):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+    
+    def retrieve(self, request, pk=None):
+        electricityUsage = get_object_or_404(self.get_queryset(), pk=pk)
+        serializer = self.get_serializer(electricityUsage)
+        return Response(serializer.data)
+
+class CompressedAirViewSet(viewsets.ModelViewSet):
+    queryset = CompressedAir.objects.all()
+    serializer_class = CompressedAirSerializer
+
+    def list(self, request):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+    
+    def retrieve(self, request, pk=None):
+        compressedAir = get_object_or_404(self.get_queryset(), pk=pk)
+        serializer = self.get_serializer(compressedAir)
+        return Response(serializer.data)
+    
+class WellWaterViewSet(viewsets.ModelViewSet):
+    queryset = WellWater.objects.all()
+    serializer_class = WellWaterSerializer
+
+    def list(self, request):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+    
+    def retrieve(self, request, pk=None):
+        wellWater = get_object_or_404(self.get_queryset(), pk=pk)
+        serializer = self.get_serializer(wellWater)
+        return Response(serializer.data)
+    
+class PureWaterViewSet(viewsets.ModelViewSet):
+    queryset = PureWater.objects.all()
+    serializer_class = PureWaterSerializer
+
+    def list(self, request):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+    
+    def retrieve(self, request, pk=None):
+        pureWater = get_object_or_404(self.get_queryset(), pk=pk)
+        serializer = self.get_serializer(pureWater)
+        return Response(serializer.data)
+     
+class WwtViewSet(viewsets.ModelViewSet):
+    queryset = Wwt.objects.all()
+    serializer_class = WwtSerializer
+
+    def list(self, request):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+    
+    def retrieve(self, request, pk=None):
+        wwt = get_object_or_404(self.get_queryset(), pk=pk)
+        serializer = self.get_serializer(wwt)
+        return Response(serializer.data)
+    
+class ExhaustGasViewSet(viewsets.ModelViewSet):
+    queryset = ExhaustGas.objects.all()
+    serializer_class = ExhaustGasSerializer
+
+    def list(self, request):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+    
+    def retrieve(self, request, pk=None):
+        exhaustGas = get_object_or_404(self.get_queryset(), pk=pk)
+        serializer = self.get_serializer(exhaustGas)
         return Response(serializer.data)

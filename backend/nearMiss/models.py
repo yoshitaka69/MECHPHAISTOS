@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils import timezone
 
-class NearMissList(models.Model):
+class NearMiss(models.Model):
 
     slug = models.SlugField()
 

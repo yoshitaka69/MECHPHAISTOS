@@ -1,10 +1,10 @@
 from rest_framework import serializers
-from .models import CompanyList,UserList,PaymentsList
+from .models import Company,User,Payment
 
 
-class CompanyListSerializer(serializers.ModelSerializer):
+class CompanySerializer(serializers.ModelSerializer):
     class Meta:
-        model = CompanyList # 呼び出すモデル
+        model = Company # 呼び出すモデル
         fields = [
             "companyListNo",
             "companyName",
@@ -17,9 +17,9 @@ class CompanyListSerializer(serializers.ModelSerializer):
 
 
 
-class UserListSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = UserList # 呼び出すモデル
+        model = User # 呼び出すモデル
         fields = [
             "userName",
             "firstName",
@@ -31,9 +31,9 @@ class UserListSerializer(serializers.ModelSerializer):
         ] # API上に表示するモデルのデータ項目
 
 
-class PaymentsListSerializer(serializers.ModelSerializer):
+class PaymentSerializer(serializers.ModelSerializer):
     class Meta:
-        model = PaymentsList # 呼び出すモデル
+        model = Payment # 呼び出すモデル
         fields = [
             "companyCode",
             "companyName",

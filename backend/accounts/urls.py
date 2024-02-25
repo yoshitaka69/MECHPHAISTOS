@@ -1,9 +1,12 @@
-from django.urls import path
-from accounts import views
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import CompanyViewSet,UserViewSet, PaymentViewSet
 
+router = DefaultRouter()
+router.register(r'company', CompanyViewSet, basename='company')
+router.register(r'user', UserViewSet, basename='user')
+router.register(r'payment', PaymentViewSet, basename='payments')
 
 urlpatterns = [
-    path('companyList/', views.CompanyListView.as_view()),
-    path('companyList/userList', views.UserListView.as_view()),
-    path('companyList/paymentsList', views.PaymentsListView.as_view()),
+    path('accounts/', include(router.urls)),
 ]
