@@ -22,7 +22,7 @@ export default {
   },
 
   mounted() {
-    axios.get("hhttp://127.0.0.1:8000/api/v1/nearMiss/").then((response) => {
+    axios.get("http://127.0.0.1:8000/api/nearMiss/?format=json").then((response) => {
       // データから年ごとの factors のカウントを抽出
       const dataByYear = response.data.reduce((acc, item) => {
         const year = new Date(item.date).getFullYear();

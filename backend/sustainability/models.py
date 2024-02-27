@@ -5,20 +5,19 @@ from django.utils import timezone
 class Co2(models.Model):
     slug = models.SlugField()
 
-    plant = models.IntegerField(verbose_name='plant', default=0)
-    date = models.IntegerField(verbose_name='date', default=0)
-    co2Cost = models.IntegerField(verbose_name='co2Cost', default=0)
+    plant = models.CharField(verbose_name='plant', max_length=200, default='', null=True, blank=True)
+    date = models.DateField(verbose_name='date', blank=True, null=True, default=timezone.now)
+    co2Cost = models.DecimalField(verbose_name='co2Cost', max_digits=12, decimal_places=2, null=True, blank=True, default=0.00,)
     createdDay = models.DateTimeField(auto_now_add=True) 
     updateDay = models.DateTimeField(auto_now_add=True) 
-
 
 #STMリスト
 class Stm(models.Model):
     slug = models.SlugField()
 
-    plant = models.IntegerField(verbose_name='plant', default=0)
-    date = models.IntegerField(verbose_name='date', default=0)
-    stmCost = models.IntegerField(verbose_name='stmCost', default=0)
+    plant = models.CharField(verbose_name='plant', max_length=200, default='', null=True, blank=True)
+    date = models.DateField(verbose_name='date', blank=True, null=True, default=timezone.now)
+    stmCost = models.DecimalField(verbose_name='stmCost', max_digits=12, decimal_places=2, null=True, blank=True, default=0.00,)
     createdDay = models.DateTimeField(auto_now_add=True) 
     updateDay = models.DateTimeField(auto_now_add=True)
 
@@ -27,9 +26,9 @@ class Stm(models.Model):
 class ElectricityUsage(models.Model):
     slug = models.SlugField()
 
-    plant = models.IntegerField(verbose_name='plant', default=0)
-    date = models.IntegerField(verbose_name='date', default=0)
-    elecCost = models.IntegerField(verbose_name='elecCost', default=0)
+    plant = models.CharField(verbose_name='plant', max_length=200, default='', null=True, blank=True)
+    date = models.DateField(verbose_name='date', blank=True, null=True, default=timezone.now)
+    elecCost = models.DecimalField(verbose_name='elecCost', max_digits=12, decimal_places=2, null=True, blank=True, default=0.00,)
     createdDay = models.DateTimeField(auto_now_add=True) 
     updateDay = models.DateTimeField(auto_now_add=True)
 
@@ -38,9 +37,9 @@ class ElectricityUsage(models.Model):
 class CompressedAir(models.Model):
     slug = models.SlugField()
 
-    plant = models.IntegerField(verbose_name='plant', default=0)
-    date = models.IntegerField(verbose_name='date', default=0)
-    compAirCost = models.IntegerField(verbose_name='compAirCost', default=0)
+    plant = models.CharField(verbose_name='plant', max_length=200, default='', null=True, blank=True)
+    date = models.DateField(verbose_name='date', blank=True, null=True, default=timezone.now)
+    compAirCost = models.DecimalField(verbose_name='compAirCost', max_digits=12, decimal_places=2, null=True, blank=True, default=0.00,)
     createdDay = models.DateTimeField(auto_now_add=True) 
     updateDay = models.DateTimeField(auto_now_add=True)
 
@@ -49,9 +48,9 @@ class CompressedAir(models.Model):
 class WellWater(models.Model):
     slug = models.SlugField()
 
-    plant = models.IntegerField(verbose_name='plant', default=0)
-    date = models.IntegerField(verbose_name='date', default=0)
-    wellWaterCost = models.IntegerField(verbose_name='wellWaterCost', default=0)
+    plant = models.CharField(verbose_name='plant', max_length=200, default='', null=True, blank=True)
+    date = models.DateField(verbose_name='date', blank=True, null=True, default=timezone.now)
+    wellWaterCost = models.DecimalField(verbose_name='wellWaterCost', max_digits=12, decimal_places=2, null=True, blank=True, default=0.00,)
     createdDay = models.DateTimeField(auto_now_add=True) 
     updateDay = models.DateTimeField(auto_now_add=True)
 
@@ -60,9 +59,9 @@ class WellWater(models.Model):
 class PureWater(models.Model):
     slug = models.SlugField()
 
-    plant = models.IntegerField(verbose_name='plant', default=0)
-    date = models.IntegerField(verbose_name='date', default=0)
-    pureWaterCost = models.IntegerField(verbose_name='pureWaterCost', default=0)
+    plant = models.CharField(verbose_name='plant', max_length=200, default='', null=True, blank=True)
+    date = models.DateField(verbose_name='date', blank=True, null=True, default=timezone.now)
+    pureWaterCost = models.DecimalField(verbose_name='pureWaterCost', max_digits=12, decimal_places=2, null=True, blank=True, default=0.00,)
     createdDay = models.DateTimeField(auto_now_add=True) 
     updateDay = models.DateTimeField(auto_now_add=True)
 
@@ -71,9 +70,9 @@ class PureWater(models.Model):
 class Wwt(models.Model):
     slug = models.SlugField()
 
-    plant = models.IntegerField(verbose_name='plant', default=0)
-    date = models.IntegerField(verbose_name='date', default=0)
-    wwtCost = models.IntegerField(verbose_name='wwtCost', default=0)
+    plant = models.CharField(verbose_name='plant', max_length=200, default='', null=True, blank=True)
+    date = models.DateField(verbose_name='date', blank=True, null=True, default=timezone.now)
+    wwtCost = models.DecimalField(verbose_name='wwtCost', max_digits=12, decimal_places=2, null=True, blank=True, default=0.00,)
     createdDay = models.DateTimeField(auto_now_add=True) 
     updateDay = models.DateTimeField(auto_now_add=True)
 
@@ -82,7 +81,7 @@ class Wwt(models.Model):
 class ExhaustGas(models.Model):
     slug = models.SlugField()
 
-    plant = models.IntegerField(verbose_name='plant', default=0)
-    date = models.IntegerField(verbose_name='date', default=0)
+    plant = models.CharField(verbose_name='plant', max_length=200, default='', null=True, blank=True)
+    date = models.DateField(verbose_name='date', blank=True, null=True, default=timezone.now)
     createdDay = models.DateTimeField(auto_now_add=True) 
     updateDay = models.DateTimeField(auto_now_add=True)

@@ -22,7 +22,7 @@
     },
   
     mounted() {
-        axios.get("http://127.0.0.1:8000/api/v1/nearMiss/")
+        axios.get("http://127.0.0.1:8000/api/nearMiss/?format=json")
     .then(response => {
         const measuresArray = response.data.map(item => item['measures']);
 

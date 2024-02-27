@@ -1,9 +1,12 @@
-from django.urls import path
-from ceList import views
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import CeViewSet, SparePartsViewSet, TaskViewSet
 
+router = DefaultRouter()
+router.register(r'ce', CeViewSet, basename='ce')
+router.register(r'spareParts', SparePartsViewSet, basename='spareParts')
+router.register(r'task', TaskViewSet, basename='task')
 
 urlpatterns = [
-    path('ceList/', views.CeListView.as_view()),
-    path('ceList/sparePartsList', views.SparePartsListView.as_view()),
-    path('ceList/taskList', views.TaskListView.as_view()),
+    path('ceList/', include(router.urls)),
 ]

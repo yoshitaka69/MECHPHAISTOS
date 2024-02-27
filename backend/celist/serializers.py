@@ -1,10 +1,10 @@
 from rest_framework import serializers
-from .models import CeList,SparePartsList,TaskList
+from .models import Ce,SpareParts,Task
 
 
-class CeListSerializer(serializers.ModelSerializer):
+class CeSerializer(serializers.ModelSerializer):
     class Meta:
-        model = CeList # 呼び出すモデル
+        model = Ce # 呼び出すモデル
         fields = [
             "ceListNo",
             "companyCode",
@@ -55,9 +55,9 @@ class CeListSerializer(serializers.ModelSerializer):
             'thisYear10later',
         ] # API上に表示するモデルのデータ項目
 
-class SparePartsListSerializer(serializers.ModelSerializer):
+class SparePartsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = SparePartsList # 呼び出すモデル
+        model = SpareParts # 呼び出すモデル
         fields = [
             "image",
             "partsName",
@@ -73,9 +73,9 @@ class SparePartsListSerializer(serializers.ModelSerializer):
             "partsDescription",
         ] # API上に表示するモデルのデータ項目
 
-class TaskListSerializer(serializers.ModelSerializer):
+class TaskSerializer(serializers.ModelSerializer):
     class Meta:
-        model = TaskList # 呼び出すモデル
+        model = Task # 呼び出すモデル
         fields = [
             "plant",
             "equipment",

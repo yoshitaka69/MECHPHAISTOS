@@ -1,17 +1,18 @@
 from django.db import models
 from django.utils import timezone
 
-class CeList(models.Model):
+class Ce(models.Model):
     slug = models.SlugField()
 
-    ceListNo = models.IntegerField(verbose_name='ceListNo', default=0)
-    companyCode = models.CharField(verbose_name='companyCode', max_length=200)
-    plant = models.CharField(verbose_name='plant', max_length=200)
-    locationNo = models.CharField(verbose_name='locationNo', max_length=200)
-    function = models.CharField(verbose_name='function', max_length=200)
-    equipment = models.CharField(verbose_name='equipment', max_length=200)
-    bomNo = models.CharField(verbose_name='bomNo', max_length=200)
-    totalBomCost = models.CharField(verbose_name='totalBomCost', max_length=200)
+    ceListNo = models.PositiveIntegerField(verbose_name='ceListNo', null=True,blank=True,default=0)
+    companyCode = models.CharField(verbose_name='companyCode', max_length=200,null=True,blank=True)
+    plant = models.CharField(verbose_name='plant', max_length=200,null=True,blank=True)
+    locationNo = models.CharField(verbose_name='locationNo', max_length=200,null=True,blank=True)
+    function = models.CharField(verbose_name='function', max_length=200,null=True,blank=True)
+    equipment = models.CharField(verbose_name='equipment', max_length=200,null=True,blank=True)
+    bomNo = models.CharField(verbose_name='bomNo', max_length=200,null=True,blank=True)#BomNoは設備-Noとかするかも
+    totalBomCost = models.DecimalField(verbose_name='totalBomCost',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00,)
+
     valueImpact = models.CharField(verbose_name='valueImpact', max_length=200)
     constructionPeriod = models.CharField(verbose_name='constructionPeriod', max_length=200)
     partsDeliveryTime = models.CharField(verbose_name='partsDeliveryTime', max_length=200)
@@ -38,27 +39,27 @@ class CeList(models.Model):
     situation = models.CharField(verbose_name='situation', max_length=200)
     ceDescription = models.CharField(verbose_name='ceDescription', max_length=200)
 
-    thisYear10ago = models.CharField(verbose_name='thisYear10ago', max_length=200)
-    thisYear9ago = models.CharField(verbose_name='thisYear9ago', max_length=200)
-    thisYear8ago = models.CharField(verbose_name='thisYear8ago', max_length=200)
-    thisYear7ago = models.CharField(verbose_name='thisYear7ago', max_length=200)
-    thisYear6ago = models.CharField(verbose_name='thisYear6ago', max_length=200)
-    thisYear5ago = models.CharField(verbose_name='thisYear5ago', max_length=200)
-    thisYear4ago = models.CharField(verbose_name='thisYear4ago', max_length=200)
-    thisYear3ago = models.CharField(verbose_name='thisYear3ago', max_length=200)
-    thisYear2ago = models.CharField(verbose_name='thisYear2ago', max_length=200)
-    thisYear1ago = models.CharField(verbose_name='thisYear1ago', max_length=200)
-    thisYear = models.CharField(verbose_name='thisYear', max_length=200)
-    thisYear1later = models.CharField(verbose_name='thisYear1later', max_length=200)
-    thisYear2later = models.CharField(verbose_name='thisYear2later', max_length=200)
-    thisYear3later = models.CharField(verbose_name='thisYear3later', max_length=200)
-    thisYear4later = models.CharField(verbose_name='thisYear4later', max_length=200)
-    thisYear5later = models.CharField(verbose_name='thisYear5later', max_length=200)
-    thisYear6later = models.CharField(verbose_name='thisYear6later', max_length=200)
-    thisYear7later = models.CharField(verbose_name='thisYear7later', max_length=200)
-    thisYear8later = models.CharField(verbose_name='thisYear8later', max_length=200)
-    thisYear9later = models.CharField(verbose_name='thisYear9later', max_length=200)
-    thisYear10later = models.CharField(verbose_name='thisYear10later', max_length=200)
+    thisYear10ago = models.BooleanField(verbose_name='thisYear10ago',  default=False,)
+    thisYear9ago = models.BooleanField(verbose_name='thisYear9ago',  default=False,)
+    thisYear8ago = models.BooleanField(verbose_name='thisYear8ago', default=False,)
+    thisYear7ago = models.BooleanField(verbose_name='thisYear7ago',  default=False,)
+    thisYear6ago = models.BooleanField(verbose_name='thisYear6ago',  default=False,)
+    thisYear5ago = models.BooleanField(verbose_name='thisYear5ago',  default=False,)
+    thisYear4ago = models.BooleanField(verbose_name='thisYear4ago',  default=False,)
+    thisYear3ago = models.BooleanField(verbose_name='thisYear3ago',  default=False,)
+    thisYear2ago = models.BooleanField(verbose_name='thisYear2ago',  default=False,)
+    thisYear1ago = models.BooleanField(verbose_name='thisYear1ago',  default=False,)
+    thisYear = models.CharField(verbose_name='thisYear', max_length=200)#今年だけは文字列を表示する可能性があるのでcharField
+    thisYear1later = models.BooleanField(verbose_name='thisYear1later',  default=False,)
+    thisYear2later = models.BooleanField(verbose_name='thisYear2later', default=False,)
+    thisYear3later = models.BooleanField(verbose_name='thisYear3later', max_length=200)
+    thisYear4later = models.BooleanField(verbose_name='thisYear4later', max_length=200)
+    thisYear5later = models.BooleanField(verbose_name='thisYear5later', max_length=200)
+    thisYear6later = models.BooleanField(verbose_name='thisYear6later', max_length=200)
+    thisYear7later = models.BooleanField(verbose_name='thisYear7later', max_length=200)
+    thisYear8later = models.BooleanField(verbose_name='thisYear8later', max_length=200)
+    thisYear9later = models.BooleanField(verbose_name='thisYear9later', max_length=200)
+    thisYear10later = models.BooleanField(verbose_name='thisYear10later', max_length=200)
 
     """記入した日付を記入してくれる"""
     createdDay = models.DateTimeField(auto_now_add=True) 
@@ -68,7 +69,8 @@ class Meta:
     verbose_name_plural = 'Critical equipment list'
     ordering = ('-date_added',)
 
-class SparePartsList(models.Model):
+
+class SpareParts(models.Model):
     slug = models.SlugField()
 
     image = models.ImageField(verbose_name='image',)
@@ -85,7 +87,7 @@ class SparePartsList(models.Model):
     partsDescription = models.CharField(verbose_name='partsDescription', max_length=200)
 
 
-class TaskList(models.Model):
+class Task(models.Model):
     slug = models.SlugField()
 
     plant = models.ImageField(verbose_name='plant',)

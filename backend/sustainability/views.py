@@ -3,6 +3,7 @@ from rest_framework import viewsets
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.request import Request
+from rest_framework import status
 
 from .models import Co2,Stm,ElectricityUsage,CompressedAir,WellWater,PureWater,Wwt,ExhaustGas
 from .serializers import Co2Serializer,StmSerializer,ElectricityUsageSerializer,CompressedAirSerializer,WellWaterSerializer,PureWaterSerializer,WwtSerializer,ExhaustGasSerializer
@@ -21,7 +22,7 @@ class Co2ViewSet(viewsets.ModelViewSet):
         co2 = get_object_or_404(self.get_queryset(), pk=pk)
         serializer = self.get_serializer(co2)
         return Response(serializer.data)
-    
+
 class StmViewSet(viewsets.ModelViewSet):
     queryset = Stm.objects.all()
     serializer_class = StmSerializer
@@ -63,7 +64,12 @@ class CompressedAirViewSet(viewsets.ModelViewSet):
         compressedAir = get_object_or_404(self.get_queryset(), pk=pk)
         serializer = self.get_serializer(compressedAir)
         return Response(serializer.data)
-    
+
+
+
+
+
+
 class WellWaterViewSet(viewsets.ModelViewSet):
     queryset = WellWater.objects.all()
     serializer_class = WellWaterSerializer

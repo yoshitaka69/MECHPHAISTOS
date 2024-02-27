@@ -1,7 +1,7 @@
 from django.contrib import admin
-from .models import CeList,SparePartsList,TaskList
+from .models import Ce,SpareParts,Task
 
 # 以下でadminサイトに表示させる
-admin.site.register(CeList)
-admin.site.register(SparePartsList)
-admin.site.register(TaskList)
+admin.site.register(Ce)
+admin.site.register(SpareParts)
+admin.site.register(Task)
