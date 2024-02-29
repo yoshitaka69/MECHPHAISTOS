@@ -5,11 +5,11 @@ from django.utils import timezone
 class Company(models.Model):
     slug = models.SlugField()
 
-    companyListNo = models.IntegerField(verbose_name='companyListNo', default=0)
-    companyName = models.IntegerField(verbose_name='companyName', default=0)
-    country = models.IntegerField(verbose_name='country', default=0)
-    zipCode = models.IntegerField(verbose_name='zipCode', default=0)
-    accountType = models.IntegerField(verbose_name='accountType', default=0)
+    companyListNo = models.CharField(verbose_name='companyListNo',max_length=200,null=True,blank=True)
+    companyName = models.CharField(verbose_name='companyName',max_length=200,null=True,blank=True)
+    country = models.CharField(verbose_name='country',max_length=200,null=True,blank=True)
+    zipCode = models.CharField(verbose_name='zipCode',max_length=200,null=True,blank=True)
+    accountType = models.CharField(verbose_name='accountType',max_length=200,null=True,blank=True)
     createdDay = models.DateTimeField(auto_now_add=True) 
     updateDay = models.DateTimeField(auto_now_add=True) 
 
@@ -23,11 +23,11 @@ class Meta:
 class User(models.Model):
     slug = models.SlugField()
 
-    userName = models.IntegerField(verbose_name='userName', default=0)
-    firstName = models.IntegerField(verbose_name='firstName', default=0)
-    familyName = models.IntegerField(verbose_name='familyName', default=0)
+    userName = models.CharField(verbose_name='userName',max_length=200,null=True,blank=True)
+    firstName = models.CharField(verbose_name='firstName',max_length=200,null=True,blank=True)
+    familyName = models.CharField(verbose_name='familyName',max_length=200,null=True,blank=True)
     email = models.EmailField(verbose_name='email',)
-    phoneNumber = models.IntegerField(verbose_name='phoneNumber', default=0)
+    phoneNumber = models.CharField(verbose_name='phoneNumber',max_length=200,null=True,blank=True)
 
     createdDay = models.DateTimeField(auto_now_add=True) 
     updateDay = models.DateTimeField(auto_now_add=True) 
@@ -36,11 +36,11 @@ class User(models.Model):
 class Payment(models.Model):
     slug = models.SlugField()
 
-    companyCode = models.IntegerField(verbose_name='companyCode', default=0)
-    companyName = models.IntegerField(verbose_name='companyName', default=0)
-    country = models.IntegerField(verbose_name='country', default=0)
-    zipCode = models.EmailField(verbose_name='zipCode',)
-    accountType = models.IntegerField(verbose_name='accountType', default=0)
+    companyCode = models.CharField(verbose_name='companyCode',max_length=200,null=True,blank=True)
+    companyName = models.CharField(verbose_name='companyName',max_length=200,null=True,blank=True)
+    country = models.CharField(verbose_name='country',max_length=200,null=True,blank=True)
+    zipCode = models.EmailField(verbose_name='zipCode',max_length=200,null=True,blank=True)
+    accountType = models.CharField(verbose_name='accountType',max_length=200,null=True,blank=True)
 
     createdDay = models.DateTimeField(auto_now_add=True) 
     updateDay = models.DateTimeField(auto_now_add=True) 

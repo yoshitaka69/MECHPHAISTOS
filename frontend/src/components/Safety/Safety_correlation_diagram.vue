@@ -29,16 +29,16 @@
 		  });
   
 		  // whereの各要素に番号を振り、順序を保持する
-		  const whereMap = {};
-		  const whereValues = rows.map(item => {
-			if (!(item.where in whereMap)) {
-			  whereMap[item.where] = Object.keys(whereMap).length + 1;
+		  const placeOfOccurrenceMap = {};
+		  const placeOfOccurrenceValues = rows.map(item => {
+			if (!(item.placeOfOccurrence in placeOfOccurrenceMap)) {
+				placeOfOccurrenceMap[item.placeOfOccurrence] = Object.keys(placeOfOccurrenceMap).length + 1;
 			}
-			return whereMap[item.where];
+			return placeOfOccurrenceMap[item.placeOfOccurrence];
 		  });
   
 		  const maxDepartmentValue = Object.keys(departmentMap).length;
-		  const maxWhereValue = Object.keys(whereMap).length;
+		  const maxPlaceOfOccurrenceValue = Object.keys(placeOfOccurrenceMap).length;
 		  
   
 		  const levelMap1 = { 'A': 5, 'B': 4, 'C': 3, 'D': 2, 'E': 1 };
@@ -65,7 +65,7 @@
 		  });
   
 		  console.log('departmentValues:', departmentValues);
-		  console.log('whereValues:', whereValues);
+		  console.log('placeOfOccurrenceValues:',placeOfOccurrenceValues);
 		  console.log('accidentTypeValues:', typeOfAccidentValues);
 		  console.log('factorValues:', factorValues);
 		  console.log('injuredLvValues:', injuredLvValues);
@@ -88,11 +88,11 @@
 				ticktext: Object.keys(departmentMap)
   
 			  }, {
-				range: [1, maxWhereValue],
+				range: [1, maxPlaceOfOccurrenceValue],
 				label: 'Where',
-				values: whereValues,
-				tickvals: Array.from({ length: whereValues.length }, (_, index) => index + 1),
-				ticktext: Object.keys(whereMap)
+				values: placeOfOccurrenceValues,
+				tickvals: Array.from({ length: placeOfOccurrenceValues.length }, (_, index) => index + 1),
+				ticktext: Object.keys(placeOfOccurrenceMap)
 			  }, {
 				range: [1, 20],
 				label: 'Accident type',

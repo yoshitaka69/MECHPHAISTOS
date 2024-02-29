@@ -20,6 +20,8 @@ class NearMiss(models.Model):
     safetyIndicater = models.CharField(verbose_name='safetyIndicater', max_length=200,null=True,blank=True)
     measures = models.CharField(verbose_name='measures', max_length=200,null=True,blank=True)
 
+    totalOfNearMiss = models.IntegerField(null=True,blank=True,default=0)
+
     createdDay = models.DateTimeField(verbose_name='createdDay',default=timezone.now)
     """記入した日付を記入してくれる"""
     updateDay = models.DateTimeField(verbose_name='updatedDay',auto_now_add=True) 

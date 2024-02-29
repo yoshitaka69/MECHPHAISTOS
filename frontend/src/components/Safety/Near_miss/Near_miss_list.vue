@@ -76,7 +76,7 @@ const items: Item[] = NearMiss.value;
 
 onMounted(async () => {
     try {
-        const response = await axios.get('http://127.0.0.1:8000/api/v1/nearMiss/');
+        const response = await axios.get('http://127.0.0.1:8000/api/nearMiss/?format=json');
         NearMiss.value.push(...response.data);
         console.log(response.data);
     } catch (error) {
