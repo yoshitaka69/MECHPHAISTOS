@@ -10,4 +10,3 @@ admin.site.register(WellWater)
 admin.site.register(PureWater)
 admin.site.register(Wwt)
 admin.site.register(ExhaustGas)
-

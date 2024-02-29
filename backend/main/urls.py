@@ -9,10 +9,9 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", include('djoser.urls')),
     path("api/", include('djoser.urls.authtoken')),
-    path("api/", include('accounts.urls')),
+    #path("api/", include('accounts.urls')),
     path("api/", include('ceList.urls')),
     path("api/", include('nearMiss.urls')),
     path("api/", include('sustainability.urls')),
     path("api/", include('repairingCost.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
