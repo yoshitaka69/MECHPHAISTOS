@@ -1,9 +1,13 @@
 from django.db import models
 from django.utils import timezone
+from accounts.models import Company
 
 class NearMiss(models.Model):
 
     slug = models.SlugField()
+
+    #on_delateはいちよPROTECTにしておく。ビッグデータは財産として残したいがプライバシーポリシーとも相談になる。
+    companyCode = models.OneToOneField(Company, on_delete=models.PROTECT, null=True, blank=True)
 
     nearMissListNo = models.CharField(verbose_name='NearMissListNo', max_length=200,null=True,blank=True)
     userName = models.CharField(verbose_name='userName', max_length=200,null=True,blank=True)

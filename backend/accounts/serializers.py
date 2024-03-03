@@ -6,6 +6,7 @@ class CompanySerializer(serializers.ModelSerializer):
     class Meta:
         model = Company # 呼び出すモデル
         fields = [
+            "companyCode",
             "companyListNo",
             "companyName",
             'country',
@@ -19,7 +20,7 @@ class CompanySerializer(serializers.ModelSerializer):
 
 class UserInfoSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User # 呼び出すモデル
+        model = UserInfo # 呼び出すモデル
         fields = [
             "userName",
             "firstName",

@@ -1,38 +1,27 @@
 from django.contrib import admin
-from .models import CustomUser
-
+from .models import CustomUser, Company, UserInfo, Payment
 
 class CustomUserAdmin(admin.ModelAdmin):
-    # 一覧画面: 表示項目
-    list_display = (
-        "email",
-        "is_staff",
-        "is_active",
-        "date_joined",
-    )
-    # 一覧画面: サイドバーフィルター
-    list_filter = (
-        "email",
-        "is_staff",
-        "is_active",
-    )
+    list_display = ('email', 'is_active', 'is_staff', 'date_joined', 'company', 'user_info', 'payment')
+    search_fields = ('email', 'company__companyName', 'user_info__userName', 'payment__companyName')
+    ordering = ('email',)
 
-    # 一覧画面: 検索ボックス
-    search_fields = ("email",)
+class CompanyAdmin(admin.ModelAdmin):
+    list_display = ('companyListNo', 'companyName', 'country', 'zipCode', 'accountType', 'createdDay', 'updateDay')
+    search_fields = ('companyListNo', 'companyName')
+    ordering = ('companyName',)
 
-    # 一覧画面: ソート（降順ならフィールド名の先頭に-）
-    ordering = ("email",)
+class UserInfoAdmin(admin.ModelAdmin):
+    list_display = ('userName', 'firstName', 'familyName', 'email', 'phoneNumber', 'createdDay', 'updateDay')
+    search_fields = ('userName', 'email')
+    ordering = ('userName',)
 
-    # 詳細画面: 表示項目
-    basic = ("username", "email", "password")
-    personal = ("last_name", "first_name", "date_joined")
-    auth = ("is_staff", "is_active")
-
-    fieldsets = (
-        ("BasicInfo", {"fields": basic}),
-        ("Personal", {"fields": personal}),
-        ("Auth", {"fields": auth}),
-    )
-
+class PaymentAdmin(admin.ModelAdmin):
+    list_display = ('companyCode', 'companyName', 'country', 'zipCode', 'accountType', 'createdDay', 'updateDay')
+    search_fields = ('companyCode', 'companyName')
+    ordering = ('companyName',)
 
 admin.site.register(CustomUser, CustomUserAdmin)
+admin.site.register(Company, CompanyAdmin)
+admin.site.register(UserInfo, UserInfoAdmin)
+admin.site.register(Payment, PaymentAdmin)

@@ -1,11 +1,16 @@
 from django.db import models
 from django.utils import timezone
 
+from accounts.models import Company
+from ceList.models import Ce
+
 #RepairingCostPM02
 class Pm02(models.Model):
     slug = models.SlugField()
 
-    plant = models.CharField(verbose_name='plant',max_length=200,null=True,blank=True)
+    companyCode = models.OneToOneField(Company, on_delete=models.PROTECT, null=True, blank=True)
+    plant = models.OneToOneField(Ce, on_delete=models.PROTECT, null=True, blank=True)
+
     plannedPM02 = models.DecimalField(verbose_name='plannedPM02', max_digits=12, decimal_places=2,default=0)
     plannedMonth = models.DateField(verbose_name='plannedMonth',default=timezone.now)
     plannedCost = models.DecimalField(verbose_name='plannedCost', max_digits=12, decimal_places=2,default=0)
@@ -26,7 +31,9 @@ class Meta:
 class Pm03(models.Model):
     slug = models.SlugField()
 
-    plant = models.CharField(verbose_name='plant',max_length=200,null=True,blank=True)
+    companyCode = models.OneToOneField(Company, on_delete=models.PROTECT, null=True, blank=True)
+    plant = models.OneToOneField(Ce, on_delete=models.PROTECT, null=True, blank=True)
+
     plannedPM03 = models.DecimalField(verbose_name='plannedPM03', max_digits=12, decimal_places=2,default=0)
     plannedMonth = models.DateField(verbose_name='plannedMonth',default=timezone.now)
     plannedCost = models.DecimalField(verbose_name='plannedCost', max_digits=12, decimal_places=2,default=0)
@@ -44,7 +51,8 @@ class Pm03(models.Model):
 class Pm04(models.Model):
     slug = models.SlugField()
 
-    plant = models.CharField(verbose_name='plant',max_length=200,null=True,blank=True)
+    companyCode = models.OneToOneField(Company, on_delete=models.PROTECT, null=True, blank=True)
+    plant = models.OneToOneField(Ce, on_delete=models.PROTECT, null=True, blank=True)
 
     actualPM04 = models.DecimalField(verbose_name='actualPM04', max_digits=12, decimal_places=2,default=0)
     actualMonth = models.DateField(verbose_name='actualMonth',default=timezone.now)
@@ -56,7 +64,9 @@ class Pm04(models.Model):
 class Pm05(models.Model):
     slug = models.SlugField()
 
-    plant = models.CharField(verbose_name='plant',max_length=200,null=True,blank=True)
+    companyCode = models.OneToOneField(Company, on_delete=models.PROTECT, null=True, blank=True)
+    plant = models.OneToOneField(Ce, on_delete=models.PROTECT, null=True, blank=True)
+    
     plannedPM05 = models.DecimalField(verbose_name='plannedPM05', max_digits=12, decimal_places=2,default=0)
     plannedMonth = models.DateField(verbose_name='plannedMonth',default=timezone.now)
     plannedCost = models.DecimalField(verbose_name='plannedCost', max_digits=12, decimal_places=2,default=0)

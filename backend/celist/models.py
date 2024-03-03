@@ -39,27 +39,6 @@ class Ce(models.Model):
     situation = models.CharField(verbose_name='situation', max_length=200,null=True,blank=True)
     ceDescription = models.TextField(verbose_name='ceDescription',blank=True,null=True,max_length=1000)
 
-    thisYear10ago = models.BooleanField(verbose_name='thisYear10ago',default=False)
-    thisYear9ago = models.BooleanField(verbose_name='thisYear9ago', default=False)
-    thisYear8ago = models.BooleanField(verbose_name='thisYear8ago', default=False)
-    thisYear7ago = models.BooleanField(verbose_name='thisYear7ago', default=False)
-    thisYear6ago = models.BooleanField(verbose_name='thisYear6ago', default=False)
-    thisYear5ago = models.BooleanField(verbose_name='thisYear5ago', default=False)
-    thisYear4ago = models.BooleanField(verbose_name='thisYear4ago', default=False)
-    thisYear3ago = models.BooleanField(verbose_name='thisYear3ago', default=False)
-    thisYear2ago = models.BooleanField(verbose_name='thisYear2ago', default=False)
-    thisYear1ago = models.BooleanField(verbose_name='thisYear1ago', default=False)
-    thisYear = models.CharField(verbose_name='thisYear', max_length=200)#今年だけは文字列を表示する可能性があるのでcharField
-    thisYear1later = models.BooleanField(verbose_name='thisYear1later', default=False)
-    thisYear2later = models.BooleanField(verbose_name='thisYear2later', default=False)
-    thisYear3later = models.BooleanField(verbose_name='thisYear3later', default=False)
-    thisYear4later = models.BooleanField(verbose_name='thisYear4later', default=False)
-    thisYear5later = models.BooleanField(verbose_name='thisYear5later', default=False)
-    thisYear6later = models.BooleanField(verbose_name='thisYear6later', default=False)
-    thisYear7later = models.BooleanField(verbose_name='thisYear7later', default=False)
-    thisYear8later = models.BooleanField(verbose_name='thisYear8later', default=False)
-    thisYear9later = models.BooleanField(verbose_name='thisYear9later', default=False)
-    thisYear10later = models.BooleanField(verbose_name='thisYear10later', default=False)
 
     """記入した日付を記入してくれる"""
     createdDay = models.DateTimeField(auto_now_add=True) 

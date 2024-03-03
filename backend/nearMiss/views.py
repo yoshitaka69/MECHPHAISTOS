@@ -21,3 +21,11 @@ class NearMissViewSet(viewsets.ModelViewSet):
         nearMiss = get_object_or_404(self.get_queryset(), pk=pk)
         serializer = self.get_serializer(nearMiss)
         return Response(serializer.data)
+    
+    
+class NearMissByCompanyViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = NearMissSerializer
+
+    def get_queryset(self):
+        companyCode_slug = self.kwargs['companyCode_slug']
+        return NearMiss.objects.filter(companyCode__slug=companyCode_slug)

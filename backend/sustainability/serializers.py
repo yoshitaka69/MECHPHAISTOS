@@ -1,137 +1,171 @@
 from rest_framework import serializers
 from .models import Co2,Stm,ElectricityUsage,CompressedAir,WellWater,PureWater,Wwt,ExhaustGas
 
+from accounts.models import Company
+from accounts.serializers import CompanySerializer
 
-#ネストしたCo2シリアライザー
-class Co2DataSerializer(serializers.Serializer):
-    date = serializers.DateField()
-    co2Cost = serializers.FloatField()
+from ceList.models import Ce
+from ceList.serializers import CeSerializer
+
+
+
+class EnPICompanyCodeSerializer(serializers.ModelSerializer):
+    companyCode = CompanySerializer(read_only=True)
+    class Meta:
+        model = Company
+        fields = ["companyCode"]
+
+class EnPIPlantSerializer(serializers.ModelSerializer):
+    companyCode = EnPICompanyCodeSerializer(read_only=True)
+    ce = CeSerializer(read_only=True)
+
+    class Meta:
+        model = Ce
+        fields = ["companyCode","plant"]
+
+
 class Co2Serializer(serializers.ModelSerializer):
-    co2_data = Co2DataSerializer(source='*')
-
+    companyCode = EnPICompanyCodeSerializer(read_only=True)
+    plant = EnPIPlantSerializer(read_only=True)
+    createdDay = serializers.DateTimeField(format="%Y-%m-%d")
+    updateDay = serializers.DateTimeField(format="%Y-%m-%d") 
     class Meta:
         model = Co2# 呼び出すモデル
         fields = [
+            "companyCode",
             "plant",
-            "co2_data",
+            "date",
+            "co2Cost",
             'createdDay',
             'updateDay',
         ]# API上に表示するモデルのデータ項目
-        depth:1
+        depth = 3
 
 
-class StmDataSerializer(serializers.Serializer):
-    date = serializers.DateField()
-    stmCost = serializers.FloatField()
 class StmSerializer(serializers.ModelSerializer):
-    stm_data = StmDataSerializer(source='*')
+    companyCode = EnPICompanyCodeSerializer(read_only=True)
+    plant = EnPIPlantSerializer(read_only=True)
+    createdDay = serializers.DateTimeField(format="%Y-%m-%d")
+    updateDay = serializers.DateTimeField(format="%Y-%m-%d") 
 
     class Meta:
         model = Stm  # 呼び出すモデル
         fields = [
+            "companyCode",
             "plant",
-            "stm_data",
+            "date",
+            "stmCost",
             'createdDay',
             'updateDay',
         ]  # API上に表示するモデルのデータ項目
-        depth = 1  # 深さの指定
+        depth = 3 # 深さの指定
 
-
-class ElectricityUsageDataSerializer(serializers.Serializer):
-    date = serializers.DateField()
-    elecCost = serializers.FloatField()
 class ElectricityUsageSerializer(serializers.ModelSerializer):
-    elec_usage_data = ElectricityUsageDataSerializer(source='*')
+    companyCode = EnPICompanyCodeSerializer(read_only=True)
+    plant = EnPIPlantSerializer(read_only=True)
+    createdDay = serializers.DateTimeField(format="%Y-%m-%d")
+    updateDay = serializers.DateTimeField(format="%Y-%m-%d") 
 
     class Meta:
         model = ElectricityUsage  # 呼び出すモデル
         fields = [
+            "companyCode",
             "plant",
-            "elec_usage_data",
+            "date",
+            "elecCost",
             'createdDay',
             'updateDay',
         ]  # API上に表示するモデルのデータ項目
+        depth = 3 # 深さの指定
 
 
-class CompressedAirDataSerializer(serializers.Serializer):
-    date = serializers.DateField()
-    compAirCost = serializers.FloatField()
 class CompressedAirSerializer(serializers.ModelSerializer):
-    comp_air_data = CompressedAirDataSerializer(source='*')
+    companyCode = EnPICompanyCodeSerializer(read_only=True)
+    plant = EnPIPlantSerializer(read_only=True)
+    createdDay = serializers.DateTimeField(format="%Y-%m-%d")
+    updateDay = serializers.DateTimeField(format="%Y-%m-%d") 
+
     class Meta:
         model = CompressedAir  # 呼び出すモデル
         fields = [
+            "companyCode",
             "plant",
-            "comp_air_data",
+            "date",
+            "compAirCost",
             'createdDay',
             'updateDay',
         ]  # API上に表示するモデルのデータ項目
+        depth = 3 # 深さの指定
 
-
-
-class WellWaterDataSerializer(serializers.Serializer):
-    date = serializers.DateField()
-    wellWaterCost = serializers.FloatField()
 class WellWaterSerializer(serializers.ModelSerializer):
-    well_water_data = WellWaterDataSerializer(source='*')
+    companyCode = EnPICompanyCodeSerializer(read_only=True)
+    plant = EnPIPlantSerializer(read_only=True)
+    createdDay = serializers.DateTimeField(format="%Y-%m-%d")
+    updateDay = serializers.DateTimeField(format="%Y-%m-%d") 
 
     class Meta:
         model = WellWater  # 呼び出すモデル
         fields = [
+            "companyCode",
             "plant",
-            "well_water_data",
+            "date",
+            "wellWaterCost",
             'createdDay',
             'updateDay',
         ]  # API上に表示するモデルのデータ項目
+        depth = 3 # 深さの指定
 
-
-
-class PureWaterDataSerializer(serializers.Serializer):
-    date = serializers.DateField()
-    pureWaterCost = serializers.FloatField()
 
 class PureWaterSerializer(serializers.ModelSerializer):
-    pure_water_data = PureWaterDataSerializer(source='*')
+    companyCode = EnPICompanyCodeSerializer(read_only=True)
+    plant = EnPIPlantSerializer(read_only=True)
+    createdDay = serializers.DateTimeField(format="%Y-%m-%d")
+    updateDay = serializers.DateTimeField(format="%Y-%m-%d") 
 
     class Meta:
         model = PureWater  # 呼び出すモデル
         fields = [
+            "companyCode",
             "plant",
-            "pure_water_data",
+            "date",
+            "pureWaterCost",
             'createdDay',
             'updateDay',
         ]  # API上に表示するモデルのデータ項目
-
-
-
-class WwtDataSerializer(serializers.Serializer):
-    date = serializers.DateField()
-    wwtCost = serializers.FloatField()
+        depth = 3 # 深さの指定
 
 class WwtSerializer(serializers.ModelSerializer):
-    wwt_data = WwtDataSerializer(source='*')
+    companyCode = EnPICompanyCodeSerializer(read_only=True)
+    plant = EnPIPlantSerializer(read_only=True)
+    createdDay = serializers.DateTimeField(format="%Y-%m-%d")
+    updateDay = serializers.DateTimeField(format="%Y-%m-%d") 
 
     class Meta:
         model = Wwt  # 呼び出すモデル
         fields = [
+            "companyCode",
             "plant",
-            "wwt_data",
+            "date",
+            "wwtCost",
             'createdDay',
             'updateDay',
         ]  # API上に表示するモデルのデータ項目
+        depth = 3 # 深さの指定
 
-
-
-class ExhaustGasDataSerializer(serializers.Serializer):
-    date = serializers.DateField()
 class ExhaustGasSerializer(serializers.ModelSerializer):
-    exhaust_gas_data = ExhaustGasDataSerializer(source='*')
-
+    companyCode = EnPICompanyCodeSerializer(read_only=True)
+    plant = EnPIPlantSerializer(read_only=True)
+    createdDay = serializers.DateTimeField(format="%Y-%m-%d")
+    updateDay = serializers.DateTimeField(format="%Y-%m-%d") 
+    
     class Meta:
         model = ExhaustGas  # 呼び出すモデル
         fields = [
+            "companyCode",
             "plant",
-            "exhaust_gas_data",
+            "date",
+            "exhaustGasCost",
             'createdDay',
             'updateDay',
         ]  # API上に表示するモデルのデータ項目
+        depth = 3 # 深さの指定

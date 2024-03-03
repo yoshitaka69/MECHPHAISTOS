@@ -25,6 +25,8 @@ class CustomUserManager(BaseUserManager):
 class Company(models.Model):
     slug = models.SlugField()
 
+    companyCode = models.CharField(verbose_name='companyCode',max_length=200,null=True,blank=True)
+
     companyListNo = models.CharField(verbose_name='companyListNo',max_length=200,null=True,blank=True)
     companyName = models.CharField(verbose_name='companyName',max_length=200,null=True,blank=True)
     country = models.CharField(verbose_name='country',max_length=200,null=True,blank=True)
@@ -57,6 +59,7 @@ class Payment(models.Model):
 
     companyCode = models.CharField(verbose_name='companyCode',max_length=200,null=True,blank=True)
     companyName = models.CharField(verbose_name='companyName',max_length=200,null=True,blank=True)
+    
     country = models.CharField(verbose_name='country',max_length=200,null=True,blank=True)
     zipCode = models.EmailField(verbose_name='zipCode',max_length=200,null=True,blank=True)
     accountType = models.CharField(verbose_name='accountType',max_length=200,null=True,blank=True)

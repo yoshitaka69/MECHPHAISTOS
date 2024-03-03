@@ -66,10 +66,6 @@ class CompressedAirViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-
-
-
-
 class WellWaterViewSet(viewsets.ModelViewSet):
     queryset = WellWater.objects.all()
     serializer_class = WellWaterSerializer
