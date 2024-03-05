@@ -8,8 +8,8 @@ from ceList.models import Ce
 class Co2(models.Model):
     slug = models.SlugField()
 
-    companyCode = models.OneToOneField(Company, on_delete=models.PROTECT, null=True, blank=True)
-    plant = models.OneToOneField(Ce, on_delete=models.PROTECT, null=True, blank=True)
+    companyCode = models.ForeignKey(Company, on_delete=models.PROTECT, null=True, blank=True)
+    plant = models.ForeignKey(Ce, on_delete=models.PROTECT, null=True, blank=True)
 
     date = models.DateField(verbose_name='date', blank=True, null=True, default=timezone.now)
     co2Cost = models.DecimalField(verbose_name='co2Cost', max_digits=12, decimal_places=2, null=True, blank=True, default=0.00,)
@@ -20,8 +20,8 @@ class Co2(models.Model):
 class Stm(models.Model):
     slug = models.SlugField()
 
-    companyCode = models.OneToOneField(Company, on_delete=models.PROTECT, null=True, blank=True)
-    plant = models.OneToOneField(Ce, on_delete=models.PROTECT, null=True, blank=True)
+    companyCode = models.ForeignKey(Company, on_delete=models.PROTECT, null=True, blank=True)
+    plant = models.ForeignKey(Ce, on_delete=models.PROTECT, null=True, blank=True)
 
     date = models.DateField(verbose_name='date', blank=True, null=True, default=timezone.now)
     stmCost = models.DecimalField(verbose_name='stmCost', max_digits=12, decimal_places=2, null=True, blank=True, default=0.00,)
@@ -33,8 +33,8 @@ class Stm(models.Model):
 class ElectricityUsage(models.Model):
     slug = models.SlugField()
 
-    companyCode = models.OneToOneField(Company, on_delete=models.PROTECT, null=True, blank=True)
-    plant = models.OneToOneField(Ce, on_delete=models.PROTECT, null=True, blank=True)
+    companyCode = models.ForeignKey(Company, on_delete=models.PROTECT, null=True, blank=True)
+    plant = models.ForeignKey(Ce, on_delete=models.PROTECT, null=True, blank=True)
 
     date = models.DateField(verbose_name='date', blank=True, null=True, default=timezone.now)
     elecCost = models.DecimalField(verbose_name='elecCost', max_digits=12, decimal_places=2, null=True, blank=True, default=0.00,)
@@ -46,8 +46,8 @@ class ElectricityUsage(models.Model):
 class CompressedAir(models.Model):
     slug = models.SlugField()
 
-    companyCode = models.OneToOneField(Company, on_delete=models.PROTECT, null=True, blank=True)
-    plant = models.OneToOneField(Ce, on_delete=models.PROTECT, null=True, blank=True)
+    companyCode = models.ForeignKey(Company, on_delete=models.PROTECT, null=True, blank=True)
+    plant = models.ForeignKey(Ce, on_delete=models.PROTECT, null=True, blank=True)
 
     date = models.DateField(verbose_name='date', blank=True, null=True, default=timezone.now)
     compAirCost = models.DecimalField(verbose_name='compAirCost', max_digits=12, decimal_places=2, null=True, blank=True, default=0.00,)
@@ -59,8 +59,8 @@ class CompressedAir(models.Model):
 class WellWater(models.Model):
     slug = models.SlugField()
 
-    companyCode = models.OneToOneField(Company, on_delete=models.PROTECT, null=True, blank=True)
-    plant = models.OneToOneField(Ce, on_delete=models.PROTECT, null=True, blank=True)
+    companyCode = models.ForeignKey(Company, on_delete=models.PROTECT, null=True, blank=True)
+    plant = models.ForeignKey(Ce, on_delete=models.PROTECT, null=True, blank=True)
 
     date = models.DateField(verbose_name='date', blank=True, null=True, default=timezone.now)
     wellWaterCost = models.DecimalField(verbose_name='wellWaterCost', max_digits=12, decimal_places=2, null=True, blank=True, default=0.00,)
@@ -72,8 +72,8 @@ class WellWater(models.Model):
 class PureWater(models.Model):
     slug = models.SlugField()
 
-    companyCode = models.OneToOneField(Company, on_delete=models.PROTECT, null=True, blank=True)
-    plant = models.OneToOneField(Ce, on_delete=models.PROTECT, null=True, blank=True)
+    companyCode = models.ForeignKey(Company, on_delete=models.PROTECT, null=True, blank=True)
+    plant = models.ForeignKey(Ce, on_delete=models.PROTECT, null=True, blank=True)
 
     date = models.DateField(verbose_name='date', blank=True, null=True, default=timezone.now)
     pureWaterCost = models.DecimalField(verbose_name='pureWaterCost', max_digits=12, decimal_places=2, null=True, blank=True, default=0.00,)
@@ -85,8 +85,8 @@ class PureWater(models.Model):
 class Wwt(models.Model):
     slug = models.SlugField()
 
-    companyCode = models.OneToOneField(Company, on_delete=models.PROTECT, null=True, blank=True)
-    plant = models.OneToOneField(Ce, on_delete=models.PROTECT, null=True, blank=True)
+    companyCode = models.ForeignKey(Company, on_delete=models.PROTECT, null=True, blank=True)
+    plant = models.ForeignKey(Ce, on_delete=models.PROTECT, null=True, blank=True)
 
     date = models.DateField(verbose_name='date', blank=True, null=True, default=timezone.now)
     wwtCost = models.DecimalField(verbose_name='wwtCost', max_digits=12, decimal_places=2, null=True, blank=True, default=0.00,)
@@ -98,8 +98,8 @@ class Wwt(models.Model):
 class ExhaustGas(models.Model):
     slug = models.SlugField()
 
-    companyCode = models.OneToOneField(Company, on_delete=models.PROTECT, null=True, blank=True)
-    plant = models.OneToOneField(Ce, on_delete=models.PROTECT, null=True, blank=True)
+    companyCode = models.ForeignKey(Company, on_delete=models.PROTECT, null=True, blank=True)
+    plant = models.ForeignKey(Ce, on_delete=models.PROTECT, null=True, blank=True)
 
     date = models.DateField(verbose_name='date', blank=True, null=True, default=timezone.now)
     exhaustGasCost = models.DecimalField(verbose_name='exhaustGasCost', max_digits=12, decimal_places=2, null=True, blank=True, default=0.00,)

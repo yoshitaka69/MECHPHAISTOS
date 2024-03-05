@@ -1,48 +1,70 @@
 from django.db import models
 from django.utils import timezone
+from datetime import timedelta
+from accounts.models import Company
+
 
 class Ce(models.Model):
     slug = models.SlugField()
 
+    companyCode = models.ForeignKey(Company, on_delete=models.PROTECT, null=True, blank=True)
+
     ceListNo = models.PositiveIntegerField(verbose_name='ceListNo', null=True,blank=True,default=0)
-    companyCode = models.CharField(verbose_name='companyCode', max_length=200,null=True,blank=True)
+
     plant = models.CharField(verbose_name='plant', max_length=200,null=True,blank=True)
-    locationNo = models.CharField(verbose_name='locationNo', max_length=200,null=True,blank=True)
-    function = models.CharField(verbose_name='function', max_length=200,null=True,blank=True)
     equipment = models.CharField(verbose_name='equipment', max_length=200,null=True,blank=True)
-    bomNo = models.CharField(verbose_name='bomNo', max_length=200,null=True,blank=True)#BomNoは設備-Noとかするかも
-    totalBomCost = models.DecimalField(verbose_name='totalBomCost',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00,)
+    function = models.CharField(verbose_name='function', max_length=200,null=True,blank=True)
+    locationNo = models.CharField(verbose_name='locationNo', max_length=200,null=True,blank=True)#いつか設置されている場所を指定する場合のため
 
-    valueImpact = models.CharField(verbose_name='valueImpact', max_length=200)
-    constructionPeriod = models.DurationField(verbose_name='constructionPeriod',blank=True,null=True,default=0)
-    partsDeliveryTime = models.DurationField(verbose_name='partsDeliveryTime', blank=True,null=True,default=0)
+    #Impact
+    levelSetValue = models.PositiveIntegerField(verbose_name='levelSetValue', null=True,blank=True,default=0)
+    constructionPeriod = models.DateField(verbose_name='constructionPeriod',blank=True,null=True,default=timezone.now)
+    partsDeliveryTime = models.DateField(verbose_name='partsDeliveryTime',blank=True,null=True,default=timezone.now)
     mttr = models.PositiveSmallIntegerField(verbose_name='mttr',blank=True,null=True,default=0)
+    possibilityOfProductionLv = models.CharField(verbose_name='possibilityOfProductionLv', max_length=200,null=True,blank=True)
 
+    #Probability of failure
     # PM02
     countOfPM02 = models.PositiveSmallIntegerField(verbose_name='countOfPM02',blank=True,null=True,default=0)
     latestPM02 = models.DateField(verbose_name='latestPM02',blank=True,null=True)
-    taskOfPM02 = models.CharField(verbose_name='taskOfPM02', max_length=200)
     # PM03
     countOfPM03 = models.PositiveSmallIntegerField(verbose_name='countOfPM03',blank=True,null=True,default=0)
     latestPM03 = models.DateField(verbose_name='latestPM03',blank=True,null=True)
-    taskOfPM03 = models.CharField(verbose_name='taskOfPM03', max_length=200)
+    #taskOfPM03 = models.CharField(verbose_name='taskOfPM03', max_length=200)
     # PM04
     countOfPM04 = models.PositiveSmallIntegerField(verbose_name='countOfPM04',blank=True,null=True,default=0)
     latestPM04 = models.DateField(verbose_name='latestPM04', blank=True,null=True)
-    taskOfPM04 = models.CharField(verbose_name='taskOfPM04', max_length=200,blank=True,null=True)
+    #taskOfPM04 = models.CharField(verbose_name='taskOfPM04', max_length=200,blank=True,null=True)
     # PM005
     countOfPM05 = models.PositiveSmallIntegerField(verbose_name='countOfPM05', blank=True,null=True,default=0,)
     latestPM05 = models.DateField(verbose_name='latestPM05', blank=True,null=True)
-    taskOfPM05 = models.CharField(verbose_name='taskOfPM05', max_length=200,blank=True,null=True)
+    #taskOfPM05 = models.CharField(verbose_name='taskOfPM05', max_length=200,blank=True,null=True)
 
-    nextEventDate = models.DateField(verbose_name='nextEventDate', blank=True,null=True)
+    # Critical Equipment Level
+    impactForProduction = models.CharField(verbose_name='impactForProduction', max_length=200, blank=True,null=True,)
+    probabilityOfFailure = models.CharField(verbose_name='probabilityOfFailure', max_length=200, blank=True,null=True,)
+    assessment = models.CharField(verbose_name='assessment', max_length=20, blank=True,null=True,)
+
+    #taskOfPM
+    taskOfPM02 = models.CharField(verbose_name='taskOfPM02', max_length=200)#これはいつかForeignKeyで結びつける。そのためTask側で代表的な値を決めさせるメソッドを組む必要あり。
+    laborOfPM02 = models.DecimalField(verbose_name='laborOfPM02',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00,)#↑と同じ
+    periodOfPM02 = models.DateField(verbose_name='periodOfPM02', blank=True,null=True,default=timezone.now)#↑と同じ
+    nextEventDate = models.DateField(verbose_name='nextEventDate', blank=True,null=True,default=timezone.now)
     situation = models.CharField(verbose_name='situation', max_length=200,null=True,blank=True)
+
+    #Spare parts
+    category = models.CharField(verbose_name='category', max_length=200,null=True,blank=True)
+    stock = models.CharField(verbose_name='stock', max_length=200,null=True,blank=True)
+    #bomNo = models.CharField(verbose_name='bomNo', max_length=200,null=True,blank=True)#BomNoは設備-Noとかするかも
+    #totalBomCost = models.DecimalField(verbose_name='totalBomCost',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00,)
+
+    #Status of measures
+    rcaOrReplace = models.BooleanField(verbose_name='rcaOrReplace',default=False)
+    sparePartsOrAlternative = models.BooleanField(verbose_name='sparePartsOrAlternative',default=False)
+    coveredFromTask = models.BooleanField(verbose_name='coveredFromTask',default=False)
+    twoways = models.BooleanField(verbose_name='twoways',default=False)
     ceDescription = models.TextField(verbose_name='ceDescription',blank=True,null=True,max_length=1000)
 
-
-    """記入した日付を記入してくれる"""
-    createdDay = models.DateTimeField(auto_now_add=True) 
-    updateDay = models.DateTimeField(auto_now_add=True) 
 
 class Meta:
     verbose_name_plural = 'Critical equipment list'
@@ -62,8 +84,9 @@ class SpareParts(models.Model):
     numberOf = models.CharField(verbose_name='numberOf',max_length=200,blank=True,null=True)
     unit = models.CharField(verbose_name='unit',max_length=200,blank=True,null=True)
     location = models.CharField(verbose_name='location',max_length=200,blank=True,null=True)
-    partsDeliveryTime = models.DurationField(verbose_name='partsDeliveryTime',blank=True,null=True,default=0)
+    partsDeliveryTime = models.DateField(verbose_name='partsDeliveryTime', blank=True,null=True,default=timezone.now)
     partsDescription = models.TextField(verbose_name='partsDescription',blank=True,null=True,max_length=1000)
+
 
 class Task(models.Model):
     slug = models.SlugField()
@@ -77,7 +100,7 @@ class Task(models.Model):
     taskOfPM02 = models.CharField(verbose_name='taskOfPM02',max_length=200,blank=True,null=True)
     laborCost = models.DecimalField(verbose_name='laborCost',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
     partsName = models.CharField(verbose_name='partsName', max_length=200,blank=True,null=True)
-    constructionPeriod = models.DurationField(verbose_name='constructionPeriod', blank=True,null=True,default=0)
+    constructionPeriod = models.DateField(verbose_name='constructionPeriod', blank=True,null=True,default=timezone.now)
     nextEventDate = models.DateField(verbose_name='nextEventDate',blank=True,null=True)
     situation = models.CharField(verbose_name='situation', max_length=200,blank=True,null=True)
     thisYear10ago = models.BooleanField(verbose_name='thisYear10ago',default=False)

@@ -1,55 +1,54 @@
 from rest_framework import serializers
-from .models import Company,UserInfo,Payment,CustomUser
-
-
-class CompanySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Company # 呼び出すモデル
-        fields = [
-            "companyCode",
-            "companyListNo",
-            "companyName",
-            'country',
-            "zipCode",
-            "accountType",
-            "createdDay",
-            "updateDay",
-        ] # API上に表示するモデルのデータ項目
-
-
-
-class UserInfoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserInfo # 呼び出すモデル
-        fields = [
-            "userName",
-            "firstName",
-            'familyName',
-            "email",
-            "phoneNumber",
-            "createdDay",
-            "updateDay",
-        ] # API上に表示するモデルのデータ項目
+from .models import Company,Payment,CustomUser
 
 
 class PaymentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payment # 呼び出すモデル
         fields = [
+            "freeUser",
+            "lightUser",
+            'middleUser',
+            "specialUser",
+            "premiumUser",
+        ] # API上に表示するモデルのデータ項目
+
+class CompanySerializer(serializers.ModelSerializer):
+    payment = PaymentSerializer()
+    class Meta:
+        model = Company # 呼び出すモデル
+        fields = [
+            "payment",
             "companyCode",
+            "companyListNo",
             "companyName",
             'country',
             "zipCode",
-            "accountType",
+            "payment",
             "createdDay",
             "updateDay",
         ] # API上に表示するモデルのデータ項目
+\
+
 
 class CustomUserSerializer(serializers.ModelSerializer):
-    company = CompanySerializer()
-    user_info = UserInfoSerializer()
+    companyCode = CompanySerializer()
     payment = PaymentSerializer()
 
     class Meta:
         model = CustomUser
-        fields = ['email', 'company', 'user_info', 'payment', 'is_active', 'is_staff', 'date_joined']
+        fields = [
+            "payment",
+            "companyCode",
+            "userName",
+            "firstName",
+            'familyName',
+            'email',
+            "phoneNumber",
+            'company',
+            'payment',
+            'is_active',
+            'is_staff',
+            "createdDay",
+            "updateDay",
+            ]

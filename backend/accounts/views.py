@@ -4,8 +4,8 @@ from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.request import Request
 
-from .models import CustomUser, Company, UserInfo, Payment
-from .serializers import CustomUserSerializer, CompanySerializer, UserInfoSerializer, PaymentSerializer
+from .models import CustomUser, Company, Payment
+from .serializers import CustomUserSerializer, CompanySerializer, PaymentSerializer
 
 class CustomUserViewSet(viewsets.ModelViewSet):
     queryset = CustomUser.objects.all()
@@ -33,20 +33,6 @@ class CompanyViewSet(viewsets.ModelViewSet):
     def retrieve(self, request, pk=None):
         company = get_object_or_404(self.get_queryset(), pk=pk)
         serializer = self.get_serializer(company)
-        return Response(serializer.data)
-
-class UserInfoViewSet(viewsets.ModelViewSet):
-    queryset = UserInfo.objects.all()
-    serializer_class = UserInfoSerializer
-
-    def list(self, request):
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-    
-    def retrieve(self, request, pk=None):
-        userInfo = get_object_or_404(self.get_queryset(), pk=pk)
-        serializer = self.get_serializer(userInfo)
         return Response(serializer.data)
 
 class PaymentViewSet(viewsets.ModelViewSet):

@@ -1,21 +1,14 @@
 from pathlib import Path
 from datetime import timedelta
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "django-insecure-_qv0fxcogfc^1gxjyx)7_3u9b=c&l15$vlv1-^bmk%m&o5oxeq"
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -26,7 +19,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     'rest_framework',
     'rest_framework.authtoken',
-    'rest_framework_simplejwt',
+    #'rest_framework_simplejwt',
     'corsheaders',
     'djoser',
     'accounts.apps.AccountsConfig',
@@ -36,6 +29,7 @@ INSTALLED_APPS = [
     'repairingCost',
 ]
 
+CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8080",
     "http://localhost:4001",
@@ -44,26 +38,31 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:8001",
 ]
 
+CORS_ALLOW_HEADERS = '*' # <-------- this
+CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:8000/"] # (Api Base Url)
+
+
 #Django rest frame work setting
-REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10,
-    'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
-    ),
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ),
-}
+#REST_FRAMEWORK = {
+    #'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    #'PAGE_SIZE': 10,
+    #'DEFAULT_PERMISSION_CLASSES': (
+        #'rest_framework.permissions.IsAuthenticated',
+   # ),
+    #'DEFAULT_AUTHENTICATION_CLASSES': (
+        #'rest_framework.authentication.SessionAuthentication',
+        #'rest_framework.authentication.BasicAuthentication',
+       # 'rest_framework_simplejwt.authentication.JWTAuthentication',
+    #),
+#}
+
 
 #JWT_AUTH設定
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+#SIMPLE_JWT = {
+    #'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+    #'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     # その他の設定...
-}
+#}
 
 
 

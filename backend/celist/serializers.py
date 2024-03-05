@@ -1,48 +1,20 @@
 from rest_framework import serializers
-from .models import Ce,SpareParts,Task
+from .models import Ce,SpareParts,Task,Company
 
 
 class CeSerializer(serializers.ModelSerializer):
-    createdDay = serializers.DateTimeField(format="%Y-%m-%d")
-    updateDay = serializers.DateTimeField(format="%Y-%m-%d") 
+    class Meta:
+        model = Ce #呼び出すモデル名
+        fields = '__all__'# API上に表示するモデルのデータ項目
+
+class CompanyCeSerializer(serializers.ModelSerializer):
+    ceList = CeSerializer(many=True, read_only=True, source='ce_set')
 
     class Meta:
-        model = Ce # 呼び出すモデル
-        fields = [
-            "ceListNo",
-            "companyCode",#one to one Field
-            "plant",#one to one Field
-            "locationNo",
-            "function",
-            "equipment",
-            "bomNo",#one to one Field
-            "totalBomCost",
+        model = Company
+        fields = ['companyCode', 'ceList']
 
-            "valueImpact",
-            "constructionPeriod",
-            "partsDeliveryTime",
-            "mttr",
 
-            "countOfPM02",
-            "latestPM02",
-            "taskOfPM02",
-
-            "countOfPM03",
-            "latestPM03",
-            "taskOfPM03",
-
-            "countOfPM04",
-            "latestPM04",
-            "taskOfPM04",
-
-            "countOfPM05",
-            "latestPM05",
-            "taskOfPM05",
-            
-            'nextEventDate',
-            'situation',
-            'ceDescription',
-        ] # API上に表示するモデルのデータ項目
 
 class SparePartsSerializer(serializers.ModelSerializer):
     class Meta:
