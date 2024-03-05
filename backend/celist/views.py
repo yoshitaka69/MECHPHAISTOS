@@ -29,8 +29,6 @@ def company_ce_list(request):
     return Response(serializer.data)
 
 
-
-
 class SparePartsViewSet(viewsets.ModelViewSet):
     queryset = SpareParts.objects.all()
     serializer_class = SparePartsSerializer

@@ -24,6 +24,8 @@
 	
 		.then(response => {
 		  const rows = response.data;
+
+      console.log("rows",rows)
   
 		  // departmentの各要素に番号を振り、順序を保持する
 		  const departmentMap = {};
