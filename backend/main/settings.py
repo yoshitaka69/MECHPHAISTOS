@@ -24,6 +24,8 @@ INSTALLED_APPS = [
     'djoser',
     'accounts.apps.AccountsConfig',
     'ceList',
+    'spareParts',
+    'taskList',
     'nearMiss',
     'sustainability',
     'repairingCost',
