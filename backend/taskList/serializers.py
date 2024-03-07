@@ -1,10 +1,10 @@
 from rest_framework import serializers
-from .models import Task,Company
+from .models import TaskList,Company
 
 
 class TaskSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Task #呼び出すモデル名
+        model = TaskList #呼び出すモデル名
         fields = '__all__'# API上に表示するモデルのデータ項目
 
 class CompanyTaskSerializer(serializers.ModelSerializer):

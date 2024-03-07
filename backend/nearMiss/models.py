@@ -31,7 +31,10 @@ class NearMiss(models.Model):
     updateDay = models.DateTimeField(verbose_name='updatedDay',auto_now_add=True) 
 
 
-class Meta:
-    verbose_name_plural = 'Near Miss List'
-    ordering = ('-date_added',)
+    class Meta:
+        verbose_name = 'Near Miss List'
+        verbose_name_plural = 'Near Miss List'
+        ordering = ('-createdDay',)
 
+    def __str__(self):
+            return self.nearMissListNo

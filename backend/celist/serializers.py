@@ -1,10 +1,10 @@
 from rest_framework import serializers
-from .models import Ce,Company
+from .models import CeList,Company
 
 
 class CeSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Ce #呼び出すモデル名
+        model = CeList #呼び出すモデル名
         fields = '__all__'# API上に表示するモデルのデータ項目
 
 class CompanyCeSerializer(serializers.ModelSerializer):

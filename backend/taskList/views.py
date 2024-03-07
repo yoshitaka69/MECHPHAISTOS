@@ -6,21 +6,21 @@ from rest_framework.response import Response
 from rest_framework.request import Request
 
 
-from .models import Task,Company
+from .models import TaskList,Company
 from .serializers import TaskSerializer,CompanyTaskSerializer
 
 
 #Critical equipment list
-class TaskViewSet(viewsets.ModelViewSet):
-    queryset = Task.objects.all()
+class TaskListViewSet(viewsets.ModelViewSet):
+    queryset = TaskList.objects.all()
     serializer_class = TaskSerializer
 
-class TaskByCompanyViewSet(viewsets.ReadOnlyModelViewSet):
+class TaskListByCompanyViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = TaskSerializer
 
     def get_queryset(self):
         companyCode_slug = self.kwargs['companyCode_slug']
-        return Task.objects.filter(companyCode__slug=companyCode_slug)
+        return TaskList.objects.filter(companyCode__slug=companyCode_slug)
 
 @api_view(['GET'])
 def company_task_list(request):

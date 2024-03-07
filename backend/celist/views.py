@@ -6,21 +6,21 @@ from rest_framework.response import Response
 from rest_framework.request import Request
 
 
-from .models import Ce,Company
+from .models import CeList,Company
 from .serializers import CeSerializer,CompanyCeSerializer
 
 
 #Critical equipment list
-class CeViewSet(viewsets.ModelViewSet):
-    queryset = Ce.objects.all()
+class CeListViewSet(viewsets.ModelViewSet):
+    queryset = CeList.objects.all()
     serializer_class = CeSerializer
 
-class CeByCompanyViewSet(viewsets.ReadOnlyModelViewSet):
+class CeListByCompanyViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = CeSerializer
 
     def get_queryset(self):
         companyCode_slug = self.kwargs['companyCode_slug']
-        return Ce.objects.filter(companyCode__slug=companyCode_slug)
+        return CeList.objects.filter(companyCode__slug=companyCode_slug)
 
 @api_view(['GET'])
 def company_ce_list(request):

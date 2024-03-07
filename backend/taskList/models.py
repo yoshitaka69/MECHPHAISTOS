@@ -1,30 +1,30 @@
 from django.db import models
 from django.utils import timezone
 from accounts.models import Company
-from ceList.models import CeList
+#from ceList.models import CeList
 
 
 class TaskList(models.Model):
     slug = models.SlugField()
 
-    companyCode = models.ForeignKey(Company, on_delete=models.PROTECT, null=True, blank=True)
+    companyCode = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True)
     
     #CeListから
     taskCode = models.CharField(verbose_name='taskCode',max_length=200,blank=True,null=True)
     taskName = models.CharField(verbose_name='taskName',max_length=200,blank=True,null=True)
-    plant = models.ForeignKey(CeList, on_delete=models.CASCADE, null=True, blank=True)
-    equipment = models.ForeignKey(CeList, on_delete=models.CASCADE, null=True, blank=True)
-    function = models.ForeignKey(CeList, on_delete=models.CASCADE, null=True, blank=True)
+    #plant = models.ForeignKey(CeList, on_delete=models.CASCADE, null=True, blank=True)
+    #equipment = models.ForeignKey(CeList, on_delete=models.CASCADE, null=True, blank=True)
+    #function = models.ForeignKey(CeList, on_delete=models.CASCADE, null=True, blank=True)
     
     # taskList
-    taskOfPM02 = models.CharField(verbose_name='taskOfPM02',max_length=200,blank=True,null=True)
-    laborCostOfPM02 = models.DecimalField(verbose_name='laborCostOfPM02',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
-    countOfPM02 = models.PositiveSmallIntegerField(verbose_name='countOfPM02',blank=True,null=True,default=0)
-    latestPM02 = models.DateField(verbose_name='latestPM02',blank=True,null=True)
-    periodOfPM02 = models.DateField(verbose_name='periodOfPM02',blank=True,null=True,default=timezone.now)
+    taskOfPM = models.CharField(verbose_name='taskOfPM',max_length=200,blank=True,null=True)
+    laborCostOfPM = models.DecimalField(verbose_name='laborCostOfPM',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
+    countOfPM = models.PositiveSmallIntegerField(verbose_name='countOfPM',blank=True,null=True,default=0)
+    latestPM = models.DateField(verbose_name='latestPM',blank=True,null=True)
+    periodOfPM = models.DateField(verbose_name='periodOfPM',blank=True,null=True,default=timezone.now)
 
-    #typeOfmaintenance
-    typeOfmaintenance = model.CharField(verbose_name='typeOfmaintenance',max_length=50,blank=True,null=True)
+    #typeOfMaintenance
+    typeOfMaintenance = models.CharField(verbose_name='typeOfMaintenance',max_length=50,blank=True,null=True)
     
     #Probability of failure
     constructionPeriod = models.DateField(verbose_name='constructionPeriod', blank=True,null=True,default=timezone.now)
@@ -75,3 +75,11 @@ class TaskList(models.Model):
     #countOfPM05 = models.PositiveSmallIntegerField(verbose_name='countOfPM05', blank=True,null=True,default=0,)
     #latestPM05 = models.DateField(verbose_name='latestPM05', blank=True,null=True)
     #periodOfPM05 = models.DateField(verbose_name='periodOfPM05',blank=True,null=True,default=timezone.now)#分析用で事後でデータ入力
+
+    class Meta:
+        verbose_name = 'Task List'
+        verbose_name_plural = 'Task List'
+        ordering = ('taskCode',) #モデルのクエリセットを取得した際にどのような順番でフィールドを並べ変えるかを決める。
+
+    def __str__(self):
+            return self.taskName

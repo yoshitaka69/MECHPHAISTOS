@@ -2,14 +2,14 @@ from django.db import models
 from django.utils import timezone
 
 from accounts.models import Company
-from ceList.models import Ce
+from ceList.models import CeList
 
 #RepairingCostPM02
 class Pm02(models.Model):
     slug = models.SlugField()
 
     companyCode = models.OneToOneField(Company, on_delete=models.PROTECT, null=True, blank=True)
-    plant = models.OneToOneField(Ce, on_delete=models.PROTECT, null=True, blank=True)
+    plant = models.OneToOneField(CeList, on_delete=models.PROTECT, null=True, blank=True)
 
     plannedPM02 = models.DecimalField(verbose_name='plannedPM02', max_digits=12, decimal_places=2,default=0)
     plannedMonth = models.DateField(verbose_name='plannedMonth',default=timezone.now)
@@ -32,7 +32,7 @@ class Pm03(models.Model):
     slug = models.SlugField()
 
     companyCode = models.OneToOneField(Company, on_delete=models.PROTECT, null=True, blank=True)
-    plant = models.OneToOneField(Ce, on_delete=models.PROTECT, null=True, blank=True)
+    plant = models.OneToOneField(CeList, on_delete=models.PROTECT, null=True, blank=True)
 
     plannedPM03 = models.DecimalField(verbose_name='plannedPM03', max_digits=12, decimal_places=2,default=0)
     plannedMonth = models.DateField(verbose_name='plannedMonth',default=timezone.now)
@@ -52,7 +52,7 @@ class Pm04(models.Model):
     slug = models.SlugField()
 
     companyCode = models.OneToOneField(Company, on_delete=models.PROTECT, null=True, blank=True)
-    plant = models.OneToOneField(Ce, on_delete=models.PROTECT, null=True, blank=True)
+    plant = models.OneToOneField(CeList, on_delete=models.PROTECT, null=True, blank=True)
 
     actualPM04 = models.DecimalField(verbose_name='actualPM04', max_digits=12, decimal_places=2,default=0)
     actualMonth = models.DateField(verbose_name='actualMonth',default=timezone.now)
@@ -65,7 +65,7 @@ class Pm05(models.Model):
     slug = models.SlugField()
 
     companyCode = models.OneToOneField(Company, on_delete=models.PROTECT, null=True, blank=True)
-    plant = models.OneToOneField(Ce, on_delete=models.PROTECT, null=True, blank=True)
+    plant = models.OneToOneField(CeList, on_delete=models.PROTECT, null=True, blank=True)
     
     plannedPM05 = models.DecimalField(verbose_name='plannedPM05', max_digits=12, decimal_places=2,default=0)
     plannedMonth = models.DateField(verbose_name='plannedMonth',default=timezone.now)

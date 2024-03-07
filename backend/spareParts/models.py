@@ -8,7 +8,8 @@ from ceList.models import CeList
 class SpareParts(models.Model):
     slug = models.SlugField()
 
-    companyCode = models.ForeignKey(Company, on_delete=models.PROTECT, null=True, blank=True)
+    #CeListから引用
+    companyCode = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True)
     plant = models.ForeignKey(CeList, on_delete=models.CASCADE, null=True, blank=True)
     equipment = models.CharField(verbose_name='equipment', max_length=200,null=True,blank=True)
     function = models.CharField(verbose_name='function', max_length=200,null=True,blank=True)
@@ -17,7 +18,7 @@ class SpareParts(models.Model):
     image = models.ImageField(verbose_name='image',)
 
     #parts 基本情報
-    partsNo = 
+    partsNo = models.CharField(verbose_name='partsName', max_length=200,blank=True,null=True)
     partsName = models.CharField(verbose_name='partsName', max_length=200,blank=True,null=True)
     partsModel = models.CharField(verbose_name='partsModel',max_length=200,blank=True,null=True)
     serialNumber = models.CharField(verbose_name='serialNumber',max_length=200,blank=True,null=True)
@@ -37,3 +38,11 @@ class SpareParts(models.Model):
     #部品の説明
     partsDescription = models.TextField(verbose_name='partsDescription',blank=True,null=True,max_length=1000)
 
+
+    class Meta:
+        verbose_name = 'Spare Parts List'
+        verbose_name_plural = 'Spare Parts List'
+        ordering = ('partsName',) #モデルのクエリセットを取得した際にどのような順番でフィールドを並べ変えるかを決める。
+
+    def __str__(self):
+            return self.partsName

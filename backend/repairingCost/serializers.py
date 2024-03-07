@@ -4,7 +4,7 @@ from .models import Pm02,Pm03,Pm04,Pm05
 from accounts.models import Company
 from accounts.serializers import CompanySerializer
 
-from ceList.models import Ce
+from ceList.models import CeList
 from ceList.serializers import CeSerializer
 
 
@@ -19,7 +19,7 @@ class RCPlantSerializer(serializers.ModelSerializer):
     ce = CeSerializer(read_only=True)
 
     class Meta:
-        model = Ce
+        model = CeList
         fields = ["companyCode","plant"]
 
 
