@@ -24,9 +24,9 @@ class Pm02(models.Model):
     no1PlannedPM02 = models.DecimalField(verbose_name='no1PlannedPM02', max_digits=12, decimal_places=2,default=0)
     no1ActualPM02 = models.DecimalField(verbose_name='no1ActualPM02', max_digits=12, decimal_places=2,default=0)
 
-class Meta:
-    verbose_name_plural = 'Repairing Cost'
-    ordering = ('-date_added',)
+    class Meta:
+        verbose_name_plural = 'Repairing Cost PM02'
+        ordering = ('plant',)
 
 class Pm03(models.Model):
     slug = models.SlugField()
@@ -47,6 +47,10 @@ class Pm03(models.Model):
     no1PlannedPM03 = models.DecimalField(verbose_name='no1PlannedPM03', max_digits=12, decimal_places=2,default=0)
     no1ActualPM03 = models.DecimalField(verbose_name='no1ActualPM03', max_digits=12, decimal_places=2,default=0)
 
+    class Meta:
+        verbose_name_plural = 'Repairing Cost PM03'
+        ordering = ('plant',)
+
 
 class Pm04(models.Model):
     slug = models.SlugField()
@@ -60,6 +64,10 @@ class Pm04(models.Model):
     totalActualPM04 = models.DecimalField(verbose_name='totalActualPM04', max_digits=12, decimal_places=2,default=0)
 
     no1ActualPM04 = models.DecimalField(verbose_name='no1ActualPM04', max_digits=12, decimal_places=2,default=0)
+
+    class Meta:
+        verbose_name_plural = 'Repairing Cost PM04'
+        ordering = ('plant',)
 
 class Pm05(models.Model):
     slug = models.SlugField()
@@ -79,3 +87,7 @@ class Pm05(models.Model):
 
     no1PlannedPM05 = models.DecimalField(verbose_name='no1PlannedPM05', max_digits=12, decimal_places=2,default=0)
     no1ActualPM05 = models.DecimalField(verbose_name='no1ActualPM05', max_digits=12, decimal_places=2,default=0)
+
+    class Meta:
+        verbose_name_plural = 'Repairing Cost PM05'
+        ordering = ('plant',)

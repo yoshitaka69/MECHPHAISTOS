@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'nearMiss',
     'sustainability',
     'repairingCost',
+    'junctionTable',
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True

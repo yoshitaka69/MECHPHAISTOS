@@ -16,6 +16,8 @@ class Co2(models.Model):
     createdDay = models.DateTimeField(auto_now_add=True) 
     updateDay = models.DateTimeField(auto_now_add=True) 
 
+
+
 #STMリスト
 class Stm(models.Model):
     slug = models.SlugField()
@@ -27,6 +29,8 @@ class Stm(models.Model):
     stmCost = models.DecimalField(verbose_name='stmCost', max_digits=12, decimal_places=2, null=True, blank=True, default=0.00,)
     createdDay = models.DateTimeField(auto_now_add=True) 
     updateDay = models.DateTimeField(auto_now_add=True)
+
+
 
 
 #ElectricityUsage
@@ -42,6 +46,9 @@ class ElectricityUsage(models.Model):
     updateDay = models.DateTimeField(auto_now_add=True)
 
 
+
+
+
 #compressorAir
 class CompressedAir(models.Model):
     slug = models.SlugField()
@@ -53,6 +60,8 @@ class CompressedAir(models.Model):
     compAirCost = models.DecimalField(verbose_name='compAirCost', max_digits=12, decimal_places=2, null=True, blank=True, default=0.00,)
     createdDay = models.DateTimeField(auto_now_add=True) 
     updateDay = models.DateTimeField(auto_now_add=True)
+
+
 
 
 #wellWater
