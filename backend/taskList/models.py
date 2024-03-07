@@ -1,33 +1,59 @@
 from django.db import models
 from django.utils import timezone
 from accounts.models import Company
-#from ceList.models import Ce
+from ceList.models import CeList
 
-#Taskは子。Ce　>　<<Task>>　> SpareParts
-class Task(models.Model):
+
+class TaskList(models.Model):
     slug = models.SlugField()
 
-
-    #taskListNo = models.OneToOneField(Ce, on_delete=models.PROTECT, null=True, blank=True)
-
-    latestPM02 = models.DateField(verbose_name='latestPM02', blank=True,null=True)
-    latestPM03 = models.DateField(verbose_name='latestPM03', blank=True,null=True)
-    latestPM04 = models.DateField(verbose_name='latestPM04', blank=True,null=True)
+    companyCode = models.ForeignKey(Company, on_delete=models.PROTECT, null=True, blank=True)
+    
+    #CeListから
+    taskCode = models.charField(verbose_name='taskCode',max_length=200,blank=True,null=True)
+    taskName = models.charField(verbose_name='taskName',max_length=200,blank=True,null=True)
+    plant = models.ForeignKey(CeList, on_delete=models.CASCADE, null=True, blank=True)
+    equipment = models.ForeignKey(CeList, on_delete=models.CASCADE, null=True, blank=True)
+    function = models.ForeignKey(CeList, on_delete=models.CASCADE, null=True, blank=True)
+    
+    # PM02
     taskOfPM02 = models.CharField(verbose_name='taskOfPM02',max_length=200,blank=True,null=True)
-    laborCost = models.DecimalField(verbose_name='laborCost',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
-    partsName = models.CharField(verbose_name='partsName', max_length=200,blank=True,null=True)
+    laborCostOfPM02 = models.DecimalField(verbose_name='laborCostOfPM02',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
+    countOfPM02 = models.PositiveSmallIntegerField(verbose_name='countOfPM02',blank=True,null=True,default=0)
+    latestPM02 = models.DateField(verbose_name='latestPM02',blank=True,null=True)
+    periodOfPM02 = models.DateField(verbose_name='periodOfPM02',blank=True,null=True,default=timezone.now)
 
+    #PM03
+    taskOfPM03 = models.CharField(verbose_name='taskOfPM03', max_length=200,blank=True,null=True)
+    laborCostOfPM03 = models.DecimalField(verbose_name='laborCostOfPM03',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
+    countOfPM03 = models.PositiveSmallIntegerField(verbose_name='countOfPM03',blank=True,null=True,default=0)
+    latestPM03 = models.DateField(verbose_name='latestPM03', max_length=200,blank=True,null=True,blank=True,null=True) 
+    periodOfPM03 = models.DateField(verbose_name='periodOfPM03',blank=True,null=True,default=timezone.now)#分析用で事後でデータ入力
+
+    # PM04
+    taskOfPM04 = models.CharField(verbose_name='taskOfPM04', max_length=200,blank=True,null=True)
+    laborCostOfPM04 = models.DecimalField(verbose_name='laborCostOfPM04',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
+    countOfPM04 = models.PositiveSmallIntegerField(verbose_name='countOfPM04',blank=True,null=True,default=0)
+    latestPM04 = models.DateField(verbose_name='latestPM04', max_length=200,blank=True,null=True,blank=True,null=True)
+    periodOfPM04 = models.DateField(verbose_name='periodOfPM04',blank=True,null=True,default=timezone.now)#分析用で事後でデータ入力
+    
+
+    #Probability of failure
     constructionPeriod = models.DateField(verbose_name='constructionPeriod', blank=True,null=True,default=timezone.now)
     nextEventDate = models.DateField(verbose_name='nextEventDate',blank=True,null=True)
     situation = models.CharField(verbose_name='situation', max_length=200,blank=True,null=True)
+    
+    
+   
+    # PM005
+    #countOfPM05 = models.PositiveSmallIntegerField(verbose_name='countOfPM05', blank=True,null=True,default=0,)
+    #latestPM05 = models.DateField(verbose_name='latestPM05', blank=True,null=True)
+    #taskOfPM05 = models.CharField(verbose_name='taskOfPM05', max_length=200,blank=True,null=True)
+    
 
-
-
-
-
-
-
-
+    #taskOfPM02 = models.CharField(verbose_name='taskOfPM02', max_length=200)#これはいつかForeignKeyで結びつける。そのためTask側で代表的な値を決めさせるメソッドを組む必要あり。
+    #laborOfPM02 = models.DecimalField(verbose_name='laborOfPM02',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00,)#↑と同じ
+    #↑と同じ
 
 
 
@@ -52,9 +78,3 @@ class Task(models.Model):
     thisYear8later = models.BooleanField(verbose_name='thisYear8later',default=False)
     thisYear9later = models.BooleanField(verbose_name='thisYear9later',default=False)
     thisYear10later = models.BooleanField(verbose_name='thisYear10later',default=False)
-
-
-    #companyCode = models.ForeignKey(Company, on_delete=models.PROTECT, null=True, blank=True)
-    #plant = models.ForeignKey(Ce, on_delete=models.CASCADE, null=True, blank=True)
-    #equipment = models.ForeignKey(Ce, on_delete=models.CASCADE, null=True, blank=True)
-    #function = models.ForeignKey(Ce, on_delete=models.CASCADE, null=True, blank=True)
