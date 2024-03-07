@@ -2,12 +2,10 @@ from django.db import models
 from django.utils import timezone
 from datetime import timedelta
 from accounts.models import Company
-from spareParts.models import SpareParts
-from taskList.models import Task
 
 
 #Critical equipment は親。<<Ce>>　>　Task　> SpareParts
-class Ce(models.Model):
+class CeList(models.Model):
     slug = models.SlugField()
 
     #accountsから取得
@@ -39,14 +37,13 @@ class Ce(models.Model):
     ceDescription = models.TextField(verbose_name='ceDescription',blank=True,null=True,max_length=1000)
 
 
-    #以下はSparePartsから取得
+    #以下はSparePartsからJunctionTableで加工して取得
     #partsDeliveryTime = models.DateField(verbose_name='partsDeliveryTime',blank=True,null=True,default=timezone.now)
-     #category = models.ForeignKey(SpareParts, on_delete=models.PROTECT, null=True, blank=True)
+    #category = models.ForeignKey(SpareParts, on_delete=models.PROTECT, null=True, blank=True)
     #stock = models.ForeignKey(SpareParts, on_delete=models.PROTECT, null=True, blank=True)
     #totalBomCost = models.DecimalField(verbose_name='totalBomCost',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00,)
 
-
-    #以下はtaskListから取得
+    #以下はtaskListからJunctionTableで加工して取得
     #Probability of failure
     #constructionPeriod = models.DateField(verbose_name='constructionPeriod',blank=True,null=True,default=timezone.now)
     # PM02
@@ -71,13 +68,13 @@ class Ce(models.Model):
     #nextEventDate = models.DateField(verbose_name='nextEventDate', blank=True,null=True,default=timezone.now)
     #situation = models.CharField(verbose_name='situation', max_length=200,null=True,blank=True)    
 
-
 class Meta:
     verbose_name = 'Critical equipment list'
     verbose_name_plural = 'Critical equipment list'
     ordering = ('ceListNo',) #モデルのクエリセットを取得した際にどのような順番でフィールドを並べ変えるかを決める。
 
-
+def __str__(self):
+        return self.CeListNo
 
 
 
