@@ -21,14 +21,14 @@ class CustomUserManager(BaseUserManager):
 
 
 #payment方法
-class Payment(models.Model):
-    slug = models.SlugField()
+#class Payment(models.Model):
+    #slug = models.SlugField()
 
-    freeUser = models.BooleanField(default=False)
-    lightUser = models.BooleanField(default=False)
-    middleUser = models.BooleanField(default=False)
-    specialUser = models.BooleanField(default=False)
-    premiumUser = models.BooleanField(default=False)
+    #freeUser = models.BooleanField(default=False)
+    #lightUser = models.BooleanField(default=False)
+    #middleUser = models.BooleanField(default=False)
+    #specialUser = models.BooleanField(default=False)
+    #premiumUser = models.BooleanField(default=False)
 
 
 #企業情報リスト
@@ -42,6 +42,7 @@ class Company(models.Model):
     country = models.CharField(verbose_name='country',max_length=200,null=True,blank=True)
     zipCode = models.CharField(verbose_name='zipCode',max_length=200,null=True,blank=True)
     payment = models.OneToOneField(Payment, on_delete=models.CASCADE, null=True, blank=True)
+    communityGroup = models.CharField(verbose_name='communityGroup',max_length=200,null=True,blank=True)
     createdDay = models.DateTimeField(auto_now_add=True) 
     updateDay = models.DateTimeField(auto_now_add=True) 
 
@@ -63,6 +64,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     company = models.OneToOneField(Company, on_delete=models.CASCADE, null=True, blank=True)
     payment = models.OneToOneField(Payment, on_delete=models.CASCADE, null=True, blank=True)
+    communityGroup = models.CharField(verbose_name='communityGroup',max_length=200,null=True,blank=True)
+    
     createdDay = models.DateTimeField(verbose_name='createdDay',default=timezone.now) 
     updateDay = models.DateTimeField(verbose_name='updateDay',default=timezone.now) 
 
