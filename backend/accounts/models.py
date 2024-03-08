@@ -23,7 +23,6 @@ class CustomUserManager(BaseUserManager):
 #payment方法
 #class Payment(models.Model):
     #slug = models.SlugField()
-
     #freeUser = models.BooleanField(default=False)
     #lightUser = models.BooleanField(default=False)
     #middleUser = models.BooleanField(default=False)
@@ -41,14 +40,17 @@ class Company(models.Model):
     companyName = models.CharField(verbose_name='companyName',max_length=200,null=True,blank=True)
     country = models.CharField(verbose_name='country',max_length=200,null=True,blank=True)
     zipCode = models.CharField(verbose_name='zipCode',max_length=200,null=True,blank=True)
-    payment = models.OneToOneField(Payment, on_delete=models.CASCADE, null=True, blank=True)
+    payment = models.CharField(verbose_name='payment',max_length=200,null=True,blank=True)
     communityGroup = models.CharField(verbose_name='communityGroup',max_length=200,null=True,blank=True)
     createdDay = models.DateTimeField(auto_now_add=True) 
     updateDay = models.DateTimeField(auto_now_add=True) 
 
-class Meta:
-    verbose_name_plural = 'Accounts List'
-    ordering = ('-date_added',)
+    class Meta:
+        verbose_name_plural = 'Company List'
+        ordering = ('-createdDay',)
+    
+    def __str__(self):
+        return self.companyName
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
 
@@ -62,15 +64,22 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
-    company = models.OneToOneField(Company, on_delete=models.CASCADE, null=True, blank=True)
-    payment = models.OneToOneField(Payment, on_delete=models.CASCADE, null=True, blank=True)
+    companyName = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='view_companyName',null=True, blank=True)
+    payment = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='view_payment',null=True, blank=True)
     communityGroup = models.CharField(verbose_name='communityGroup',max_length=200,null=True,blank=True)
     
     createdDay = models.DateTimeField(verbose_name='createdDay',default=timezone.now) 
     updateDay = models.DateTimeField(verbose_name='updateDay',default=timezone.now) 
 
     objects = CustomUserManager()
-
     USERNAME_FIELD = "email"
+
+
+    class Meta:
+        verbose_name_plural = 'User List'
+        ordering = ('-createdDay',)
+    
+    def __str__(self):
+        return self.userName
 
 

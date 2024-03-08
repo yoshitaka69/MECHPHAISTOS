@@ -25,3 +25,4 @@ class JunctionTable(models.Model):
     #taskCode および bomCode フィールドが null と blank であることを許容し、それらが提供されない場合は "N/A" を表示する
     def __str__(self):
         return f'{self.taskCode.taskCode if self.taskCode else "N/A"} - {self.bomCode.bomCode if self.bomCode else "N/A"}'
+

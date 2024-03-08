@@ -21,8 +21,8 @@ class Co2(models.Model):
             verbose_name_plural = 'Co2 List'
             ordering = ('date',) #モデルのクエリセットを取得した際にどのような順番でフィールドを並べ変えるかを決める。
     
-        def __str__(self):
-                return self.co2Cost
+    def __str__(self):
+        return self.co2Cost
 
 
 
@@ -43,9 +43,8 @@ class Stm(models.Model):
             verbose_name_plural = 'Stm List'
             ordering = ('date',) #モデルのクエリセットを取得した際にどのような順番でフィールドを並べ変えるかを決める。
     
-        def __str__(self):
-                return self.stmCost
-
+    def __str__(self):
+        return self.stmCost
 
 
 
@@ -67,8 +66,8 @@ class ElectricityUsage(models.Model):
             verbose_name_plural = 'Elec List'
             ordering = ('date',) #モデルのクエリセットを取得した際にどのような順番でフィールドを並べ変えるかを決める。
     
-        def __str__(self):
-                return self.elecCost
+    def __str__(self):
+        return self.elecCost
 
 
 
@@ -91,8 +90,8 @@ class CompressedAir(models.Model):
             verbose_name_plural = 'CompAir List'
             ordering = ('date',) #モデルのクエリセットを取得した際にどのような順番でフィールドを並べ変えるかを決める。
     
-        def __str__(self):
-                return self.compAirCost
+    def __str__(self):
+        return self.compAirCost
 
 
 
@@ -113,8 +112,8 @@ class WellWater(models.Model):
             verbose_name_plural = 'wellWater List'
             ordering = ('date',) #モデルのクエリセットを取得した際にどのような順番でフィールドを並べ変えるかを決める。
     
-        def __str__(self):
-                return self.wellWaterCost
+    def __str__(self):
+        return self.wellWaterCost
 
 
 
@@ -135,8 +134,8 @@ class PureWater(models.Model):
             verbose_name_plural = 'pureWater List'
             ordering = ('date',) #モデルのクエリセットを取得した際にどのような順番でフィールドを並べ変えるかを決める。
     
-        def __str__(self):
-                return self.pureWaterCost
+    def __str__(self):
+        return self.pureWaterCost
 
 #Wwt
 class Wwt(models.Model):
@@ -155,8 +154,8 @@ class Wwt(models.Model):
             verbose_name_plural = 'wwt List'
             ordering = ('date',) #モデルのクエリセットを取得した際にどのような順番でフィールドを並べ変えるかを決める。
     
-        def __str__(self):
-                return self.wwtCost
+    def __str__(self):
+        return self.wwtCost
 
 #ExhaustGas
 class ExhaustGas(models.Model):
@@ -176,5 +175,5 @@ class ExhaustGas(models.Model):
             verbose_name_plural = 'exhaustGas List'
             ordering = ('date',) #モデルのクエリセットを取得した際にどのような順番でフィールドを並べ変えるかを決める。
     
-        def __str__(self):
-                return self.exhaustGasCost
+    def __str__(self):
+        return self.exhaustGasCost
