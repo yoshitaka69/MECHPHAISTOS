@@ -16,6 +16,14 @@ class Co2(models.Model):
     createdDay = models.DateTimeField(auto_now_add=True) 
     updateDay = models.DateTimeField(auto_now_add=True) 
 
+    class Meta:
+            verbose_name = 'Co2 list'
+            verbose_name_plural = 'Co2 List'
+            ordering = ('date',) #モデルのクエリセットを取得した際にどのような順番でフィールドを並べ変えるかを決める。
+    
+        def __str__(self):
+                return self.co2Cost
+
 
 
 #STMリスト
@@ -29,6 +37,15 @@ class Stm(models.Model):
     stmCost = models.DecimalField(verbose_name='stmCost', max_digits=12, decimal_places=2, null=True, blank=True, default=0.00,)
     createdDay = models.DateTimeField(auto_now_add=True) 
     updateDay = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+            verbose_name = 'Stm list'
+            verbose_name_plural = 'Stm List'
+            ordering = ('date',) #モデルのクエリセットを取得した際にどのような順番でフィールドを並べ変えるかを決める。
+    
+        def __str__(self):
+                return self.stmCost
+
 
 
 
@@ -44,6 +61,14 @@ class ElectricityUsage(models.Model):
     elecCost = models.DecimalField(verbose_name='elecCost', max_digits=12, decimal_places=2, null=True, blank=True, default=0.00,)
     createdDay = models.DateTimeField(auto_now_add=True) 
     updateDay = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+            verbose_name = 'Elec list'
+            verbose_name_plural = 'Elec List'
+            ordering = ('date',) #モデルのクエリセットを取得した際にどのような順番でフィールドを並べ変えるかを決める。
+    
+        def __str__(self):
+                return self.elecCost
 
 
 
@@ -61,6 +86,13 @@ class CompressedAir(models.Model):
     createdDay = models.DateTimeField(auto_now_add=True) 
     updateDay = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+            verbose_name = 'CompAir list'
+            verbose_name_plural = 'CompAir List'
+            ordering = ('date',) #モデルのクエリセットを取得した際にどのような順番でフィールドを並べ変えるかを決める。
+    
+        def __str__(self):
+                return self.compAirCost
 
 
 
@@ -76,6 +108,15 @@ class WellWater(models.Model):
     createdDay = models.DateTimeField(auto_now_add=True) 
     updateDay = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+            verbose_name = 'wellWater list'
+            verbose_name_plural = 'wellWater List'
+            ordering = ('date',) #モデルのクエリセットを取得した際にどのような順番でフィールドを並べ変えるかを決める。
+    
+        def __str__(self):
+                return self.wellWaterCost
+
+
 
 #pureWater
 class PureWater(models.Model):
@@ -89,6 +130,13 @@ class PureWater(models.Model):
     createdDay = models.DateTimeField(auto_now_add=True) 
     updateDay = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+            verbose_name = 'pureWater list'
+            verbose_name_plural = 'pureWater List'
+            ordering = ('date',) #モデルのクエリセットを取得した際にどのような順番でフィールドを並べ変えるかを決める。
+    
+        def __str__(self):
+                return self.pureWaterCost
 
 #Wwt
 class Wwt(models.Model):
@@ -102,6 +150,13 @@ class Wwt(models.Model):
     createdDay = models.DateTimeField(auto_now_add=True) 
     updateDay = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+            verbose_name = 'wwt list'
+            verbose_name_plural = 'wwt List'
+            ordering = ('date',) #モデルのクエリセットを取得した際にどのような順番でフィールドを並べ変えるかを決める。
+    
+        def __str__(self):
+                return self.wwtCost
 
 #ExhaustGas
 class ExhaustGas(models.Model):
@@ -114,3 +169,12 @@ class ExhaustGas(models.Model):
     exhaustGasCost = models.DecimalField(verbose_name='exhaustGasCost', max_digits=12, decimal_places=2, null=True, blank=True, default=0.00,)
     createdDay = models.DateTimeField(auto_now_add=True) 
     updateDay = models.DateTimeField(auto_now_add=True)
+
+    
+    class Meta:
+            verbose_name = 'exhaustGas list'
+            verbose_name_plural = 'exhaustGas List'
+            ordering = ('date',) #モデルのクエリセットを取得した際にどのような順番でフィールドを並べ変えるかを決める。
+    
+        def __str__(self):
+                return self.exhaustGasCost
