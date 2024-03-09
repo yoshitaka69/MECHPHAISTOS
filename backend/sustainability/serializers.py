@@ -39,7 +39,7 @@ class Co2Serializer(serializers.ModelSerializer):
             'createdDay',
             'updateDay',
         ]# API上に表示するモデルのデータ項目
-        depth = 3
+        depth = 2
 
 
 class StmSerializer(serializers.ModelSerializer):

@@ -3,8 +3,8 @@ from .models import CeList
 
 
 class CeListAdmin(admin.ModelAdmin):
-    list_display = ('companyCode','ceListNo', 'plant', 'equipment','function')
-    search_fields = ('ceListNo', 'plant', 'equipment','function')
+    list_display = ('companyCode','ceListId', 'plant', 'equipment','function')
+    search_fields = ('ceListId', 'plant', 'equipment','function')
     list_filter = ('companyCode',) # adminで右側にあるフィルターBOXのこと
     ordering = ('companyCode',) # 表示する順番
     save_on_top = True #上部にもsaveボタンを配置

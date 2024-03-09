@@ -21,18 +21,24 @@ class CustomUserManager(BaseUserManager):
 
 
 #payment方法
-#class Payment(models.Model):
+class Payment(models.Model):
+    #ここは表に出てこないので、slugは不要
     #slug = models.SlugField()
-    #freeUser = models.BooleanField(default=False)
-    #lightUser = models.BooleanField(default=False)
-    #middleUser = models.BooleanField(default=False)
-    #specialUser = models.BooleanField(default=False)
-    #premiumUser = models.BooleanField(default=False)
+    paymentType = models.CharField(verbose_name='paymentType',max_length=20,null=True,blank=True)
+    description = models.TextField(verbose_name='description',max_length=500,null=True,blank=True)
+
+    class Meta:
+        verbose_name = 'Payment List'
+        verbose_name_plural = 'Payment List'
+        ordering = ('-paymentType',)
+    
+    def __str__(self):
+        return self.paymentType
 
 
 #企業情報リスト
 class Company(models.Model):
-    slug = models.SlugField()
+    #slug = models.SlugField(null=True,blank=True)
 
     companyCode = models.CharField(verbose_name='companyCode',max_length=200,null=True,blank=True)
 
@@ -40,7 +46,7 @@ class Company(models.Model):
     companyName = models.CharField(verbose_name='companyName',max_length=200,null=True,blank=True)
     country = models.CharField(verbose_name='country',max_length=200,null=True,blank=True)
     zipCode = models.CharField(verbose_name='zipCode',max_length=200,null=True,blank=True)
-    payment = models.CharField(verbose_name='payment',max_length=200,null=True,blank=True)
+    payment = models.ForeignKey(Payment, on_delete=models.CASCADE, related_name='company_payment',null=True, blank=True)
     communityGroup = models.CharField(verbose_name='communityGroup',max_length=200,null=True,blank=True)
     createdDay = models.DateTimeField(auto_now_add=True) 
     updateDay = models.DateTimeField(auto_now_add=True) 
@@ -64,8 +70,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
-    companyName = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='view_companyName',null=True, blank=True)
-    payment = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='view_payment',null=True, blank=True)
+    companyName = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='customUser_companyName',null=True, blank=True)
+    payment = models.ForeignKey(Payment, on_delete=models.CASCADE, related_name='customUser_payment',null=True, blank=True)
     communityGroup = models.CharField(verbose_name='communityGroup',max_length=200,null=True,blank=True)
     
     createdDay = models.DateTimeField(verbose_name='createdDay',default=timezone.now) 
@@ -78,8 +84,14 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     class Meta:
         verbose_name_plural = 'User List'
         ordering = ('-createdDay',)
-    
-    def __str__(self):
-        return self.userName
+
+    def save(self, *args, **kwargs):
+        # userNameが空の場合、firstNameとfamilyNameを組み合わせる
+        if not self.userName:
+            self.userName = f'{self.firstName} {self.familyName}'.strip()
+        super(CustomUser, self).save(*args, **kwargs)
+
+    #def __str__(self):
+        #return self.userName
 
 

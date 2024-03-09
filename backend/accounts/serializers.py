@@ -1,17 +1,12 @@
 from rest_framework import serializers
-from .models import Company,CustomUser#,Payment,
+from .models import Company,CustomUser,Payment
 
 
-#class PaymentSerializer(serializers.ModelSerializer):
-    #class Meta:
-        #model = Payment # 呼び出すモデル
-        #fields = [
-            #"freeUser",
-            #"lightUser",
-            #'middleUser',
-            #"specialUser",
-            #"premiumUser",
-        #] # API上に表示するモデルのデータ項目
+class PaymentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Payment # 呼び出すモデル
+        fields = '__all__' # API上に表示するモデルのデータ項目
+
 
 class CompanySerializer(serializers.ModelSerializer):
     class Meta:

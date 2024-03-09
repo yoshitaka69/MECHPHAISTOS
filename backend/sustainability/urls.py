@@ -12,6 +12,7 @@ router.register(r'pureWater', PureWaterViewSet, basename='pureWater')
 router.register(r'wwt', WwtViewSet, basename='wwt')
 router.register(r'exhaustGas', ExhaustGasViewSet, basename='exhaustGas')
 
+
 urlpatterns = [
     path('sustainability/', include(router.urls)),
 ]
