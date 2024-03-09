@@ -6,7 +6,7 @@ from ceList.models import CeList
 
 
 class SpareParts(models.Model):
-    slug = models.SlugField()
+    #slug = models.SlugField()
 
     #CeListから引用
     companyCode = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True)
@@ -15,7 +15,7 @@ class SpareParts(models.Model):
     function = models.CharField(verbose_name='function', max_length=200,null=True,blank=True)
 
     #画像
-    image = models.ImageField(verbose_name='image',)
+    image = models.ImageField(verbose_name='image',null=True,blank=True)
 
     #parts 基本情報
     partsNo = models.CharField(verbose_name='partsName', max_length=200,blank=True,null=True)
@@ -44,5 +44,5 @@ class SpareParts(models.Model):
         verbose_name_plural = 'Spare Parts List'
         ordering = ('partsName',) #モデルのクエリセットを取得した際にどのような順番でフィールドを並べ変えるかを決める。
 
-    def __str__(self):
-            return self.partsName
+    #def __str__(self):
+            #return self.partsName

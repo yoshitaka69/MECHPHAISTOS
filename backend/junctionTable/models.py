@@ -9,7 +9,7 @@ class SpareParts(models.Model):
     bomCode = models.ManyToManyField(TaskList, through='JunctionTable')
 
 class JunctionTable(models.Model):
-    slug = models.SlugField()
+    #slug = models.SlugField()
     
     taskCode = models.ForeignKey(TaskList, on_delete=models.CASCADE, related_name="tasks", null=True, blank=True)
     taskCost = models.DecimalField(verbose_name='taskCost', max_digits=5, decimal_places=2, blank=True, null=True, default=0.00)

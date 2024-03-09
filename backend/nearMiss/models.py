@@ -4,7 +4,7 @@ from accounts.models import Company
 
 class NearMiss(models.Model):
 
-    slug = models.SlugField()
+    #slug = models.SlugField()
 
     #on_delateはいちよPROTECTにしておく。ビッグデータは財産として残したいがプライバシーポリシーとも相談になる。
     companyCode = models.ForeignKey(Company, on_delete=models.PROTECT, null=True, blank=True)

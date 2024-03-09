@@ -6,7 +6,7 @@ from ceList.models import CeList
 
 #Co2リスト
 class Co2(models.Model):
-    slug = models.SlugField()
+    #slug = models.SlugField()
 
     companyCode = models.ForeignKey(Company, on_delete=models.PROTECT, null=True, blank=True)
     plant = models.ForeignKey(CeList, on_delete=models.PROTECT, null=True, blank=True)
@@ -21,11 +21,14 @@ class Co2(models.Model):
             verbose_name_plural = 'Co2 List'
             ordering = ('date',) #モデルのクエリセットを取得した際にどのような順番でフィールドを並べ変えるかを決める。
 
+    def __str__(self):
+        return f'{self.companyCode} - {self.date}'
+
 
 
 #STMリスト
 class Stm(models.Model):
-    slug = models.SlugField()
+    #slug = models.SlugField()
 
     companyCode = models.ForeignKey(Company, on_delete=models.PROTECT, null=True, blank=True)
     plant = models.ForeignKey(CeList, on_delete=models.PROTECT, null=True, blank=True)
@@ -40,10 +43,12 @@ class Stm(models.Model):
             verbose_name_plural = 'Stm List'
             ordering = ('date',) #モデルのクエリセットを取得した際にどのような順番でフィールドを並べ変えるかを決める。
 
+    def __str__(self):
+        return f'{self.companyCode} - {self.date}'
 
 #ElectricityUsage
 class ElectricityUsage(models.Model):
-    slug = models.SlugField()
+    #slug = models.SlugField()
 
     companyCode = models.ForeignKey(Company, on_delete=models.PROTECT, null=True, blank=True)
     plant = models.ForeignKey(CeList, on_delete=models.PROTECT, null=True, blank=True)
@@ -57,11 +62,14 @@ class ElectricityUsage(models.Model):
             verbose_name = 'Elec list'
             verbose_name_plural = 'Elec List'
             ordering = ('date',) #モデルのクエリセットを取得した際にどのような順番でフィールドを並べ変えるかを決める。
+
+    def __str__(self):
+        return f'{self.companyCode} - {self.date}'
     
 
 #compressorAir
 class CompressedAir(models.Model):
-    slug = models.SlugField()
+    #slug = models.SlugField()
 
     companyCode = models.ForeignKey(Company, on_delete=models.PROTECT, null=True, blank=True)
     plant = models.ForeignKey(CeList, on_delete=models.PROTECT, null=True, blank=True)
@@ -76,10 +84,13 @@ class CompressedAir(models.Model):
             verbose_name_plural = 'CompAir List'
             ordering = ('date',) #モデルのクエリセットを取得した際にどのような順番でフィールドを並べ変えるかを決める。
 
+    def __str__(self):
+        return f'{self.companyCode} - {self.date}'
+
 
 #wellWater
 class WellWater(models.Model):
-    slug = models.SlugField()
+    #slug = models.SlugField()
 
     companyCode = models.ForeignKey(Company, on_delete=models.PROTECT, null=True, blank=True)
     plant = models.ForeignKey(CeList, on_delete=models.PROTECT, null=True, blank=True)
@@ -93,11 +104,14 @@ class WellWater(models.Model):
             verbose_name = 'wellWater list'
             verbose_name_plural = 'wellWater List'
             ordering = ('date',) #モデルのクエリセットを取得した際にどのような順番でフィールドを並べ変えるかを決める。
+
+    def __str__(self):
+        return f'{self.companyCode} - {self.date}'
     
 
 #pureWater
 class PureWater(models.Model):
-    slug = models.SlugField()
+    #slug = models.SlugField()
 
     companyCode = models.ForeignKey(Company, on_delete=models.PROTECT, null=True, blank=True)
     plant = models.ForeignKey(CeList, on_delete=models.PROTECT, null=True, blank=True)
@@ -111,11 +125,14 @@ class PureWater(models.Model):
             verbose_name = 'pureWater list'
             verbose_name_plural = 'pureWater List'
             ordering = ('date',) #モデルのクエリセットを取得した際にどのような順番でフィールドを並べ変えるかを決める。
+
+    def __str__(self):
+        return f'{self.companyCode} - {self.date}'
     
 
 #Wwt
 class Wwt(models.Model):
-    slug = models.SlugField()
+    #slug = models.SlugField()
 
     companyCode = models.ForeignKey(Company, on_delete=models.PROTECT, null=True, blank=True)
     plant = models.ForeignKey(CeList, on_delete=models.PROTECT, null=True, blank=True)
@@ -129,11 +146,14 @@ class Wwt(models.Model):
             verbose_name = 'wwt list'
             verbose_name_plural = 'wwt List'
             ordering = ('date',) #モデルのクエリセットを取得した際にどのような順番でフィールドを並べ変えるかを決める。
+
+    def __str__(self):
+        return f'{self.companyCode} - {self.date}'
     
 
 #ExhaustGas
 class ExhaustGas(models.Model):
-    slug = models.SlugField()
+    #slug = models.SlugField()
 
     companyCode = models.ForeignKey(Company, on_delete=models.PROTECT, null=True, blank=True)
     plant = models.ForeignKey(CeList, on_delete=models.PROTECT, null=True, blank=True)
@@ -148,3 +168,6 @@ class ExhaustGas(models.Model):
             verbose_name = 'exhaustGas list'
             verbose_name_plural = 'exhaustGas List'
             ordering = ('date',) #モデルのクエリセットを取得した際にどのような順番でフィールドを並べ変えるかを決める。
+
+    def __str__(self):
+        return f'{self.companyCode} - {self.date}'
