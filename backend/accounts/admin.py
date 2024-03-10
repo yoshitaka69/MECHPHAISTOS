@@ -6,7 +6,7 @@ class CustomUserAdmin(admin.ModelAdmin):
     search_fields = ('userName', 'email','company''payment', )
     list_filter = ('userName',) # adminで右側にあるフィルターBOXのこと
     save_on_top = True #上部にもsaveボタンを配置
-    ordering = ('userName', )
+    ordering = ('id', )
 
 class CompanyAdmin(admin.ModelAdmin):
     list_display = ('companyListNo', 'companyName', 'country', 'zipCode', 'payment', 'createdDay', 'updateDay')
@@ -37,9 +37,9 @@ class CompanyNameAdmin(admin.ModelAdmin):
     ordering = ('companyName',)
 
 class AreaCodeAdmin(admin.ModelAdmin):
-    list_display = ('country','zipCode','description',)
-    search_fields = ('country','zipCode','description',)
-    list_filter = ('country','zipCode','description',) # adminで右側にあるフィルターBOXのこと
+    list_display = ('country','zipCode','companyCode','companyName','description',)
+    search_fields = ('country','zipCode','companyCode','companyName','description',)
+    list_filter = ('country','zipCode','companyCode','companyName','description',) # adminで右側にあるフィルターBOXのこと
     save_on_top = True #上部にもsaveボタンを配置
     ordering = ('country',)
 

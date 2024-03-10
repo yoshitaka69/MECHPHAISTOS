@@ -34,7 +34,6 @@ class ActualPM04Serializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-
 class PlannedPM05Serializer(serializers.ModelSerializer):
     plannedMonth = serializers.DateTimeField(format="%Y-%m-%d")
     class Meta:

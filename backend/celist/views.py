@@ -6,8 +6,8 @@ from rest_framework.response import Response
 from rest_framework.request import Request
 
 
-from .models import CeList,Company,Plant,Equipment,Function
-from .serializers import CeSerializer,CompanyCeSerializer,PlantSerializer,EquipmentSerializer,FunctionSerializer
+from .models import CeList,CompanyCode,Plant,Equipment,Machine
+from .serializers import CeSerializer,CompanyCodeCeSerializer,PlantSerializer,EquipmentSerializer,MachineSerializer
 
 class PlantListViewSet(viewsets.ModelViewSet):
     queryset = Plant.objects.all()
@@ -17,9 +17,11 @@ class EquipmentListViewSet(viewsets.ModelViewSet):
     queryset = Equipment.objects.all()
     serializer_class = EquipmentSerializer
 
-class FunctionListViewSet(viewsets.ModelViewSet):
-    queryset = Function.objects.all()
-    serializer_class = FunctionSerializer
+class MachineListViewSet(viewsets.ModelViewSet):
+    queryset = Machine.objects.all()
+    serializer_class = MachineSerializer
+
+
 
 #Critical equipment list
 class CeListViewSet(viewsets.ModelViewSet):
@@ -35,8 +37,8 @@ class CeListByCompanyViewSet(viewsets.ReadOnlyModelViewSet):
 
 @api_view(['GET'])
 def company_ce_list(request):
-    companies = Company.objects.all()
-    serializer = CompanyCeSerializer(companies, many=True)
+    companies = CompanyCode.objects.all()
+    serializer = CompanyCodeCeSerializer(companies, many=True)
     return Response(serializer.data)
 
 

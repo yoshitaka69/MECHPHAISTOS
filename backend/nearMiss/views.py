@@ -3,7 +3,7 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
-from .models import NearMiss, Company
+from .models import NearMiss, CompanyCode
 from .serializers import NearMissSerializer, CompanyNearMissSerializer
 
 class NearMissViewSet(viewsets.ModelViewSet):
@@ -22,6 +22,6 @@ class NearMissByCompanyViewSet(viewsets.ReadOnlyModelViewSet):
 
 @api_view(['GET'])
 def company_near_miss_list(request):
-    companies = Company.objects.all()
+    companies = CompanyCode.objects.all()
     serializer = CompanyNearMissSerializer(companies, many=True)
     return Response(serializer.data)

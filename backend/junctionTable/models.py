@@ -15,7 +15,7 @@ class JunctionTable(models.Model):
     taskCost = models.DecimalField(verbose_name='taskCost', max_digits=5, decimal_places=2, blank=True, null=True, default=0.00)
     bomCode = models.ForeignKey(SpareParts, on_delete=models.CASCADE, related_name="spare_parts", null=True, blank=True)
     bomCost = models.DecimalField(verbose_name='bomCost', max_digits=5, decimal_places=2, blank=True, null=True, default=0.00)
-    totalCost = models.DecimalField(verbose_name='totalCost', max_digits=5, decimal_places=2, blank=True, null=True, default=0.00)
+    
 
     class Meta:
         verbose_name = 'Junction Table'
@@ -25,4 +25,12 @@ class JunctionTable(models.Model):
     #taskCode および bomCode フィールドが null と blank であることを許容し、それらが提供されない場合は "N/A" を表示する
     def __str__(self):
         return f'{self.taskCode.taskCode if self.taskCode else "N/A"} - {self.bomCode.bomCode if self.bomCode else "N/A"}'
+
+
+
+#ここでtaskListとsparePartsの処理をさせる
+#class pickUpTaskTable(models.Model):
+
+    #pickUpTask = models.CharField(verbose_name='taskCode', max_length=200, blank=True, null=True)
+    #totalCost = models.DecimalField(verbose_name='totalCost', max_digits=5, decimal_places=2, blank=True, null=True, default=0.00)
 

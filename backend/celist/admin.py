@@ -1,11 +1,11 @@
 from django.contrib import admin
-from .models import CeList,Plant,Equipment,Function
+from .models import CeList,Plant,Equipment,Machine
 
 
 class CeListAdmin(admin.ModelAdmin):
-    list_display = ('companyCode','plant', 'equipment','function',)
-    search_fields = ('plant', 'equipment','function',)
-    list_filter = ('plant', 'equipment','function',) # adminで右側にあるフィルターBOXのこと
+    list_display = ('companyCode','plant', 'equipment','machineName','levelSetValue','mttr','possibilityOfProductionLv','impactForProduction','probabilityOfFailure','assessment')
+    search_fields = ('plant', 'equipment','machineName','levelSetValue','mttr','possibilityOfProductionLv','impactForProduction','probabilityOfFailure','assessment')
+    list_filter = ('plant', 'equipment','machineName','levelSetValue','mttr','possibilityOfProductionLv','impactForProduction','probabilityOfFailure','assessment') # adminで右側にあるフィルターBOXのこと
     ordering = ('companyCode',) # 表示する順番
     save_on_top = True #上部にもsaveボタンを配置
    
@@ -30,10 +30,10 @@ class EquipmentAdmin(admin.ModelAdmin):
 
     list_per_page = 50 
 
-class FunctionAdmin(admin.ModelAdmin):
-    list_display = ('companyCode','companyName','function',)
-    search_fields = ('companyCode','companyName','function',)
-    list_filter = ('companyCode','companyName','function',) 
+class MachineAdmin(admin.ModelAdmin):
+    list_display = ('companyCode','companyName','machineName','spareMachineLocationNo',)
+    search_fields = ('companyCode','companyName','machineName','spareMachineLocationNo',)
+    list_filter = ('companyCode','companyName','machineName','spareMachineLocationNo',) 
     ordering = ('companyCode',) 
     save_on_top = True 
 
@@ -44,5 +44,5 @@ class FunctionAdmin(admin.ModelAdmin):
 admin.site.register(CeList,CeListAdmin)
 admin.site.register(Plant,PlantAdmin)
 admin.site.register(Equipment,EquipmentAdmin)
-admin.site.register(Function,FunctionAdmin)
+admin.site.register(Machine,MachineAdmin)
 

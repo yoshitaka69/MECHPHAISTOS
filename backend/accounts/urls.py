@@ -9,7 +9,7 @@ router.register(r'customUser', CustomUserViewSet, basename='customUser')
 router.register(r'company', CompanyViewSet, basename='company')
 router.register(r'payment', PaymentViewSet, basename='payments')
 router.register(r'companyCode', CompanyCodeViewSet, basename='companyCode')
-router.register(r'companyName', CompanyNameViewSet, basename='companyCode')
+router.register(r'companyName', CompanyNameViewSet, basename='companyName')
 router.register(r'areaCode', AreaCodeViewSet, basename='areaCode')
 router.register(r'communityGroup', CommunityGroupViewSet, basename='communityGroup')
 

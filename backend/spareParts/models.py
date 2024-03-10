@@ -2,7 +2,7 @@ from django.db import models
 from django.utils import timezone
 from datetime import timedelta
 from accounts.models import Company,CompanyName
-from ceList.models import Plant,Equipment,Function
+from ceList.models import Plant,Equipment,Machine
 
 
 class SpareParts(models.Model):
@@ -12,7 +12,7 @@ class SpareParts(models.Model):
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='spareParts_companyName', null=True, blank=True)
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='spareParts_plant', null=True, blank=True)
     equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='spareParts_equipment', null=True, blank=True)
-    function = models.ForeignKey(Function, on_delete=models.CASCADE, related_name='spareParts_function', null=True, blank=True)
+    machineName = models.ForeignKey(Machine, on_delete=models.CASCADE, related_name='spareParts_function', null=True, blank=True)
 
     #画像
     image = models.ImageField(verbose_name='image',null=True,blank=True)

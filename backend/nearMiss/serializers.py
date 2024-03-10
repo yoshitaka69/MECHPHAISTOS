@@ -1,8 +1,8 @@
 from rest_framework import serializers
-from .models import NearMiss, Company
+from .models import NearMiss, CompanyCode
 
 class NearMissSerializer(serializers.ModelSerializer):
-    dateOfOccurrence = serializers.DateTimeField(format="%Y-%m-%d")
+    dateOfOccurrence = serializers.DateField(format="%Y-%m-%d")
     createdDay = serializers.DateTimeField(format="%Y-%m-%d")
     updateDay = serializers.DateTimeField(format="%Y-%m-%d")
     class Meta:
@@ -13,5 +13,5 @@ class CompanyNearMissSerializer(serializers.ModelSerializer):
     nearMissList = NearMissSerializer(many=True, read_only=True, source='nearmiss_set')
 
     class Meta:
-        model = Company
+        model = CompanyCode
         fields = ['companyCode', 'nearMissList']

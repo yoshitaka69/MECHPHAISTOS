@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from accounts.models import Company,CompanyName
-from ceList.models import Plant,Equipment,Function
+from ceList.models import Plant,Equipment,Machine
 
 
 class TaskList(models.Model):
@@ -14,7 +14,7 @@ class TaskList(models.Model):
     taskName = models.CharField(verbose_name='taskName',max_length=200,blank=True,null=True)
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE,related_name='taskList_plant', null=True, blank=True)
     equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='taskList_equipment', null=True, blank=True)
-    function = models.ForeignKey(Function, on_delete=models.CASCADE, related_name='taskList_function', null=True, blank=True)
+    machineName = models.ForeignKey(Machine, on_delete=models.CASCADE, related_name='taskList_function', null=True, blank=True)
     
     # taskList
     taskOfPM = models.CharField(verbose_name='taskOfPM',max_length=200,blank=True,null=True)

@@ -145,7 +145,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     class Meta:
         verbose_name_plural = 'User List'
-        ordering = ('-createdDay',)
+        ordering = ('id',)
 
     def save(self, *args, **kwargs):
         # userNameが空の場合、firstNameとfamilyNameを組み合わせる

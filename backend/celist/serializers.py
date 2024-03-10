@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CeList,Company,Plant,Equipment,Function
+from .models import CeList,CompanyCode,Plant,Equipment,Machine
 
 class PlantSerializer(serializers.ModelSerializer):
     class Meta:
@@ -11,9 +11,9 @@ class EquipmentSerializer(serializers.ModelSerializer):
         model = Equipment 
         fields = '__all__'
 
-class FunctionSerializer(serializers.ModelSerializer):
+class MachineSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Function 
+        model = Machine 
         fields = '__all__'
 
 class CeSerializer(serializers.ModelSerializer):
@@ -21,10 +21,10 @@ class CeSerializer(serializers.ModelSerializer):
         model = CeList
         fields = '__all__'
 
-class CompanyCeSerializer(serializers.ModelSerializer):
+class CompanyCodeCeSerializer(serializers.ModelSerializer):
     ceList = CeSerializer(many=True, read_only=True, source='ce_set')
 
     class Meta:
-        model = Company
+        model = CompanyCode
         fields = ['companyCode', 'ceList']
 

@@ -1,11 +1,11 @@
 from django.db import models
 from django.utils import timezone
 from datetime import timedelta
-from accounts.models import Company,CompanyName
+from accounts.models import CompanyCode,CompanyName
 
 class Plant(models.Model):
 
-    companyCode = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='plant_companyCode',null=True, blank=True)
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='plant_companyCode',null=True, blank=True)
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='plant_companyName', null=True, blank=True)
     plant = plant = models.CharField(verbose_name='plant', max_length=200,null=True,blank=True)
 
@@ -19,7 +19,7 @@ class Plant(models.Model):
 
 class Equipment(models.Model):
 
-    companyCode = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='equipment_companyCode',null=True, blank=True)
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='equipment_companyCode',null=True, blank=True)
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='equipment_companyName', null=True, blank=True)
     equipment = models.CharField(verbose_name='equipment', max_length=200,null=True,blank=True)
 
@@ -32,18 +32,26 @@ class Equipment(models.Model):
         return f'{self.equipment}'
     
 
+class Machine(models.Model):
 
-class Function(models.Model):
-
-    companyCode = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='function_companyCode',null=True, blank=True)
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='function_companyCode',null=True, blank=True)
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='function_companyName', null=True, blank=True)
-    function = models.CharField(verbose_name='function', max_length=200,null=True,blank=True)
+    machineName = models.CharField(verbose_name='machineName', max_length=200,null=True,blank=True)
+    spareMachineLocationNo = models.CharField(verbose_name='spareMachineLocationNo', max_length=200,null=True,blank=True)#いつか設置されている場所を指定する場合のため
+
+    class Meta:
+        verbose_name = 'Machine'
+        verbose_name_plural = 'Machine'
+        ordering = ('companyCode',) 
+
+    def __str__(self):
+        return f'{self.machineName}'
 
 
 class CeList(models.Model):
 
     #accountsから取得
-    companyCode = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='ceList_companyCode',null=True, blank=True)
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='ceList_companyCode',null=True, blank=True)
     
     #Celistメインの項目
     #ceListId = models.CharField(verbose_name='ceListNo', max_length=200,null=True,blank=True,default=0)
@@ -53,9 +61,7 @@ class CeList(models.Model):
     
     equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='ceList_equipment',null=True, blank=True)
     #equipment = models.CharField(verbose_name='equipment', max_length=200,null=True,blank=True)
-
-    function = models.CharField(verbose_name='function', max_length=200,null=True,blank=True)
-    locationNo = models.CharField(verbose_name='locationNo', max_length=200,null=True,blank=True)#いつか設置されている場所を指定する場合のため
+    machineName = models.ForeignKey(Machine, on_delete=models.CASCADE, related_name='ceList_machine',null=True, blank=True)
 
     #Task List
     taskListCode = models.CharField(verbose_name='taskListNo', max_length=200,null=True,blank=True)

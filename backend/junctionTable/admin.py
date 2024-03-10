@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import JunctionTable
 
 class JunctionTableAdmin(admin.ModelAdmin):
-    list_display = ('taskCode','taskCost', 'bomCode', 'bomCost','totalCost')
+    list_display = ('taskCode','taskCost', 'bomCode', 'bomCost',)
     search_fields = ('taskCode','taskCost', 'bomCode', 'bomCost',)
     list_filter = ('taskCode',) # adminで右側にあるフィルターBOXのこと
     ordering = ('taskCode',) # 表示する順番
