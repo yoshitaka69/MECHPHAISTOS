@@ -1,20 +1,20 @@
 from django.db import models
 from django.utils import timezone
-from accounts.models import Company
-from ceList.models import CeList
+from accounts.models import Company,CompanyName
+from ceList.models import Plant,Equipment,Function
 
 
 class TaskList(models.Model):
-    #slug = models.SlugField()
 
     companyCode = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True)
+    companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='taskList_companyName', null=True, blank=True)
     
     #CeListから
     taskCode = models.CharField(verbose_name='taskCode',max_length=200,blank=True,null=True)
     taskName = models.CharField(verbose_name='taskName',max_length=200,blank=True,null=True)
-    plant = models.ForeignKey(CeList, on_delete=models.PROTECT,related_name='plant_taskList', null=True, blank=True)
-    equipment = models.ForeignKey(CeList, on_delete=models.PROTECT, related_name='equipment_taskList', null=True, blank=True)
-    function = models.ForeignKey(CeList, on_delete=models.PROTECT, related_name='function_taskList', null=True, blank=True)
+    plant = models.ForeignKey(Plant, on_delete=models.CASCADE,related_name='taskList_plant', null=True, blank=True)
+    equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='taskList_equipment', null=True, blank=True)
+    function = models.ForeignKey(Function, on_delete=models.CASCADE, related_name='taskList_function', null=True, blank=True)
     
     # taskList
     taskOfPM = models.CharField(verbose_name='taskOfPM',max_length=200,blank=True,null=True)
@@ -60,5 +60,5 @@ class TaskList(models.Model):
         verbose_name_plural = 'Task List'
         ordering = ('taskCode',) #モデルのクエリセットを取得した際にどのような順番でフィールドを並べ変えるかを決める。
 
-    #def __str__(self):
-            #return self.taskName
+    def __str__(self):
+            return f'{self.taskName}'

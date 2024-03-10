@@ -4,8 +4,8 @@ from .models import Co2,Stm,ElectricityUsage,CompressedAir,WellWater,PureWater,W
 from accounts.models import Company
 from accounts.serializers import CompanySerializer
 
-from ceList.models import CeList
-from ceList.serializers import CeSerializer
+from ceList.models import Plant
+from ceList.serializers import PlantSerializer
 
 
 
@@ -17,10 +17,10 @@ class EnPICompanyCodeSerializer(serializers.ModelSerializer):
 
 class EnPIPlantSerializer(serializers.ModelSerializer):
     companyCode = EnPICompanyCodeSerializer(read_only=True)
-    ce = CeSerializer(read_only=True)
+    plant = PlantSerializer(read_only=True)
 
     class Meta:
-        model = CeList
+        model = Plant
         fields = ["companyCode","plant"]
 
 

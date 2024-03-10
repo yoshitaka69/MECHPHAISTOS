@@ -7,7 +7,7 @@ class NearMiss(models.Model):
     #slug = models.SlugField()
 
     #on_delateはいちよPROTECTにしておく。ビッグデータは財産として残したいがプライバシーポリシーとも相談になる。
-    companyCode = models.ForeignKey(Company, on_delete=models.PROTECT, null=True, blank=True)
+    companyCode = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True)
 
     nearMissListNo = models.IntegerField(null=True, blank=True)
     userName = models.CharField(verbose_name='userName', max_length=200,null=True,blank=True)

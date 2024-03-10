@@ -6,9 +6,20 @@ from rest_framework.response import Response
 from rest_framework.request import Request
 
 
-from .models import CeList,Company
-from .serializers import CeSerializer,CompanyCeSerializer
+from .models import CeList,Company,Plant,Equipment,Function
+from .serializers import CeSerializer,CompanyCeSerializer,PlantSerializer,EquipmentSerializer,FunctionSerializer
 
+class PlantListViewSet(viewsets.ModelViewSet):
+    queryset = Plant.objects.all()
+    serializer_class = PlantSerializer
+
+class EquipmentListViewSet(viewsets.ModelViewSet):
+    queryset = Equipment.objects.all()
+    serializer_class = EquipmentSerializer
+
+class FunctionListViewSet(viewsets.ModelViewSet):
+    queryset = Function.objects.all()
+    serializer_class = FunctionSerializer
 
 #Critical equipment list
 class CeListViewSet(viewsets.ModelViewSet):

@@ -1,9 +1,12 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import CeListViewSet, company_ce_list, CeListByCompanyViewSet
+from .views import CeListViewSet, company_ce_list, CeListByCompanyViewSet,PlantListViewSet,EquipmentListViewSet,FunctionListViewSet
 
 router = DefaultRouter()
+router.register(r'plant', PlantListViewSet, basename='plant')
+router.register(r'equipment', EquipmentListViewSet, basename='equipment')
 router.register(r'ceList', CeListViewSet, basename='ceList')
+router.register(r'function', FunctionListViewSet, basename='function')
 
 urlpatterns = [
     path('ceList/', include(router.urls)),

@@ -17,5 +17,4 @@ urlpatterns = [
     path("api/", include('sustainability.urls')),
     path("api/", include('repairingCost.urls')),
     path("api/", include('taskList.urls')),
-
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

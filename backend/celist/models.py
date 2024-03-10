@@ -1,24 +1,59 @@
 from django.db import models
 from django.utils import timezone
 from datetime import timedelta
-from accounts.models import Company
+from accounts.models import Company,CompanyName
+
+class Plant(models.Model):
+
+    companyCode = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='plant_companyCode',null=True, blank=True)
+    companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='plant_companyName', null=True, blank=True)
+    plant = plant = models.CharField(verbose_name='plant', max_length=200,null=True,blank=True)
+
+    class Meta:
+        verbose_name = 'Plant'
+        verbose_name_plural = 'Plant'
+        ordering = ('plant',) 
+
+    def __str__(self):
+        return f'{self.plant}'
+
+class Equipment(models.Model):
+
+    companyCode = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='equipment_companyCode',null=True, blank=True)
+    companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='equipment_companyName', null=True, blank=True)
+    equipment = models.CharField(verbose_name='equipment', max_length=200,null=True,blank=True)
+
+    class Meta:
+        verbose_name = 'Equipment'
+        verbose_name_plural = 'Equipment'
+        ordering = ('companyCode',) 
+
+    def __str__(self):
+        return f'{self.equipment}'
+    
 
 
+class Function(models.Model):
 
-#Critical equipment は親。<<Ce>>　>　Task　> SpareParts
+    companyCode = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='function_companyCode',null=True, blank=True)
+    companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='function_companyName', null=True, blank=True)
+    function = models.CharField(verbose_name='function', max_length=200,null=True,blank=True)
+
+
 class CeList(models.Model):
 
-    #基本slugは不要。backend側のseo対策は不要
-    #slug = models.SlugField(null=True, blank=True)
-
     #accountsから取得
-    companyCode = models.ForeignKey(Company, on_delete=models.PROTECT, related_name='ceList_companyCode',null=True, blank=True)
+    companyCode = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='ceList_companyCode',null=True, blank=True)
     
     #Celistメインの項目
     #ceListId = models.CharField(verbose_name='ceListNo', max_length=200,null=True,blank=True,default=0)
-    companyName = models.ForeignKey(Company, on_delete=models.PROTECT, related_name='ceList_companyName',null=True, blank=True)
-    plant = models.CharField(verbose_name='plant', max_length=200,null=True,blank=True)#ここでplantNameが生成されるので、ここが基準。
-    equipment = models.CharField(verbose_name='equipment', max_length=200,null=True,blank=True)
+    companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='ceList_companyName', null=True, blank=True)
+    plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='ceList_plant',null=True, blank=True)
+    #plant = models.CharField(verbose_name='plant', max_length=200,null=True,blank=True)
+    
+    equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='ceList_equipment',null=True, blank=True)
+    #equipment = models.CharField(verbose_name='equipment', max_length=200,null=True,blank=True)
+
     function = models.CharField(verbose_name='function', max_length=200,null=True,blank=True)
     locationNo = models.CharField(verbose_name='locationNo', max_length=200,null=True,blank=True)#いつか設置されている場所を指定する場合のため
 
@@ -51,9 +86,8 @@ class CeList(models.Model):
         verbose_name_plural = 'Critical equipment list'
         ordering = ('plant',) #モデルのクエリセットを取得した際にどのような順番でフィールドを並べ変えるかを決める。
     
-
     def __str__(self):
-        return f'{self.plant}'
+        return f'{self.companyName}'
    
 
 

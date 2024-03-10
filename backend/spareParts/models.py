@@ -1,18 +1,18 @@
 from django.db import models
 from django.utils import timezone
 from datetime import timedelta
-from accounts.models import Company
-from ceList.models import CeList
+from accounts.models import Company,CompanyName
+from ceList.models import Plant,Equipment,Function
 
 
 class SpareParts(models.Model):
-    #slug = models.SlugField()
 
     #CeListから引用
-    companyCode = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True)
-    plant = models.ForeignKey(CeList, on_delete=models.CASCADE, null=True, blank=True)
-    equipment = models.CharField(verbose_name='equipment', max_length=200,null=True,blank=True)
-    function = models.CharField(verbose_name='function', max_length=200,null=True,blank=True)
+    companyCode = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='spareParts_companyCode', null=True, blank=True)
+    companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='spareParts_companyName', null=True, blank=True)
+    plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='spareParts_plant', null=True, blank=True)
+    equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='spareParts_equipment', null=True, blank=True)
+    function = models.ForeignKey(Function, on_delete=models.CASCADE, related_name='spareParts_function', null=True, blank=True)
 
     #画像
     image = models.ImageField(verbose_name='image',null=True,blank=True)
@@ -42,7 +42,7 @@ class SpareParts(models.Model):
     class Meta:
         verbose_name = 'Spare Parts List'
         verbose_name_plural = 'Spare Parts List'
-        ordering = ('partsName',) #モデルのクエリセットを取得した際にどのような順番でフィールドを並べ変えるかを決める。
+        ordering = ('partsName',) 
 
-    #def __str__(self):
-            #return self.partsName
+    def __str__(self):
+            return f'{self.partsName}'

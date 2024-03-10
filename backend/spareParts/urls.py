@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter
 from .views import SparePartsViewSet, company_spareParts_list, SparePartsByCompanyViewSet
 
 router = DefaultRouter()
-router.register(r'spareParts', SparePartsViewSet, basename='ce')
+router.register(r'spareParts', SparePartsViewSet, basename='spareParts')
 
 urlpatterns = [
     path('spareParts/', include(router.urls)),
