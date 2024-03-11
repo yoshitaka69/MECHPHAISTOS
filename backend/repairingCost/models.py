@@ -192,7 +192,7 @@ class ActualPM05(models.Model):
 
 
 #項目が多くなるが、将来的にいろいろな企業が参加してくることを考慮し、ここは細かく設定するぞ！
-class CalTablePlanPM02(models.Model):
+class CalTablePlannedPM02(models.Model):
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='calTablePlanPM02_companyCode', null=True, blank=True)
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='calTablePlanPM02_companyName', null=True, blank=True)
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE,related_name='calTablePlanPM02_plant', null=True, blank=True)
@@ -232,10 +232,10 @@ class CalTableActualPM02(models.Model):
         return str('CalTableActualPM02')
     
 
-class CalTablePlanPM03(models.Model):
+class CalTablePlannedPM03(models.Model):
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='calTablePlanPM03_companyCode', null=True, blank=True)
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='calTablePlanPM03_companyName', null=True, blank=True)
-    plant = models.ForeignKey(Plant, on_delete=models.CASCADE,related_name='calTablePlanPM02_plant', null=True, blank=True)
+    plant = models.ForeignKey(Plant, on_delete=models.CASCADE,related_name='calTablePlanPM03_plant', null=True, blank=True)
     
     totalCost = models.DecimalField(verbose_name='totalCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     no1HighCost = models.DecimalField(verbose_name='no1HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
@@ -291,7 +291,7 @@ class CalTableActualPM04(models.Model):
     def __str__(self):
         return str('CalTableActualPM04')
 
-class CalTablePlanPM05(models.Model):
+class CalTablePlannedPM05(models.Model):
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='calTablePlanPM05_companyCode', null=True, blank=True)
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='calTablePlanPM05_companyName', null=True, blank=True)
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE,related_name='calTablePlanPM05_plant', null=True, blank=True)
@@ -311,7 +311,7 @@ class CalTablePlanPM05(models.Model):
         return str('CalTablePlanPM05')
 
 
-class CalTableActualPM03(models.Model):
+class CalTableActualPM05(models.Model):
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='calTableActualPM05_companyCode', null=True, blank=True)
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='calTableActualPM05_companyName', null=True, blank=True)
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE,related_name='calTableActualPM05_plant', null=True, blank=True)
