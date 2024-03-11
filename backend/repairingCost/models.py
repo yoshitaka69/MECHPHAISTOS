@@ -4,66 +4,86 @@ from django.utils import timezone
 from accounts.models import CompanyCode,CompanyName
 from ceList.models import Plant
 
-#RepairingCostPM02
+#RepairingCostPM02 項目が多くなるけど将来的にいろいろな企業が入ってきた際に、このように細かく振り分けておいたほうがわかり易くなるはず…
 class PlannedPM02(models.Model):
 
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='plannedPM02_companyCode', null=True, blank=True)
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='plannedPM02_companyName', null=True, blank=True)
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='plannedPM02_plant', null=True, blank=True)
 
-    #plannedPM02 = models.DecimalField(verbose_name='plannedPM02', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
-    plannedMonth = models.DateField(verbose_name='plannedMonth',default=timezone.now,null=True, blank=True)
-    plannedCost = models.DecimalField(verbose_name='plannedCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    jan = models.DecimalField(verbose_name='jan', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    feb = models.DecimalField(verbose_name='feb', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    mar = models.DecimalField(verbose_name='mar', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    apr = models.DecimalField(verbose_name='apr', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    may = models.DecimalField(verbose_name='may', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    jun = models.DecimalField(verbose_name='jun', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    jul = models.DecimalField(verbose_name='jul', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    aug = models.DecimalField(verbose_name='aug', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    sep = models.DecimalField(verbose_name='sep', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    oct = models.DecimalField(verbose_name='oct', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    nov = models.DecimalField(verbose_name='nov', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    dec = models.DecimalField(verbose_name='dec', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    commitment = models.DecimalField(verbose_name='commitment', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     
-
     class Meta:
         verbose_name_plural = 'Repairing Cost Planned PM02'
         ordering = ('plant',)
-
     def __str__(self):
         return str('plannedPm02')
 
 
 
 class ActualPM02(models.Model):
-
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='actualPM02_companyCode', null=True, blank=True)
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='actualPM02_companyName', null=True, blank=True)
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='actualPM02_plant', null=True, blank=True)
 
-    #actualPM02 = models.DecimalField(verbose_name='actualPM02', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
-    actualMonth = models.DateField(verbose_name='actualMonth',default=timezone.now,null=True, blank=True)
-    actualCost = models.DecimalField(verbose_name='actualCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
-    
+    jan = models.DecimalField(verbose_name='jan', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    feb = models.DecimalField(verbose_name='feb', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    mar = models.DecimalField(verbose_name='mar', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    apr = models.DecimalField(verbose_name='apr', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    may = models.DecimalField(verbose_name='may', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    jun = models.DecimalField(verbose_name='jun', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    jul = models.DecimalField(verbose_name='jul', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    aug = models.DecimalField(verbose_name='aug', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    sep = models.DecimalField(verbose_name='sep', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    oct = models.DecimalField(verbose_name='oct', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    nov = models.DecimalField(verbose_name='nov', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    dec = models.DecimalField(verbose_name='dec', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    commitment = models.DecimalField(verbose_name='commitment', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     
     class Meta:
         verbose_name_plural = 'Repairing Cost Actual PM02'
         ordering = ('plant',)
-
     def __str__(self):
         return str('actualPm02')
     
 
-
 class PlannedPM03(models.Model):
-
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='plannedPM03_companyCode', null=True, blank=True)
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='plannedPM03_companyName', null=True, blank=True)
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='plannedPM03_plant', null=True, blank=True)
 
-    #plannedPM03 = models.DecimalField(verbose_name='plannedPM03', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
-    plannedMonth = models.DateField(verbose_name='plannedMonth',default=timezone.now,null=True, blank=True)
-    plannedCost = models.DecimalField(verbose_name='plannedCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    jan = models.DecimalField(verbose_name='jan', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    feb = models.DecimalField(verbose_name='feb', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    mar = models.DecimalField(verbose_name='mar', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    apr = models.DecimalField(verbose_name='apr', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    may = models.DecimalField(verbose_name='may', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    jun = models.DecimalField(verbose_name='jun', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    jul = models.DecimalField(verbose_name='jul', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    aug = models.DecimalField(verbose_name='aug', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    sep = models.DecimalField(verbose_name='sep', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    oct = models.DecimalField(verbose_name='oct', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    nov = models.DecimalField(verbose_name='nov', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    dec = models.DecimalField(verbose_name='dec', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    commitment = models.DecimalField(verbose_name='commitment', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     
-
     class Meta:
         verbose_name_plural = 'Repairing Cost Planned PM03'
         ordering = ('plant',)
-
     def __str__(self):
         return str('plannedPm03')
     
-
 
 class ActualPM03(models.Model):
 
@@ -71,18 +91,25 @@ class ActualPM03(models.Model):
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='actualPM03_companyName', null=True, blank=True)
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='actualPM03_plant', null=True, blank=True)
 
-    #actualPM03 = models.DecimalField(verbose_name='actualPM03', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
-    actualMonth = models.DateField(verbose_name='actualMonth',default=timezone.now,null=True, blank=True)
-    actualCost = models.DecimalField(verbose_name='actualCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    jan = models.DecimalField(verbose_name='jan', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    feb = models.DecimalField(verbose_name='feb', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    mar = models.DecimalField(verbose_name='mar', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    apr = models.DecimalField(verbose_name='apr', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    may = models.DecimalField(verbose_name='may', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    jun = models.DecimalField(verbose_name='jun', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    jul = models.DecimalField(verbose_name='jul', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    aug = models.DecimalField(verbose_name='aug', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    sep = models.DecimalField(verbose_name='sep', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    oct = models.DecimalField(verbose_name='oct', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    nov = models.DecimalField(verbose_name='nov', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    dec = models.DecimalField(verbose_name='dec', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    commitment = models.DecimalField(verbose_name='commitment', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     
-
     class Meta:
         verbose_name_plural = 'Repairing Cost Actual PM03'
         ordering = ('plant',)
-
     def __str__(self):
         return str('actualPm03')
-
 
 class ActualPM04(models.Model):
 
@@ -90,11 +117,20 @@ class ActualPM04(models.Model):
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='actualPM04_companyName', null=True, blank=True)
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='actualPM04_plant', null=True, blank=True)
 
-    #actualPM04 = models.DecimalField(verbose_name='actualPM04', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
-    actualMonth = models.DateField(verbose_name='actualMonth',default=timezone.now,null=True, blank=True)
-    actualCost = models.DecimalField(verbose_name='actualCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    jan = models.DecimalField(verbose_name='jan', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    feb = models.DecimalField(verbose_name='feb', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    mar = models.DecimalField(verbose_name='mar', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    apr = models.DecimalField(verbose_name='apr', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    may = models.DecimalField(verbose_name='may', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    jun = models.DecimalField(verbose_name='jun', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    jul = models.DecimalField(verbose_name='jul', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    aug = models.DecimalField(verbose_name='aug', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    sep = models.DecimalField(verbose_name='sep', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    oct = models.DecimalField(verbose_name='oct', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    nov = models.DecimalField(verbose_name='nov', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    dec = models.DecimalField(verbose_name='dec', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    commitment = models.DecimalField(verbose_name='commitment', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     
-
     class Meta:
         verbose_name_plural = 'Repairing Cost Actual PM04'
         ordering = ('plant',)
@@ -102,128 +138,195 @@ class ActualPM04(models.Model):
     def __str__(self):
         return str('actualPm04')
 
-
 class PlannedPM05(models.Model):
 
-    companyCode = models.ForeignKey(CompanyCode, on_delete=models.PROTECT, related_name='plannedPM05_companyCode', null=True, blank=True)
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='plannedPM05_companyCode', null=True, blank=True)
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='plannedPM05_companyName', null=True, blank=True)
-    plant = models.ForeignKey(Plant, on_delete=models.PROTECT,related_name='plannedPM05_plant', null=True, blank=True)
+    plant = models.ForeignKey(Plant, on_delete=models.CASCADE,related_name='plannedPM05_plant', null=True, blank=True)
     
-    #plannedPM05 = models.DecimalField(verbose_name='plannedPM05', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
-    plannedMonth = models.DateField(verbose_name='plannedMonth',default=timezone.now,null=True, blank=True)
-    plannedCost = models.DecimalField(verbose_name='plannedCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    jan = models.DecimalField(verbose_name='jan', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    feb = models.DecimalField(verbose_name='feb', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    mar = models.DecimalField(verbose_name='mar', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    apr = models.DecimalField(verbose_name='apr', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    may = models.DecimalField(verbose_name='may', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    jun = models.DecimalField(verbose_name='jun', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    jul = models.DecimalField(verbose_name='jul', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    aug = models.DecimalField(verbose_name='aug', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    sep = models.DecimalField(verbose_name='sep', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    oct = models.DecimalField(verbose_name='oct', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    nov = models.DecimalField(verbose_name='nov', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    dec = models.DecimalField(verbose_name='dec', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    commitment = models.DecimalField(verbose_name='commitment', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     
-
     class Meta:
         verbose_name_plural = 'Repairing Cost Planned PM05'
-        ordering = ('plant',)
-        
+        ordering = ('plant',)      
     def __str__(self):
         return str('plannedPm05}')
     
 class ActualPM05(models.Model):
 
-    companyCode = models.ForeignKey(CompanyCode, on_delete=models.PROTECT, related_name='actualPM05_companyCode', null=True, blank=True)
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='actualPM05_companyCode', null=True, blank=True)
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='actualPM05_companyName', null=True, blank=True)
-    plant = models.ForeignKey(Plant, on_delete=models.PROTECT,related_name='actualPM05_plant', null=True, blank=True)
+    plant = models.ForeignKey(Plant, on_delete=models.CASCADE,related_name='actualPM05_plant', null=True, blank=True)
 
-    #actualPM05 = models.DecimalField(verbose_name='actualPM05', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
-    actualMonth = models.DateField(verbose_name='actualMonth',default=timezone.now,null=True, blank=True)
-    actualCost = models.DecimalField(verbose_name='actualCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    jan = models.DecimalField(verbose_name='jan', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    feb = models.DecimalField(verbose_name='feb', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    mar = models.DecimalField(verbose_name='mar', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    apr = models.DecimalField(verbose_name='apr', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    may = models.DecimalField(verbose_name='may', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    jun = models.DecimalField(verbose_name='jun', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    jul = models.DecimalField(verbose_name='jul', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    aug = models.DecimalField(verbose_name='aug', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    sep = models.DecimalField(verbose_name='sep', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    oct = models.DecimalField(verbose_name='oct', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    nov = models.DecimalField(verbose_name='nov', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    dec = models.DecimalField(verbose_name='dec', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    commitment = models.DecimalField(verbose_name='commitment', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     
-
     class Meta:
         verbose_name_plural = 'Repairing Cost Actual PM05'
         ordering = ('plant',)
-
     def __str__(self):
         return str('actualPm05')
 
 
-
-class IndexFormPM02(models.Model):
-    indexNamePM02 = models.CharField(verbose_name='indexNamePM02', max_length=200,null=True,blank=True)
+#項目が多くなるが、将来的にいろいろな企業が参加してくることを考慮し、ここは細かく設定するぞ！
+class CalTablePlanPM02(models.Model):
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='calTablePlanPM02_companyCode', null=True, blank=True)
+    companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='calTablePlanPM02_companyName', null=True, blank=True)
+    plant = models.ForeignKey(Plant, on_delete=models.CASCADE,related_name='calTablePlanPM02_plant', null=True, blank=True)
+    
+    totalCost = models.DecimalField(verbose_name='totalCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no1HighCost = models.DecimalField(verbose_name='no1HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no2HighCost = models.DecimalField(verbose_name='no2HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no3HighCost = models.DecimalField(verbose_name='no3HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no4HighCost = models.DecimalField(verbose_name='no4HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no5HighCost = models.DecimalField(verbose_name='no5HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no1LowCost = models.DecimalField(verbose_name='no1LowCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    averageCost = models.DecimalField(verbose_name='averageCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
 
     class Meta:
-        verbose_name_plural = 'Index Form PM02'
-
+        verbose_name_plural = 'CalTablePlanPm02'
     def __str__(self):
-        return f'{self.indexNamePM02}'
+        return str('CalTablePlanPM02')
+
+
+class CalTableActualPM02(models.Model):
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='calTableActualPM02_companyCode', null=True, blank=True)
+    companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='calTableActualPM02_companyName', null=True, blank=True)
+    plant = models.ForeignKey(Plant, on_delete=models.CASCADE,related_name='calTableActualPM02_plant', null=True, blank=True)
+    
+    totalCost = models.DecimalField(verbose_name='totalCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no1HighCost = models.DecimalField(verbose_name='no1HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no2HighCost = models.DecimalField(verbose_name='no2HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no3HighCost = models.DecimalField(verbose_name='no3HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no4HighCost = models.DecimalField(verbose_name='no4HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no5HighCost = models.DecimalField(verbose_name='no5HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no1LowCost = models.DecimalField(verbose_name='no1LowCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    averageCost = models.DecimalField(verbose_name='averageCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+
+    class Meta:
+        verbose_name_plural = 'CalTableActualPM02'
+    def __str__(self):
+        return str('CalTableActualPM02')
     
 
-class IndexFormPM03(models.Model):
-    indexNamePM03 = models.CharField(verbose_name='indexNamePM03', max_length=200,null=True,blank=True)
-
-    class Meta:
-        verbose_name_plural = 'Index Form PM03'
-
-    def __str__(self):
-        return f'{self.indexNamePM03}'
+class CalTablePlanPM03(models.Model):
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='calTablePlanPM03_companyCode', null=True, blank=True)
+    companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='calTablePlanPM03_companyName', null=True, blank=True)
+    plant = models.ForeignKey(Plant, on_delete=models.CASCADE,related_name='calTablePlanPM02_plant', null=True, blank=True)
     
-
-class IndexFormPM04(models.Model):
-    indexNamePM04 = models.CharField(verbose_name='indexNamePM04', max_length=200,null=True,blank=True)
+    totalCost = models.DecimalField(verbose_name='totalCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no1HighCost = models.DecimalField(verbose_name='no1HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no2HighCost = models.DecimalField(verbose_name='no2HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no3HighCost = models.DecimalField(verbose_name='no3HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no4HighCost = models.DecimalField(verbose_name='no4HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no5HighCost = models.DecimalField(verbose_name='no5HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no1LowCost = models.DecimalField(verbose_name='no1LowCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    averageCost = models.DecimalField(verbose_name='averageCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
 
     class Meta:
-        verbose_name_plural = 'Index Form PM04'
-
+        verbose_name_plural = 'CalTablePlanPm03'
     def __str__(self):
-        return f'{self.indexNamePM04}'
+        return str('CalTablePlanPM03')
+
+
+class CalTableActualPM03(models.Model):
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='calTableActualPM03_companyCode', null=True, blank=True)
+    companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='calTableActualPM03_companyName', null=True, blank=True)
+    plant = models.ForeignKey(Plant, on_delete=models.CASCADE,related_name='calTableActualPM03_plant', null=True, blank=True)
     
-class IndexFormPM05(models.Model):
-    indexNamePM05 = models.CharField(verbose_name='indexNamePM05', max_length=200,null=True,blank=True)
+    totalCost = models.DecimalField(verbose_name='totalCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no1HighCost = models.DecimalField(verbose_name='no1HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no2HighCost = models.DecimalField(verbose_name='no2HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no3HighCost = models.DecimalField(verbose_name='no3HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no4HighCost = models.DecimalField(verbose_name='no4HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no5HighCost = models.DecimalField(verbose_name='no5HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no1LowCost = models.DecimalField(verbose_name='no1LowCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    averageCost = models.DecimalField(verbose_name='averageCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
 
     class Meta:
-        verbose_name_plural = 'Index Form PM05'
-
+        verbose_name_plural = 'CalTableActualPM03'
     def __str__(self):
-        return f'{self.indexNamePM05}'
+        return str('CalTableActualPM03')
 
 
-
-
-class CalculationTablePM02(models.Model):
-    indexPM02 = models.DecimalField(verbose_name='indexPM2', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
-    cost = models.DecimalField(verbose_name='calCostPM02', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
-
-    class Meta:
-        verbose_name_plural = 'CalTablePM02'
-
-    def __str__(self):
-        return f'{self.indexPM02}'
-
-
-class CalculationTablePM03(models.Model):
-    indexPM03 = models.DecimalField(verbose_name='indexPM03', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
-    cost = models.DecimalField(verbose_name='calCostPM02', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
-
-    class Meta:
-        verbose_name_plural = 'CalTablePM03'
-
-    def __str__(self):
-        return f'{self.indexPM03}'
+class CalTableActualPM04(models.Model):
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='calTableActualPM04_companyCode', null=True, blank=True)
+    companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='calTableActualPM04_companyName', null=True, blank=True)
+    plant = models.ForeignKey(Plant, on_delete=models.CASCADE,related_name='calTableActualPM04_plant', null=True, blank=True)
     
-
-class CalculationTablePM04(models.Model):
-    indexPM04 = models.DecimalField(verbose_name='indexPM04', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
-    cost = models.DecimalField(verbose_name='calCostPM04', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
-
-    class Meta:
-        verbose_name_plural = 'CalTablePM04'
-
-    def __str__(self):
-        return f'{self.indexPM04}'
-
-
-class CalculationTablePM05(models.Model):
-    indexPM05 = models.DecimalField(verbose_name='indexPM05', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
-    cost = models.DecimalField(verbose_name='calcCostPM05', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    totalCost = models.DecimalField(verbose_name='totalCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no1HighCost = models.DecimalField(verbose_name='no1HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no2HighCost = models.DecimalField(verbose_name='no2HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no3HighCost = models.DecimalField(verbose_name='no3HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no4HighCost = models.DecimalField(verbose_name='no4HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no5HighCost = models.DecimalField(verbose_name='no5HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no1LowCost = models.DecimalField(verbose_name='no1LowCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    averageCost = models.DecimalField(verbose_name='averageCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
 
     class Meta:
-        verbose_name_plural = 'CalTablePM05'
-
+        verbose_name_plural = 'CalTableActualPM04'
     def __str__(self):
-        return f'{self.indexPM05}'
+        return str('CalTableActualPM04')
 
+class CalTablePlanPM05(models.Model):
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='calTablePlanPM05_companyCode', null=True, blank=True)
+    companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='calTablePlanPM05_companyName', null=True, blank=True)
+    plant = models.ForeignKey(Plant, on_delete=models.CASCADE,related_name='calTablePlanPM05_plant', null=True, blank=True)
     
+    totalCost = models.DecimalField(verbose_name='totalCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no1HighCost = models.DecimalField(verbose_name='no1HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no2HighCost = models.DecimalField(verbose_name='no2HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no3HighCost = models.DecimalField(verbose_name='no3HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no4HighCost = models.DecimalField(verbose_name='no4HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no5HighCost = models.DecimalField(verbose_name='no5HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no1LowCost = models.DecimalField(verbose_name='no1LowCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    averageCost = models.DecimalField(verbose_name='averageCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+
+    class Meta:
+        verbose_name_plural = 'CalTablePlanPm05'
+    def __str__(self):
+        return str('CalTablePlanPM05')
+
+
+class CalTableActualPM03(models.Model):
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='calTableActualPM05_companyCode', null=True, blank=True)
+    companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='calTableActualPM05_companyName', null=True, blank=True)
+    plant = models.ForeignKey(Plant, on_delete=models.CASCADE,related_name='calTableActualPM05_plant', null=True, blank=True)
+    
+    totalCost = models.DecimalField(verbose_name='totalCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no1HighCost = models.DecimalField(verbose_name='no1HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no2HighCost = models.DecimalField(verbose_name='no2HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no3HighCost = models.DecimalField(verbose_name='no3HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no4HighCost = models.DecimalField(verbose_name='no4HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no5HighCost = models.DecimalField(verbose_name='no5HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no1LowCost = models.DecimalField(verbose_name='no1LowCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    averageCost = models.DecimalField(verbose_name='averageCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+
+    class Meta:
+        verbose_name_plural = 'CalTableActualPM05'
+    def __str__(self):
+        return str('CalTableActualPM05')
 
