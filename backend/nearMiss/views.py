@@ -18,7 +18,7 @@ class NearMissByCompanyViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         companyCode_slug = self.kwargs['companyCode_slug']
-        return NearMiss.objects.filter(companyCode__slug=companyCode_slug)
+        return NearMiss.objects.filter(companyCode__slug=companyCode_slug)#このslugは設定してないからいつか変更が必要
 
 @api_view(['GET'])
 def company_near_miss_list(request):

@@ -24,6 +24,7 @@ class PlannedPM02(models.Model):
     nov = models.DecimalField(verbose_name='nov', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     dec = models.DecimalField(verbose_name='dec', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     commitment = models.DecimalField(verbose_name='commitment', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    totalCost = models.DecimalField(verbose_name='totalCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     
     class Meta:
         verbose_name_plural = 'Repairing Cost Planned PM02'
@@ -51,6 +52,7 @@ class ActualPM02(models.Model):
     nov = models.DecimalField(verbose_name='nov', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     dec = models.DecimalField(verbose_name='dec', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     commitment = models.DecimalField(verbose_name='commitment', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    totalCost = models.DecimalField(verbose_name='totalCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     
     class Meta:
         verbose_name_plural = 'Repairing Cost Actual PM02'
@@ -77,6 +79,7 @@ class PlannedPM03(models.Model):
     nov = models.DecimalField(verbose_name='nov', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     dec = models.DecimalField(verbose_name='dec', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     commitment = models.DecimalField(verbose_name='commitment', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    totalCost = models.DecimalField(verbose_name='totalCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     
     class Meta:
         verbose_name_plural = 'Repairing Cost Planned PM03'
@@ -104,6 +107,7 @@ class ActualPM03(models.Model):
     nov = models.DecimalField(verbose_name='nov', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     dec = models.DecimalField(verbose_name='dec', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     commitment = models.DecimalField(verbose_name='commitment', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    totalCost = models.DecimalField(verbose_name='totalCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     
     class Meta:
         verbose_name_plural = 'Repairing Cost Actual PM03'
@@ -130,6 +134,7 @@ class ActualPM04(models.Model):
     nov = models.DecimalField(verbose_name='nov', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     dec = models.DecimalField(verbose_name='dec', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     commitment = models.DecimalField(verbose_name='commitment', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    totalCost = models.DecimalField(verbose_name='totalCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     
     class Meta:
         verbose_name_plural = 'Repairing Cost Actual PM04'
@@ -157,6 +162,7 @@ class PlannedPM05(models.Model):
     nov = models.DecimalField(verbose_name='nov', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     dec = models.DecimalField(verbose_name='dec', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     commitment = models.DecimalField(verbose_name='commitment', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    totalCost = models.DecimalField(verbose_name='totalCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     
     class Meta:
         verbose_name_plural = 'Repairing Cost Planned PM05'
@@ -183,6 +189,7 @@ class ActualPM05(models.Model):
     nov = models.DecimalField(verbose_name='nov', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     dec = models.DecimalField(verbose_name='dec', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     commitment = models.DecimalField(verbose_name='commitment', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    totalCost = models.DecimalField(verbose_name='totalCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     
     class Meta:
         verbose_name_plural = 'Repairing Cost Actual PM05'
@@ -197,7 +204,6 @@ class CalTablePlannedPM02(models.Model):
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='calTablePlanPM02_companyName', null=True, blank=True)
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE,related_name='calTablePlanPM02_plant', null=True, blank=True)
     
-    totalCost = models.DecimalField(verbose_name='totalCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     no1HighCost = models.DecimalField(verbose_name='no1HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     no2HighCost = models.DecimalField(verbose_name='no2HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     no3HighCost = models.DecimalField(verbose_name='no3HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
@@ -217,7 +223,6 @@ class CalTableActualPM02(models.Model):
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='calTableActualPM02_companyName', null=True, blank=True)
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE,related_name='calTableActualPM02_plant', null=True, blank=True)
     
-    totalCost = models.DecimalField(verbose_name='totalCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     no1HighCost = models.DecimalField(verbose_name='no1HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     no2HighCost = models.DecimalField(verbose_name='no2HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     no3HighCost = models.DecimalField(verbose_name='no3HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
@@ -237,7 +242,6 @@ class CalTablePlannedPM03(models.Model):
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='calTablePlanPM03_companyName', null=True, blank=True)
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE,related_name='calTablePlanPM03_plant', null=True, blank=True)
     
-    totalCost = models.DecimalField(verbose_name='totalCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     no1HighCost = models.DecimalField(verbose_name='no1HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     no2HighCost = models.DecimalField(verbose_name='no2HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     no3HighCost = models.DecimalField(verbose_name='no3HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
@@ -257,7 +261,6 @@ class CalTableActualPM03(models.Model):
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='calTableActualPM03_companyName', null=True, blank=True)
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE,related_name='calTableActualPM03_plant', null=True, blank=True)
     
-    totalCost = models.DecimalField(verbose_name='totalCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     no1HighCost = models.DecimalField(verbose_name='no1HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     no2HighCost = models.DecimalField(verbose_name='no2HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     no3HighCost = models.DecimalField(verbose_name='no3HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
@@ -277,7 +280,6 @@ class CalTableActualPM04(models.Model):
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='calTableActualPM04_companyName', null=True, blank=True)
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE,related_name='calTableActualPM04_plant', null=True, blank=True)
     
-    totalCost = models.DecimalField(verbose_name='totalCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     no1HighCost = models.DecimalField(verbose_name='no1HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     no2HighCost = models.DecimalField(verbose_name='no2HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     no3HighCost = models.DecimalField(verbose_name='no3HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
@@ -296,7 +298,6 @@ class CalTablePlannedPM05(models.Model):
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='calTablePlanPM05_companyName', null=True, blank=True)
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE,related_name='calTablePlanPM05_plant', null=True, blank=True)
     
-    totalCost = models.DecimalField(verbose_name='totalCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     no1HighCost = models.DecimalField(verbose_name='no1HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     no2HighCost = models.DecimalField(verbose_name='no2HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     no3HighCost = models.DecimalField(verbose_name='no3HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
@@ -316,7 +317,6 @@ class CalTableActualPM05(models.Model):
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='calTableActualPM05_companyName', null=True, blank=True)
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE,related_name='calTableActualPM05_plant', null=True, blank=True)
     
-    totalCost = models.DecimalField(verbose_name='totalCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     no1HighCost = models.DecimalField(verbose_name='no1HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     no2HighCost = models.DecimalField(verbose_name='no2HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     no3HighCost = models.DecimalField(verbose_name='no3HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)

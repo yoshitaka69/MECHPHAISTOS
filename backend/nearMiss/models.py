@@ -5,8 +5,8 @@ from accounts.models import CompanyCode,CompanyName,CustomUser
 class NearMiss(models.Model):
 
     #on_delateはいちよPROTECTにしておく。ビッグデータは財産として残したいがプライバシーポリシーとも相談になる。
-    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, null=True, blank=True)
-    companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, null=True, blank=True)
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='nearMiss_companyCode',null=True, blank=True)
+    companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE,related_name='nearMiss_companyName', null=True, blank=True)
 
     nearMissListNo = models.IntegerField(null=True, blank=True)
     userName = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='nearMiss_userName', null=True, blank=True)

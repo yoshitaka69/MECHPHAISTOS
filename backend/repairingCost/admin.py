@@ -1,18 +1,18 @@
 from django.contrib import admin
 from .models import PlannedPM02,ActualPM02,PlannedPM03,ActualPM03,ActualPM04,PlannedPM05,ActualPM05,CalTablePlannedPM02,CalTableActualPM02,CalTablePlannedPM03,CalTableActualPM03,CalTableActualPM04,CalTablePlannedPM05,CalTableActualPM05
 class PlannedPM02Admin(admin.ModelAdmin):
-    list_display = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment',)
-    search_fields = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment',)
-    list_filter = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment',) # adminで右側にあるフィルターBOXのこと
+    list_display = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
+    search_fields = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
+    list_filter = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',) # adminで右側にあるフィルターBOXのこと
     ordering = ('companyCode',) # 表示する順番
     save_on_top = True #上部にもsaveボタンを配置
 
     list_per_page = 50 # １ページあたりに表示するオブジェクト数を指定
 
 class ActualPM02Admin(admin.ModelAdmin):
-    list_display = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment',)
-    search_fields = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment',)
-    list_filter = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment',)
+    list_display = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
+    search_fields = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
+    list_filter = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
     ordering = ('companyCode',)
     save_on_top = True
 
@@ -20,9 +20,9 @@ class ActualPM02Admin(admin.ModelAdmin):
 
 
 class PlannedPM03Admin(admin.ModelAdmin):
-    list_display = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment',)
-    search_fields = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment',)
-    list_filter = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment',) 
+    list_display = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
+    search_fields = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
+    list_filter = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',) 
     ordering = ('companyCode',) 
     save_on_top = True 
 
@@ -30,9 +30,9 @@ class PlannedPM03Admin(admin.ModelAdmin):
 
 
 class ActualPM03Admin(admin.ModelAdmin):
-    list_display = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment',)
-    search_fields = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment',)
-    list_filter = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment',)
+    list_display = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
+    search_fields = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
+    list_filter = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
     ordering = ('companyCode',)
     save_on_top = True
 
@@ -40,9 +40,9 @@ class ActualPM03Admin(admin.ModelAdmin):
 
 
 class ActualPM04Admin(admin.ModelAdmin):
-    list_display = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment',)
-    search_fields = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment',)
-    list_filter = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment',)
+    list_display = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
+    search_fields = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
+    list_filter = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
     ordering = ('companyCode',)
     save_on_top = True
 
@@ -50,18 +50,18 @@ class ActualPM04Admin(admin.ModelAdmin):
 
 
 class PlannedPM05Admin(admin.ModelAdmin):
-    list_display = ('plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment',)
-    search_fields = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment',)
-    list_filter = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment',) 
+    list_display = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
+    search_fields = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
+    list_filter = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',) 
     ordering = ('companyCode',) 
     save_on_top = True 
 
     list_per_page = 50 
 
 class ActualPM05Admin(admin.ModelAdmin):
-    list_display = ('companyCode','companyName','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment',)
-    search_fields = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment',)
-    list_filter = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment',)
+    list_display = ('companyCode','companyName','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
+    search_fields = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
+    list_filter = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
     ordering = ('companyCode',)
     save_on_top = True
 
@@ -69,9 +69,9 @@ class ActualPM05Admin(admin.ModelAdmin):
 
 
 class CalTablePlannedPM02Admin(admin.ModelAdmin):
-    list_display = ('companyCode','companyName','plant','totalCost','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost')
-    search_fields = ('companyCode','companyName','plant','totalCost','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost')
-    list_filter = ('companyCode','companyName','plant','totalCost','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost')
+    list_display = ('companyCode','companyName','plant','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',)
+    search_fields = ('companyCode','companyName','plant','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',)
+    list_filter = ('companyCode','companyName','plant','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',)
     ordering = ('plant',)
     save_on_top = True
 
@@ -79,9 +79,9 @@ class CalTablePlannedPM02Admin(admin.ModelAdmin):
 
 
 class CalTabelActualPM02Admin(admin.ModelAdmin):
-    list_display = ('companyCode','companyName','plant','totalCost','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost')
-    search_fields = ('companyCode','companyName','plant','totalCost','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost')
-    list_filter = ('companyCode','companyName','plant','totalCost','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost')
+    list_display = ('companyCode','companyName','plant','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',)
+    search_fields = ('companyCode','companyName','plant','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',)
+    list_filter = ('companyCode','companyName','plant','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',)
     ordering = ('plant',)
     save_on_top = True
 
@@ -89,9 +89,9 @@ class CalTabelActualPM02Admin(admin.ModelAdmin):
 
 
 class CalTablePlannedPM03Admin(admin.ModelAdmin):
-    list_display = ('companyCode','companyName','plant','totalCost','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost')
-    search_fields = ('companyCode','companyName','plant','totalCost','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost')
-    list_filter = ('companyCode','companyName','plant','totalCost','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost')
+    list_display = ('companyCode','companyName','plant','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',)
+    search_fields = ('companyCode','companyName','plant','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',)
+    list_filter = ('companyCode','companyName','plant','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',)
     ordering = ('plant',)
     save_on_top = True
 
@@ -100,9 +100,9 @@ class CalTablePlannedPM03Admin(admin.ModelAdmin):
 
 
 class CalTabelActualPM03Admin(admin.ModelAdmin):
-    list_display = ('companyCode','companyName','plant','totalCost','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost')
-    search_fields = ('companyCode','companyName','plant','totalCost','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost')
-    list_filter = ('companyCode','companyName','plant','totalCost','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost')
+    list_display = ('companyCode','companyName','plant','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',)
+    search_fields = ('companyCode','companyName','plant','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',)
+    list_filter = ('companyCode','companyName','plant','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',)
     ordering = ('plant',)
     save_on_top = True
 
@@ -110,9 +110,9 @@ class CalTabelActualPM03Admin(admin.ModelAdmin):
 
 
 class CalTabelActualPM04Admin(admin.ModelAdmin):
-    list_display = ('companyCode','companyName','plant','totalCost','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost')
-    search_fields = ('companyCode','companyName','plant','totalCost','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost')
-    list_filter = ('companyCode','companyName','plant','totalCost','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost')
+    list_display = ('companyCode','companyName','plant','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',)
+    search_fields = ('companyCode','companyName','plant','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',)
+    list_filter = ('companyCode','companyName','plant','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',)
     ordering = ('plant',)
     save_on_top = True
 
@@ -120,9 +120,9 @@ class CalTabelActualPM04Admin(admin.ModelAdmin):
 
 
 class CalTablePlannedPM05Admin(admin.ModelAdmin):
-    list_display = ('companyCode','companyName','plant','totalCost','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost')
-    search_fields = ('companyCode','companyName','plant','totalCost','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost')
-    list_filter = ('companyCode','companyName','plant','totalCost','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost')
+    list_display = ('companyCode','companyName','plant','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',)
+    search_fields = ('companyCode','companyName','plant','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',)
+    list_filter = ('companyCode','companyName','plant','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',)
     ordering = ('plant',)
     save_on_top = True
 
@@ -130,9 +130,9 @@ class CalTablePlannedPM05Admin(admin.ModelAdmin):
 
 
 class CalTabelActualPM05Admin(admin.ModelAdmin):
-    list_display = ('companyCode','companyName','plant','totalCost','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost')
-    search_fields = ('companyCode','companyName','plant','totalCost','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost')
-    list_filter = ('companyCode','companyName','plant','totalCost','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost')
+    list_display = ('companyCode','companyName','plant','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',)
+    search_fields = ('companyCode','companyName','plant','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',)
+    list_filter = ('companyCode','companyName','plant','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',)
     ordering = ('plant',)
     save_on_top = True
 

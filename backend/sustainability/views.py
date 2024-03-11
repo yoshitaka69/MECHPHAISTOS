@@ -4,120 +4,108 @@ from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework import status
+from rest_framework.decorators import api_view
 
 from .models import Co2,Stm,ElectricityUsage,CompressedAir,WellWater,PureWater,Wwt,ExhaustGas
-from .serializers import Co2Serializer,StmSerializer,ElectricityUsageSerializer,CompressedAirSerializer,WellWaterSerializer,PureWaterSerializer,WwtSerializer,ExhaustGasSerializer
+from accounts.models import CompanyCode
+
+from .serializers import Co2Serializer,CompanyCodeCo2Serializer,StmSerializer,CompanyCodeStmSerializer,ElectricityUsageSerializer,CompanyCodeElectricityUsageSerializer,CompressedAirSerializer,CompanyCodeCompressedAirSerializer,WellWaterSerializer,CompanyCodeWellWaterSerializer,PureWaterSerializer,CompanyCodePureWaterSerializer,WwtSerializer,CompanyCodeWwtSerializer,ExhaustGasSerializer,CompanyCodeExhaustGasSerializer
 
     
 class Co2ViewSet(viewsets.ModelViewSet):
     queryset = Co2.objects.all()
     serializer_class = Co2Serializer
 
-    def list(self, request):
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-    
-    def retrieve(self, request, pk=None):
-        co2 = get_object_or_404(self.get_queryset(), pk=pk)
-        serializer = self.get_serializer(co2)
-        return Response(serializer.data)
+class CompanyCodeCo2ViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = CompanyCodeCo2Serializer
+
+    def get_queryset(self):
+        return CompanyCode.objects.prefetch_related('co2_companyCode').all()
+
+
+
 
 class StmViewSet(viewsets.ModelViewSet):
     queryset = Stm.objects.all()
     serializer_class = StmSerializer
 
-    def list(self, request):
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-    
-    def retrieve(self, request, pk=None):
-        stm = get_object_or_404(self.get_queryset(), pk=pk)
-        serializer = self.get_serializer(stm)
-        return Response(serializer.data)
+class CompanyCodeStmViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = CompanyCodeStmSerializer
+
+    def get_queryset(self):
+        return CompanyCode.objects.prefetch_related('stm_companyCode').all()
+
+
 
 class ElectricityUsageViewSet(viewsets.ModelViewSet):
     queryset = ElectricityUsage.objects.all()
     serializer_class = ElectricityUsageSerializer
 
-    def list(self, request):
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-    
-    def retrieve(self, request, pk=None):
-        electricityUsage = get_object_or_404(self.get_queryset(), pk=pk)
-        serializer = self.get_serializer(electricityUsage)
-        return Response(serializer.data)
+class CompanyCodeElectricityUsageViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = CompanyCodeElectricityUsageSerializer
+
+    def get_queryset(self):
+        return CompanyCode.objects.prefetch_related('elec_companyCode').all()
+
+
+
 
 class CompressedAirViewSet(viewsets.ModelViewSet):
     queryset = CompressedAir.objects.all()
     serializer_class = CompressedAirSerializer
 
-    def list(self, request):
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-    
-    def retrieve(self, request, pk=None):
-        compressedAir = get_object_or_404(self.get_queryset(), pk=pk)
-        serializer = self.get_serializer(compressedAir)
-        return Response(serializer.data)
+class CompanyCodeCompressedAirViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = CompanyCodeCompressedAirSerializer
+
+    def get_queryset(self):
+        return CompanyCode.objects.prefetch_related('compAIr_companyCode').all()
+
 
 
 class WellWaterViewSet(viewsets.ModelViewSet):
     queryset = WellWater.objects.all()
     serializer_class = WellWaterSerializer
 
-    def list(self, request):
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-    
-    def retrieve(self, request, pk=None):
-        wellWater = get_object_or_404(self.get_queryset(), pk=pk)
-        serializer = self.get_serializer(wellWater)
-        return Response(serializer.data)
-    
+class CompanyCodeWellWaterViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = CompanyCodeWellWaterSerializer
+
+    def get_queryset(self):
+        return CompanyCode.objects.prefetch_related('wellWater_companyCode').all()
+
+
+
+
 class PureWaterViewSet(viewsets.ModelViewSet):
     queryset = PureWater.objects.all()
     serializer_class = PureWaterSerializer
 
-    def list(self, request):
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-    
-    def retrieve(self, request, pk=None):
-        pureWater = get_object_or_404(self.get_queryset(), pk=pk)
-        serializer = self.get_serializer(pureWater)
-        return Response(serializer.data)
-     
+class CompanyCodePureWaterViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = CompanyCodePureWaterSerializer
+
+    def get_queryset(self):
+        return CompanyCode.objects.prefetch_related('pureWater_companyCode').all()
+
+
+
 class WwtViewSet(viewsets.ModelViewSet):
     queryset = Wwt.objects.all()
     serializer_class = WwtSerializer
 
-    def list(self, request):
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-    
-    def retrieve(self, request, pk=None):
-        wwt = get_object_or_404(self.get_queryset(), pk=pk)
-        serializer = self.get_serializer(wwt)
-        return Response(serializer.data)
-    
+class CompanyCodeWwtViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = CompanyCodeWwtSerializer
+
+    def get_queryset(self):
+        return CompanyCode.objects.prefetch_related('wwt_companyCode').all()
+
+
+
+
 class ExhaustGasViewSet(viewsets.ModelViewSet):
     queryset = ExhaustGas.objects.all()
     serializer_class = ExhaustGasSerializer
 
-    def list(self, request):
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-    
-    def retrieve(self, request, pk=None):
-        exhaustGas = get_object_or_404(self.get_queryset(), pk=pk)
-        serializer = self.get_serializer(exhaustGas)
-        return Response(serializer.data)
+class CompanyCodeExhaustGasViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = CompanyCodeExhaustGasSerializer
+
+    def get_queryset(self):
+        return CompanyCode.objects.prefetch_related('exhaustGas_companyCode').all()

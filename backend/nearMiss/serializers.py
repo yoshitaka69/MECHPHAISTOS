@@ -10,7 +10,7 @@ class NearMissSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class CompanyNearMissSerializer(serializers.ModelSerializer):
-    nearMissList = NearMissSerializer(many=True, read_only=True, source='nearmiss_set')
+    nearMissList = NearMissSerializer(many=True, read_only=True, source='nearMiss_companyCode')
 
     class Meta:
         model = CompanyCode
