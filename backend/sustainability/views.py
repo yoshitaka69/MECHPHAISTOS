@@ -58,7 +58,7 @@ class CompanyCodeCompressedAirViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = CompanyCodeCompressedAirSerializer
 
     def get_queryset(self):
-        return CompanyCode.objects.prefetch_related('compAIr_companyCode').all()
+        return CompanyCode.objects.prefetch_related('compAir_companyCode').all()
 
 
 
