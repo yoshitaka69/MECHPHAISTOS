@@ -1,7 +1,7 @@
 from django.contrib import admin
-from .models import PlannedPM02,ActualPM02,PlannedPM03,ActualPM03,ActualPM04,PlannedPM05,ActualPM05,IndexFormPM02,IndexFormPM03,IndexFormPM04,IndexFormPM05,CalculationTablePM02,CalculationTablePM03,CalculationTablePM04,CalculationTablePM05
+from .models import PlannedPM02,ActualPM02,PlannedPM03,ActualPM03,ActualPM04,PlannedPM05,ActualPM05,
 class PlannedPM02Admin(admin.ModelAdmin):
-    list_display = ('companyCode','companyName','plant','plannedMonth','plannedCost',)
+    list_display = ('companyCode','companyName','plant','jan','fab','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment',)
     search_fields = ('companyCode','companyName','plant','plannedMonth','plannedCost',)
     list_filter = ('companyCode','companyName','plant','plannedMonth','plannedCost',) # adminで右側にあるフィルターBOXのこと
     ordering = ('companyCode',) # 表示する順番
