@@ -5,104 +5,84 @@ from rest_framework.response import Response
 from rest_framework.request import Request
 
 from .models import PlannedPM02,ActualPM02,PlannedPM03,ActualPM03,ActualPM04,PlannedPM05,ActualPM05
-from .serializers import PlannedPM02Serializer,ActualPM02Serializer,PlannedPM03Serializer,ActualPM03Serializer,ActualPM04Serializer,PlannedPM05Serializer,ActualPM05Serializer
+from .serializers import PlannedPM02Serializer,CompanyCodePPM02Serializer,ActualPM02Serializer,CompanyCodeAPM02Serializer,PlannedPM03Serializer,CompanyCodePPM03Serializer,ActualPM03Serializer,CompanyCodeAPM03Serializer,ActualPM04Serializer,CompanyCodeAPM04Serializer,PlannedPM05Serializer,CompanyCodePPM05Serializer,ActualPM05Serializer,CompanyCodeAPM05Serializer
 
 
 class PlannedPM02ViewSet(viewsets.ModelViewSet):
     queryset = PlannedPM02.objects.all()
     serializer_class = PlannedPM02Serializer
 
-    def list(self, request):
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-    
-    def retrieve(self, request, pk=None):
-        plannedPM02 = get_object_or_404(self.get_queryset(), pk=pk)
-        serializer = self.get_serializer(plannedPM02)
-        return Response(serializer.data)
+class CompanyCodePPM02ViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = CompanyCodePPM02Serializer
+
+    def get_queryset(self):
+        return CompanyCode.objects.prefetch_related('plannedPM02_companyCode').all()
+
 
 class ActualPM02ViewSet(viewsets.ModelViewSet):
     queryset = ActualPM02.objects.all()
     serializer_class = ActualPM02Serializer
 
-    def list(self, request):
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-    
-    def retrieve(self, request, pk=None):
-        actualPM02 = get_object_or_404(self.get_queryset(), pk=pk)
-        serializer = self.get_serializer(actualPM02)
-        return Response(serializer.data)
+class CompanyCodeAPM02ViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = CompanyCodeAPM02Serializer
+
+    def get_queryset(self):
+        return CompanyCode.objects.prefetch_related('actualPM02_companyCode').all()
 
 
 class PlannedPM03ViewSet(viewsets.ModelViewSet):
     queryset = PlannedPM03.objects.all()
     serializer_class = PlannedPM03Serializer
 
-    def list(self, request):
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-    
-    def retrieve(self, request, pk=None):
-        plannedPM03 = get_object_or_404(self.get_queryset(), pk=pk)
-        serializer = self.get_serializer(plannedPM03)
-        return Response(serializer.data)
+class CompanyCodePPM03ViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = CompanyCodePPM03Serializer
+
+    def get_queryset(self):
+        return CompanyCode.objects.prefetch_related('plannedPM03_companyCode').all()
+
+
 
 class ActualPM03ViewSet(viewsets.ModelViewSet):
     queryset = ActualPM03.objects.all()
     serializer_class = ActualPM03Serializer
 
-    def list(self, request):
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-    
-    def retrieve(self, request, pk=None):
-        actualPM03 = get_object_or_404(self.get_queryset(), pk=pk)
-        serializer = self.get_serializer(actualPM03)
-        return Response(serializer.data)
+class CompanyCodeAPM03ViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = CompanyCodeAPM03Serializer
+
+    def get_queryset(self):
+        return CompanyCode.objects.prefetch_related('actualPM03_companyCode').all()
+
 
 class ActualPM04ViewSet(viewsets.ModelViewSet):
     queryset = ActualPM04.objects.all()
     serializer_class = ActualPM04Serializer
 
-    def list(self, request):
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-    
-    def retrieve(self, request, pk=None):
-        actualPM04 = get_object_or_404(self.get_queryset(), pk=pk)
-        serializer = self.get_serializer(actualPM04)
-        return Response(serializer.data)
+class CompanyCodeAPM04ViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = CompanyCodeAPM04Serializer
+
+    def get_queryset(self):
+        return CompanyCode.objects.prefetch_related('actualPM04_companyCode').all()
+
+
     
 class PlannedPM05ViewSet(viewsets.ModelViewSet):
     queryset = PlannedPM05.objects.all()
     serializer_class = PlannedPM05Serializer
 
-    def list(self, request):
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-    
-    def retrieve(self, request, pk=None):
-        plannedPM05 = get_object_or_404(self.get_queryset(), pk=pk)
-        serializer = self.get_serializer(plannedPM05)
-        return Response(serializer.data)
+class CompanyCodePPM04ViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = CompanyCodePPM05Serializer
+
+    def get_queryset(self):
+        return CompanyCode.objects.prefetch_related('plannedPM05_companyCode').all()
+
+
 
 class ActualPM05ViewSet(viewsets.ModelViewSet):
     queryset = ActualPM05.objects.all()
     serializer_class = ActualPM05Serializer
 
-    def list(self, request):
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-    
-    def retrieve(self, request, pk=None):
-        actualPM05 = get_object_or_404(self.get_queryset(), pk=pk)
-        serializer = self.get_serializer(actualPM05)
-        return Response(serializer.data)
+class CompanyCodeAPM05ViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = CompanyCodeAPM05Serializer
+
+    def get_queryset(self):
+        return CompanyCode.objects.prefetch_related('actualPM05_companyCode').all()
