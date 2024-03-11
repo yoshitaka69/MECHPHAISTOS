@@ -7,11 +7,31 @@ class PlannedPM02Serializer(serializers.ModelSerializer):
     class Meta:
         model = PlannedPM02 # 呼び出すモデル
         fields = '__all__' # API上に表示するモデルのデータ項目
+        
+class CompanyCodePPM02Serializer(serializers.ModelSerializer):
+    plannedPM02List = PlannedPM02Serializer(many=True, read_only=True, source='plannedPM02_companyCode')#sourceはmodelのrelated_nameにすること。ここで嵌った。
+
+    class Meta:
+        model = CompanyCode
+        fields = ['companyCode', 'plannedPM02List']
+
+
+
+#Actual PM02 cost
 class ActualPM02Serializer(serializers.ModelSerializer):
     actualMonth = serializers.DateTimeField(format="%Y-%m-%d")
     class Meta:
         model = ActualPM02
         fields = '__all__'
+
+class CompanyCodeAPM02Serializer(serializers.ModelSerializer):
+    actualPM02List = ActualPM02Serializer(many=True, read_only=True, source='actualPM02_companyCode')
+
+    class Meta:
+        model = CompanyCode
+        fields = ['companyCode', 'plannedPM02List']
+
+
 
 
 class PlannedPM03Serializer(serializers.ModelSerializer):
@@ -19,11 +39,28 @@ class PlannedPM03Serializer(serializers.ModelSerializer):
     class Meta:
         model = PlannedPM03
         fields = '__all__' 
+
+class CompanyCodePPM03Serializer(serializers.ModelSerializer):
+    plannedPM03List = PlannedPM03Serializer(many=True, read_only=True, source='plannedPM03_companyCode')
+
+    class Meta:
+        model = CompanyCode
+        fields = ['companyCode', 'plannedPM03List']
+
+
+
 class ActualPM03Serializer(serializers.ModelSerializer):
     actualMonth = serializers.DateTimeField(format="%Y-%m-%d")
     class Meta:
         model = ActualPM03
         fields = '__all__'
+
+class CompanyCodeAPM03Serializer(serializers.ModelSerializer):
+    actualPM03List = ActualPM03Serializer(many=True, read_only=True, source='actualPM03_companyCode')
+
+    class Meta:
+        model = CompanyCode
+        fields = ['companyCode', 'actualPM03List']
 
 
 
@@ -33,14 +70,39 @@ class ActualPM04Serializer(serializers.ModelSerializer):
         model = ActualPM04
         fields = '__all__'
 
+class CompanyCodeAPM04Serializer(serializers.ModelSerializer):
+    actualPM04List = ActualPM04Serializer(many=True, read_only=True, source='actualPM04_companyCode')
+
+    class Meta:
+        model = CompanyCode
+        fields = ['companyCode', 'actualPM04List']
+
+
 
 class PlannedPM05Serializer(serializers.ModelSerializer):
     plannedMonth = serializers.DateTimeField(format="%Y-%m-%d")
     class Meta:
         model = PlannedPM03
         fields = '__all__' 
+        
+class CompanyCodePPM05Serializer(serializers.ModelSerializer):
+    plannedPM05List = PlannedPM03Serializer(many=True, read_only=True, source='plannedPM05_companyCode')
+
+    class Meta:
+        model = CompanyCode
+        fields = ['companyCode', 'plannedPM05List']
+
+
+
 class ActualPM05Serializer(serializers.ModelSerializer):
     actualMonth = serializers.DateTimeField(format="%Y-%m-%d")
     class Meta:
         model = ActualPM03
         fields = '__all__'
+        
+class CompanyCodeAPM05Serializer(serializers.ModelSerializer):
+    actualPM05List = ActualPM04Serializer(many=True, read_only=True, source='actualPM05_companyCode')
+
+    class Meta:
+        model = CompanyCode
+        fields = ['companyCode', 'actualPM05List']
