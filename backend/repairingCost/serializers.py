@@ -128,3 +128,95 @@ class CompanyCodeAPM05Serializer(serializers.ModelSerializer):
     class Meta:
         model = CompanyCode
         fields = ['companyCode', 'actualPM05List']
+
+
+
+#ここからCalTable
+#PM02
+class CalTablePPM02Serializer(serializers.ModelSerializer):
+    class Meta:
+        model = PlannedPM02
+        fields = '__all__'
+        
+class CompanyCodeCalPPM02Serializer(serializers.ModelSerializer):
+    calPPM02List = CalTablePPM02Serializer(many=True, read_only=True, source='calTablePlanPM02_companyCode')
+    class Meta:
+        model = CompanyCode
+        fields = ['companyCode', 'calPPM02List']
+
+
+
+class CalTableAPM02Serializer(serializers.ModelSerializer):
+    class Meta:
+        model = ActualPM02
+        fields = '__all__'
+        
+class CompanyCodeCalAPM02Serializer(serializers.ModelSerializer):
+    calAPM02List = CalTableAPM02Serializer(many=True, read_only=True, source='calTableActualPM02_companyCode')
+    class Meta:
+        model = CompanyCode
+        fields = ['companyCode', 'calAPM02List']
+
+
+#PM03
+class CalTablePPM03Serializer(serializers.ModelSerializer):
+    class Meta:
+        model = PlannedPM03
+        fields = '__all__'
+        
+class CompanyCodeCalPPM03Serializer(serializers.ModelSerializer):
+    calPPM03List = CalTablePPM03Serializer(many=True, read_only=True, source='calTablePlanPM03_companyCode')
+    class Meta:
+        model = CompanyCode
+        fields = ['companyCode', 'calPPM03List']
+
+
+
+class CalTableAPM03Serializer(serializers.ModelSerializer):
+    class Meta:
+        model = ActualPM03
+        fields = '__all__'
+        
+class CompanyCodeCalAPM03Serializer(serializers.ModelSerializer):
+    calAPM03List = CalTableAPM03Serializer(many=True, read_only=True, source='calTableActualPM03_companyCode')
+    class Meta:
+        model = CompanyCode
+        fields = ['companyCode', 'calAPM03List']
+
+
+#PM04
+class CalTableAPM04Serializer(serializers.ModelSerializer):
+    class Meta:
+        model = ActualPM04
+        fields = '__all__'
+        
+class CompanyCodeCalAPM04Serializer(serializers.ModelSerializer):
+    calAPM04List = CalTableAPM04Serializer(many=True, read_only=True, source='calTableActualPM04_companyCode')
+    class Meta:
+        model = CompanyCode
+        fields = ['companyCode', 'calAPM04List']
+
+
+#PM05
+class CalTablePPM05Serializer(serializers.ModelSerializer):
+    class Meta:
+        model = PlannedPM05
+        fields = '__all__'
+        
+class CompanyCodeCalPPM05Serializer(serializers.ModelSerializer):
+    calPPM05List = CalTablePPM05Serializer(many=True, read_only=True, source='calTablePlanPM05_companyCode')
+    class Meta:
+        model = CompanyCode
+        fields = ['companyCode', 'calPPM05List']
+
+
+class CalTableAPM05Serializer(serializers.ModelSerializer):
+    class Meta:
+        model = ActualPM05
+        fields = '__all__'
+        
+class CompanyCodeCalAPM05Serializer(serializers.ModelSerializer):
+    calAPM05List = CalTableAPM05Serializer(many=True, read_only=True, source='calTableActualPM05_companyCode')
+    class Meta:
+        model = CompanyCode
+        fields = ['companyCode', 'calAPM05List']
