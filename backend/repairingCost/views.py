@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.request import Request
 
 from .models import PlannedPM02,ActualPM02,PlannedPM03,ActualPM03,ActualPM04,PlannedPM05,ActualPM05
+from accounts.models import CompanyCode
 from .serializers import PlannedPM02Serializer,CompanyCodePPM02Serializer,ActualPM02Serializer,CompanyCodeAPM02Serializer,PlannedPM03Serializer,CompanyCodePPM03Serializer,ActualPM03Serializer,CompanyCodeAPM03Serializer,ActualPM04Serializer,CompanyCodeAPM04Serializer,PlannedPM05Serializer,CompanyCodePPM05Serializer,ActualPM05Serializer,CompanyCodeAPM05Serializer
 
 
@@ -69,7 +70,7 @@ class PlannedPM05ViewSet(viewsets.ModelViewSet):
     queryset = PlannedPM05.objects.all()
     serializer_class = PlannedPM05Serializer
 
-class CompanyCodePPM04ViewSet(viewsets.ReadOnlyModelViewSet):
+class CompanyCodePPM05ViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = CompanyCodePPM05Serializer
 
     def get_queryset(self):

@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import PlannedPM02,ActualPM02,PlannedPM03,ActualPM03,ActualPM04,PlannedPM05,ActualPM05
+from accounts.models import CompanyCode
 
 
 class PlannedPM02Serializer(serializers.ModelSerializer):
