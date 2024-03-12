@@ -4,10 +4,32 @@ from .models import PlannedPM02,ActualPM02,PlannedPM03,ActualPM03,ActualPM04,Pla
 
 class PlannedPM02Serializer(serializers.ModelSerializer):
     plannedMonth = serializers.DateTimeField(format="%Y-%m-%d")
+    totalCost = serializers.SerializerMethodField(read_only=True)
+    
     class Meta:
         model = PlannedPM02 # 呼び出すモデル
         fields = '__all__' # API上に表示するモデルのデータ項目
         
+    def get_totalCost(self, obj):
+        return sum(getattr(obj, month, 0) or 0 for month in ['jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'])
+
+    def update(self, instance, validated_data):
+        # 各月のデータを更新
+        for month in ['jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']:
+            if month in validated_data:
+                setattr(instance, month, validated_data[month])
+
+        # インスタンスを保存
+        instance.save()
+
+        # totalCostを更新
+        instance.totalCost = self.get_totalCost(instance)
+        instance.save()
+
+        return instance
+
+
+
 class CompanyCodePPM02Serializer(serializers.ModelSerializer):
     plannedPM02List = PlannedPM02Serializer(many=True, read_only=True, source='plannedPM02_companyCode')#sourceはmodelのrelated_nameにすること。ここで嵌った。
 
