@@ -1,18 +1,18 @@
 from django.contrib import admin
 from .models import PlannedPM02,ActualPM02,PlannedPM03,ActualPM03,ActualPM04,PlannedPM05,ActualPM05,CalTablePlannedPM02,CalTableActualPM02,CalTablePlannedPM03,CalTableActualPM03,CalTableActualPM04,CalTablePlannedPM05,CalTableActualPM05
 class PlannedPM02Admin(admin.ModelAdmin):
-    list_display = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
-    search_fields = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
-    list_filter = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',) # adminで右側にあるフィルターBOXのこと
+    list_display = ('companyCode','companyName','plant','year','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
+    search_fields = ('companyCode','companyName','plant','year','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
+    list_filter = ('companyCode','companyName','plant','year','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',) # adminで右側にあるフィルターBOXのこと
     ordering = ('companyCode',) # 表示する順番
     save_on_top = True #上部にもsaveボタンを配置
 
     list_per_page = 50 # １ページあたりに表示するオブジェクト数を指定
 
 class ActualPM02Admin(admin.ModelAdmin):
-    list_display = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
-    search_fields = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
-    list_filter = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
+    list_display = ('companyCode','companyName','plant','year','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
+    search_fields = ('companyCode','companyName','plant','year','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
+    list_filter = ('companyCode','companyName','plant','year','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
     ordering = ('companyCode',)
     save_on_top = True
 
@@ -20,9 +20,9 @@ class ActualPM02Admin(admin.ModelAdmin):
 
 
 class PlannedPM03Admin(admin.ModelAdmin):
-    list_display = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
-    search_fields = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
-    list_filter = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',) 
+    list_display = ('companyCode','companyName','plant','year','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
+    search_fields = ('companyCode','companyName','plant','year','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
+    list_filter = ('companyCode','companyName','plant','year','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',) 
     ordering = ('companyCode',) 
     save_on_top = True 
 
@@ -30,9 +30,9 @@ class PlannedPM03Admin(admin.ModelAdmin):
 
 
 class ActualPM03Admin(admin.ModelAdmin):
-    list_display = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
-    search_fields = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
-    list_filter = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
+    list_display = ('companyCode','companyName','plant','year','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
+    search_fields = ('companyCode','companyName','plant','year','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
+    list_filter = ('companyCode','companyName','plant','year','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
     ordering = ('companyCode',)
     save_on_top = True
 
@@ -40,9 +40,9 @@ class ActualPM03Admin(admin.ModelAdmin):
 
 
 class ActualPM04Admin(admin.ModelAdmin):
-    list_display = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
-    search_fields = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
-    list_filter = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
+    list_display = ('companyCode','companyName','plant','year','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
+    search_fields = ('companyCode','companyName','plant','year','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
+    list_filter = ('companyCode','companyName','plant','year','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
     ordering = ('companyCode',)
     save_on_top = True
 
@@ -50,18 +50,18 @@ class ActualPM04Admin(admin.ModelAdmin):
 
 
 class PlannedPM05Admin(admin.ModelAdmin):
-    list_display = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
-    search_fields = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
-    list_filter = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',) 
+    list_display = ('companyCode','companyName','plant','year','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
+    search_fields = ('companyCode','companyName','plant','year','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
+    list_filter = ('companyCode','companyName','plant','year','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',) 
     ordering = ('companyCode',) 
     save_on_top = True 
 
     list_per_page = 50 
 
 class ActualPM05Admin(admin.ModelAdmin):
-    list_display = ('companyCode','companyName','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
-    search_fields = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
-    list_filter = ('companyCode','companyName','plant','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
+    list_display = ('companyCode','companyName','year','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
+    search_fields = ('companyCode','companyName','plant','year','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
+    list_filter = ('companyCode','companyName','plant','year','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
     ordering = ('companyCode',)
     save_on_top = True
 

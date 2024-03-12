@@ -11,6 +11,7 @@ class PlannedPM02(models.Model):
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='plannedPM02_companyName', null=True, blank=True)
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='plannedPM02_plant', null=True, blank=True)
 
+    year = models.IntegerField(verbose_name='year', default=0, null=True, blank=True)
     jan = models.DecimalField(verbose_name='jan', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     feb = models.DecimalField(verbose_name='feb', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     mar = models.DecimalField(verbose_name='mar', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
@@ -39,6 +40,7 @@ class ActualPM02(models.Model):
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='actualPM02_companyName', null=True, blank=True)
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='actualPM02_plant', null=True, blank=True)
 
+    year = models.IntegerField(verbose_name='year', default=0, null=True, blank=True)
     jan = models.DecimalField(verbose_name='jan', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     feb = models.DecimalField(verbose_name='feb', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     mar = models.DecimalField(verbose_name='mar', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
@@ -66,6 +68,7 @@ class PlannedPM03(models.Model):
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='plannedPM03_companyName', null=True, blank=True)
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='plannedPM03_plant', null=True, blank=True)
 
+    year = models.IntegerField(verbose_name='year', default=0, null=True, blank=True)
     jan = models.DecimalField(verbose_name='jan', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     feb = models.DecimalField(verbose_name='feb', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     mar = models.DecimalField(verbose_name='mar', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
@@ -94,6 +97,7 @@ class ActualPM03(models.Model):
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='actualPM03_companyName', null=True, blank=True)
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='actualPM03_plant', null=True, blank=True)
 
+    year = models.IntegerField(verbose_name='year', default=0, null=True, blank=True)
     jan = models.DecimalField(verbose_name='jan', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     feb = models.DecimalField(verbose_name='feb', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     mar = models.DecimalField(verbose_name='mar', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
@@ -121,6 +125,7 @@ class ActualPM04(models.Model):
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='actualPM04_companyName', null=True, blank=True)
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='actualPM04_plant', null=True, blank=True)
 
+    year = models.IntegerField(verbose_name='year', default=0, null=True, blank=True)
     jan = models.DecimalField(verbose_name='jan', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     feb = models.DecimalField(verbose_name='feb', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     mar = models.DecimalField(verbose_name='mar', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
@@ -148,7 +153,8 @@ class PlannedPM05(models.Model):
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='plannedPM05_companyCode', null=True, blank=True)
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='plannedPM05_companyName', null=True, blank=True)
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE,related_name='plannedPM05_plant', null=True, blank=True)
-    
+
+    year = models.IntegerField(verbose_name='year', default=0, null=True, blank=True)
     jan = models.DecimalField(verbose_name='jan', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     feb = models.DecimalField(verbose_name='feb', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     mar = models.DecimalField(verbose_name='mar', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
@@ -176,6 +182,7 @@ class ActualPM05(models.Model):
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='actualPM05_companyName', null=True, blank=True)
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE,related_name='actualPM05_plant', null=True, blank=True)
 
+    year = models.IntegerField(verbose_name='year', default=0, null=True, blank=True)
     jan = models.DecimalField(verbose_name='jan', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     feb = models.DecimalField(verbose_name='feb', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     mar = models.DecimalField(verbose_name='mar', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
