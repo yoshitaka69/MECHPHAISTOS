@@ -5,15 +5,40 @@ from accounts.models import Company,CompanyName
 from ceList.models import Plant,Equipment,Machine
 
 class Category(models.Model):
-     
-     category = models.CharField(verbose_name='category', max_length=200,blank=True,null=True)
+   category = models.CharField(verbose_name='category', max_length=10,blank=True,null=True)
+   description = models.TextField(verbose_name='category', max_length=200,blank=True,null=True)
+   class Meta:
+      verbose_name = 'Category'
+      verbose_name_plural = 'Category'
+      ordering = ('category',) #モデルのクエリセットを取得した際にどのような順番でフィールドを並べ変えるかを決める。
+   def __str__(self):
+        return f'{self.category}'
 
-class location(models.Model):
-     location = models.CharField(verbose_name='location', max_length=200,blank=True,null=True)
+
+class Location(models.Model):
+     
+   companyCode = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='location_companyCode', null=True, blank=True)
+   companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='location_companyName', null=True, blank=True)
+   locationNo = models.CharField(verbose_name='locationNo', max_length=200,blank=True,null=True)
+   location = models.CharField(verbose_name='location', max_length=200,blank=True,null=True)
+   class Meta:
+        verbose_name = 'Location'
+        verbose_name_plural = 'Location'
+        ordering = ('location',) #モデルのクエリセットを取得した際にどのような順番でフィールドを並べ変えるかを決める。
+   def __str__(self):
+        return f'{self.location}'
+
 
 class Classification(models.Model):
      
-     classification = models.CharField(verbose_name='category', max_length=200,blank=True,null=True)
+   classification = models.CharField(verbose_name='classification', max_length=200,blank=True,null=True)
+   description = models.TextField(verbose_name='description', max_length=200,blank=True,null=True)
+   class Meta:
+      verbose_name = 'Classification'
+      verbose_name_plural = 'Classification'
+      ordering = ('classification',) #モデルのクエリセットを取得した際にどのような順番でフィールドを並べ変えるかを決める。
+   def __str__(self):
+        return f'{self.classification}'
 
 
 class SpareParts(models.Model):
@@ -23,7 +48,7 @@ class SpareParts(models.Model):
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='spareParts_companyName', null=True, blank=True)
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='spareParts_plant', null=True, blank=True)
     equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='spareParts_equipment', null=True, blank=True)
-    machineName = models.ForeignKey(Machine, on_delete=models.CASCADE, related_name='spareParts_function', null=True, blank=True)
+    machineName = models.ForeignKey(Machine, on_delete=models.CASCADE, related_name='spareParts_machineName', null=True, blank=True)
 
     #画像
     image = models.ImageField(verbose_name='image',null=True,blank=True)
@@ -34,7 +59,7 @@ class SpareParts(models.Model):
     partsName = models.CharField(verbose_name='partsName', max_length=200,blank=True,null=True)
     partsModel = models.CharField(verbose_name='partsModel',max_length=200,blank=True,null=True)
     serialNumber = models.CharField(verbose_name='serialNumber',max_length=200,blank=True,null=True)
-    category = models.CharField(verbose_name='category', max_length=200,blank=True,null=True)
+    category = models.ForeignKey(Category, on_delete=models.PROTECT, related_name='spareParts_category', null=True, blank=True)#ここは間違いなくPROTECT
 
     #部品コスト
     partsCost = models.DecimalField(verbose_name='partsCost',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
@@ -42,20 +67,22 @@ class SpareParts(models.Model):
     unit = models.CharField(verbose_name='unit',max_length=200,blank=True,null=True)
 
     #物理的な状況
-    location = models.CharField(verbose_name='location',max_length=200,blank=True,null=True)
+    location = models.ForeignKey(Location, on_delete=models.PROTECT, related_name='spareParts_location', null=True, blank=True)#ここは間違いなくPROTECT
     stock = models.CharField(verbose_name='stock', max_length=200,null=True,blank=True)
     partsDeliveryTime = models.DateField(verbose_name='partsDeliveryTime', blank=True,null=True,default=timezone.now)
 
     #部品の説明
-    classification = models.CharField(verbose_name='classification',max_length=200,blank=True,null=True)
+    classification = models.ForeignKey(Classification, on_delete=models.PROTECT, related_name='spareParts_classification', null=True, blank=True)#ここは間違いなくPROTECT
     inventoryTurnover = models.CharField(verbose_name='classification',max_length=200,blank=True,null=True)
     partsDescription = models.TextField(verbose_name='partsDescription',blank=True,null=True,max_length=1000)
+
 
 
     class Meta:
         verbose_name = 'Spare Parts List'
         verbose_name_plural = 'Spare Parts List'
         ordering = ('partsName',) 
+
 
     def __str__(self):
             return f'{self.partsName}'

@@ -7,27 +7,38 @@ class PlannedPM02Serializer(serializers.ModelSerializer):
     totalCost = serializers.SerializerMethodField(read_only=True)
     
     class Meta:
-        model = PlannedPM02 # 呼び出すモデル
-        fields = '__all__' # API上に表示するモデルのデータ項目
+        model = PlannedPM02
+        fields = '__all__'
         
     def get_totalCost(self, obj):
-        return sum(getattr(obj, month, 0) or 0 for month in ['jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'])
+        return sum(getattr(obj, month, 0) or 0 for month in ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'])
 
-    def update(self, instance, validated_data):
-        # 各月のデータを更新
-        for month in ['jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']:
-            if month in validated_data:
-                setattr(instance, month, validated_data[month])
-
-        # インスタンスを保存
-        instance.save()
-
-        # totalCostを更新
+    def create(self, validated_data):
+        year = validated_data.get('year')
+        instance, created = PlannedPM02.objects.update_or_create(
+            companyCode=validated_data.get('companyCode'),
+            year=year,
+            defaults=validated_data
+        )
+        # totalCostを計算して保存
         instance.totalCost = self.get_totalCost(instance)
         instance.save()
 
         return instance
 
+    def update(self, instance, validated_data):
+        # 各月のデータを更新
+        for month in ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']:
+            if month in validated_data:
+                setattr(instance, month, validated_data[month])
+
+        instance.save()  # 最初にインスタンスを保存
+
+        # totalCostを計算して保存
+        instance.totalCost = self.get_totalCost(instance)
+        instance.save()
+
+        return instance
 
 
 class CompanyCodePPM02Serializer(serializers.ModelSerializer):
@@ -39,11 +50,49 @@ class CompanyCodePPM02Serializer(serializers.ModelSerializer):
 
 
 
+
+
+
 #Actual PM02 cost
 class ActualPM02Serializer(serializers.ModelSerializer):
+    totalCost = serializers.SerializerMethodField(read_only=True)
     class Meta:
         model = ActualPM02
         fields = '__all__'
+
+
+    def get_totalCost(self, obj):
+        return sum(getattr(obj, month, 0) or 0 for month in ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'])
+
+    def create(self, validated_data):
+        year = validated_data.get('year')
+        instance, created = ActualPM02.objects.update_or_create(
+            companyCode=validated_data.get('companyCode'),
+            year=year,
+            defaults=validated_data
+        )
+        # totalCostを計算して保存
+        instance.totalCost = self.get_totalCost(instance)
+        instance.save()
+
+        return instance
+
+    def update(self, instance, validated_data):
+        # 各月のデータを更新
+        for month in ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']:
+            if month in validated_data:
+                setattr(instance, month, validated_data[month])
+
+        instance.save()  # 最初にインスタンスを保存
+
+        # totalCostを計算して保存
+        instance.totalCost = self.get_totalCost(instance)
+        instance.save()
+
+        return instance
+    
+
+
 
 class CompanyCodeAPM02Serializer(serializers.ModelSerializer):
     actualPM02List = ActualPM02Serializer(many=True, read_only=True, source='actualPM02_companyCode')
@@ -55,10 +104,48 @@ class CompanyCodeAPM02Serializer(serializers.ModelSerializer):
 
 
 
+
+
+
+
+
 class PlannedPM03Serializer(serializers.ModelSerializer):
+    totalCost = serializers.SerializerMethodField(read_only=True)
     class Meta:
         model = PlannedPM03
         fields = '__all__' 
+
+
+    def get_totalCost(self, obj):
+        return sum(getattr(obj, month, 0) or 0 for month in ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'])
+
+    def create(self, validated_data):
+        year = validated_data.get('year')
+        instance, created = PlannedPM03.objects.update_or_create(
+            companyCode=validated_data.get('companyCode'),
+            year=year,
+            defaults=validated_data
+        )
+        # totalCostを計算して保存
+        instance.totalCost = self.get_totalCost(instance)
+        instance.save()
+
+        return instance
+
+    def update(self, instance, validated_data):
+        # 各月のデータを更新
+        for month in ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']:
+            if month in validated_data:
+                setattr(instance, month, validated_data[month])
+
+        instance.save()  # 最初にインスタンスを保存
+
+        # totalCostを計算して保存
+        instance.totalCost = self.get_totalCost(instance)
+        instance.save()
+
+        return instance
+
 
 class CompanyCodePPM03Serializer(serializers.ModelSerializer):
     plannedPM03List = PlannedPM03Serializer(many=True, read_only=True, source='plannedPM03_companyCode')
@@ -69,10 +156,47 @@ class CompanyCodePPM03Serializer(serializers.ModelSerializer):
 
 
 
+
+
+
+
 class ActualPM03Serializer(serializers.ModelSerializer):
+    totalCost = serializers.SerializerMethodField(read_only=True)
     class Meta:
         model = ActualPM03
         fields = '__all__'
+
+    def get_totalCost(self, obj):
+        return sum(getattr(obj, month, 0) or 0 for month in ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'])
+
+    def create(self, validated_data):
+        year = validated_data.get('year')
+        instance, created = ActualPM03.objects.update_or_create(
+            companyCode=validated_data.get('companyCode'),
+            year=year,
+            defaults=validated_data
+        )
+        # totalCostを計算して保存
+        instance.totalCost = self.get_totalCost(instance)
+        instance.save()
+
+        return instance
+
+    def update(self, instance, validated_data):
+        # 各月のデータを更新
+        for month in ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']:
+            if month in validated_data:
+                setattr(instance, month, validated_data[month])
+
+        instance.save()  # 最初にインスタンスを保存
+
+        # totalCostを計算して保存
+        instance.totalCost = self.get_totalCost(instance)
+        instance.save()
+
+        return instance
+
+
 
 class CompanyCodeAPM03Serializer(serializers.ModelSerializer):
     actualPM03List = ActualPM03Serializer(many=True, read_only=True, source='actualPM03_companyCode')
@@ -83,10 +207,46 @@ class CompanyCodeAPM03Serializer(serializers.ModelSerializer):
 
 
 
+
+
+
 class ActualPM04Serializer(serializers.ModelSerializer):
+    totalCost = serializers.SerializerMethodField(read_only=True)
     class Meta:
         model = ActualPM04
         fields = '__all__'
+
+
+    def get_totalCost(self, obj):
+        return sum(getattr(obj, month, 0) or 0 for month in ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'])
+
+    def create(self, validated_data):
+        year = validated_data.get('year')
+        instance, created = ActualPM04.objects.update_or_create(
+            companyCode=validated_data.get('companyCode'),
+            year=year,
+            defaults=validated_data
+        )
+        # totalCostを計算して保存
+        instance.totalCost = self.get_totalCost(instance)
+        instance.save()
+
+        return instance
+
+    def update(self, instance, validated_data):
+        # 各月のデータを更新
+        for month in ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']:
+            if month in validated_data:
+                setattr(instance, month, validated_data[month])
+
+        instance.save()  # 最初にインスタンスを保存
+
+        # totalCostを計算して保存
+        instance.totalCost = self.get_totalCost(instance)
+        instance.save()
+
+        return instance
+    
 
 class CompanyCodeAPM04Serializer(serializers.ModelSerializer):
     actualPM04List = ActualPM04Serializer(many=True, read_only=True, source='actualPM04_companyCode')
@@ -97,10 +257,45 @@ class CompanyCodeAPM04Serializer(serializers.ModelSerializer):
 
 
 
+
+
+
 class PlannedPM05Serializer(serializers.ModelSerializer):
+    totalCost = serializers.SerializerMethodField(read_only=True)
     class Meta:
-        model = PlannedPM03
+        model = PlannedPM05
         fields = '__all__' 
+
+    def get_totalCost(self, obj):
+        return sum(getattr(obj, month, 0) or 0 for month in ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'])
+
+    def create(self, validated_data):
+        year = validated_data.get('year')
+        instance, created = PlannedPM05.objects.update_or_create(
+            companyCode=validated_data.get('companyCode'),
+            year=year,
+            defaults=validated_data
+        )
+        # totalCostを計算して保存
+        instance.totalCost = self.get_totalCost(instance)
+        instance.save()
+
+        return instance
+
+    def update(self, instance, validated_data):
+        # 各月のデータを更新
+        for month in ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']:
+            if month in validated_data:
+                setattr(instance, month, validated_data[month])
+
+        instance.save()  # 最初にインスタンスを保存
+
+        # totalCostを計算して保存
+        instance.totalCost = self.get_totalCost(instance)
+        instance.save()
+
+        return instance
+    
         
 class CompanyCodePPM05Serializer(serializers.ModelSerializer):
     plannedPM05List = PlannedPM03Serializer(many=True, read_only=True, source='plannedPM05_companyCode')
@@ -111,10 +306,44 @@ class CompanyCodePPM05Serializer(serializers.ModelSerializer):
 
 
 
+
+
+
 class ActualPM05Serializer(serializers.ModelSerializer):
+    totalCost = serializers.SerializerMethodField(read_only=True)
     class Meta:
-        model = ActualPM03
+        model = ActualPM05
         fields = '__all__'
+
+    def get_totalCost(self, obj):
+        return sum(getattr(obj, month, 0) or 0 for month in ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'])
+
+    def create(self, validated_data):
+        year = validated_data.get('year')
+        instance, created = ActualPM05.objects.update_or_create(
+            companyCode=validated_data.get('companyCode'),
+            year=year,
+            defaults=validated_data
+        )
+        # totalCostを計算して保存
+        instance.totalCost = self.get_totalCost(instance)
+        instance.save()
+
+        return instance
+
+    def update(self, instance, validated_data):
+        # 各月のデータを更新
+        for month in ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']:
+            if month in validated_data:
+                setattr(instance, month, validated_data[month])
+
+        instance.save()  # 最初にインスタンスを保存
+
+        # totalCostを計算して保存
+        instance.totalCost = self.get_totalCost(instance)
+        instance.save()
+
+        return instance
         
 class CompanyCodeAPM05Serializer(serializers.ModelSerializer):
     actualPM05List = ActualPM04Serializer(many=True, read_only=True, source='actualPM05_companyCode')
@@ -122,6 +351,9 @@ class CompanyCodeAPM05Serializer(serializers.ModelSerializer):
     class Meta:
         model = CompanyCode
         fields = ['companyCode', 'actualPM05List']
+
+
+
 
 
 
@@ -144,7 +376,9 @@ class CalTableAPM02Serializer(serializers.ModelSerializer):
     class Meta:
         model = ActualPM02
         fields = '__all__'
-        
+
+
+
 class CompanyCodeCalAPM02Serializer(serializers.ModelSerializer):
     calAPM02List = CalTableAPM02Serializer(many=True, read_only=True, source='calTableActualPM02_companyCode')
     class Meta:

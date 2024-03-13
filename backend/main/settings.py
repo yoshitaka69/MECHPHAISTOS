@@ -30,6 +30,8 @@ INSTALLED_APPS = [
     'sustainability',
     'repairingCost',
     'junctionTable',
+    'module',
+    'calculation',
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True

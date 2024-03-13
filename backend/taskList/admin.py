@@ -2,8 +2,8 @@ from django.contrib import admin
 from .models import TaskList
 
 class TaskListAdmin(admin.ModelAdmin):
-    list_display = ('companyCode','companyName','taskCode', 'taskOfPM','typeOfMaintenance')
-    search_fields = ('companyCode','companyName','taskCode', 'taskOfPM','typeOfMaintenance')
+    list_display = ('companyCode','companyName','taskCode', )
+    search_fields = ('companyCode','companyName','taskCode', )
     list_filter = ('companyCode','companyName',"taskCode",) # adminで右側にあるフィルターBOXのこと
     ordering = ('companyCode',) # 表示する順番
     save_on_top = True #上部にもsaveボタンを配置

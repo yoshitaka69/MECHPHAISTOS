@@ -6,8 +6,8 @@ from rest_framework.response import Response
 from rest_framework.request import Request
 
 
-from .models import CeList,CompanyCode,Plant,Equipment,Machine
-from .serializers import CeSerializer,CompanyCodeCeSerializer,PlantSerializer,EquipmentSerializer,MachineSerializer
+from .models import CeList,CompanyCode,Plant,Equipment,Machine,TypeOfPM
+from .serializers import CeSerializer,CompanyCodeCeSerializer,PlantSerializer,EquipmentSerializer,MachineSerializer,TypeOfPMSerializer
 
 class PlantListViewSet(viewsets.ModelViewSet):
     queryset = Plant.objects.all()
@@ -22,6 +22,9 @@ class MachineListViewSet(viewsets.ModelViewSet):
     serializer_class = MachineSerializer
 
 
+class TypeOfPMListViewSet(viewsets.ModelViewSet):
+    queryset = TypeOfPM.objects.all()
+    serializer_class = TypeOfPMSerializer
 
 #Critical equipment list
 class CeListViewSet(viewsets.ModelViewSet):

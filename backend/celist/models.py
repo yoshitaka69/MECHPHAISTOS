@@ -2,7 +2,8 @@ from django.db import models
 from django.utils import timezone
 from datetime import timedelta
 from accounts.models import CompanyCode,CompanyName
-from taskList.models import TypeOfPM,TaskList
+
+
 
 class Plant(models.Model):
 
@@ -18,6 +19,9 @@ class Plant(models.Model):
     def __str__(self):
         return f'{self.plant}'
 
+
+
+
 class Equipment(models.Model):
 
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='equipment_companyCode',null=True, blank=True)
@@ -32,6 +36,8 @@ class Equipment(models.Model):
     def __str__(self):
         return f'{self.equipment}'
     
+
+
 
 class Machine(models.Model):
 
@@ -49,26 +55,38 @@ class Machine(models.Model):
         return f'{self.machineName}'
 
 
+
+
+class TypeOfPM(models.Model):
+     
+    typeOfPM = models.CharField(verbose_name='typeOfPM',max_length=5,blank=True,null=True)
+    description = models.TextField(verbose_name='PMDescription',blank=True,null=True,max_length=500)
+    
+    class Meta:
+        verbose_name = 'TypeOfPM'
+        verbose_name_plural = 'TypeOfPM'
+        ordering = ('typeOfPM',) 
+    def __str__(self):
+        return f'{self.typeOfPM}'
+
+
+
 class CeList(models.Model):
 
     #accountsから取得
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='ceList_companyCode',null=True, blank=True)
     
     #Celistメインの項目
-    #ceListId = models.CharField(verbose_name='ceListNo', max_length=200,null=True,blank=True,default=0)
+    ceList_Id = models.CharField(verbose_name='ceListNo', max_length=200,null=True,blank=True,default=0)
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='ceList_companyName', null=True, blank=True)
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='ceList_plant',null=True, blank=True)
-    #plant = models.CharField(verbose_name='plant', max_length=200,null=True,blank=True)
-    
     equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='ceList_equipment',null=True, blank=True)
-    #equipment = models.CharField(verbose_name='equipment', max_length=200,null=True,blank=True)
     machineName = models.ForeignKey(Machine, on_delete=models.CASCADE, related_name='ceList_machineName',null=True, blank=True)
 
     #Task List
     typeOfPM = models.ForeignKey(TypeOfPM, on_delete=models.PROTECT, related_name='ceList_typeOfPM',null=True, blank=True)#ここは絶対PROTECT
-    taskName = models.ForeignKey(TaskList, on_delete=models.CASCADE, related_name='ceList_taskName',null=True, blank=True)
-    #taskCost = 
-
+    taskName = models.CharField(verbose_name='taskName', max_length=200,null=True,blank=True,default=0)
+ 
     #Impact
     levelSetValue = models.PositiveIntegerField(verbose_name='levelSetValue', null=True,blank=True,default=0)
     mttr = models.PositiveSmallIntegerField(verbose_name='mttr',blank=True,null=True,default=0)

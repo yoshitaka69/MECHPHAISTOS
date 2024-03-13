@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import CeList,Plant,Equipment,Machine
+from .models import CeList,Plant,Equipment,Machine,TypeOfPM
 
 
 class CeListAdmin(admin.ModelAdmin):
@@ -39,10 +39,22 @@ class MachineAdmin(admin.ModelAdmin):
 
     list_per_page = 50 
 
+class TypeOfPMAdmin(admin.ModelAdmin):
+    list_display = ('typeOfPM','description',)
+    search_fields = ('typeOfPM','description',)
+    list_filter = ('typeOfPM','description',) 
+    ordering = ('typeOfPM',) 
+    save_on_top = True 
+
+    list_per_page = 50 
+
+
 
 # 以下でadminサイトに表示させる
 admin.site.register(CeList,CeListAdmin)
 admin.site.register(Plant,PlantAdmin)
 admin.site.register(Equipment,EquipmentAdmin)
 admin.site.register(Machine,MachineAdmin)
+admin.site.register(TypeOfPM,TypeOfPMAdmin)
+
 
