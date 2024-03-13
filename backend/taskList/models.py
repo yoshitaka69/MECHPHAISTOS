@@ -3,28 +3,28 @@ from django.utils import timezone
 from accounts.models import Company,CompanyName
 from ceList.models import Plant,Equipment,Machine
 
+class TypeOfPM(models.Model):
+     
+     typeOfPM = models.CharField(verbose_name='typeOfPM',max_length=5,blank=True,null=True)
+     description = models.TextField(verbose_name='PMDescription',blank=True,null=True,max_length=1000)
+
 
 class TaskList(models.Model):
 
     companyCode = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True)
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='taskList_companyName', null=True, blank=True)
-    
-    #CeListから
-    taskCode = models.CharField(verbose_name='taskCode',max_length=200,blank=True,null=True)
-    taskName = models.CharField(verbose_name='taskName',max_length=200,blank=True,null=True)
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE,related_name='taskList_plant', null=True, blank=True)
     equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='taskList_equipment', null=True, blank=True)
     machineName = models.ForeignKey(Machine, on_delete=models.CASCADE, related_name='taskList_function', null=True, blank=True)
-    
-    # taskList
-    taskOfPM = models.CharField(verbose_name='taskOfPM',max_length=200,blank=True,null=True)
+
+    taskCode = models.CharField(verbose_name='taskCode',max_length=200,blank=True,null=True)
+    typeOfPM = models.ForeignKey(TypeOfPM, on_delete=models.PROTECT, related_name='typeOfPM', null=True, blank=True)#これは絶対PROTECT
+    taskName = models.CharField(verbose_name='taskName',max_length=200,blank=True,null=True)
     laborCostOfPM = models.DecimalField(verbose_name='laborCostOfPM',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
+
     countOfPM = models.PositiveSmallIntegerField(verbose_name='countOfPM',blank=True,null=True,default=0)
     latestPM = models.DateField(verbose_name='latestPM',blank=True,null=True)
     periodOfPM = models.DateField(verbose_name='periodOfPM',blank=True,null=True,default=timezone.now)
-
-    #typeOfMaintenance
-    typeOfMaintenance = models.CharField(verbose_name='typeOfMaintenance',max_length=50,blank=True,null=True)
     
     #Probability of failure
     constructionPeriod = models.DateField(verbose_name='constructionPeriod', blank=True,null=True,default=timezone.now)

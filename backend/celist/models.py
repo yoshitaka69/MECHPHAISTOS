@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 from datetime import timedelta
 from accounts.models import CompanyCode,CompanyName
+from taskList.models import TypeOfPM,TaskList
 
 class Plant(models.Model):
 
@@ -61,10 +62,12 @@ class CeList(models.Model):
     
     equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='ceList_equipment',null=True, blank=True)
     #equipment = models.CharField(verbose_name='equipment', max_length=200,null=True,blank=True)
-    machineName = models.ForeignKey(Machine, on_delete=models.CASCADE, related_name='ceList_machine',null=True, blank=True)
+    machineName = models.ForeignKey(Machine, on_delete=models.CASCADE, related_name='ceList_machineName',null=True, blank=True)
 
     #Task List
-    taskListCode = models.CharField(verbose_name='taskListNo', max_length=200,null=True,blank=True)
+    typeOfPM = models.ForeignKey(TypeOfPM, on_delete=models.PROTECT, related_name='ceList_typeOfPM',null=True, blank=True)#ここは絶対PROTECT
+    taskName = models.ForeignKey(TaskList, on_delete=models.CASCADE, related_name='ceList_taskName',null=True, blank=True)
+    #taskCost = 
 
     #Impact
     levelSetValue = models.PositiveIntegerField(verbose_name='levelSetValue', null=True,blank=True,default=0)
@@ -77,7 +80,8 @@ class CeList(models.Model):
     assessment = models.CharField(verbose_name='assessment', max_length=20, blank=True,null=True,)
 
     #Spare parts
-    bomCode = models.CharField(verbose_name='bomNo', max_length=200,null=True,blank=True)
+    bomCode = models.CharField(verbose_name='bomCode', max_length=200,null=True,blank=True)
+    #BomCost
 
     #Status of measures
     rcaOrReplace = models.BooleanField(verbose_name='rcaOrReplace',default=False)

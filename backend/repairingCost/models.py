@@ -24,7 +24,7 @@ class PlannedPM02(models.Model):
     oct = models.DecimalField(verbose_name='oct', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     nov = models.DecimalField(verbose_name='nov', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     dec = models.DecimalField(verbose_name='dec', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
-    commitment = models.DecimalField(verbose_name='commitment', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    commitment = models.DecimalField(verbose_name='commitment(Unknown DeliveryTime)', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     totalCost = models.DecimalField(verbose_name='totalCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     
     class Meta:
@@ -53,7 +53,7 @@ class ActualPM02(models.Model):
     oct = models.DecimalField(verbose_name='oct', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     nov = models.DecimalField(verbose_name='nov', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     dec = models.DecimalField(verbose_name='dec', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
-    commitment = models.DecimalField(verbose_name='commitment', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    commitment = models.DecimalField(verbose_name='commitment(Unknown DeliveryTime)', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     totalCost = models.DecimalField(verbose_name='totalCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     
     class Meta:
@@ -81,7 +81,7 @@ class PlannedPM03(models.Model):
     oct = models.DecimalField(verbose_name='oct', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     nov = models.DecimalField(verbose_name='nov', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     dec = models.DecimalField(verbose_name='dec', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
-    commitment = models.DecimalField(verbose_name='commitment', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    commitment = models.DecimalField(verbose_name='commitment(Unknown DeliveryTime)', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     totalCost = models.DecimalField(verbose_name='totalCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     
     class Meta:
@@ -110,7 +110,7 @@ class ActualPM03(models.Model):
     oct = models.DecimalField(verbose_name='oct', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     nov = models.DecimalField(verbose_name='nov', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     dec = models.DecimalField(verbose_name='dec', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
-    commitment = models.DecimalField(verbose_name='commitment', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    commitment = models.DecimalField(verbose_name='commitment(Unknown DeliveryTime)', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     totalCost = models.DecimalField(verbose_name='totalCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     
     class Meta:
@@ -138,7 +138,7 @@ class ActualPM04(models.Model):
     oct = models.DecimalField(verbose_name='oct', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     nov = models.DecimalField(verbose_name='nov', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     dec = models.DecimalField(verbose_name='dec', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
-    commitment = models.DecimalField(verbose_name='commitment', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    commitment = models.DecimalField(verbose_name='commitment(Unknown DeliveryTime)', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     totalCost = models.DecimalField(verbose_name='totalCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     
     class Meta:
@@ -167,7 +167,7 @@ class PlannedPM05(models.Model):
     oct = models.DecimalField(verbose_name='oct', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     nov = models.DecimalField(verbose_name='nov', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     dec = models.DecimalField(verbose_name='dec', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
-    commitment = models.DecimalField(verbose_name='commitment', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    commitment = models.DecimalField(verbose_name='commitment(Unknown DeliveryTime)', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     totalCost = models.DecimalField(verbose_name='totalCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     
     class Meta:
@@ -195,7 +195,7 @@ class ActualPM05(models.Model):
     oct = models.DecimalField(verbose_name='oct', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     nov = models.DecimalField(verbose_name='nov', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     dec = models.DecimalField(verbose_name='dec', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
-    commitment = models.DecimalField(verbose_name='commitment', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    commitment = models.DecimalField(verbose_name='commitment(Unknown DeliveryTime)', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     totalCost = models.DecimalField(verbose_name='totalCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     
     class Meta:

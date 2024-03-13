@@ -4,7 +4,6 @@ from accounts.models import CompanyCode
 
 
 class PlannedPM02Serializer(serializers.ModelSerializer):
-    plannedMonth = serializers.DateTimeField(format="%Y-%m-%d")
     totalCost = serializers.SerializerMethodField(read_only=True)
     
     class Meta:
@@ -42,7 +41,6 @@ class CompanyCodePPM02Serializer(serializers.ModelSerializer):
 
 #Actual PM02 cost
 class ActualPM02Serializer(serializers.ModelSerializer):
-    actualMonth = serializers.DateTimeField(format="%Y-%m-%d")
     class Meta:
         model = ActualPM02
         fields = '__all__'
@@ -58,7 +56,6 @@ class CompanyCodeAPM02Serializer(serializers.ModelSerializer):
 
 
 class PlannedPM03Serializer(serializers.ModelSerializer):
-    plannedMonth = serializers.DateTimeField(format="%Y-%m-%d")
     class Meta:
         model = PlannedPM03
         fields = '__all__' 
@@ -73,7 +70,6 @@ class CompanyCodePPM03Serializer(serializers.ModelSerializer):
 
 
 class ActualPM03Serializer(serializers.ModelSerializer):
-    actualMonth = serializers.DateTimeField(format="%Y-%m-%d")
     class Meta:
         model = ActualPM03
         fields = '__all__'
@@ -88,7 +84,6 @@ class CompanyCodeAPM03Serializer(serializers.ModelSerializer):
 
 
 class ActualPM04Serializer(serializers.ModelSerializer):
-    actualMonth = serializers.DateTimeField(format="%Y-%m-%d")
     class Meta:
         model = ActualPM04
         fields = '__all__'
@@ -103,7 +98,6 @@ class CompanyCodeAPM04Serializer(serializers.ModelSerializer):
 
 
 class PlannedPM05Serializer(serializers.ModelSerializer):
-    plannedMonth = serializers.DateTimeField(format="%Y-%m-%d")
     class Meta:
         model = PlannedPM03
         fields = '__all__' 
@@ -118,7 +112,6 @@ class CompanyCodePPM05Serializer(serializers.ModelSerializer):
 
 
 class ActualPM05Serializer(serializers.ModelSerializer):
-    actualMonth = serializers.DateTimeField(format="%Y-%m-%d")
     class Meta:
         model = ActualPM03
         fields = '__all__'
