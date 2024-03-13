@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from datetime import timedelta
-from accounts.models import Company,CompanyName
+from accounts.models import CompanyCode,CompanyName
 from ceList.models import Plant,Equipment,Machine
 
 class Category(models.Model):
@@ -17,9 +17,9 @@ class Category(models.Model):
 
 class Location(models.Model):
      
-   companyCode = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='location_companyCode', null=True, blank=True)
+   companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='location_companyCode', null=True, blank=True)
    companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='location_companyName', null=True, blank=True)
-   locationNo = models.CharField(verbose_name='locationNo', max_length=200,blank=True,null=True)
+   location_Id = models.CharField(verbose_name='location_id', max_length=200,blank=True,null=True)
    location = models.CharField(verbose_name='location', max_length=200,blank=True,null=True)
    class Meta:
         verbose_name = 'Location'
@@ -44,7 +44,7 @@ class Classification(models.Model):
 class SpareParts(models.Model):
 
     #CeListから引用
-    companyCode = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='spareParts_companyCode', null=True, blank=True)
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='spareParts_companyCode', null=True, blank=True)
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='spareParts_companyName', null=True, blank=True)
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='spareParts_plant', null=True, blank=True)
     equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='spareParts_equipment', null=True, blank=True)

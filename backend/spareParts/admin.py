@@ -13,10 +13,10 @@ class CategoryAdmin(admin.ModelAdmin):
 
 
 class LocationAdmin(admin.ModelAdmin):
-    list_display = ('companyCode','companyName','locationNo','location',)
-    search_fields = ('companyCode','companyName','locationNo','location',)
-    list_filter = ('companyCode','companyName','locationNo','location',) # adminで右側にあるフィルターBOXのこと
-    ordering = ('locationNo',) # 表示する順番
+    list_display = ('companyCode','companyName','location_Id','location',)
+    search_fields = ('companyCode','companyName','location_Id','location',)
+    list_filter = ('companyCode','companyName','location_Id','location',) # adminで右側にあるフィルターBOXのこと
+    ordering = ('location_Id',) # 表示する順番
     save_on_top = True #上部にもsaveボタンを配置\
 
     list_per_page = 50 # １ページあたりに表示するオブジェクト数を指定
