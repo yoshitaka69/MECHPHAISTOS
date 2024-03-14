@@ -1,7 +1,9 @@
 from rest_framework import serializers
-from .models import PlannedPM02,ActualPM02,PlannedPM03,ActualPM03,ActualPM04,PlannedPM05,ActualPM05
 from accounts.models import CompanyCode
-from tasklist.models import Task
+from .models import PlannedPM02,ActualPM02,PlannedPM03,ActualPM03,ActualPM04,PlannedPM05,ActualPM05,CalTablePlannedPM02,CalTableActualPM02,CalTablePlannedPM03,CalTableActualPM03,CalTableActualPM04,CalTablePlannedPM05,CalTableActualPM05
+
+from accounts.models import CompanyCode
+from taskList.models import TaskList
 from module.serializers import CommonSerializerMethodMixin
 
 
@@ -45,38 +47,19 @@ class ActualPM02Serializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-    def get_totalCost(self, obj):
-        return sum(getattr(obj, month, 0) or 0 for month in ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'])
-
+    # createとupdateメソッドで共通ロジックを呼び出す
     def create(self, validated_data):
-        year = validated_data.get('year')
-        instance, created = ActualPM02.objects.update_or_create(
-            companyCode=validated_data.get('companyCode'),
-            year=year,
-            defaults=validated_data
-        )
-        # totalCostを計算して保存
-        instance.totalCost = self.get_totalCost(instance)
-        instance.save()
-
+        # createのロジック...
+        instance = super().create(validated_data)
+        self.save_total_cost(instance)
         return instance
 
     def update(self, instance, validated_data):
-        # 各月のデータを更新
-        for month in ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']:
-            if month in validated_data:
-                setattr(instance, month, validated_data[month])
-
-        instance.save()  # 最初にインスタンスを保存
-
-        # totalCostを計算して保存
-        instance.totalCost = self.get_totalCost(instance)
-        instance.save()
-
+        # updateのロジック...
+        instance = super().update(instance, validated_data)
+        self.save_total_cost(instance)
         return instance
     
-
-
 
 class CompanyCodeAPM02Serializer(serializers.ModelSerializer):
     actualPM02List = ActualPM02Serializer(many=True, read_only=True, source='actualPM02_companyCode')
@@ -100,34 +83,17 @@ class PlannedPM03Serializer(serializers.ModelSerializer):
         fields = '__all__' 
 
 
-    def get_totalCost(self, obj):
-        return sum(getattr(obj, month, 0) or 0 for month in ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'])
-
+    # createとupdateメソッドで共通ロジックを呼び出す
     def create(self, validated_data):
-        year = validated_data.get('year')
-        instance, created = PlannedPM03.objects.update_or_create(
-            companyCode=validated_data.get('companyCode'),
-            year=year,
-            defaults=validated_data
-        )
-        # totalCostを計算して保存
-        instance.totalCost = self.get_totalCost(instance)
-        instance.save()
-
+        # createのロジック...
+        instance = super().create(validated_data)
+        self.save_total_cost(instance)
         return instance
 
     def update(self, instance, validated_data):
-        # 各月のデータを更新
-        for month in ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']:
-            if month in validated_data:
-                setattr(instance, month, validated_data[month])
-
-        instance.save()  # 最初にインスタンスを保存
-
-        # totalCostを計算して保存
-        instance.totalCost = self.get_totalCost(instance)
-        instance.save()
-
+        # updateのロジック...
+        instance = super().update(instance, validated_data)
+        self.save_total_cost(instance)
         return instance
 
 
@@ -150,34 +116,17 @@ class ActualPM03Serializer(serializers.ModelSerializer):
         model = ActualPM03
         fields = '__all__'
 
-    def get_totalCost(self, obj):
-        return sum(getattr(obj, month, 0) or 0 for month in ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'])
-
+    # createとupdateメソッドで共通ロジックを呼び出す
     def create(self, validated_data):
-        year = validated_data.get('year')
-        instance, created = ActualPM03.objects.update_or_create(
-            companyCode=validated_data.get('companyCode'),
-            year=year,
-            defaults=validated_data
-        )
-        # totalCostを計算して保存
-        instance.totalCost = self.get_totalCost(instance)
-        instance.save()
-
+        # createのロジック...
+        instance = super().create(validated_data)
+        self.save_total_cost(instance)
         return instance
 
     def update(self, instance, validated_data):
-        # 各月のデータを更新
-        for month in ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']:
-            if month in validated_data:
-                setattr(instance, month, validated_data[month])
-
-        instance.save()  # 最初にインスタンスを保存
-
-        # totalCostを計算して保存
-        instance.totalCost = self.get_totalCost(instance)
-        instance.save()
-
+        # updateのロジック...
+        instance = super().update(instance, validated_data)
+        self.save_total_cost(instance)
         return instance
 
 
@@ -201,34 +150,17 @@ class ActualPM04Serializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-    def get_totalCost(self, obj):
-        return sum(getattr(obj, month, 0) or 0 for month in ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'])
-
+    # createとupdateメソッドで共通ロジックを呼び出す
     def create(self, validated_data):
-        year = validated_data.get('year')
-        instance, created = ActualPM04.objects.update_or_create(
-            companyCode=validated_data.get('companyCode'),
-            year=year,
-            defaults=validated_data
-        )
-        # totalCostを計算して保存
-        instance.totalCost = self.get_totalCost(instance)
-        instance.save()
-
+        # createのロジック...
+        instance = super().create(validated_data)
+        self.save_total_cost(instance)
         return instance
 
     def update(self, instance, validated_data):
-        # 各月のデータを更新
-        for month in ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']:
-            if month in validated_data:
-                setattr(instance, month, validated_data[month])
-
-        instance.save()  # 最初にインスタンスを保存
-
-        # totalCostを計算して保存
-        instance.totalCost = self.get_totalCost(instance)
-        instance.save()
-
+        # updateのロジック...
+        instance = super().update(instance, validated_data)
+        self.save_total_cost(instance)
         return instance
     
 
@@ -250,34 +182,17 @@ class PlannedPM05Serializer(serializers.ModelSerializer):
         model = PlannedPM05
         fields = '__all__' 
 
-    def get_totalCost(self, obj):
-        return sum(getattr(obj, month, 0) or 0 for month in ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'])
-
+    # createとupdateメソッドで共通ロジックを呼び出す
     def create(self, validated_data):
-        year = validated_data.get('year')
-        instance, created = PlannedPM05.objects.update_or_create(
-            companyCode=validated_data.get('companyCode'),
-            year=year,
-            defaults=validated_data
-        )
-        # totalCostを計算して保存
-        instance.totalCost = self.get_totalCost(instance)
-        instance.save()
-
+        # createのロジック...
+        instance = super().create(validated_data)
+        self.save_total_cost(instance)
         return instance
 
     def update(self, instance, validated_data):
-        # 各月のデータを更新
-        for month in ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']:
-            if month in validated_data:
-                setattr(instance, month, validated_data[month])
-
-        instance.save()  # 最初にインスタンスを保存
-
-        # totalCostを計算して保存
-        instance.totalCost = self.get_totalCost(instance)
-        instance.save()
-
+        # updateのロジック...
+        instance = super().update(instance, validated_data)
+        self.save_total_cost(instance)
         return instance
     
         
@@ -299,34 +214,17 @@ class ActualPM05Serializer(serializers.ModelSerializer):
         model = ActualPM05
         fields = '__all__'
 
-    def get_totalCost(self, obj):
-        return sum(getattr(obj, month, 0) or 0 for month in ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'])
-
+    # createとupdateメソッドで共通ロジックを呼び出す
     def create(self, validated_data):
-        year = validated_data.get('year')
-        instance, created = ActualPM05.objects.update_or_create(
-            companyCode=validated_data.get('companyCode'),
-            year=year,
-            defaults=validated_data
-        )
-        # totalCostを計算して保存
-        instance.totalCost = self.get_totalCost(instance)
-        instance.save()
-
+        # createのロジック...
+        instance = super().create(validated_data)
+        self.save_total_cost(instance)
         return instance
 
     def update(self, instance, validated_data):
-        # 各月のデータを更新
-        for month in ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']:
-            if month in validated_data:
-                setattr(instance, month, validated_data[month])
-
-        instance.save()  # 最初にインスタンスを保存
-
-        # totalCostを計算して保存
-        instance.totalCost = self.get_totalCost(instance)
-        instance.save()
-
+        # updateのロジック...
+        instance = super().update(instance, validated_data)
+        self.save_total_cost(instance)
         return instance
         
 class CompanyCodeAPM05Serializer(serializers.ModelSerializer):
@@ -351,14 +249,14 @@ class CalTablePPM02Serializer(serializers.ModelSerializer):
     no5RepairingCost = serializers.SerializerMethodField()
     
     class Meta:
-        model = PlannedPM02
+        model = CalTablePlannedPM02
         fields = '__all__'
         
     def get_repairing_cost_info(self, rank):
         task_list = TaskList.objects.order_by('-laborCostOfPM')[:5]  # laborCostOfPMで降順にソートし、上位5位までを取得
         if len(task_list) > rank:
             task = task_list[rank]
-            return {'taskName': task.taskOfPM, 'repairingCost': task.laborCostOfPM}
+            return {'taskName': task.taskName, 'repairingCost': task.laborCostOfPM}
         return None
 
     def get_no1RepairingCost(self, obj):
@@ -374,6 +272,8 @@ class CalTablePPM02Serializer(serializers.ModelSerializer):
         return self.get_repairing_cost_info(3)
 
     def get_no5RepairingCost(self, obj):
+        return self.get_repairing_cost_info(4)
+
         
 class CompanyCodeCalPPM02Serializer(serializers.ModelSerializer):
     calPPM02List = CalTablePPM02Serializer(many=True, read_only=True, source='calTablePlanPM02_companyCode')
@@ -392,14 +292,14 @@ class CalTableAPM02Serializer(serializers.ModelSerializer):
     no5RepairingCost = serializers.SerializerMethodField()
     
     class Meta:
-        model = ActualPM02
+        model = CalTableActualPM02
         fields = '__all__'
         
     def get_repairing_cost_info(self, rank):
         task_list = TaskList.objects.order_by('-laborCostOfPM')[:5]  # laborCostOfPMで降順にソートし、上位5位までを取得
         if len(task_list) > rank:
             task = task_list[rank]
-            return {'taskName': task.taskOfPM, 'repairingCost': task.laborCostOfPM}
+            return {'taskName': task.taskName, 'repairingCost': task.laborCostOfPM}
         return None
 
     def get_no1RepairingCost(self, obj):
@@ -415,6 +315,9 @@ class CalTableAPM02Serializer(serializers.ModelSerializer):
         return self.get_repairing_cost_info(3)
 
     def get_no5RepairingCost(self, obj):
+        return self.get_repairing_cost_info(4)
+
+
 
 
 class CompanyCodeCalAPM02Serializer(serializers.ModelSerializer):
@@ -435,7 +338,7 @@ class CalTablePPM03Serializer(serializers.ModelSerializer):
     no5RepairingCost = serializers.SerializerMethodField()
     
     class Meta:
-        model = PlannedPM03
+        model = CalTablePlannedPM03
         fields = '__all__'
 
     def get_repairing_cost_info(self, rank):
@@ -458,6 +361,7 @@ class CalTablePPM03Serializer(serializers.ModelSerializer):
         return self.get_repairing_cost_info(3)
 
     def get_no5RepairingCost(self, obj):
+        return self.get_repairing_cost_info(4)
 
         
         
@@ -469,6 +373,8 @@ class CompanyCodeCalPPM03Serializer(serializers.ModelSerializer):
 
 
 
+
+
 class CalTableAPM03Serializer(serializers.ModelSerializer):
     no1RepairingCost = serializers.SerializerMethodField()
     no2RepairingCost = serializers.SerializerMethodField()
@@ -477,7 +383,7 @@ class CalTableAPM03Serializer(serializers.ModelSerializer):
     no5RepairingCost = serializers.SerializerMethodField()
 
     class Meta:
-        model = ActualPM03
+        model = CalTableActualPM03
         fields = '__all__'
 
         
@@ -485,7 +391,7 @@ class CalTableAPM03Serializer(serializers.ModelSerializer):
         task_list = TaskList.objects.order_by('-laborCostOfPM')[:5]  # laborCostOfPMで降順にソートし、上位5位までを取得
         if len(task_list) > rank:
             task = task_list[rank]
-            return {'taskName': task.taskOfPM, 'repairingCost': task.laborCostOfPM}
+            return {'taskName': task.taskName, 'repairingCost': task.laborCostOfPM}
         return None
 
     def get_no1RepairingCost(self, obj):
@@ -501,6 +407,7 @@ class CalTableAPM03Serializer(serializers.ModelSerializer):
         return self.get_repairing_cost_info(3)
 
     def get_no5RepairingCost(self, obj):
+        return self.get_repairing_cost_info(4)
 
         
 class CompanyCodeCalAPM03Serializer(serializers.ModelSerializer):
@@ -508,6 +415,8 @@ class CompanyCodeCalAPM03Serializer(serializers.ModelSerializer):
     class Meta:
         model = CompanyCode
         fields = ['companyCode', 'calAPM03List']
+
+
 
 
 #PM04
@@ -519,14 +428,14 @@ class CalTableAPM04Serializer(serializers.ModelSerializer):
     no5RepairingCost = serializers.SerializerMethodField()
     
     class Meta:
-        model = ActualPM04
+        model = CalTableActualPM04
         fields = '__all__'
 
     def get_repairing_cost_info(self, rank):
         task_list = TaskList.objects.order_by('-laborCostOfPM')[:5]  # laborCostOfPMで降順にソートし、上位5位までを取得
         if len(task_list) > rank:
             task = task_list[rank]
-            return {'taskName': task.taskOfPM, 'repairingCost': task.laborCostOfPM}
+            return {'taskName': task.taskName, 'repairingCost': task.laborCostOfPM}
         return None
 
     def get_no1RepairingCost(self, obj):
@@ -542,6 +451,8 @@ class CalTableAPM04Serializer(serializers.ModelSerializer):
         return self.get_repairing_cost_info(3)
 
     def get_no5RepairingCost(self, obj):
+        return self.get_repairing_cost_info(4)
+
 
         
 class CompanyCodeCalAPM04Serializer(serializers.ModelSerializer):
@@ -549,6 +460,9 @@ class CompanyCodeCalAPM04Serializer(serializers.ModelSerializer):
     class Meta:
         model = CompanyCode
         fields = ['companyCode', 'calAPM04List']
+
+
+
 
 
 
@@ -562,14 +476,14 @@ class CalTablePPM05Serializer(serializers.ModelSerializer):
     no5RepairingCost = serializers.SerializerMethodField()
 
     class Meta:
-        model = PlannedPM05
+        model = CalTablePlannedPM05
         fields = '__all__'
 
     def get_repairing_cost_info(self, rank):
         task_list = TaskList.objects.order_by('-laborCostOfPM')[:5]  # laborCostOfPMで降順にソートし、上位5位までを取得
         if len(task_list) > rank:
             task = task_list[rank]
-            return {'taskName': task.taskOfPM, 'repairingCost': task.laborCostOfPM}
+            return {'taskName': task.taskName, 'repairingCost': task.laborCostOfPM}
         return None
 
     def get_no1RepairingCost(self, obj):
@@ -606,14 +520,14 @@ class CalTableAPM05Serializer(serializers.ModelSerializer):
     no5RepairingCost = serializers.SerializerMethodField()
     
     class Meta:
-        model = ActualPM05
+        model = CalTableActualPM05
         fields = '__all__'
 
     def get_repairing_cost_info(self, rank):
         task_list = TaskList.objects.order_by('-laborCostOfPM')[:5]  # laborCostOfPMで降順にソートし、上位5位までを取得
         if len(task_list) > rank:
             task = task_list[rank]
-            return {'taskName': task.taskOfPM, 'repairingCost': task.laborCostOfPM}
+            return {'taskName': task.taskName, 'repairingCost': task.laborCostOfPM}
         return None
 
     def get_no1RepairingCost(self, obj):
@@ -630,7 +544,6 @@ class CalTableAPM05Serializer(serializers.ModelSerializer):
 
     def get_no5RepairingCost(self, obj):
         return self.get_repairing_cost_info(4)
-
 
 
 

@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.request import Request
 
 
-from .models import TaskList,Company
+from .models import TaskList,CompanyCode
 from .serializers import TaskSerializer,CompanyTaskSerializer
 
 
@@ -24,6 +24,6 @@ class TaskListByCompanyViewSet(viewsets.ReadOnlyModelViewSet):
 
 @api_view(['GET'])
 def company_task_list(request):
-    companies = Company.objects.all()
+    companies = CompanyCode.objects.all()
     serializer = CompanyTaskSerializer(companies, many=True)
     return Response(serializer.data)

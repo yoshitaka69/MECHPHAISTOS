@@ -8,7 +8,7 @@ class NearMiss(models.Model):
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='nearMiss_companyCode',null=True, blank=True)
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE,related_name='nearMiss_companyName', null=True, blank=True)
 
-    nearMissListNo = models.IntegerField(null=True, blank=True)
+    nearMissNo = models.CharField(verbose_name='nearMissNo', max_length=50,null=True,blank=True)
     userName = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='nearMiss_userName', null=True, blank=True)
     department = models.CharField(verbose_name='department', max_length=200,null=True,blank=True)
     dateOfOccurrence = models.DateField(verbose_name='dateOfOccurrence', null=True,blank=True, default=timezone.now)
@@ -36,4 +36,4 @@ class NearMiss(models.Model):
         ordering = ('-createdDay',)
 
     def __str__(self):
-            return f'{self.nearMissListNo}'
+            return f'{self.nearMissNo}'

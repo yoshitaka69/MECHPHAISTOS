@@ -32,6 +32,8 @@ INSTALLED_APPS = [
     'junctionTable',
     'module',
     'calculation',
+    'agora',
+    'worldIndicators',
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
