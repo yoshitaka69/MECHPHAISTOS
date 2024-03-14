@@ -2,43 +2,27 @@ from rest_framework import serializers
 from .models import PlannedPM02,ActualPM02,PlannedPM03,ActualPM03,ActualPM04,PlannedPM05,ActualPM05
 from accounts.models import CompanyCode
 from tasklist.models import Task
+from module.serializers import CommonSerializerMethodMixin
 
 
-class PlannedPM02Serializer(serializers.ModelSerializer):
+class PlannedPM02Serializer(CommonSerializerMethodMixin,serializers.ModelSerializer):
     totalCost = serializers.SerializerMethodField(read_only=True)
     
     class Meta:
         model = PlannedPM02
         fields = '__all__'
         
-    def get_totalCost(self, obj):
-        return sum(getattr(obj, month, 0) or 0 for month in ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'])
-
+    # createとupdateメソッドで共通ロジックを呼び出す
     def create(self, validated_data):
-        year = validated_data.get('year')
-        instance, created = PlannedPM02.objects.update_or_create(
-            companyCode=validated_data.get('companyCode'),
-            year=year,
-            defaults=validated_data
-        )
-        # totalCostを計算して保存
-        instance.totalCost = self.get_totalCost(instance)
-        instance.save()
-
+        # createのロジック...
+        instance = super().create(validated_data)
+        self.save_total_cost(instance)
         return instance
 
     def update(self, instance, validated_data):
-        # 各月のデータを更新
-        for month in ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']:
-            if month in validated_data:
-                setattr(instance, month, validated_data[month])
-
-        instance.save()  # 最初にインスタンスを保存
-
-        # totalCostを計算して保存
-        instance.totalCost = self.get_totalCost(instance)
-        instance.save()
-
+        # updateのロジック...
+        instance = super().update(instance, validated_data)
+        self.save_total_cost(instance)
         return instance
 
 
@@ -48,7 +32,6 @@ class CompanyCodePPM02Serializer(serializers.ModelSerializer):
     class Meta:
         model = CompanyCode
         fields = ['companyCode', 'plannedPM02List']
-
 
 
 
