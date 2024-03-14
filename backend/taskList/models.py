@@ -20,10 +20,10 @@ class TaskList(models.Model):
 
     countOfPM = models.PositiveSmallIntegerField(verbose_name='countOfPM',blank=True,null=True,default=0)
     latestPM = models.DateField(verbose_name='latestPM',blank=True,null=True)
-    periodOfPM = models.DateField(verbose_name='periodOfPM',blank=True,null=True,default=timezone.now)
+    periodOfPM = models.IntegerField(verbose_name='periodOfPM', blank=True, null=True)  # 整数フィールドに変更
     
     #Probability of failure
-    constructionPeriod = models.DateField(verbose_name='constructionPeriod', blank=True,null=True,default=timezone.now)
+    constructionPeriod = models.IntegerField(verbose_name='constructionPeriod', blank=True, null=True)  # 整数フィールドに変更
     nextEventDate = models.DateField(verbose_name='nextEventDate',blank=True,null=True)
     situation = models.CharField(verbose_name='situation', max_length=200,blank=True,null=True)
 
