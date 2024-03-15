@@ -70,3 +70,14 @@ class CompanyCodeCeSerializer(serializers.ModelSerializer):
         model = CompanyCode
         fields = ['companyCode', 'ceList']
 
+
+class RepairingCostSumSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RepairingCostSum
+        fields = ['task', 'repairingCost']
+
+    def create(self, validated_data):
+        instance = RepairingCostSum.objects.create(**validated_data)
+        instance.calculate_repairing_cost()
+        return instance
+
