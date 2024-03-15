@@ -55,6 +55,9 @@ class CompanyCodeElectricityUsageSerializer(serializers.ModelSerializer):
 
 
 
+
+
+
 class CompressedAirSerializer(serializers.ModelSerializer):
     createdDay = serializers.DateTimeField(format="%Y-%m-%d")
     updateDay = serializers.DateTimeField(format="%Y-%m-%d") 
