@@ -258,6 +258,11 @@ class CalTablePPM02Serializer(serializers.ModelSerializer):
             task = task_list[rank]
             return {'taskName': task.taskName, 'repairingCost': task.laborCostOfPM}
         return None
+        
+        except Exception as e:
+        # ここにエラーログを記録する
+        print(f'Error in get_repairing_cost_info: {e}')
+        return None
 
     def get_no1RepairingCost(self, obj):
         return self.get_repairing_cost_info(0)
@@ -301,6 +306,12 @@ class CalTableAPM02Serializer(serializers.ModelSerializer):
             task = task_list[rank]
             return {'taskName': task.taskName, 'repairingCost': task.laborCostOfPM}
         return None
+        
+        except Exception as e:
+        # ここにエラーログを記録する
+        print(f'Error in get_repairing_cost_info: {e}')
+        return None
+        
 
     def get_no1RepairingCost(self, obj):
         return self.get_repairing_cost_info(0)
@@ -346,6 +357,11 @@ class CalTablePPM03Serializer(serializers.ModelSerializer):
         if len(task_list) > rank:
             task = task_list[rank]
             return {'taskName': task.taskOfPM, 'repairingCost': task.laborCostOfPM}
+        return None
+
+        except Exception as e:
+        # ここにエラーログを記録する
+        print(f'Error in get_repairing_cost_info: {e}')
         return None
 
     def get_no1RepairingCost(self, obj):
@@ -394,6 +410,11 @@ class CalTableAPM03Serializer(serializers.ModelSerializer):
             return {'taskName': task.taskName, 'repairingCost': task.laborCostOfPM}
         return None
 
+        except Exception as e:
+        # ここにエラーログを記録する
+        print(f'Error in get_repairing_cost_info: {e}')
+        return None
+
     def get_no1RepairingCost(self, obj):
         return self.get_repairing_cost_info(0)
 
@@ -438,6 +459,11 @@ class CalTableAPM04Serializer(serializers.ModelSerializer):
             return {'taskName': task.taskName, 'repairingCost': task.laborCostOfPM}
         return None
 
+        except Exception as e:
+        # ここにエラーログを記録する
+        print(f'Error in get_repairing_cost_info: {e}')
+        return None
+
     def get_no1RepairingCost(self, obj):
         return self.get_repairing_cost_info(0)
 
@@ -465,8 +491,6 @@ class CompanyCodeCalAPM04Serializer(serializers.ModelSerializer):
 
 
 
-
-
 #PM05
 class CalTablePPM05Serializer(serializers.ModelSerializer):
     no1RepairingCost = serializers.SerializerMethodField()
@@ -486,6 +510,11 @@ class CalTablePPM05Serializer(serializers.ModelSerializer):
             return {'taskName': task.taskName, 'repairingCost': task.laborCostOfPM}
         return None
 
+        except Exception as e:
+        # ここにエラーログを記録する
+        print(f'Error in get_repairing_cost_info: {e}')
+        return None
+        
     def get_no1RepairingCost(self, obj):
         return self.get_repairing_cost_info(0)
 
@@ -528,6 +557,11 @@ class CalTableAPM05Serializer(serializers.ModelSerializer):
         if len(task_list) > rank:
             task = task_list[rank]
             return {'taskName': task.taskName, 'repairingCost': task.laborCostOfPM}
+        return None
+
+        except Exception as e:
+        # ここにエラーログを記録する
+        print(f'Error in get_repairing_cost_info: {e}')
         return None
 
     def get_no1RepairingCost(self, obj):
