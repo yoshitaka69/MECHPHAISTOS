@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import NearMiss, CompanyCode,SafetyIndicators,
+from .models import NearMiss, CompanyCode, ActionItemList, SafetyIndicators
 from django.db.models import Count, Q
 
 class NearMissSerializer(serializers.ModelSerializer):
@@ -62,6 +62,14 @@ class CompanyNearMissSerializer(serializers.ModelSerializer):
         fields = ['companyCode', 'nearMissList']
 
 
+
+class ActionitemsListSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ActionItemList
+        fields = fields = ['companyCode', 'companyName', 'actionItems', 'solvedActionItems']
+
+    
 
 class SafetyIndicatorsSerializer(serializers.ModelSerializer):
     safetyIndicators = serializers.SerializerMethodField()
