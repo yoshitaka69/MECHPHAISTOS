@@ -63,7 +63,7 @@ class CompanyNearMissSerializer(serializers.ModelSerializer):
 
 
 
-class ActionitemsListSerializer(serializers.ModelSerializer):
+class ActionitemListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ActionItemList
