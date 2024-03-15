@@ -119,6 +119,18 @@ class CeList(models.Model):
    
 
 
+class RepairingCostSum(models.Model):
+    task = models.OneToOneField(TaskList, on_delete=models.CASCADE, related_name='repairing_cost_sum')
+    repairingCost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
+    def calculate_repairing_cost(self):
+        task_cost = self.task.taskCost
+        bom_cost = SpareParts.objects.get(bomCode=self.task.taskName).bomCost if SpareParts.objects.filter(bomCode=self.task.taskName).exists() else 0
+        self.repairingCost = task_cost + bom_cost
+        self.save()
+
+    def __str__(self):
+        return f'{self.task.taskName} - {self.repairingCost}'
 
 
 
