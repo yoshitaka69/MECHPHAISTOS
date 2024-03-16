@@ -1,165 +1,109 @@
 <template>
-	<div>
-	  <v-flex>
-		<v-card>
-		  <v-card-title>Safety correlation diagram</v-card-title>
-		  <div id="scd"></div>
-		</v-card>
-	  </v-flex>
-	</div>
-  </template>
+    <div>
+        <v-flex>
+            <v-card>
+                <v-card-title>Co2 trend</v-card-title>
+                <div id="co2"></div>
+            </v-card>
+        </v-flex>
+    </div>
+</template>
   
-  <script>
-  import Plotly from "plotly.js-dist-min";
-  import axios from 'axios'
-  
-  export default {
-	mounted() {
-		axios.get("http://127.0.0.1:8000/api/company-near-misses/?format=json", {
-      headers: {
-        'Authorization': 'Token a860caa1717c3ce1b47474728f10677aa04c440c'
-      }
+<script>
+import Plotly from "plotly.js-dist-min";
+import axios from "axios";
 
-    })
-	
-		.then(response => {
-		  const rows = response.data;
+export default {
+    data() {
+        return {
+            sustainabilityData: [],
+        };
+    },
+    mounted() {
+        // Sustainabilityデータを取得する関数
+        const getSustainabilityData = async () => {
+            try {
+                // axiosを使用してデータを取得
+                const response = await axios.get('http://127.0.0.1:8000/api/sustainability/co2ByCompany/?format=json');
+                // Sustainabilityデータを取り出す
+                const sustainabilityData = response.data;
 
-      console.log("rows",rows)
-  
-		  // departmentの各要素に番号を振り、順序を保持する
-		  const departmentMap = {};
-		  const departmentValues = rows.map(item => {
-			if (!(item.department in departmentMap)) {
-			  departmentMap[item.department] = Object.keys(departmentMap).length + 1;
-			}
-			return departmentMap[item.department];
-		  });
-  
-		  // whereの各要素に番号を振り、順序を保持する
-		  const placeOfOccurrenceMap = {};
-		  const placeOfOccurrenceValues = rows.map(item => {
-			if (!(item.placeOfOccurrence in placeOfOccurrenceMap)) {
-				placeOfOccurrenceMap[item.placeOfOccurrence] = Object.keys(placeOfOccurrenceMap).length + 1;
-			}
-			return placeOfOccurrenceMap[item.placeOfOccurrence];
-		  });
-  
-		  const maxDepartmentValue = Object.keys(departmentMap).length;
-		  const maxPlaceOfOccurrenceValue = Object.keys(placeOfOccurrenceMap).length;
-		  
-  
-		  const levelMap1 = { 'A': 5, 'B': 4, 'C': 3, 'D': 2, 'E': 1 };
-		  const levelMap2 = { 'others': 1, 'protective equipment violation': 2, 'impossible movement': 3, 'traffic accIdent': 4, 'conflagration': 5, 'rupture': 6, 'explosion': 7, 'electric shock': 8, 'contact with organic matter': 9, 'contact with hot or cold objects': 10, 'drown': 11, 'treading on something sharp': 12, 'cut/Rubbing': 13, 'got caught up in': 14, 'hit by something': 15, 'collapse': 16, 'accIdental fall': 17, 'collision': 18, 'fall/slip': 19, 'fall down': 20 };
-		  const levelMap3 = { 'others': 1, 'Rule': 2, 'Person': 3, 'Methods': 4, 'Equipment': 5 };
-  
-		  let typeOfAccidentValues = [];
-		  let factorValues = [];
-		  let injuredLvValues = [];
-		  let equipmentDamageLvValues = [];
-		  let affectOfEnviromentValues = [];
-		  let newsCoverageValues = [];
-		  let measuresValues = [];
-  
-		  // Extracting values for each dimension
-		  rows.forEach(item => {
-			typeOfAccidentValues.push(levelMap2[item.typeOfAccident]);
-			factorValues.push(levelMap3[item.factor]);
-			injuredLvValues.push(levelMap1[item.injuredLv]);
-			equipmentDamageLvValues.push(levelMap1[item.equipmentDamageLv]);
-			affectOfEnviromentValues.push(levelMap1[item.affectOfEnviroment]);
-			newsCoverageValues.push(levelMap1[item.newsCoverage]);
-			measuresValues.push(levelMap1[item.measures]);
-		  });
-  
-		  console.log('departmentValues:', departmentValues);
-		  console.log('placeOfOccurrenceValues:',placeOfOccurrenceValues);
-		  console.log('accidentTypeValues:', typeOfAccidentValues);
-		  console.log('factorValues:', factorValues);
-		  console.log('injuredLvValues:', injuredLvValues);
-		  console.log('equipmentDamageLvValues:', equipmentDamageLvValues);
-		  console.log('affectOfEnviromentValues:', affectOfEnviromentValues);
-		  console.log('newsCoverageValues:', newsCoverageValues);
-		  console.log('measuresValues:', measuresValues);
-  
-		  let data = {
-			type: "parcoords",
-			line: {
-			  color: 'blue'
-			},
-			dimensions: [
-			  {
-				range: [1, maxDepartmentValue],
-				label: 'Department',
-				values: departmentValues,
-				tickvals: Array.from({ length: departmentValues.length }, (_, index) => index + 1),
-				ticktext: Object.keys(departmentMap)
-  
-			  }, {
-				range: [1, maxPlaceOfOccurrenceValue],
-				label: 'Where',
-				values: placeOfOccurrenceValues,
-				tickvals: Array.from({ length: placeOfOccurrenceValues.length }, (_, index) => index + 1),
-				ticktext: Object.keys(placeOfOccurrenceMap)
-			  }, {
-				range: [1, 20],
-				label: 'Accident type',
-				values: typeOfAccidentValues,
-				tickvals: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
-				ticktext: ['others', 'protective equipment violation', 'impossible movement', 'traffic accIdent', 'conflagration', 'rupture', 'explosion', 'electric shock', 'contact with organic matter', 'contact with hot or cold objects', 'drown', 'treading on something sharp', 'cut/Rubbing', 'got caught up in', 'hit by something', 'collapse', 'accIdental fall', 'collision', 'fall/slip', 'fall down']
-			  }, {
-				range: [1, 5],
-				label: 'Factor',
-				values: factorValues,
-				tickvals: [1, 2, 3, 4, 5],
-				ticktext: ['others', 'Rule', 'Person', 'Methods', 'Equipment']
-			  }, {
-				range: [1, 5],
-				label: 'injured Lv',
-				values: injuredLvValues,
-				tickvals: [1, 2, 3, 4, 5],
-				ticktext: ['E', 'D', 'C', 'B', 'A']
-			  },
-			  {
-				range: [1, 5],
-				label: 'Equipment Damage Lv',
-				values: equipmentDamageLvValues,
-				tickvals: [1, 2, 3, 4, 5],
-				ticktext: ['E', 'D', 'C', 'B', 'A']
-			  },
-			  {
-				range: [1, 5],
-				label: 'Affect Of Enviroment',
-				values: affectOfEnviromentValues,
-				tickvals: [1, 2, 3, 4, 5],
-				ticktext: ['E', 'D', 'C', 'B', 'A']
-			  },
-			  {
-				range: [1, 5],
-				label: 'News Coverage',
-				values: newsCoverageValues,
-				tickvals: [1, 2, 3, 4, 5],
-				ticktext: ['E', 'D', 'C', 'B', 'A']
-			  },
-			  {
-				range: [1, 5],
-				label: 'Measures',
-				values: measuresValues,
-				tickvals: [1, 2, 3, 4, 5],
-				ticktext: ['E', 'D', 'C', 'B', 'A']
-			  }
-			]
-		  };
+                console.error('sustainabilityData', sustainabilityData);
 
-		  const layout ={
-			width:1000,
-		  }
+                // 各工場のデータごとに処理
+                for (const plantData of sustainabilityData) {
+                    const co2Data = plantData.Co2;
+
+                    // dateとco2の列だけを抽出して新しいデータ形式に変換
+                    const transformedData = co2Data.map(entry => ({ date: entry.date, co2: entry.co2 }));
+                    // Vueのdataに追加
+                    this.sustainabilityData.push({ plant: plantData.plant, co2Data: transformedData });
+                }
+            } catch (error) {
+                console.error('Error fetching Sustainability data:', error);
+                throw error;
+            }
+        };
+
+        // 上記関数の実行
+        getSustainabilityData().then(() => {
+            // 取得したデータを使ってグラフを描画
+            const plotData = this.sustainabilityData.map((plantData, index) => {
+                const xValues = plantData.co2Data.map(entry => entry.date);
+                const yValues = plantData.co2Data.map(entry => entry.co2);
+
+                // xの最小値と最大値を取得
+                const minX = Math.min(...xValues);
+                const maxX = Math.max(...xValues);
+
+                return {
+                    type: "scatter",
+                    mode: "lines",
+                    name: `${plantData.plant} Co2`,
+                    x: xValues,
+                    y: yValues,
+                    line: { color: `#${Math.floor(Math.random() * 16777215).toString(16)}` }
+                };
+            });
+
+            // layout内でxの最小値と最大値を取得
+            const minDate = Math.min(...this.sustainabilityData.flatMap(plantData => plantData.co2Data.map(entry => entry.date)));
+            const maxDate = Math.max(...this.sustainabilityData.flatMap(plantData => plantData.co2Data.map(entry => entry.date)));
+
+            const layout = {
+                xaxis: {
+                    autorange: true,
+                    range: [minDate, maxDate],
+                    rangeselector: {
+                        buttons: [
+                            {
+                                count: 1,
+                                label: '1m',
+                                step: 'month',
+                                stepmode: 'backward'
+                            },
+                            {
+                                count: 6,
+                                label: '6m',
+                                step: 'month',
+                                stepmode: 'backward'
+                            },
+                            { step: 'all' }
+                        ]
+                    },
+                    rangeslider: { range: [minDate, maxDate] },
+                    type: 'date'
+                },
+                yaxis: {
+                    autorange: true,
+                    range: [Math.min(...this.sustainabilityData.flatMap(plantData => plantData.co2Data.map(entry => entry.co2))), Math.max(...this.sustainabilityData.flatMap(plantData => plantData.co2Data.map(entry => entry.co2)))],
+                    type: 'linear'
+                }
+            };
+
+            Plotly.newPlot('co2', plotData, layout);
+        });
+    },
+};
+</script>
   
-		  Plotly.newPlot('scd', [data],layout);
-		})
-		.catch(error => {
-		  console.error('データの取得に失敗しました', error);
-		});
-	}
-  }
-  </script>

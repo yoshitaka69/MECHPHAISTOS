@@ -24,7 +24,7 @@ export default {
         const getSustainabilityData = async () => {
             try {
                 // axiosを使用してデータを取得
-                const response = await axios.get('http://127.0.0.1:8000/api/sustainability/co2/?format=json');
+                const response = await axios.get('http://127.0.0.1:8000/api/sustainability/co2ByCompany/?format=json');
                 // Sustainabilityデータを取り出す
                 const sustainabilityData = response.data;
 
