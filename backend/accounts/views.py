@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.request import Request
 
 from .models import CustomUser, Company, Payment,CompanyCode,CompanyName,AreaCode,CommunityGroup
-from .serializers import CustomUserSerializer, CompanySerializer, PaymentSerializer,CompanyCodeSerializer,CompanyNameSerializer,AreaCodeSerializer,CommunityGroupSerializer
+from .serializers import CustomUserSerializer, CompanySerializer, PaymentSerializer,CompanyCodeSerializer,CompanyNameSerializer,AreaCodeSerializer,CommunityGroupSerializer,CompanyCodeUserSerializer
 
 class CustomUserViewSet(viewsets.ModelViewSet):
     queryset = CustomUser.objects.all()
@@ -105,3 +105,11 @@ class CommunityGroupViewSet(viewsets.ModelViewSet):
         payment = get_object_or_404(self.get_queryset(), pk=pk)
         serializer = self.get_serializer(payment)
         return Response(serializer.data)
+    
+
+
+class CompanyCodeUserViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = CompanyCodeUserSerializer
+
+    def get_queryset(self):
+        return CompanyCode.objects.prefetch_related('customUser_companyCode').all()

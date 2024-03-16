@@ -1,8 +1,8 @@
 from django.db import models
 from django.utils import timezone
 
-from accounts.models import CompanyCode,CompanyName
-from ceList.models import Plant
+from accounts.models import CompanyCode,CompanyName,Plant
+
 
 #RepairingCostPM02 項目が多くなるけど将来的にいろいろな企業が入ってきた際に、このように細かく振り分けておいたほうがわかり易くなるはず…
 class PlannedPM02(models.Model):

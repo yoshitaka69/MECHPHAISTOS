@@ -1,25 +1,9 @@
 from django.db import models
 from django.utils import timezone
 from datetime import timedelta
-from accounts.models import CompanyCode,CompanyName
+from accounts.models import CompanyCode,CompanyName,Plant
 from taskList.models import TaskList
 from spareParts.models import SpareParts
-
-
-
-class Plant(models.Model):
-
-    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='plant_companyCode',null=True, blank=True)
-    companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='plant_companyName', null=True, blank=True)
-    plant = plant = models.CharField(verbose_name='plant', max_length=200,null=True,blank=True)
-
-    class Meta:
-        verbose_name = 'Plant'
-        verbose_name_plural = 'Plant'
-        ordering = ('plant',) 
-
-    def __str__(self):
-        return f'{self.plant}'
 
 
 

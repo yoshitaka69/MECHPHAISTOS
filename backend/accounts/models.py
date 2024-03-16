@@ -119,6 +119,23 @@ class Company(models.Model):
         return f'{self.companyName}'
 
 
+
+class Plant(models.Model):
+
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='plant_companyCode',null=True, blank=True)
+    companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='plant_companyName', null=True, blank=True)
+    plant = models.CharField(verbose_name='plant', max_length=200,null=True,blank=True)
+
+    class Meta:
+        verbose_name = 'Plant'
+        verbose_name_plural = 'Plant'
+        ordering = ('plant',) 
+
+    def __str__(self):
+        return f'{self.plant}'
+
+
+
 class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     firstName = models.CharField(verbose_name='firstName',max_length=200,null=True,blank=True)

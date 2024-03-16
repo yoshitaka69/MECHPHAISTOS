@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils import timezone
-from accounts.models import CompanyCode,CompanyName
-from ceList.models import Plant
+from accounts.models import CompanyCode,CompanyName,Plant
+
 
 
 #Co2リスト
@@ -12,7 +12,7 @@ class Co2(models.Model):
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='co2_plant', null=True, blank=True)
 
     date = models.DateField(verbose_name='date', blank=True, null=True, default=timezone.now)
-    co2Cost = models.DecimalField(verbose_name='co2Cost', max_digits=15, decimal_places=2, null=True, blank=True, default=0.00,)
+    co2Cost = models.DecimalField(verbose_name='co2Cost', max_digits=15, decimal_places=5, null=True, blank=True, default=0.00,)
     createdDay = models.DateTimeField(auto_now_add=True) 
     updateDay = models.DateTimeField(auto_now_add=True) 
 
@@ -46,6 +46,7 @@ class Stm(models.Model):
     def __str__(self):
         return f'{self.companyCode} - {self.date}'
 
+
 #ElectricityUsage
 class ElectricityUsage(models.Model):
 
@@ -66,6 +67,8 @@ class ElectricityUsage(models.Model):
     def __str__(self):
         return f'{self.companyCode} - {self.date}'
     
+
+
 
 #compressorAir
 class CompressedAir(models.Model):

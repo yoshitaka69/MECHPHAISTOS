@@ -1,55 +1,82 @@
 from rest_framework import serializers
 from .models import Co2,Stm,ElectricityUsage,CompressedAir,WellWater,PureWater,Wwt,ExhaustGas
-from accounts.models import CompanyCode
+from accounts.models import CompanyCode,Plant
 
 
+#Co2
 class Co2Serializer(serializers.ModelSerializer):
-    createdDay = serializers.DateTimeField(format="%Y-%m-%d")
-    updateDay = serializers.DateTimeField(format="%Y-%m-%d") 
+    co2 = serializers.DecimalField(max_digits=15, decimal_places=5, source='co2Cost') 
+
     class Meta:
         model = Co2
-        fields = ['id', 'companyCode', 'companyName', 'plant', 'date', 'co2Cost', 'createdDay', 'updateDay']
+        fields = ['date', 'co2']
+
+class PlantCo2Serializer(serializers.ModelSerializer):
+    Co2 = Co2Serializer(many=True, source='co2_plant')  # Co2 モデルの related_name
+
+    class Meta:
+        model = Plant
+        fields = ['plant', 'Co2']
 
 class CompanyCodeCo2Serializer(serializers.ModelSerializer):
-    co2List = Co2Serializer(many=True, read_only=True, source='co2_companyCode')#sourceはmodelのrelated_nameにすること。ここで嵌った。
+    Co2List = PlantCo2Serializer(many=True, source='plant_companyCode')  # Plant モデルの related_name
 
     class Meta:
         model = CompanyCode
-        fields = ['companyCode', 'co2List']
+        fields = ['companyCode', 'Co2List']
 
 
 
 
+
+
+#STM
 class StmSerializer(serializers.ModelSerializer):
-    createdDay = serializers.DateTimeField(format="%Y-%m-%d")
-    updateDay = serializers.DateTimeField(format="%Y-%m-%d") 
+    stm = serializers.DecimalField(max_digits=15, decimal_places=5, source='stmCost') 
+
     class Meta:
         model = Stm
-        fields = ['id', 'companyCode', 'companyName', 'plant', 'date', 'stmCost', 'createdDay', 'updateDay']
+        fields = ['date', 'stm']
+
+class PlantStmSerializer(serializers.ModelSerializer):
+    Stm = StmSerializer(many=True, source='stm_plant')  
+
+    class Meta:
+        model = Plant
+        fields = ['plant', 'Stm']
 
 class CompanyCodeStmSerializer(serializers.ModelSerializer):
-    stmList = StmSerializer(many=True, read_only=True, source='stm_companyCode')#sourceはmodelのrelated_nameにすること。ここで嵌った…。
+    StmList = PlantStmSerializer(many=True, source='plant_companyCode') 
 
     class Meta:
         model = CompanyCode
-        fields = ['companyCode', 'stmList']
+        fields = ['companyCode', 'StmList']
 
 
 
 
-class ElectricityUsageSerializer(serializers.ModelSerializer):
-    createdDay = serializers.DateTimeField(format="%Y-%m-%d")
-    updateDay = serializers.DateTimeField(format="%Y-%m-%d") 
+
+#elec
+class ElecSerializer(serializers.ModelSerializer):
+    elec = serializers.DecimalField(max_digits=15, decimal_places=5, source='elecCost') 
+
     class Meta:
         model = ElectricityUsage
-        fields = ['id', 'companyCode', 'companyName', 'plant', 'date', 'elecCost', 'createdDay', 'updateDay']
+        fields = ['date', 'elec']
 
-class CompanyCodeElectricityUsageSerializer(serializers.ModelSerializer):
-    elecList = ElectricityUsageSerializer(many=True, read_only=True, source='elec_companyCode')#sourceはmodelのrelated_nameにすること。ここで嵌った…。
+class PlantElecSerializer(serializers.ModelSerializer):
+    Elec = ElecSerializer(many=True, source='elec_plant')  
+
+    class Meta:
+        model = Plant
+        fields = ['plant', 'Elec']
+
+class CompanyCodeElecSerializer(serializers.ModelSerializer):
+    ElecList = PlantStmSerializer(many=True, source='plant_companyCode') 
 
     class Meta:
         model = CompanyCode
-        fields = ['companyCode', 'elecList']
+        fields = ['companyCode', 'ElecList']
 
 
 
@@ -58,100 +85,131 @@ class CompanyCodeElectricityUsageSerializer(serializers.ModelSerializer):
 
 
 
-class CompressedAirSerializer(serializers.ModelSerializer):
-    createdDay = serializers.DateTimeField(format="%Y-%m-%d")
-    updateDay = serializers.DateTimeField(format="%Y-%m-%d") 
+#CompAir
+class CompAirSerializer(serializers.ModelSerializer):
+    compAir = serializers.DecimalField(max_digits=15, decimal_places=5, source='compAirCost') 
+
     class Meta:
         model = CompressedAir
-        fields = ['id', 'companyCode', 'companyName', 'plant', 'date', 'compAirCost', 'createdDay', 'updateDay']
+        fields = ['date', 'compAir']
 
-class CompanyCodeCompressedAirSerializer(serializers.ModelSerializer):
-    compAirList = CompressedAirSerializer(many=True, read_only=True, source='compAir_companyCode')#sourceはmodelのrelated_nameにすること。ここで嵌った…。
+class PlantCompAirSerializer(serializers.ModelSerializer):
+    CompAir = CompAirSerializer(many=True, source='compAir_plant')  
+
+    class Meta:
+        model = Plant
+        fields = ['plant', 'CompAir']
+
+class CompanyCodeCompAirSerializer(serializers.ModelSerializer):
+    CompAirList = PlantCompAirSerializer(many=True, source='plant_companyCode') 
 
     class Meta:
         model = CompanyCode
-        fields = ['companyCode', 'compAirList']
+        fields = ['companyCode', 'CompAirList']
 
 
 
 
+#WellWater
 class WellWaterSerializer(serializers.ModelSerializer):
-    createdDay = serializers.DateTimeField(format="%Y-%m-%d")
-    updateDay = serializers.DateTimeField(format="%Y-%m-%d") 
+    wellWater = serializers.DecimalField(max_digits=15, decimal_places=5, source='wellWaterCost') 
+
     class Meta:
         model = WellWater
-        fields = ['id', 'companyCode', 'companyName', 'plant', 'date', 'wellWaterCost', 'createdDay', 'updateDay']
+        fields = ['date', 'wellWater']
+
+class PlantWellWaterSerializer(serializers.ModelSerializer):
+    WellWater = WellWaterSerializer(many=True, source='wellWater_plant')  
+
+    class Meta:
+        model = Plant
+        fields = ['plant', 'WellWater']
 
 class CompanyCodeWellWaterSerializer(serializers.ModelSerializer):
-    wellWaterList = WellWaterSerializer(many=True, read_only=True, source='wellWater_companyCode')#sourceはmodelのrelated_nameにすること。ここで嵌った…。
+    WellWaterList = PlantWellWaterSerializer(many=True, source='plant_companyCode') 
 
     class Meta:
         model = CompanyCode
-        fields = ['companyCode', 'wellWaterList']
+        fields = ['companyCode', 'WellWaterList']
 
 
 
+
+
+
+#PureWater
 class PureWaterSerializer(serializers.ModelSerializer):
-    createdDay = serializers.DateTimeField(format="%Y-%m-%d")
-    updateDay = serializers.DateTimeField(format="%Y-%m-%d") 
+    pureWater = serializers.DecimalField(max_digits=15, decimal_places=5, source='pureWaterCost') 
+
     class Meta:
         model = PureWater
-        fields = ['id', 'companyCode', 'companyName', 'plant', 'date', 'pureWaterCost', 'createdDay', 'updateDay']
+        fields = ['date', 'pureWater']
+
+class PlantPureWaterSerializer(serializers.ModelSerializer):
+    PureWater = PureWaterSerializer(many=True, source='pureWater_plant')  
+
+    class Meta:
+        model = Plant
+        fields = ['plant', 'PureWater']
 
 class CompanyCodePureWaterSerializer(serializers.ModelSerializer):
-    pureWaterList = PureWaterSerializer(many=True, read_only=True, source='pureWater_companyCode')#sourceはmodelのrelated_nameにすること。ここで嵌った…。
+    PureWaterList = PlantPureWaterSerializer(many=True, source='plant_companyCode') 
 
     class Meta:
         model = CompanyCode
-        fields = ['companyCode', 'pureWaterList']
+        fields = ['companyCode', 'PureWaterList']
 
 
 
 
+
+
+
+#Wwt
 class WwtSerializer(serializers.ModelSerializer):
-    createdDay = serializers.DateTimeField(format="%Y-%m-%d")
-    updateDay = serializers.DateTimeField(format="%Y-%m-%d") 
+    wwt = serializers.DecimalField(max_digits=15, decimal_places=5, source='wwtCost') 
+
     class Meta:
         model = Wwt
-        fields = ['id', 'companyCode', 'companyName', 'plant', 'date', 'wwtCost', 'createdDay', 'updateDay']
+        fields = ['date', 'wwt']
+
+class PlantWwtSerializer(serializers.ModelSerializer):
+    Wwt = WwtSerializer(many=True, source='wwt_plant')  
+
+    class Meta:
+        model = Plant
+        fields = ['plant', 'Wwt']
 
 class CompanyCodeWwtSerializer(serializers.ModelSerializer):
-    wwtList = WwtSerializer(many=True, read_only=True, source='wwt_companyCode')#sourceはmodelのrelated_nameにすること。ここで嵌った…。
+    WwtList = PlantWwtSerializer(many=True, source='plant_companyCode') 
 
     class Meta:
         model = CompanyCode
-        fields = ['companyCode', 'wwtList']
-
-
-
-class WwtSerializer(serializers.ModelSerializer):
-    createdDay = serializers.DateTimeField(format="%Y-%m-%d")
-    updateDay = serializers.DateTimeField(format="%Y-%m-%d") 
-    class Meta:
-        model = Wwt
-        fields = ['id', 'companyCode', 'companyName', 'plant', 'date', 'wwtCost', 'createdDay', 'updateDay']
-
-class CompanyCodeWwtSerializer(serializers.ModelSerializer):
-    wwtList = WwtSerializer(many=True, read_only=True, source='wwt_companyCode')#sourceはmodelのrelated_nameにすること。ここで嵌った…。
-
-    class Meta:
-        model = CompanyCode
-        fields = ['companyCode', 'wwtList']
+        fields = ['companyCode', 'WwtList']
 
 
 
 
+
+
+#ExhaustGas
 class ExhaustGasSerializer(serializers.ModelSerializer):
-    createdDay = serializers.DateTimeField(format="%Y-%m-%d")
-    updateDay = serializers.DateTimeField(format="%Y-%m-%d") 
+    exhaustGas = serializers.DecimalField(max_digits=15, decimal_places=5, source='exhaustGasCost') 
+
     class Meta:
         model = ExhaustGas
-        fields = ['id', 'companyCode', 'companyName', 'plant', 'date', 'exhaustGasCost', 'createdDay', 'updateDay']
+        fields = ['date', 'exhaustGas']
+
+class PlantExhaustGasSerializer(serializers.ModelSerializer):
+    ExhaustGas = ExhaustGasSerializer(many=True, source='exhaustGas_plant')  
+
+    class Meta:
+        model = Plant
+        fields = ['plant', 'ExhaustGas']
 
 class CompanyCodeExhaustGasSerializer(serializers.ModelSerializer):
-    exhaustGasList = ExhaustGasSerializer(many=True, read_only=True, source='exhaustGas_companyCode')#sourceはmodelのrelated_nameにすること。ここで嵌った…。
+    ExhaustGasList = PlantExhaustGasSerializer(many=True, source='plant_companyCode') 
 
     class Meta:
         model = CompanyCode
-        fields = ['companyCode', 'exhaustGasList']
-
+        fields = ['companyCode', 'ExhaustGasList']

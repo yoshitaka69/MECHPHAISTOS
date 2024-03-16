@@ -20,6 +20,7 @@ class CompanyCodePPM02ViewSet(viewsets.ReadOnlyModelViewSet):
         return CompanyCode.objects.prefetch_related('plannedPM02_companyCode').all()
 
 
+
 class ActualPM02ViewSet(viewsets.ModelViewSet):
     queryset = ActualPM02.objects.all()
     serializer_class = ActualPM02Serializer
@@ -52,6 +53,7 @@ class CompanyCodeAPM03ViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         return CompanyCode.objects.prefetch_related('actualPM03_companyCode').all()
+
 
 
 class ActualPM04ViewSet(viewsets.ModelViewSet):

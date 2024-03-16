@@ -40,10 +40,17 @@ class CompanySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+
+
+
+#CustomUserSerializer
 class CustomUserSerializer(serializers.ModelSerializer):
-    createdDay = serializers.DateTimeField(format="%Y-%m-%d")
-    updateDay = serializers.DateTimeField(format="%Y-%m-%d")
-    companyCode = CompanyCodeSerializer()
     class Meta:
         model = CustomUser
-        fields = '__all__'
+        fields = ['userName','email','payment']
+
+class CompanyCodeUserSerializer(serializers.ModelSerializer):
+    users = CustomUserSerializer(many=True, read_only=True, source='customUser_companyCode')  # sourceはCustomUserモデルのrelated_name
+    class Meta:
+        model = CompanyCode
+        fields = ['companyCode', 'users']
