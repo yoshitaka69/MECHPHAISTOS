@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from accounts.models import CompanyCode,CompanyName
-from ceList.models import Plant,Equipment,Machine,TypeOfPM
+#from ceList.models import Plant,Equipment,Machine,TypeOfPM
 
 
 
@@ -9,12 +9,12 @@ class TaskList(models.Model):
 
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='taskList_companyCode',null=True, blank=True)
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='taskList_companyName', null=True, blank=True)
-    plant = models.ForeignKey(Plant, on_delete=models.CASCADE,related_name='taskList_plant', null=True, blank=True)
-    equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='taskList_equipment', null=True, blank=True)
-    machineName = models.ForeignKey(Machine, on_delete=models.CASCADE, related_name='taskList_function', null=True, blank=True)
+    #plant = models.ForeignKey(Plant, on_delete=models.CASCADE,related_name='taskList_plant', null=True, blank=True)
+    #equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='taskList_equipment', null=True, blank=True)
+    #machineName = models.ForeignKey(Machine, on_delete=models.CASCADE, related_name='taskList_function', null=True, blank=True)
 
     taskCode = models.CharField(verbose_name='taskCode',max_length=200,blank=True,null=True)
-    typeOfPM = models.ForeignKey(TypeOfPM, on_delete=models.PROTECT, related_name='taskList_typeOfPM', null=True, blank=True)#これは絶対PROTECT
+    #typeOfPM = models.ForeignKey(TypeOfPM, on_delete=models.PROTECT, related_name='taskList_typeOfPM', null=True, blank=True)#これは絶対PROTECT
     taskName = models.CharField(verbose_name='taskName',max_length=200,blank=True,null=True)
     laborCostOfPM = models.DecimalField(verbose_name='laborCostOfPM',max_digits=10,decimal_places=5,blank=True,null=True,default=0.00)
 

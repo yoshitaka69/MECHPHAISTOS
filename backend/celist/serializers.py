@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from django.db.models import Max
-from .models import CeList,CompanyCode,Plant,Equipment,Machine,TypeOfPM
+from .models import CeList,CompanyCode,Plant,Equipment,Machine,TypeOfPM,TotalRepairingCost
 
 class PlantSerializer(serializers.ModelSerializer):
     class Meta:
@@ -73,11 +73,11 @@ class CompanyCodeCeSerializer(serializers.ModelSerializer):
 
 class RepairingCostSumSerializer(serializers.ModelSerializer):
     class Meta:
-        model = RepairingCostSum
+        model = TotalRepairingCost
         fields = ['task', 'repairingCost']
 
     def create(self, validated_data):
-        instance = RepairingCostSum.objects.create(**validated_data)
+        instance = TotalRepairingCost.objects.create(**validated_data)
         instance.calculate_repairing_cost()
         return instance
 

@@ -2,6 +2,8 @@ from django.db import models
 from django.utils import timezone
 from datetime import timedelta
 from accounts.models import CompanyCode,CompanyName
+from taskList.models import TaskList
+from spareParts.models import SpareParts
 
 
 
@@ -119,7 +121,7 @@ class CeList(models.Model):
    
 
 
-class RepairingCostSum(models.Model):
+class TotalRepairingCost(models.Model):
     task = models.OneToOneField(TaskList, on_delete=models.CASCADE, related_name='repairing_cost_sum')
     repairingCost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 

@@ -2,7 +2,7 @@ from django.db import models
 from django.utils import timezone
 from datetime import timedelta
 from accounts.models import CompanyCode,CompanyName
-from ceList.models import Plant,Equipment,Machine
+#from ceList.models import Plant,Equipment,Machine
 
 class Category(models.Model):
    category = models.CharField(verbose_name='category', max_length=10,blank=True,null=True)
@@ -46,9 +46,9 @@ class SpareParts(models.Model):
     #CeListから引用
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='spareParts_companyCode', null=True, blank=True)
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='spareParts_companyName', null=True, blank=True)
-    plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='spareParts_plant', null=True, blank=True)
-    equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='spareParts_equipment', null=True, blank=True)
-    machineName = models.ForeignKey(Machine, on_delete=models.CASCADE, related_name='spareParts_machineName', null=True, blank=True)
+    #plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='spareParts_plant', null=True, blank=True)
+    #equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='spareParts_equipment', null=True, blank=True)
+    #machineName = models.ForeignKey(Machine, on_delete=models.CASCADE, related_name='spareParts_machineName', null=True, blank=True)
 
     #画像
     image = models.ImageField(verbose_name='image',null=True,blank=True)
@@ -88,32 +88,35 @@ class SpareParts(models.Model):
             return f'{self.partsName}'
 
 
-class SparePartsAlertNextMonth(models.Model):
-   companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='spareParts_companyCode', null=True, blank=True)
-   companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='spareParts_companyName', null=True, blank=True)
-   plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='spareParts_plant', null=True, blank=True)
 
-   nextMonthOrder1 = models.CharField(verbose_name='nextMonthorder1',max_length=200,blank=True,null=True)
-   nextMonthOrder2 = models.CharField(verbose_name='nextMonthorder2',max_length=200,blank=True,null=True)
-   nextMonthOrder3 = models.CharField(verbose_name='nextMonthorder3',max_length=200,blank=True,null=True)
-   nextMonthOrder4 = models.CharField(verbose_name='nextMonthorder4',max_length=200,blank=True,null=True)
-   nextMonthOrder5 = models.CharField(verbose_name='nextMonthorder5',max_length=200,blank=True,null=True)
-   nextMonthOrder6 = models.CharField(verbose_name='nextMonthorder6',max_length=200,blank=True,null=True)
-   nextMonthOrder7 = models.CharField(verbose_name='nextMonthorder7',max_length=200,blank=True,null=True)
-   nextMonthOrder8 = models.CharField(verbose_name='nextMonthorder8',max_length=200,blank=True,null=True)
-   nextMonthOrder9 = models.CharField(verbose_name='nextMonthorder9',max_length=200,blank=True,null=True)
-   nextMonthOrder10 = models.CharField(verbose_name='nextMonthorder10',max_length=200,blank=True,null=True)
-   nextMonthOrder11 = models.CharField(verbose_name='nextMonthorder11',max_length=200,blank=True,null=True)
-   nextMonthOrder12 = models.CharField(verbose_name='nextMonthorder12',max_length=200,blank=True,null=True)
-   nextMonthOrder13 = models.CharField(verbose_name='nextMonthorder13',max_length=200,blank=True,null=True)
-   nextMonthOrder14 = models.CharField(verbose_name='nextMonthorder14',max_length=200,blank=True,null=True)
-   nextMonthOrder15 = models.CharField(verbose_name='nextMonthorder15',max_length=200,blank=True,null=True)
+class SparePartsAlertNextMonth(models.Model):
+   companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='sparePartsAlert_companyCode', null=True, blank=True)
+   companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='sparePartsAlert_companyName', null=True, blank=True)
+   #plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='spareParts_plant', null=True, blank=True)
+
+
+   nextMonthOrder1 = models.CharField(verbose_name='nextMonthOrder1',max_length=200,blank=True,null=True)
+   nextMonthOrder2 = models.CharField(verbose_name='nextMonthOrder2',max_length=200,blank=True,null=True)
+   nextMonthOrder3 = models.CharField(verbose_name='nextMonthOrder3',max_length=200,blank=True,null=True)
+   nextMonthOrder4 = models.CharField(verbose_name='nextMonthOrder4',max_length=200,blank=True,null=True)
+   nextMonthOrder5 = models.CharField(verbose_name='nextMonthOrder5',max_length=200,blank=True,null=True)
+   nextMonthOrder6 = models.CharField(verbose_name='nextMonthOrder6',max_length=200,blank=True,null=True)
+   nextMonthOrder7 = models.CharField(verbose_name='nextMonthOrder7',max_length=200,blank=True,null=True)
+   nextMonthOrder8 = models.CharField(verbose_name='nextMonthOrder8',max_length=200,blank=True,null=True)
+   nextMonthOrder9 = models.CharField(verbose_name='nextMonthOrder9',max_length=200,blank=True,null=True)
+   nextMonthOrder10 = models.CharField(verbose_name='nextMonthOrder10',max_length=200,blank=True,null=True)
+   nextMonthOrder11 = models.CharField(verbose_name='nextMonthOrder11',max_length=200,blank=True,null=True)
+   nextMonthOrder12 = models.CharField(verbose_name='nextMonthOrder12',max_length=200,blank=True,null=True)
+   nextMonthOrder13 = models.CharField(verbose_name='nextMonthOrder13',max_length=200,blank=True,null=True)
+   nextMonthOrder14 = models.CharField(verbose_name='nextMonthOrder14',max_length=200,blank=True,null=True)
+   nextMonthOrder15 = models.CharField(verbose_name='nextMonthOrder15',max_length=200,blank=True,null=True)
+
 
    class Meta:
         verbose_name = 'SparePartsAlertNextMonth'
         verbose_name_plural = 'SparePartsAlertNextMonth'
         ordering = ('companyCode',) 
 
-    def __str__(self):
-            return str'(nextMonthOrder)'
+   def __str__(self):
+      return str('nextMonthOrder')
    

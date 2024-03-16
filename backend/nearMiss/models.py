@@ -39,8 +39,8 @@ class NearMiss(models.Model):
 
 
 class ActionItemList(models.Model):
-    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='safetyindicators_companyCode',null=True, blank=True)
-    companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='safetyindicators_companyName', null=True, blank=True)
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='actionItemList_companyCode',null=True, blank=True)
+    companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='actionItemList_companyName', null=True, blank=True)
     actionItems = models.IntegerField(verbose_name='actionItems',null=True,blank=True,default=0)
     solvedActionItems = models.IntegerField(verbose_name='solvedActionItems',null=True,blank=True,default=0)
 
@@ -58,13 +58,13 @@ class ActionItemList(models.Model):
 
 class SafetyIndicators(models.Model):
     
-    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='safetyindicators_companyCode',null=True, blank=True)
-    companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='safetyindicators_companyName', null=True, blank=True)
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='safetyIndicators_companyCode',null=True, blank=True)
+    companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='safetyIndicators_companyName', null=True, blank=True)
     safetyIndicators = models.CharField(verbose_name='safetyIndicators', max_length=20,null=True,blank=True)
     totalOfNearMiss = models.IntegerField(verbose_name='totalOfNearMiss',null=True,blank=True,default=0)
     rateOflevelA = models.IntegerField(verbose_name='totalOfNearMiss',null=True,blank=True,default=0)
-    ActionItems = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='safetyindicators_actionItems',null=True, blank=True)
-    solvedActionItems = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='safetyindicators_solvedActionItems',null=True, blank=True)
+    ActionItems = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='safetyIndicators_actionItems',null=True, blank=True)
+    solvedActionItems = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='safetyIndicators_solvedActionItems',null=True, blank=True)
     rateOfActionItems = models.IntegerField(verbose_name='totalOfNearMiss',null=True,blank=True,default=0)
 
    

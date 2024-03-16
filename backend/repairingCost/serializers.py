@@ -251,18 +251,20 @@ class CalTablePPM02Serializer(serializers.ModelSerializer):
     class Meta:
         model = CalTablePlannedPM02
         fields = '__all__'
-        
+
+
     def get_repairing_cost_info(self, rank):
-        task_list = TaskList.objects.order_by('-laborCostOfPM')[:5]  # laborCostOfPMで降順にソートし、上位5位までを取得
-        if len(task_list) > rank:
-            task = task_list[rank]
-            return {'taskName': task.taskName, 'repairingCost': task.laborCostOfPM}
-        return None
-        
+        try:
+            task_list = TaskList.objects.order_by('-laborCostOfPM')[:5]  # laborCostOfPMで降順にソートし、上位5位までを取得
+            if len(task_list) > rank:
+                task = task_list[rank]
+                return {'taskName': task.taskName, 'repairingCost': task.laborCostOfPM}
+            return None
         except Exception as e:
-        # ここにエラーログを記録する
-        print(f'Error in get_repairing_cost_info: {e}')
-        return None
+            # 例外が発生した場合、エラーログを記録する
+            print(f'Error in get_repairing_cost_info: {e}')
+            return None
+
 
     def get_no1RepairingCost(self, obj):
         return self.get_repairing_cost_info(0)
@@ -288,7 +290,6 @@ class CompanyCodeCalPPM02Serializer(serializers.ModelSerializer):
 
 
 
-
 class CalTableAPM02Serializer(serializers.ModelSerializer):
     no1RepairingCost = serializers.SerializerMethodField()
     no2RepairingCost = serializers.SerializerMethodField()
@@ -301,16 +302,17 @@ class CalTableAPM02Serializer(serializers.ModelSerializer):
         fields = '__all__'
         
     def get_repairing_cost_info(self, rank):
-        task_list = TaskList.objects.order_by('-laborCostOfPM')[:5]  # laborCostOfPMで降順にソートし、上位5位までを取得
-        if len(task_list) > rank:
-            task = task_list[rank]
-            return {'taskName': task.taskName, 'repairingCost': task.laborCostOfPM}
-        return None
-        
+        try:
+            task_list = TaskList.objects.order_by('-laborCostOfPM')[:5]  # laborCostOfPMで降順にソートし、上位5位までを取得
+            if len(task_list) > rank:
+                task = task_list[rank]
+                return {'taskName': task.taskName, 'repairingCost': task.laborCostOfPM}
+            return None
         except Exception as e:
-        # ここにエラーログを記録する
-        print(f'Error in get_repairing_cost_info: {e}')
-        return None
+            # 例外が発生した場合、エラーログを記録する
+            print(f'Error in get_repairing_cost_info: {e}')
+            return None
+
         
 
     def get_no1RepairingCost(self, obj):
@@ -353,16 +355,17 @@ class CalTablePPM03Serializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_repairing_cost_info(self, rank):
-        task_list = TaskList.objects.order_by('-laborCostOfPM')[:5]  # laborCostOfPMで降順にソートし、上位5位までを取得
-        if len(task_list) > rank:
-            task = task_list[rank]
-            return {'taskName': task.taskOfPM, 'repairingCost': task.laborCostOfPM}
-        return None
-
+        try:
+            task_list = TaskList.objects.order_by('-laborCostOfPM')[:5]  # laborCostOfPMで降順にソートし、上位5位までを取得
+            if len(task_list) > rank:
+                task = task_list[rank]
+                return {'taskName': task.taskName, 'repairingCost': task.laborCostOfPM}
+            return None
         except Exception as e:
-        # ここにエラーログを記録する
-        print(f'Error in get_repairing_cost_info: {e}')
-        return None
+            # 例外が発生した場合、エラーログを記録する
+            print(f'Error in get_repairing_cost_info: {e}')
+            return None
+
 
     def get_no1RepairingCost(self, obj):
         return self.get_repairing_cost_info(0)
@@ -404,16 +407,17 @@ class CalTableAPM03Serializer(serializers.ModelSerializer):
 
         
     def get_repairing_cost_info(self, rank):
-        task_list = TaskList.objects.order_by('-laborCostOfPM')[:5]  # laborCostOfPMで降順にソートし、上位5位までを取得
-        if len(task_list) > rank:
-            task = task_list[rank]
-            return {'taskName': task.taskName, 'repairingCost': task.laborCostOfPM}
-        return None
-
+        try:
+            task_list = TaskList.objects.order_by('-laborCostOfPM')[:5]  # laborCostOfPMで降順にソートし、上位5位までを取得
+            if len(task_list) > rank:
+                task = task_list[rank]
+                return {'taskName': task.taskName, 'repairingCost': task.laborCostOfPM}
+            return None
         except Exception as e:
-        # ここにエラーログを記録する
-        print(f'Error in get_repairing_cost_info: {e}')
-        return None
+            # 例外が発生した場合、エラーログを記録する
+            print(f'Error in get_repairing_cost_info: {e}')
+            return None
+
 
     def get_no1RepairingCost(self, obj):
         return self.get_repairing_cost_info(0)
@@ -453,16 +457,17 @@ class CalTableAPM04Serializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_repairing_cost_info(self, rank):
-        task_list = TaskList.objects.order_by('-laborCostOfPM')[:5]  # laborCostOfPMで降順にソートし、上位5位までを取得
-        if len(task_list) > rank:
-            task = task_list[rank]
-            return {'taskName': task.taskName, 'repairingCost': task.laborCostOfPM}
-        return None
-
+        try:
+            task_list = TaskList.objects.order_by('-laborCostOfPM')[:5]  # laborCostOfPMで降順にソートし、上位5位までを取得
+            if len(task_list) > rank:
+                task = task_list[rank]
+                return {'taskName': task.taskName, 'repairingCost': task.laborCostOfPM}
+            return None
         except Exception as e:
-        # ここにエラーログを記録する
-        print(f'Error in get_repairing_cost_info: {e}')
-        return None
+            # 例外が発生した場合、エラーログを記録する
+            print(f'Error in get_repairing_cost_info: {e}')
+            return None
+
 
     def get_no1RepairingCost(self, obj):
         return self.get_repairing_cost_info(0)
@@ -504,16 +509,17 @@ class CalTablePPM05Serializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_repairing_cost_info(self, rank):
-        task_list = TaskList.objects.order_by('-laborCostOfPM')[:5]  # laborCostOfPMで降順にソートし、上位5位までを取得
-        if len(task_list) > rank:
-            task = task_list[rank]
-            return {'taskName': task.taskName, 'repairingCost': task.laborCostOfPM}
-        return None
-
+        try:
+            task_list = TaskList.objects.order_by('-laborCostOfPM')[:5]  # laborCostOfPMで降順にソートし、上位5位までを取得
+            if len(task_list) > rank:
+                task = task_list[rank]
+                return {'taskName': task.taskName, 'repairingCost': task.laborCostOfPM}
+            return None
         except Exception as e:
-        # ここにエラーログを記録する
-        print(f'Error in get_repairing_cost_info: {e}')
-        return None
+            # 例外が発生した場合、エラーログを記録する
+            print(f'Error in get_repairing_cost_info: {e}')
+            return None
+
         
     def get_no1RepairingCost(self, obj):
         return self.get_repairing_cost_info(0)
@@ -553,16 +559,17 @@ class CalTableAPM05Serializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_repairing_cost_info(self, rank):
-        task_list = TaskList.objects.order_by('-laborCostOfPM')[:5]  # laborCostOfPMで降順にソートし、上位5位までを取得
-        if len(task_list) > rank:
-            task = task_list[rank]
-            return {'taskName': task.taskName, 'repairingCost': task.laborCostOfPM}
-        return None
-
+        try:
+            task_list = TaskList.objects.order_by('-laborCostOfPM')[:5]  # laborCostOfPMで降順にソートし、上位5位までを取得
+            if len(task_list) > rank:
+                task = task_list[rank]
+                return {'taskName': task.taskName, 'repairingCost': task.laborCostOfPM}
+            return None
         except Exception as e:
-        # ここにエラーログを記録する
-        print(f'Error in get_repairing_cost_info: {e}')
-        return None
+            # 例外が発生した場合、エラーログを記録する
+            print(f'Error in get_repairing_cost_info: {e}')
+            return None
+
 
     def get_no1RepairingCost(self, obj):
         return self.get_repairing_cost_info(0)

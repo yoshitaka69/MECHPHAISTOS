@@ -3,7 +3,7 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 
 from .models import NearMiss, CompanyCode, ActionItemList, SafetyIndicators
-from .serializers import NearMissSerializer, CompanyNearMissSerializer, ActionItemListSerializer, SafetyIndicators
+from .serializers import NearMissSerializer, CompanyNearMissSerializer, ActionItemListSerializer, SafetyIndicatorsSerializer
 
 
 class NearMissViewSet(viewsets.ModelViewSet):
@@ -17,10 +17,10 @@ class CompanyNearMissViewSet(viewsets.ReadOnlyModelViewSet):
         return CompanyCode.objects.prefetch_related('nearMiss_companyCode').all()
 
 
-class ActionItemListVieset(viewsets.ModelViewSet):
+class ActionItemListViewSet(viewsets.ModelViewSet):
     queryset = ActionItemList.objects.all()
-    serializer_class = ActionItemsListSerializer
+    serializer_class = ActionItemListSerializer
 
-class SafetyindicatorsVieset(viewsets.ModelViewSet):
-    queryset = Safetyindicators.objects.all()
-    serializer_class = SafetyindicatorsSerializer
+class SafetyIndicatorsViewSet(viewsets.ModelViewSet):
+    queryset = SafetyIndicators.objects.all()
+    serializer_class = SafetyIndicatorsSerializer

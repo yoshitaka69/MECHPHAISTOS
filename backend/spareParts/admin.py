@@ -34,9 +34,9 @@ class ClassificationAdmin(admin.ModelAdmin):
 
 
 class SparePartsAdmin(admin.ModelAdmin):
-    list_display = ('companyCode','companyName','plant','partsName', 'category','bomCode',)
-    search_fields = ('companyCode','companyName','plant', 'partsName', 'category','bomCode',)
-    list_filter = ('companyCode','companyName','plant','partsName', 'category','bomCode',) # adminで右側にあるフィルターBOXのこと
+    list_display = ('companyCode','companyName','partsName', 'category','bomCode',)
+    search_fields = ('companyCode','companyName', 'partsName', 'category','bomCode',)
+    list_filter = ('companyCode','companyName','partsName', 'category','bomCode',) # adminで右側にあるフィルターBOXのこと
     ordering = ('companyCode',) # 表示する順番
     save_on_top = True #上部にもsaveボタンを配置\
 
