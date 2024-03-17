@@ -2,7 +2,7 @@ from rest_framework import serializers
 from accounts.models import CompanyCode
 from .models import PlannedPM02,ActualPM02,PlannedPM03,ActualPM03,ActualPM04,PlannedPM05,ActualPM05,CalTablePlannedPM02,CalTableActualPM02,CalTablePlannedPM03,CalTableActualPM03,CalTableActualPM04,CalTablePlannedPM05,CalTableActualPM05
 
-from accounts.models import CompanyCode
+from accounts.models import CompanyCode,Plant
 from taskList.models import TaskList
 from module.serializers import CommonSerializerMethodMixin
 
@@ -39,34 +39,53 @@ class CompanyCodePPM02Serializer(serializers.ModelSerializer):
 
 
 
+
+
 #Actual PM02 cost
-class ActualPM02Serializer(serializers.ModelSerializer):
+class ActualPM02Serializer(CommonSerializerMethodMixin,serializers.ModelSerializer):
     totalCost = serializers.SerializerMethodField(read_only=True)
     class Meta:
         model = ActualPM02
-        fields = '__all__'
+        fields = ['companyCode','plant','year','jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec','commitment','totalCost',]
 
 
     # createとupdateメソッドで共通ロジックを呼び出す
     def create(self, validated_data):
-        # createのロジック...
-        instance = super().create(validated_data)
-        self.save_total_cost(instance)
-        return instance
+        # companyCode、plant、年を取得
+        company_code = validated_data.get('companyCode')
+        plant = validated_data.get('plant')
+        year = validated_data.get('year')
+
+        # 既存のレコードを検索
+        existing_record = ActualPM02.objects.filter(companyCode=company_code, plant=plant, year=year).first()
+
+        if existing_record:
+            # 既存のレコードが存在する場合は、そのレコードを更新
+            return self.update(existing_record, validated_data)
+        else:
+            # 既存のレコードが存在しない場合は、新しいレコードを作成
+            return super().create(validated_data)
 
     def update(self, instance, validated_data):
         # updateのロジック...
         instance = super().update(instance, validated_data)
         self.save_total_cost(instance)
         return instance
+
+class PlantAPM02Serializer(serializers.ModelSerializer):
+    actualPM02 = ActualPM02Serializer(many=True, source='actualPM02_plant')  # Co2 モデルの related_name
+
+    class Meta:
+        model = Plant
+        fields = ['plant', 'actualPM02']
     
 
 class CompanyCodeAPM02Serializer(serializers.ModelSerializer):
-    actualPM02List = ActualPM02Serializer(many=True, read_only=True, source='actualPM02_companyCode')
+    actualPM02List =PlantAPM02Serializer(many=True, read_only=True, source='plant_companyCode')
 
     class Meta:
         model = CompanyCode
-        fields = ['companyCode', 'plannedPM02List']
+        fields = ['companyCode', 'actualPM02List']
 
 
 
@@ -76,7 +95,7 @@ class CompanyCodeAPM02Serializer(serializers.ModelSerializer):
 
 
 
-class PlannedPM03Serializer(serializers.ModelSerializer):
+class PlannedPM03Serializer(CommonSerializerMethodMixin,serializers.ModelSerializer):
     totalCost = serializers.SerializerMethodField(read_only=True)
     class Meta:
         model = PlannedPM03
@@ -110,7 +129,7 @@ class CompanyCodePPM03Serializer(serializers.ModelSerializer):
 
 
 
-class ActualPM03Serializer(serializers.ModelSerializer):
+class ActualPM03Serializer(CommonSerializerMethodMixin,serializers.ModelSerializer):
     totalCost = serializers.SerializerMethodField(read_only=True)
     class Meta:
         model = ActualPM03
@@ -143,7 +162,7 @@ class CompanyCodeAPM03Serializer(serializers.ModelSerializer):
 
 
 
-class ActualPM04Serializer(serializers.ModelSerializer):
+class ActualPM04Serializer(CommonSerializerMethodMixin,serializers.ModelSerializer):
     totalCost = serializers.SerializerMethodField(read_only=True)
     class Meta:
         model = ActualPM04
@@ -176,7 +195,7 @@ class CompanyCodeAPM04Serializer(serializers.ModelSerializer):
 
 
 
-class PlannedPM05Serializer(serializers.ModelSerializer):
+class PlannedPM05Serializer(CommonSerializerMethodMixin,serializers.ModelSerializer):
     totalCost = serializers.SerializerMethodField(read_only=True)
     class Meta:
         model = PlannedPM05
@@ -208,7 +227,7 @@ class CompanyCodePPM05Serializer(serializers.ModelSerializer):
 
 
 
-class ActualPM05Serializer(serializers.ModelSerializer):
+class ActualPM05Serializer(CommonSerializerMethodMixin,serializers.ModelSerializer):
     totalCost = serializers.SerializerMethodField(read_only=True)
     class Meta:
         model = ActualPM05

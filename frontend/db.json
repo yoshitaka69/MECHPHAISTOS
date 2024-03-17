@@ -3365,6 +3365,10 @@
           "cost": 62540
         },
         {
+          "month": "Commitment",
+          "cost": 62540
+        },
+        {
           "month": "Total",
           "cost": 6530
         }

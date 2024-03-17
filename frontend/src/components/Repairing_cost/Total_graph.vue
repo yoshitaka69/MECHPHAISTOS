@@ -1,9 +1,11 @@
 <template>
   <div>
-    <v-card>
-      <v-card-title>Planned vs Actual</v-card-title>
-      <div id="Totalrpc"></div>
-    </v-card>
+    <v-flex>
+      <v-card>
+        <v-card-title>Total Graph (Planned vs Actual)</v-card-title>
+        <div id="Totalrpc"></div>
+      </v-card>
+    </v-flex>
   </div>
 </template>
 
@@ -96,7 +98,7 @@ export default {
         };
 
         // トレースを合成してグラフを描画
-        Plotly.newPlot('Totalrpc', [...lineTraces, barTracePM02,barTracePM03,barTracePM04,barTracePM05], layout);
+        Plotly.newPlot('Totalrpc', [...lineTraces, barTracePM02, barTracePM03, barTracePM04, barTracePM05], layout);
       })
       .catch(error => {
         console.error('Error plotting Repairing Cost graph:', error);

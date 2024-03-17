@@ -72,7 +72,7 @@ class PlantElecSerializer(serializers.ModelSerializer):
         fields = ['plant', 'Elec']
 
 class CompanyCodeElecSerializer(serializers.ModelSerializer):
-    ElecList = PlantStmSerializer(many=True, source='plant_companyCode') 
+    ElecList = PlantElecSerializer(many=True, source='plant_companyCode') 
 
     class Meta:
         model = CompanyCode

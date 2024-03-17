@@ -17,6 +17,7 @@ import App from './App.vue'
 
 // Composables
 import { createApp } from 'vue'
+import { createPinia } from 'pinia';
 
 //sakai-vue style
 import PrimeVue from 'primevue/config';
@@ -182,6 +183,8 @@ import {
 loadFonts()
 
 const app = createApp(App)
+const pinia = createPinia();
+
 
 //vuetify用プラグイン
 //pinia,vue-router,vuetifyはプラグイン管理
@@ -243,7 +246,7 @@ registerAllPlugins();
 // or, register all of Handsontable's modules at once
 registerAllModules();
 
-
+app.use(pinia);
 app.use(ganttastic)
 app.use(PrimeVue,{ripple : true})
 app.use(VueAxios, axios)

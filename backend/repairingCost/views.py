@@ -9,6 +9,7 @@ from accounts.models import CompanyCode
 from .serializers import PlannedPM02Serializer,CompanyCodePPM02Serializer,ActualPM02Serializer,CompanyCodeAPM02Serializer,PlannedPM03Serializer,CompanyCodePPM03Serializer,ActualPM03Serializer,CompanyCodeAPM03Serializer,ActualPM04Serializer,CompanyCodeAPM04Serializer,PlannedPM05Serializer,CompanyCodePPM05Serializer,ActualPM05Serializer,CompanyCodeAPM05Serializer
 
 
+#PM02-Plan
 class PlannedPM02ViewSet(viewsets.ModelViewSet):
     queryset = PlannedPM02.objects.all()
     serializer_class = PlannedPM02Serializer
@@ -20,7 +21,7 @@ class CompanyCodePPM02ViewSet(viewsets.ReadOnlyModelViewSet):
         return CompanyCode.objects.prefetch_related('plannedPM02_companyCode').all()
 
 
-
+#PM0-Actual
 class ActualPM02ViewSet(viewsets.ModelViewSet):
     queryset = ActualPM02.objects.all()
     serializer_class = ActualPM02Serializer
@@ -30,6 +31,8 @@ class CompanyCodeAPM02ViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         return CompanyCode.objects.prefetch_related('actualPM02_companyCode').all()
+
+
 
 
 class PlannedPM03ViewSet(viewsets.ModelViewSet):

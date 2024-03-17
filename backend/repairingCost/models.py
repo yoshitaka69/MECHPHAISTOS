@@ -63,6 +63,8 @@ class ActualPM02(models.Model):
         return str('actualPm02')
     
 
+
+
 class PlannedPM03(models.Model):
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='plannedPM03_companyCode', null=True, blank=True)
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='plannedPM03_companyName', null=True, blank=True)
@@ -90,6 +92,8 @@ class PlannedPM03(models.Model):
     def __str__(self):
         return str('plannedPm03')
     
+
+
 
 class ActualPM03(models.Model):
 

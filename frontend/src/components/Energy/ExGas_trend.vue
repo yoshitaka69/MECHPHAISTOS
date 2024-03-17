@@ -8,10 +8,11 @@
         </v-flex>
     </div>
 </template>
-  
+
 <script>
 import Plotly from "plotly.js-dist-min";
 import axios from "axios";
+import { useUserStore } from '@/stores/userStore'; // Piniaストアをインポート
 
 export default {
     data() {
@@ -20,21 +21,31 @@ export default {
         };
     },
     mounted() {
-        // Sustainabilityデータを取得する関数
         const getSustainabilityData = async () => {
             try {
-                // axiosを使用してデータを取得
-                const response = await axios.get('http://localhost:3000/Sustainability');
-                // Sustainabilityデータを取り出す
-                const sustainabilityData = response.data;
+                const response = await axios.get('http://127.0.0.1:8000/api/sustainability/exhaustGasByCompany/?format=json');
+                let sustainabilityData = response.data;
+
+                // Pinia ストアから companyCode を取得
+                const userStore = useUserStore();
+                const userCompanyCode = userStore.companyCode;
+
+                // ユーザーの companyCode に基づいてデータをフィルタリング
+                if (userCompanyCode) {
+                    sustainabilityData = sustainabilityData.filter(companyData => companyData.companyCode === userCompanyCode);
+                }
 
                 // 各工場のデータごとに処理
-                for (const plantData of sustainabilityData) {
-                    const exGasData = plantData.exhaustGas;
-                    // dateとco2の列だけを抽出して新しいデータ形式に変換
-                    const transformedData = exGasData.map(entry => ({ date: entry.date, exGas: entry.exGas }));
-                    // Vueのdataに追加
-                    this.sustainabilityData.push({ plant: plantData.plant, exGasData: transformedData });
+                for (const companyData of sustainabilityData) {
+                    for (const plantData of companyData.ExhaustGasList) {
+
+                        const exhaustGasData = plantData.ExhaustGas; // ここで co2Data を定義
+
+                        // dateとco2の列だけを抽出して新しいデータ形式に変換
+                        const transformedData = exhaustGasData.map(entry => ({ date: entry.date, exGas: entry.exhaustGas }));
+                        // Vueのdataに追加
+                        this.sustainabilityData.push({ plant: plantData.plant, exGasData: transformedData });
+                    }
                 }
             } catch (error) {
                 console.error('Error fetching Sustainability data:', error);
@@ -103,4 +114,3 @@ export default {
     },
 };
 </script>
-  
