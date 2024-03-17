@@ -1,102 +1,102 @@
+
 <template>
-    <div>
-        <v-flex>
-            <v-card>
-                <v-card-title>PM02 Actual cost</v-card-title>
-                <div id="rpcPM02A"></div>
-            </v-card>
-        </v-flex>
-    </div>
+  <button id="show-modal" @click="showModal = true">Show Modal</button>
+  <Teleport to="body">
+      <!-- use the modal component, pass in the prop -->
+      <modal :show="showModal" @close="showModal = false">
+      </modal>
+  </Teleport>
+  <div>
+      <span>search field:</span>
+      <select v-model="searchField">
+          <option value="name">Name</option>
+          <option value="department">Department</option>
+          <option value="Date">Date</option>
+          <option value="Where">where</option>
+          <option value="typeOfAccident">Factor</option>
+          <option value="description">Date</option>
+          <option value="factor">Factor</option>
+      </select>
+      <span>&nbsp;&nbsp;</span> <!-- ここに空白を挿入 -->
+      <span>search value:</span>
+      <input type="text" v-model="searchValue">
+
+      <br><br>
+      <EasyDataTable buttons-pagination :headers="headers" :items="items" alternating :search-field="searchField"
+          :search-value="searchValue" :sort-by="sortBy" :sort-type="sortType" multi-sort>
+          <template #item-description="item">
+              <span>
+                  {{ item.description }}
+              </span>
+          </template>
+
+          <template #item-user.name="item">
+              <span>
+                  {{ item.user.name }}
+              </span>
+          </template>
+      </EasyDataTable>
+  </div>
 </template>
 
-<script>
-import Plotly from "plotly.js-dist-min";
+<script lang="ts" setup>
+import type { Header, Item, SortType } from "vue3-easy-data-table";
+import { onMounted, ref } from "vue";
 import axios from "axios";
-import { useUserStore } from '@/stores/userStore'; // Piniaストアをインポート
+import Modal from '@/components/Safety/Near_miss/Near_miss_form.vue'
+import { useUserStore } from '@/stores/userStore'; // Pinia ストアをインポート
 
+const showModal = ref(false)
 
-export default {
-    data() {
-        return {
-            RepairingCostData: [],
-        };
-    },
+const searchField = ref('');
+const searchValue = ref('');
 
-    mounted() {
-        const getRepairingCostData = async () => {
-            try {
-                const response = await axios.get('http://127.0.0.1:8000/api/repairingCost/APM02ByCompany/?format=json');
-                let repairingCostData = response.data;
+const sortBy: string[] = ["ID No.", "Name", "Department", "Date", "where?", "Type of accident", "Description/Learning", "Factor", "Injured lv", "Equipment damage lv", "Affect of enviroment", "News coverage", "Affect of quality", "Measures","Need Action?","Solved Items?",];
+const sortType: SortType[] = ["desc", "asc"];
 
-                // Pinia ストアから companyCode を取得
-                const userStore = useUserStore();
-                const userCompanyCode = userStore.companyCode;
+const NearMiss = ref([]);
 
-                // ユーザーの companyCode に基づいてデータをフィルタリング
-                if (userCompanyCode) {
-                    repairingCostData = repairingCostData.filter(companyData => companyData.companyCode === userCompanyCode);
-                }
+const headers: Header[] = [
+  { text: "NearMiss No.", value: "nearMissNo", sortable: true },
+  { text: "Name", value: "userName", sortable: true },
+  { text: "Department", value: "department", sortable: true },
+  { text: "Date", value: "dateOfOccurrence", sortable: true },
+  { text: "Where?", value: "placeOfOccurrence", sortable: true },
+  { text: "Type of accident", value: "typeOfAccident", sortable: true },
+  { text: "Description/Learning", value: "description", sortable: true },
+  { text: "Factor", value: "factor", sortable: true },
+  { text: "Injured lv.", value: "injuredLv", sortable: true },
+  { text: "Equipment damage lv.", value: "equipmentDamageLv", sortable: true },
+  { text: "Affect of Enviroment", value: "affectOfEnviroment", sortable: true },
+  { text: "News coverage", value: "newsCoverage", sortable: true },
+  { text: "Measures", value: "measures", sortable: true },
+  { text: "Need Action?", value: "actionItems", sortable: true },
+  { text: "Solved Items?", value: "solvedItems", sortable: true },
+  { text: "Operation", value: "Operation" },
+];
 
-                // 各工場のデータごとに処理
-                for (const companyData of repairingCostData) {
-                    for (const plantData of companyData.actualPM02List) {
-                        const actualPM02Data = plantData.actualPM02;
+const items: Item[] = NearMiss.value;
 
-                        // 各月ごとのデータを新しい形式に変換
-                        actualPM02Data.forEach(yearData => {
-                            const months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
-                            let monthCosts = [];
-                            months.forEach(month => {
-                                if (yearData[month]) {
-                                    monthCosts.push({
-                                        month: month,
-                                        cost: parseFloat(yearData[month])
-                                    });
-                                }
-                            });
+onMounted(async () => {
+  try {
+      const response = await axios.get('http://127.0.0.1:8000/api/nearMiss/nearMissByCompany/?format=json');
+      console.log("Response data:", response.data);
+      
+      //piniaのStore呼び出し
+      const userStore = useUserStore();
+      const userCompanyCode = userStore.companyCode;
 
-                            this.RepairingCostData.push({
-                                plant: plantData.plant,
-                                data: monthCosts
-                            });
-                        });
-                    }
-                }
-            } catch (error) {
-                console.error('Error fetching RepairingCost data:', error);
-            }
-        };
-
-        // 上記関数の実行
-        getRepairingCostData()
-            .then(() => {
-                // 取得したデータを使ってグラフを描画
-                const plotData = this.RepairingCostData.map(plantData => {
-                    const xValues = plantData.data.map(entry => entry.month);
-                    const yValues = plantData.data.map(entry => entry.cost);
-
-                    let trace = {
-                        x: xValues,
-                        y: yValues,
-                        name: plantData.plant,
-                    };
-
-                    return trace;
-                });
-
-                const layout = {
-                    height: 500,
-                    width: 600,
-                    title: 'Repairing Cost',
-                };
-
-                Plotly.newPlot('rpcPM02A', plotData, layout);
-            })
-            .catch(error => {
-                console.error('Error plotting Repairing Cost graph:', error);
-                throw error;
-            });
-    },
-};
-
+      // ユーザーの companyCode に基づいてデータをフィルタリング
+      if (userCompanyCode) {
+        const filteredData = response.data.filter(item => item.companyCode === userCompanyCode);
+        NearMiss.value.push(...filteredData);
+      } else {
+        NearMiss.value.push(...response.data);
+      }
+      
+      console.log(NearMiss.value);
+    } catch (error) {
+      console.error(error);
+    }
+  });
 </script>

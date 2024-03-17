@@ -25,7 +25,9 @@
 						<div class="col-12 xl:col-12">
 							<div class="card" style="background-color: #f2f2f2">
 								<total_graph />
+								<p>Planned cost</p>
 								<Total_cost_table />
+								<p>actual summary cost (readOnly)</p>
 								<Message :closable="false">AI recommendation
 									<br>
 									Now developing

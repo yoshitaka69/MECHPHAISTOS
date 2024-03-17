@@ -44,19 +44,20 @@ import type { Header, Item, SortType } from "vue3-easy-data-table";
 import { onMounted, ref } from "vue";
 import axios from "axios";
 import Modal from '@/components/Safety/Near_miss/Near_miss_form.vue'
+import { useUserStore } from '@/stores/userStore'; // Pinia ストアをインポート
 
 const showModal = ref(false)
 
 const searchField = ref('');
 const searchValue = ref('');
 
-const sortBy: string[] = ["ID No.", "Name", "Department", "Date", "where?", "Type of accident", "Description/Learning", "Factor", "Injured lv", "Equipment damage lv", "Affect of enviroment", "News coverage", "Affect of quality", "Measures",];
+const sortBy: string[] = ["ID No.", "Name", "Department", "Date", "where?", "Type of accident", "Description/Learning", "Factor", "Injured lv", "Equipment damage lv", "Affect of enviroment", "News coverage", "Affect of quality", "Measures","Need Action?","Solved Items?",];
 const sortType: SortType[] = ["desc", "asc"];
 
 const NearMiss = ref([]);
 
 const headers: Header[] = [
-    { text: "ID No.", value: "nearMissListNo", sortable: true },
+    { text: "NearMiss No.", value: "nearMissNo", sortable: true },
     { text: "Name", value: "userName", sortable: true },
     { text: "Department", value: "department", sortable: true },
     { text: "Date", value: "dateOfOccurrence", sortable: true },
@@ -69,6 +70,8 @@ const headers: Header[] = [
     { text: "Affect of Enviroment", value: "affectOfEnviroment", sortable: true },
     { text: "News coverage", value: "newsCoverage", sortable: true },
     { text: "Measures", value: "measures", sortable: true },
+    { text: "Need Action?", value: "actionItems", sortable: true },
+    { text: "Solved Items?", value: "solvedItems", sortable: true },
     { text: "Operation", value: "Operation" },
 ];
 
@@ -77,10 +80,22 @@ const items: Item[] = NearMiss.value;
 onMounted(async () => {
     try {
         const response = await axios.get('http://127.0.0.1:8000/api/nearMiss/?format=json');
-        NearMiss.value.push(...response.data);
-        console.log(response.data);
-    } catch (error) {
-        console.log(error);
-    }
-});
+        
+        //piniaのStore呼び出し
+        const userStore = useUserStore();
+        const userCompanyCode = userStore.companyCode;
+
+        // ユーザーの companyCode に基づいてデータをフィルタリング
+        if (userCompanyCode) {
+          const filteredData = response.data.filter(item => item.companyCode === userCompanyCode);
+          NearMiss.value.push(...filteredData);
+        } else {
+          NearMiss.value.push(...response.data);
+        }
+        
+        console.log(NearMiss.value);
+      } catch (error) {
+        console.error(error);
+      }
+    });
 </script>

@@ -44,7 +44,7 @@ export default {
 
                       // 各月ごとのデータを新しい形式に変換
                       actualPM02Data.forEach(yearData => {
-                          const months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+                          const months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec","commitment","totalCost"];
                           let monthCosts = [];
                           months.forEach(month => {
                               if (yearData[month]) {

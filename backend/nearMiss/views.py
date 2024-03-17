@@ -10,6 +10,7 @@ class NearMissViewSet(viewsets.ModelViewSet):
     queryset = NearMiss.objects.all()
     serializer_class = NearMissSerializer
 
+
 class CompanyNearMissViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = CompanyNearMissSerializer
 
@@ -20,6 +21,7 @@ class CompanyNearMissViewSet(viewsets.ReadOnlyModelViewSet):
 class ActionItemListViewSet(viewsets.ModelViewSet):
     queryset = ActionItemList.objects.all()
     serializer_class = ActionItemListSerializer
+
 
 class SafetyIndicatorsViewSet(viewsets.ModelViewSet):
     queryset = SafetyIndicators.objects.all()

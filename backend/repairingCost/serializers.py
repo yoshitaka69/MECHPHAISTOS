@@ -12,14 +12,24 @@ class PlannedPM02Serializer(CommonSerializerMethodMixin,serializers.ModelSeriali
     
     class Meta:
         model = PlannedPM02
-        fields = '__all__'
+        fields = ['companyCode','plant','year','jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec','commitment','totalCost',]
         
     # createとupdateメソッドで共通ロジックを呼び出す
     def create(self, validated_data):
-        # createのロジック...
-        instance = super().create(validated_data)
-        self.save_total_cost(instance)
-        return instance
+        # companyCode、plant、年を取得
+        company_code = validated_data.get('companyCode')
+        plant = validated_data.get('plant')
+        year = validated_data.get('year')
+
+        # 既存のレコードを検索
+        existing_record = PlannedPM02.objects.filter(companyCode=company_code, plant=plant, year=year).first()
+
+        if existing_record:
+            # 既存のレコードが存在する場合は、そのレコードを更新
+            return self.update(existing_record, validated_data)
+        else:
+            # 既存のレコードが存在しない場合は、新しいレコードを作成
+            return super().create(validated_data)
 
     def update(self, instance, validated_data):
         # updateのロジック...
@@ -27,9 +37,16 @@ class PlannedPM02Serializer(CommonSerializerMethodMixin,serializers.ModelSeriali
         self.save_total_cost(instance)
         return instance
 
+class PlantPPM02Serializer(serializers.ModelSerializer):
+    plannedPM02 = PlannedPM02Serializer(many=True, source='plannedPM02_plant')  # Co2 モデルの related_name
+
+    class Meta:
+        model = Plant
+        fields = ['plant', 'plannedPM02']
+
 
 class CompanyCodePPM02Serializer(serializers.ModelSerializer):
-    plannedPM02List = PlannedPM02Serializer(many=True, read_only=True, source='plannedPM02_companyCode')#sourceはmodelのrelated_nameにすること。ここで嵌った。
+    plannedPM02List = PlantPPM02Serializer(many=True, read_only=True, source='plant_companyCode')#sourceはmodelのrelated_nameにすること。ここで嵌った。
 
     class Meta:
         model = CompanyCode
@@ -94,20 +111,29 @@ class CompanyCodeAPM02Serializer(serializers.ModelSerializer):
 
 
 
-
+#plannedPM03
 class PlannedPM03Serializer(CommonSerializerMethodMixin,serializers.ModelSerializer):
     totalCost = serializers.SerializerMethodField(read_only=True)
     class Meta:
         model = PlannedPM03
-        fields = '__all__' 
-
-
+        fields = ['companyCode','plant','year','jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec','commitment','totalCost',]
+        
     # createとupdateメソッドで共通ロジックを呼び出す
     def create(self, validated_data):
-        # createのロジック...
-        instance = super().create(validated_data)
-        self.save_total_cost(instance)
-        return instance
+        # companyCode、plant、年を取得
+        company_code = validated_data.get('companyCode')
+        plant = validated_data.get('plant')
+        year = validated_data.get('year')
+
+        # 既存のレコードを検索
+        existing_record = PlannedPM03.objects.filter(companyCode=company_code, plant=plant, year=year).first()
+
+        if existing_record:
+            # 既存のレコードが存在する場合は、そのレコードを更新
+            return self.update(existing_record, validated_data)
+        else:
+            # 既存のレコードが存在しない場合は、新しいレコードを作成
+            return super().create(validated_data)
 
     def update(self, instance, validated_data):
         # updateのロジック...
@@ -115,9 +141,16 @@ class PlannedPM03Serializer(CommonSerializerMethodMixin,serializers.ModelSeriali
         self.save_total_cost(instance)
         return instance
 
+class PlantPPM03Serializer(serializers.ModelSerializer):
+    plannedPM03 = PlannedPM03Serializer(many=True, source='plannedPM03_plant') 
+
+    class Meta:
+        model = Plant
+        fields = ['plant', 'plannedPM03']
+
 
 class CompanyCodePPM03Serializer(serializers.ModelSerializer):
-    plannedPM03List = PlannedPM03Serializer(many=True, read_only=True, source='plannedPM03_companyCode')
+    plannedPM03List = PlantPPM03Serializer(many=True, read_only=True, source='plant_companyCode')
 
     class Meta:
         model = CompanyCode
@@ -128,19 +161,30 @@ class CompanyCodePPM03Serializer(serializers.ModelSerializer):
 
 
 
-
+#PM03-actual
 class ActualPM03Serializer(CommonSerializerMethodMixin,serializers.ModelSerializer):
     totalCost = serializers.SerializerMethodField(read_only=True)
     class Meta:
         model = ActualPM03
-        fields = '__all__'
+        fields = ['companyCode','plant','year','jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec','commitment','totalCost',]
+
 
     # createとupdateメソッドで共通ロジックを呼び出す
     def create(self, validated_data):
-        # createのロジック...
-        instance = super().create(validated_data)
-        self.save_total_cost(instance)
-        return instance
+        # companyCode、plant、年を取得
+        company_code = validated_data.get('companyCode')
+        plant = validated_data.get('plant')
+        year = validated_data.get('year')
+
+        # 既存のレコードを検索
+        existing_record = ActualPM03.objects.filter(companyCode=company_code, plant=plant, year=year).first()
+
+        if existing_record:
+            # 既存のレコードが存在する場合は、そのレコードを更新
+            return self.update(existing_record, validated_data)
+        else:
+            # 既存のレコードが存在しない場合は、新しいレコードを作成
+            return super().create(validated_data)
 
     def update(self, instance, validated_data):
         # updateのロジック...
@@ -148,10 +192,16 @@ class ActualPM03Serializer(CommonSerializerMethodMixin,serializers.ModelSerializ
         self.save_total_cost(instance)
         return instance
 
+class PlantAPM03Serializer(serializers.ModelSerializer):
+    actualPM03 = ActualPM02Serializer(many=True, source='actualPM03_plant')  # Co2 モデルの related_name
 
+    class Meta:
+        model = Plant
+        fields = ['plant', 'actualPM03']
+    
 
 class CompanyCodeAPM03Serializer(serializers.ModelSerializer):
-    actualPM03List = ActualPM03Serializer(many=True, read_only=True, source='actualPM03_companyCode')
+    actualPM03List =PlantAPM03Serializer(many=True, read_only=True, source='plant_companyCode')
 
     class Meta:
         model = CompanyCode
@@ -162,29 +212,47 @@ class CompanyCodeAPM03Serializer(serializers.ModelSerializer):
 
 
 
+#PM04-actual
 class ActualPM04Serializer(CommonSerializerMethodMixin,serializers.ModelSerializer):
     totalCost = serializers.SerializerMethodField(read_only=True)
     class Meta:
         model = ActualPM04
-        fields = '__all__'
+        fields = ['companyCode','plant','year','jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec','commitment','totalCost',]
 
 
     # createとupdateメソッドで共通ロジックを呼び出す
     def create(self, validated_data):
-        # createのロジック...
-        instance = super().create(validated_data)
-        self.save_total_cost(instance)
-        return instance
+        # companyCode、plant、年を取得
+        company_code = validated_data.get('companyCode')
+        plant = validated_data.get('plant')
+        year = validated_data.get('year')
+
+        # 既存のレコードを検索
+        existing_record = ActualPM04.objects.filter(companyCode=company_code, plant=plant, year=year).first()
+
+        if existing_record:
+            # 既存のレコードが存在する場合は、そのレコードを更新
+            return self.update(existing_record, validated_data)
+        else:
+            # 既存のレコードが存在しない場合は、新しいレコードを作成
+            return super().create(validated_data)
 
     def update(self, instance, validated_data):
         # updateのロジック...
         instance = super().update(instance, validated_data)
         self.save_total_cost(instance)
         return instance
+
+class PlantAPM04Serializer(serializers.ModelSerializer):
+    actualPM04 = ActualPM04Serializer(many=True, source='actualPM04_plant')  # Co2 モデルの related_name
+
+    class Meta:
+        model = Plant
+        fields = ['plant', 'actualPM04']
     
 
 class CompanyCodeAPM04Serializer(serializers.ModelSerializer):
-    actualPM04List = ActualPM04Serializer(many=True, read_only=True, source='actualPM04_companyCode')
+    actualPM04List =PlantAPM04Serializer(many=True, read_only=True, source='plant_companyCode')
 
     class Meta:
         model = CompanyCode
@@ -195,28 +263,46 @@ class CompanyCodeAPM04Serializer(serializers.ModelSerializer):
 
 
 
+
 class PlannedPM05Serializer(CommonSerializerMethodMixin,serializers.ModelSerializer):
     totalCost = serializers.SerializerMethodField(read_only=True)
     class Meta:
         model = PlannedPM05
-        fields = '__all__' 
-
+        fields = ['companyCode','plant','year','jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec','commitment','totalCost',]
+        
     # createとupdateメソッドで共通ロジックを呼び出す
     def create(self, validated_data):
-        # createのロジック...
-        instance = super().create(validated_data)
-        self.save_total_cost(instance)
-        return instance
+        # companyCode、plant、年を取得
+        company_code = validated_data.get('companyCode')
+        plant = validated_data.get('plant')
+        year = validated_data.get('year')
+
+        # 既存のレコードを検索
+        existing_record = PlannedPM05.objects.filter(companyCode=company_code, plant=plant, year=year).first()
+
+        if existing_record:
+            # 既存のレコードが存在する場合は、そのレコードを更新
+            return self.update(existing_record, validated_data)
+        else:
+            # 既存のレコードが存在しない場合は、新しいレコードを作成
+            return super().create(validated_data)
 
     def update(self, instance, validated_data):
         # updateのロジック...
         instance = super().update(instance, validated_data)
         self.save_total_cost(instance)
         return instance
-    
-        
+
+class PlantPPM05Serializer(serializers.ModelSerializer):
+    plannedPM05 = PlannedPM05Serializer(many=True, source='plannedPM05_plant') 
+
+    class Meta:
+        model = Plant
+        fields = ['plant', 'plannedPM05']
+
+
 class CompanyCodePPM05Serializer(serializers.ModelSerializer):
-    plannedPM05List = PlannedPM03Serializer(many=True, read_only=True, source='plannedPM05_companyCode')
+    plannedPM05List = PlantPPM05Serializer(many=True, read_only=True, source='plant_companyCode')
 
     class Meta:
         model = CompanyCode
@@ -227,27 +313,47 @@ class CompanyCodePPM05Serializer(serializers.ModelSerializer):
 
 
 
+#PM05^actual
 class ActualPM05Serializer(CommonSerializerMethodMixin,serializers.ModelSerializer):
     totalCost = serializers.SerializerMethodField(read_only=True)
     class Meta:
         model = ActualPM05
-        fields = '__all__'
+        fields = ['companyCode','plant','year','jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec','commitment','totalCost',]
+
 
     # createとupdateメソッドで共通ロジックを呼び出す
     def create(self, validated_data):
-        # createのロジック...
-        instance = super().create(validated_data)
-        self.save_total_cost(instance)
-        return instance
+        # companyCode、plant、年を取得
+        company_code = validated_data.get('companyCode')
+        plant = validated_data.get('plant')
+        year = validated_data.get('year')
+
+        # 既存のレコードを検索
+        existing_record = ActualPM05.objects.filter(companyCode=company_code, plant=plant, year=year).first()
+
+        if existing_record:
+            # 既存のレコードが存在する場合は、そのレコードを更新
+            return self.update(existing_record, validated_data)
+        else:
+            # 既存のレコードが存在しない場合は、新しいレコードを作成
+            return super().create(validated_data)
 
     def update(self, instance, validated_data):
         # updateのロジック...
         instance = super().update(instance, validated_data)
         self.save_total_cost(instance)
         return instance
-        
+
+class PlantAPM05Serializer(serializers.ModelSerializer):
+    actualPM05 = ActualPM05Serializer(many=True, source='actualPM05_plant')  # Co2 モデルの related_name
+
+    class Meta:
+        model = Plant
+        fields = ['plant', 'actualPM05']
+    
+
 class CompanyCodeAPM05Serializer(serializers.ModelSerializer):
-    actualPM05List = ActualPM04Serializer(many=True, read_only=True, source='actualPM05_companyCode')
+    actualPM05List =PlantAPM05Serializer(many=True, read_only=True, source='plant_companyCode')
 
     class Meta:
         model = CompanyCode

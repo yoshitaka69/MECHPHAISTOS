@@ -4,11 +4,11 @@ from .views import NearMissViewSet, CompanyNearMissViewSet, ActionItemListViewSe
 
 # ルーターの設定
 router = DefaultRouter()
-router.register(r'nearMiss', NearMissViewSet, basename='nearMiss')
-router.register(r'companyCode-nearMiss', CompanyNearMissViewSet, basename='companyCode-nearMiss')
+router.register(r'nearMissList', NearMissViewSet, basename='nearMiss')
+router.register(r'nearMissByCompany', CompanyNearMissViewSet, basename='companyCode-nearMiss')
 router.register(r'actionItemsList', ActionItemListViewSet, basename='actionItemList')
 router.register(r'safetyIndicators', SafetyIndicatorsViewSet, basename='safetyIndicators')
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('nearMiss/', include(router.urls)),
 ]

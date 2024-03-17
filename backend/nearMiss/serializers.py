@@ -1,35 +1,20 @@
 from rest_framework import serializers
 from .models import NearMiss, CompanyCode, ActionItemList, SafetyIndicators
 from django.db.models import Count, Q
+from accounts.serializers import CustomUserSerializer
 
 class NearMissSerializer(serializers.ModelSerializer):
     nearMissNo = serializers.CharField(read_only=True)
+    userName = CustomUserSerializer(read_only=True) 
     dateOfOccurrence = serializers.DateField(format="%Y-%m-%d")
-    createdDay = serializers.DateTimeField(format="%Y-%m-%d",read_only=True)
     updateDay = serializers.DateTimeField(format="%Y-%m-%d",read_only=True)
-    safetyIndicater = serializers.CharField(read_only=True)
+
 
     class Meta:
         model = NearMiss
-        fields = ['id','companyCode','companyName','nearMissNo','userName','department','dateOfOccurrence','placeOfOccurrence','typeOfAccident','factor','injuredLv','equipmentDamageLv','affectOfEnviroment','newsCoverage','measures','safetyIndicater','description','createdDay','updateDay',]
-        #fields = '__all__'
+        fields = ['id','nearMissNo','userName','department','dateOfOccurrence','placeOfOccurrence','typeOfAccident','factor','injuredLv','equipmentDamageLv','affectOfEnviroment','newsCoverage','measures','description','updateDay',]
 
-
-    #userに対するForeignKeyのfillter機能
-    def get_queryset(self):
-        user = self.request.user
-        if user.is_authenticated:
-            # 特定の masterCode を持つユーザーの場合、すべてのレコードを表示
-            if user.companyCode.masterCode == 'MASTER123':
-                return NearMiss.objects.all()
-            # それ以外のユーザーにはその companyCode に関連するレコードのみを表示
-            else:
-                return NearMiss.objects.filter(companyCode=user.companyCode)
-        else:
-            # 認証されていないユーザーには空のクエリセットを返す
-            return NearMiss.objects.none()
     
-
     #NearMissNo付与
     def create(self, validated_data):
         # companyName から値を取得
@@ -72,7 +57,9 @@ class ActionItemListSerializer(serializers.ModelSerializer):
         model = ActionItemList
         fields = fields = ['companyCode', 'companyName', 'actionItems', 'solvedActionItems']
 
-    
+
+
+
 
 class SafetyIndicatorsSerializer(serializers.ModelSerializer):
 
