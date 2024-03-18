@@ -11,11 +11,16 @@ class NearMissViewSet(viewsets.ModelViewSet):
     serializer_class = NearMissSerializer
 
 
+# views.py
 class CompanyNearMissViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = CompanyNearMissSerializer
 
     def get_queryset(self):
-        return CompanyCode.objects.prefetch_related('nearMiss_companyCode').all()
+        company_code = self.request.query_params.get('companyCode', None)
+        if company_code is not None:
+            return CompanyCode.objects.filter(companyCode=company_code).prefetch_related('nearMiss_companyCode')
+        return CompanyCode.objects.all()
+
 
 
 class ActionItemListViewSet(viewsets.ModelViewSet):

@@ -2,6 +2,8 @@ from rest_framework import serializers
 from .models import NearMiss, CompanyCode, ActionItemList, SafetyIndicators
 from django.db.models import Count, Q
 from accounts.serializers import CustomUserSerializer
+from rest_framework import serializers
+
 
 class NearMissSerializer(serializers.ModelSerializer):
     nearMissNo = serializers.CharField(read_only=True)
@@ -9,10 +11,9 @@ class NearMissSerializer(serializers.ModelSerializer):
     dateOfOccurrence = serializers.DateField(format="%Y-%m-%d")
     updateDay = serializers.DateTimeField(format="%Y-%m-%d",read_only=True)
 
-
     class Meta:
         model = NearMiss
-        fields = ['id','nearMissNo','userName','department','dateOfOccurrence','placeOfOccurrence','typeOfAccident','factor','injuredLv','equipmentDamageLv','affectOfEnviroment','newsCoverage','measures','description','updateDay',]
+        fields = ['nearMissNo','userName','department','dateOfOccurrence','placeOfOccurrence','typeOfAccident','factor','injuredLv','equipmentDamageLv','affectOfEnviroment','newsCoverage','measures','description','updateDay',]
 
     
     #NearMissNo付与
@@ -41,7 +42,6 @@ class NearMissSerializer(serializers.ModelSerializer):
 
         return NearMiss.objects.create(**validated_data)
 
-
 class CompanyNearMissSerializer(serializers.ModelSerializer):
     nearMissList = NearMissSerializer(many=True, read_only=True, source='nearMiss_companyCode')
 
@@ -51,14 +51,14 @@ class CompanyNearMissSerializer(serializers.ModelSerializer):
 
 
 
+
+
+
 class ActionItemListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ActionItemList
         fields = fields = ['companyCode', 'companyName', 'actionItems', 'solvedActionItems']
-
-
-
 
 
 class SafetyIndicatorsSerializer(serializers.ModelSerializer):
