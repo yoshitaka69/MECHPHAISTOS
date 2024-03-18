@@ -57,7 +57,7 @@ const NearMiss = ref([]);
 
 const headers: Header[] = [
     { text: "ID No.", value: "nearMissListNo", sortable: true },
-    { text: "Name", value: "userName", sortable: true },
+    { text: "Name", value: "userName.userName", sortable: true },
     { text: "Department", value: "department", sortable: true },
     { text: "Date", value: "dateOfOccurrence", sortable: true },
     { text: "Where?", value: "placeOfOccurrence", sortable: true },
