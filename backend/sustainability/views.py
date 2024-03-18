@@ -23,6 +23,13 @@ class Co2ViewSet(viewsets.ModelViewSet):
     queryset = Co2.objects.all()
     serializer_class = Co2Serializer
 
+    def get_queryset(self):
+        queryset = Co2.objects.all()
+        company_code = self.request.query_params.get('companyCode', None)
+        if company_code is not None:
+            queryset = queryset.filter(companyCode__code=company_code)
+        return queryset
+
 
 class PlantCo2ViewSet(viewsets.ModelViewSet):
     serializer_class = PlantCo2Serializer
@@ -46,6 +53,13 @@ class CompanyCodeCo2ViewSet(viewsets.ReadOnlyModelViewSet):
 class StmViewSet(viewsets.ModelViewSet):
     queryset = Stm.objects.all()
     serializer_class = StmSerializer
+  
+    def get_queryset(self):
+      queryset = Stm.objects.all()
+      company_code = self.request.query_params.get('companyCode', None)
+      if company_code is not None:
+          queryset = queryset.filter(companyCode__code=company_code)
+      return queryset
 
 
 class PlantStmViewSet(viewsets.ModelViewSet):
@@ -73,6 +87,14 @@ class ElecViewSet(viewsets.ModelViewSet):
     queryset = ElectricityUsage.objects.all()
     serializer_class = ElecSerializer
 
+    def get_queryset(self):
+        queryset = ElectricityUsage.objects.all()
+        company_code = self.request.query_params.get('companyCode', None)
+        if company_code is not None:
+            queryset = queryset.filter(companyCode__code=company_code)
+        return queryset
+  
+
 class PlantElecViewSet(viewsets.ModelViewSet):
     serializer_class = PlantElecSerializer
 
@@ -96,6 +118,13 @@ class CompAirViewSet(viewsets.ModelViewSet):
     queryset = CompressedAir.objects.all()
     serializer_class = CompAirSerializer
 
+    def get_queryset(self):
+      queryset = CompressedAir.objects.all()
+      company_code = self.request.query_params.get('companyCode', None)
+      if company_code is not None:
+          queryset = queryset.filter(companyCode__code=company_code)
+      return queryset
+
 class PlantCompAirViewSet(viewsets.ModelViewSet):
     serializer_class = PlantCompAirSerializer
 
@@ -117,6 +146,13 @@ class WellWaterViewSet(viewsets.ModelViewSet):
     queryset = WellWater.objects.all()
     serializer_class = WellWaterSerializer
 
+    def get_queryset(self):
+      queryset = WellWater.objects.all()
+      company_code = self.request.query_params.get('companyCode', None)
+      if company_code is not None:
+          queryset = queryset.filter(companyCode__code=company_code)
+      return queryset
+
 class PlantWellWaterViewSet(viewsets.ModelViewSet):
     serializer_class = PlantWellWaterSerializer
 
@@ -137,6 +173,13 @@ class CompanyCodeWellWaterViewSet(viewsets.ReadOnlyModelViewSet):
 class PureWaterViewSet(viewsets.ModelViewSet):
     queryset = PureWater.objects.all()
     serializer_class = PureWaterSerializer
+
+    def get_queryset(self):
+      queryset = PureWater.objects.all()
+      company_code = self.request.query_params.get('companyCode', None)
+      if company_code is not None:
+          queryset = queryset.filter(companyCode__code=company_code)
+      return queryset
 
 class PlantPureWaterViewSet(viewsets.ModelViewSet):
     serializer_class = PlantPureWaterSerializer
@@ -161,6 +204,14 @@ class WwtViewSet(viewsets.ModelViewSet):
     queryset = Wwt.objects.all()
     serializer_class = WwtSerializer
 
+    def get_queryset(self):
+      queryset = Wwt.objects.all()
+      company_code = self.request.query_params.get('companyCode', None)
+      if company_code is not None:
+          queryset = queryset.filter(companyCode__code=company_code)
+      return queryset
+
+
 class PlantWwtViewSet(viewsets.ModelViewSet):
     serializer_class = PlantWwtSerializer
 
@@ -177,10 +228,17 @@ class CompanyCodeWwtViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 
-#Wwt
+#ExhaustGas
 class ExhaustGasViewSet(viewsets.ModelViewSet):
     queryset = ExhaustGas.objects.all()
     serializer_class = ExhaustGasSerializer
+
+    def get_queryset(self):
+      queryset = ExhaustGas.objects.all()
+      company_code = self.request.query_params.get('companyCode', None)
+      if company_code is not None:
+          queryset = queryset.filter(companyCode__code=company_code)
+      return queryset
 
 class PlantExhaustGasViewSet(viewsets.ModelViewSet):
     serializer_class = PlantExhaustGasSerializer
