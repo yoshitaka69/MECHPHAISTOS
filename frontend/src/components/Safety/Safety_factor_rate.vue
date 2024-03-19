@@ -1,15 +1,16 @@
 <template>
   <div>
     <v-card>
-    <v-card-title>Safety Accident type</v-card-title>
+      <v-card-title>Safety factor type</v-card-title>
       <div id="SafeRate"></div>
     </v-card>
   </div>
 </template>
-  
+
 <script>
 import Plotly from "plotly.js-dist-min";
 import axios from "axios";
+import { useUserStore } from '@/stores/userStore'; // Pinia ストアをインポート
 
 export default {
   data() {
@@ -20,9 +21,30 @@ export default {
   },
 
   mounted() {
-    axios.get("http://127.0.0.1:8000/api/nearMiss/?format=json")
+    const userStore = useUserStore();
+    const userCompanyCode = userStore.companyCode;
+
+    if (!userCompanyCode) {
+      console.error("Error: No company code found for the user.");
+      return; // companyCodeがない場合、処理を中断
+    }
+
+    const url = `http://127.0.0.1:8000/api/nearMiss/nearMissByCompany/?format=json&companyCode=${userCompanyCode}`;
+
+    axios.get(url, {
+      headers: {
+        "Content-Type": "application/json"
+      },
+      withCredentials: true
+    })
       .then(response => {
-        const factorArray = response.data.map(item => item['factor']);
+        const nearMissData = response.data;
+
+        // 全ての nearMissList をフラットなリストに変換
+        const allNearMisses = nearMissData.flatMap(companyData => companyData.nearMissList);
+
+        // factor の配列を作成
+        const factorArray = allNearMisses.map(item => item['factor']);
 
         this.values = factorArray.reduce((accumulator, factor) => {
           accumulator[factor] = (accumulator[factor] || 0) + 1;
@@ -61,4 +83,3 @@ export default {
   },
 };
 </script>
-  

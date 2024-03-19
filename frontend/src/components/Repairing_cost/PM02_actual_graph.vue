@@ -23,24 +23,24 @@ export default {
   },
 
   mounted() {
-      const getRepairingCostData = async () => {
-          try {
-              const response = await axios.get('http://127.0.0.1:8000/api/repairingCost/APM02ByCompany/?format=json');
-              let repairingCostData = response.data;
+  const getRepairingCostData = async () => {
+    try {
+      const userStore = useUserStore();
+      const userCompanyCode = userStore.companyCode;
 
-              // Pinia ストアから companyCode を取得
-              const userStore = useUserStore();
-              const userCompanyCode = userStore.companyCode;
+      if (!userCompanyCode) {
+        console.error("Error: No company code found for the user.");
+        return; // 処理を中断
+      }
 
-              // ユーザーの companyCode に基づいてデータをフィルタリング
-              if (userCompanyCode) {
-                  repairingCostData = repairingCostData.filter(companyData => companyData.companyCode === userCompanyCode);
-              }
+      const url = `http://127.0.0.1:8000/api/repairingCost/APM02ByCompany/?format=json&companyCode=${userCompanyCode}`;
+      const response = await axios.get(url);
+      console.log("Fetched RepairingCost Data:", response.data); // データ取得ログ
 
-              // 各工場のデータごとに処理
-              for (const companyData of repairingCostData) {
-                  for (const plantData of companyData.actualPM02List) {
-                      const actualPM02Data = plantData.actualPM02;
+      let repairingCostData = response.data;
+      for (const companyData of repairingCostData) {
+        for (const plantData of companyData.actualPM02List) {
+          const actualPM02Data = plantData.actualPM02;
 
                       // 各月ごとのデータを新しい形式に変換
                       actualPM02Data.forEach(yearData => {

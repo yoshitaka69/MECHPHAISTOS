@@ -1,10 +1,10 @@
 <template>
   <div>
     <!--<v-flex>-->
-      <v-card>
-        <v-card-title>Safety Accident type (world)</v-card-title>
-        <div id="SafeAccidentRate"></div>
-      </v-card>
+    <v-card>
+      <v-card-title>Safety Accident type (world)</v-card-title>
+      <div id="SafeAccidentRate"></div>
+    </v-card>
     <!--<v-flex>-->
   </div>
 </template>
@@ -12,6 +12,7 @@
 <script>
 import Plotly from "plotly.js-dist-min";
 import axios from "axios";
+import { useUserStore } from '@/stores/userStore'; // Pinia ストアをインポート
 
 export default {
   data() {
@@ -22,29 +23,32 @@ export default {
   },
 
   mounted() {
-    axios.get("http://127.0.0.1:8000/api/company-near-misses/?format=json", {
+    const userStore = useUserStore();
+    const userCompanyCode = userStore.companyCode;
+
+    if (!userCompanyCode) {
+      console.error("Error: No company code found for the user.");
+      return; // companyCodeがない場合、処理を中断
+    }
+
+    const url = `http://127.0.0.1:8000/api/nearMiss/nearMissByCompany/?companyCode=${userCompanyCode}`;
+
+    axios.get(url, {
       headers: {
-        'Authorization': 'Token a860caa1717c3ce1b47474728f10677aa04c440c'
-      }
-
+        "Content-Type": "application/json"
+      },
+      withCredentials: true
     })
-
       .then(response => {
-        // response.data は期待されるJSON構造の配列を持っていると想定
         const nearMissData = response.data;
+        console.log("nearMissData", nearMissData);
 
-        console.log("nearMissData", nearMissData)
+        // 全ての nearMissList をフラットなリストに変換
+        const allNearMisses = nearMissData.flatMap(companyData => companyData.nearMissList);
 
-        // companyCode をキーとして、対応する nearMissList を格納するオブジェクトを作成
-        const companyNearMiss = nearMissData.reduce((accumulator, item) => {
-          accumulator[item.companyCode] = item.nearMissList;
-          return accumulator;
-        }, {});
+        console.log("allNearMisses", allNearMisses);
 
-        // companyNearMiss から全ての nearMissList を抽出してフラットなリストを作成
-        const allNearMisses = Object.values(companyNearMiss).flat();
-
-        // allNearMisses から typeOfAccident を抽出して配列を作成
+        // typeOfAccident を抽出して配列を作成
         const typeArray = allNearMisses.map(item => item['typeOfAccident']);
 
         console.log("typeArray:", typeArray);

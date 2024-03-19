@@ -21,37 +21,36 @@ export default {
         };
     },
     mounted() {
-        const getSustainabilityData = async () => {
-            try {
-                const response = await axios.get('http://127.0.0.1:8000/api/sustainability/stmByCompany/?format=json');
-                let sustainabilityData = response.data;
+    const getSustainabilityData = async () => {
+      try {
+        const userStore = useUserStore();
+        const userCompanyCode = userStore.companyCode;
 
-                // Pinia ストアから companyCode を取得
-                const userStore = useUserStore();
-                const userCompanyCode = userStore.companyCode;
+        if (!userCompanyCode) {
+          console.error("Error: No company code found for the user.");
+          return; // 処理を中断
+        }
 
-                // ユーザーの companyCode に基づいてデータをフィルタリング
-                if (userCompanyCode) {
-                    sustainabilityData = sustainabilityData.filter(companyData => companyData.companyCode === userCompanyCode);
-                }
+        const url = `http://127.0.0.1:8000/api/sustainability/stmByCompany/?format=json&companyCode=${userCompanyCode}`;
+        const response = await axios.get(url);
+        console.log("Fetched Sustainability Data:", response.data); // データ取得ログ
 
-                // 各工場のデータごとに処理
-                for (const companyData of sustainabilityData) {
-                    for (const plantData of companyData.StmList) {
-
-
-                        const stmData = plantData.Stm;
-                        // dateとco2の列だけを抽出して新しいデータ形式に変換
-                        const transformedData = stmData.map(entry => ({ date: entry.date, stm: entry.stm }));
-                        // Vueのdataに追加
-                        this.sustainabilityData.push({ plant: plantData.plant, stmData: transformedData });
-                    }
-                }
-            } catch (error) {
-                console.error('Error fetching Sustainability data:', error);
-                throw error;
-            }
-        };
+        let sustainabilityData = response.data;
+        for (const companyData of sustainabilityData) {
+          for (const plantData of companyData.StmList) {
+            const stmData = plantData.Stm;
+            const transformedData = stmData.map(entry => ({ date: entry.date, stm: entry.stm }));
+            this.sustainabilityData.push({ plant: plantData.plant, stmData: transformedData });
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching Sustainability data:', error);
+        if (error.response) {
+          // サーバーからの応答が存在する場合、その詳細をログ出力
+          console.log("Error Response:", error.response);
+        }
+      }
+    };
 
         // 上記関数の実行
         getSustainabilityData().then(() => {

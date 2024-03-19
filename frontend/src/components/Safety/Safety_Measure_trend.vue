@@ -10,6 +10,7 @@
 <script>
 import Plotly from "plotly.js-dist-min";
 import axios from "axios";
+import { useUserStore } from '@/stores/userStore'; // Pinia ストアをインポート
 
 export default {
   data() {
@@ -20,10 +21,28 @@ export default {
   },
 
   mounted() {
-    axios.get("http://127.0.0.1:8000/api/nearMiss/?format=json").then((response) => {
-      // データから年ごとの measures のカウントを抽出
-      const dataByYear = response.data.reduce((acc, item) => {
-        const year = new Date(item.dateOfOccurrence).getFullYear();
+  const userStore = useUserStore();
+  const userCompanyCode = userStore.companyCode;
+
+  if (!userCompanyCode) {
+    console.error("Error: No company code found for the user.");
+    return; // companyCodeがない場合、処理を中断
+  }
+
+  const url = `http://127.0.0.1:8000/api/nearMiss/nearMissByCompany/?companyCode=${userCompanyCode}`;
+
+  axios.get(url, {
+    headers: {
+      "Content-Type": "application/json"
+    },
+    withCredentials: true
+  })
+  .then(response => {
+    const nearMissData = response.data;
+
+    // データから年ごとの measures のカウントを抽出
+    const dataByYear = nearMissData.flatMap(companyData => companyData.nearMissList).reduce((acc, item) => {
+      const year = new Date(item.dateOfOccurrence).getFullYear();
 
         // measures の要素数をカウント
         acc[year] = acc[year] || { A: 0, B: 0, C: 0, D: 0, E: 0 };

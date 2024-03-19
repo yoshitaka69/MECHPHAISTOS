@@ -28,6 +28,7 @@
 								<p>Planned cost</p>
 								<Total_cost_table />
 								<p>actual summary cost (readOnly)</p>
+								<Actual_summary_table/>
 								<Message :closable="false">AI recommendation
 									<br>
 									Now developing
@@ -120,7 +121,7 @@
 									<PM02_forecast_table />
 									<br>
 									<h2>Actual cost (contain PM02 PM03 PM04 PM05)</h2>
-									<Actual_summary_table />
+									<Actual_summary_table_year />
 								</div>
 								<br>
 								<br>
@@ -144,6 +145,7 @@ import Total_graph from '@/components/Repairing_cost/Total_graph.vue'
 import Total_cost_table from '@/components/Repairing_cost/Total_cost_table.vue'
 import Planned_vs_actual from '@/components/Repairing_cost/Planned_vs_actual_graph.vue'
 import Actual_summary_table from '@/components/Repairing_cost/Actual_summary_table.vue'
+import Actual_summary_table_year from '@/components/Repairing_cost/Actual_summary_table_year.vue'
 import PM02_forecast_table from '@/components/Repairing_cost/PM02_forecast_table.vue'
 import PM02_planned_graph from '@/components/Repairing_cost/PM02_planned_graph.vue'
 import PM02_planned_table from '@/components/Repairing_cost/PM02_planned_table.vue'
@@ -162,6 +164,7 @@ export default {
 		Total_graph,
 		Total_cost_table,
 		Planned_vs_actual,
+		Actual_summary_table_year,
 		Actual_summary_table,
 		PM02_forecast_table,
 		PM02_planned_graph,

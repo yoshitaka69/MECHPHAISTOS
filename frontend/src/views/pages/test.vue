@@ -1,123 +1,178 @@
 <template>
-  <button id="show-modal" @click="showModal = true">Show Modal</button>
-  <Teleport to="body">
-    <!-- use the modal component, pass in the prop -->
-    <modal :show="showModal" @close="showModal = false">
-    </modal>
-  </Teleport>
-  <div>
-    <span>search field:</span>
-    <select v-model="searchField">
-      <option value="name">Name</option>
-      <option value="department">Department</option>
-      <option value="Date">Date</option>
-      <option value="Where">where</option>
-      <option value="typeOfAccident">Factor</option>
-      <option value="description">Date</option>
-      <option value="factor">Factor</option>
-    </select>
-    <span>&nbsp;&nbsp;</span> <!-- ここに空白を挿入 -->
-    <span>search value:</span>
-    <input type="text" v-model="searchValue">
+	<div>
+	  <v-flex>
+		<v-card>
+		  <v-card-title>Safety correlation diagram</v-card-title>
+		  <div id="scd"></div>
+		</v-card>
+	  </v-flex>
+	</div>
+  </template>
+  
+  <script>
+  import Plotly from "plotly.js-dist-min";
+  import axios from 'axios'
+  import { useUserStore } from '@/stores/userStore'; // Pinia ストアをインポート
+  
+  export default {
+    mounted() {
+    const userStore = useUserStore();
+    const userCompanyCode = userStore.companyCode;
 
-    <br><br>
-    <EasyDataTable buttons-pagination :headers="headers" :items="items" alternating :search-field="searchField"
-      :search-value="searchValue" :sort-by="sortBy" :sort-type="sortType" multi-sort>
-      <template #item-description="item">
-        <span>
-          {{ item.description }}
-        </span>
-      </template>
+    if (!userCompanyCode) {
+      console.error("Error: No company code found for the user.");
+      return; // companyCodeがない場合、処理を中断
+    }
 
-      <template #item-user.name="item">
-        <span>
-          {{ item.user.name }}
-        </span>
-      </template>
-    </EasyDataTable>
-  </div>
-</template>
-
-<script lang="ts" setup>
-import type { Header, Item, SortType } from "vue3-easy-data-table";
-import { onMounted, ref } from "vue";
-import axios from "axios";
-import Modal from '@/components/Safety/Near_miss/Near_miss_form.vue'
-import { useUserStore } from '@/stores/userStore'; // Pinia ストアをインポート
-
-const showModal = ref(false)
-
-const searchField = ref('');
-const searchValue = ref('');
-
-const sortBy: string[] = ["ID No.", "Name", "Department", "Date", "where?", "Type of accident", "Description/Learning", "Factor", "Injured lv", "Equipment damage lv", "Affect of enviroment", "News coverage", "Affect of quality", "Measures", "Need Action?", "Solved Items?",];
-const sortType: SortType[] = ["desc", "asc"];
-
-const NearMiss = ref([]);
-
-const headers: Header[] = [
-  { text: "NearMiss No.", value: "nearMissNo", sortable: true },
-  { text: "Name", value: "userName.userName", sortable: true },
-  { text: "Department", value: "department", sortable: true },
-  { text: "Date", value: "dateOfOccurrence", sortable: true },
-  { text: "Where?", value: "placeOfOccurrence", sortable: true },
-  { text: "Type of accident", value: "typeOfAccident", sortable: true },
-  { text: "Description/Learning", value: "description", sortable: true },
-  { text: "Factor", value: "factor", sortable: true },
-  { text: "Injured lv.", value: "injuredLv", sortable: true },
-  { text: "Equipment damage lv.", value: "equipmentDamageLv", sortable: true },
-  { text: "Affect of Enviroment", value: "affectOfEnviroment", sortable: true },
-  { text: "News coverage", value: "newsCoverage", sortable: true },
-  { text: "Measures", value: "measures", sortable: true },
-  { text: "Need Action?", value: "actionItems", sortable: true },
-  { text: "Solved Items?", value: "solvedItems", sortable: true },
-  { text: "updateDay", value: "updateDay", sortable: true },
-  { text: "Operation", value: "Operation" },
-];
-
-const items: Item[] = NearMiss.value;
-
-onMounted(async () => {
-  const userStore = useUserStore();
-  const userCompanyCode = userStore.companyCode;
-
-  console.log("User Company Code:", userCompanyCode); // ユーザーの companyCode をログ出力
-
-  if (!userCompanyCode) {
-    console.error("Error: No company code found for the user.");
-    return; // 処理を中断
-  }
-
-  try {
     const url = `http://127.0.0.1:8000/api/nearMiss/nearMissByCompany/?companyCode=${userCompanyCode}`;
-    const response = await axios.get(url);
 
-    console.log("API Response:", response); // API の応答をログ出力
-    console.log("Response data structure:", response.data); // 応答データの構造を確認
+    axios.get(url)
+    .then(response => {
+      const nearMissData = response.data;
+      let rows = [];
 
-    if (response.data && response.data.length > 0) {
-      // nearMissList の各要素を個別に NearMiss.value に格納
-      response.data.forEach(item => {
-        if (item.nearMissList && item.nearMissList.length > 0) {
-          item.nearMissList.forEach(nearMiss => {
-            NearMiss.value.push(nearMiss);
-          });
+      // nearMissData の全ての要素（各会社）をループ処理
+      for (const companyData of nearMissData) {
+        // 各会社の nearMissList をループ処理
+        for (const nearMiss of companyData.nearMissList) {
+          // ここで nearMiss の各データを rows に追加
+          rows.push(nearMiss);
         }
-      });
+      }
+  
+		  // departmentの各要素に番号を振り、順序を保持する
+		  const departmentMap = {};
+		  const departmentValues = rows.map(item => {
+			if (!(item.department in departmentMap)) {
+			  departmentMap[item.department] = Object.keys(departmentMap).length + 1;
+			}
+			return departmentMap[item.department];
+		  });
+  
+		  // whereの各要素に番号を振り、順序を保持する
+		  const placeOfOccurrenceMap = {};
+		  const placeOfOccurrenceValues = rows.map(item => {
+			if (!(item.placeOfOccurrence in placeOfOccurrenceMap)) {
+				placeOfOccurrenceMap[item.placeOfOccurrence] = Object.keys(placeOfOccurrenceMap).length + 1;
+			}
+			return placeOfOccurrenceMap[item.placeOfOccurrence];
+		  });
+  
+		  const maxDepartmentValue = Object.keys(departmentMap).length;
+		  const maxPlaceOfOccurrenceValue = Object.keys(placeOfOccurrenceMap).length;
+		  
+  
+		  const levelMap1 = { 'A': 5, 'B': 4, 'C': 3, 'D': 2, 'E': 1 };
+		  const levelMap2 = { 'others': 1, 'protective equipment violation': 2, 'impossible movement': 3, 'traffic accIdent': 4, 'conflagration': 5, 'rupture': 6, 'explosion': 7, 'electric shock': 8, 'contact with organic matter': 9, 'contact with hot or cold objects': 10, 'drown': 11, 'treading on something sharp': 12, 'cut/Rubbing': 13, 'got caught up in': 14, 'hit by something': 15, 'collapse': 16, 'accIdental fall': 17, 'collision': 18, 'fall/slip': 19, 'fall down': 20 };
+		  const levelMap3 = { 'others': 1, 'Rule': 2, 'Person': 3, 'Methods': 4, 'Equipment': 5 };
+  
+		  let typeOfAccidentValues = [];
+		  let factorValues = [];
+		  let injuredLvValues = [];
+		  let equipmentDamageLvValues = [];
+		  let affectOfEnviromentValues = [];
+		  let newsCoverageValues = [];
+		  let measuresValues = [];
+  
+		  // Extracting values for each dimension
+		  rows.forEach(item => {
+			typeOfAccidentValues.push(levelMap2[item.typeOfAccident]);
+			factorValues.push(levelMap3[item.factor]);
+			injuredLvValues.push(levelMap1[item.injuredLv]);
+			equipmentDamageLvValues.push(levelMap1[item.equipmentDamageLv]);
+			affectOfEnviromentValues.push(levelMap1[item.affectOfEnviroment]);
+			newsCoverageValues.push(levelMap1[item.newsCoverage]);
+			measuresValues.push(levelMap1[item.measures]);
+		  });
+  
+		  console.log('departmentValues:', departmentValues);
+		  console.log('placeOfOccurrenceValues:',placeOfOccurrenceValues);
+		  console.log('accidentTypeValues:', typeOfAccidentValues);
+		  console.log('factorValues:', factorValues);
+		  console.log('injuredLvValues:', injuredLvValues);
+		  console.log('equipmentDamageLvValues:', equipmentDamageLvValues);
+		  console.log('affectOfEnviromentValues:', affectOfEnviromentValues);
+		  console.log('newsCoverageValues:', newsCoverageValues);
+		  console.log('measuresValues:', measuresValues);
+  
+		  let data = {
+			type: "parcoords",
+			line: {
+			  color: 'blue'
+			},
+			dimensions: [
+			  {
+				range: [1, maxDepartmentValue],
+				label: 'Department',
+				values: departmentValues,
+				tickvals: Array.from({ length: departmentValues.length }, (_, index) => index + 1),
+				ticktext: Object.keys(departmentMap)
+  
+			  }, {
+				range: [1, maxPlaceOfOccurrenceValue],
+				label: 'Where',
+				values: placeOfOccurrenceValues,
+				tickvals: Array.from({ length: placeOfOccurrenceValues.length }, (_, index) => index + 1),
+				ticktext: Object.keys(placeOfOccurrenceMap)
+			  }, {
+				range: [1, 20],
+				label: 'Accident type',
+				values: typeOfAccidentValues,
+				tickvals: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+				ticktext: ['others', 'protective equipment violation', 'impossible movement', 'traffic accIdent', 'conflagration', 'rupture', 'explosion', 'electric shock', 'contact with organic matter', 'contact with hot or cold objects', 'drown', 'treading on something sharp', 'cut/Rubbing', 'got caught up in', 'hit by something', 'collapse', 'accIdental fall', 'collision', 'fall/slip', 'fall down']
+			  }, {
+				range: [1, 5],
+				label: 'Factor',
+				values: factorValues,
+				tickvals: [1, 2, 3, 4, 5],
+				ticktext: ['others', 'Rule', 'Person', 'Methods', 'Equipment']
+			  }, {
+				range: [1, 5],
+				label: 'injured Lv',
+				values: injuredLvValues,
+				tickvals: [1, 2, 3, 4, 5],
+				ticktext: ['E', 'D', 'C', 'B', 'A']
+			  },
+			  {
+				range: [1, 5],
+				label: 'Equipment Damage Lv',
+				values: equipmentDamageLvValues,
+				tickvals: [1, 2, 3, 4, 5],
+				ticktext: ['E', 'D', 'C', 'B', 'A']
+			  },
+			  {
+				range: [1, 5],
+				label: 'Affect Of Enviroment',
+				values: affectOfEnviromentValues,
+				tickvals: [1, 2, 3, 4, 5],
+				ticktext: ['E', 'D', 'C', 'B', 'A']
+			  },
+			  {
+				range: [1, 5],
+				label: 'News Coverage',
+				values: newsCoverageValues,
+				tickvals: [1, 2, 3, 4, 5],
+				ticktext: ['E', 'D', 'C', 'B', 'A']
+			  },
+			  {
+				range: [1, 5],
+				label: 'Measures',
+				values: measuresValues,
+				tickvals: [1, 2, 3, 4, 5],
+				ticktext: ['E', 'D', 'C', 'B', 'A']
+			  }
+			]
+		  };
 
-      console.log("Consolidated Near Miss Data:", NearMiss.value);
-    } else {
-      console.log("No data received or data structure is incorrect");
-    }
-  } catch (error) {
-    console.error("Axios Error:", error); // エラー内容をログ出力
-    if (error.response) {
-      // サーバーからの応答が存在する場合、その詳細をログ出力
-      console.log("Error Response:", error.response);
-    }
+		  const layout ={
+			width:1000,
+		  }
+  
+		  Plotly.newPlot('scd', [data],layout);
+		})
+		.catch(error => {
+		  console.error('データの取得に失敗しました', error);
+		});
+	}
   }
-});
-
-
-
-</script>
+  </script>

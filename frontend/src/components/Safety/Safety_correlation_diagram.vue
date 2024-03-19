@@ -12,18 +12,33 @@
   <script>
   import Plotly from "plotly.js-dist-min";
   import axios from 'axios'
+  import { useUserStore } from '@/stores/userStore'; // Pinia ストアをインポート
   
   export default {
-	mounted() {
-		axios.get("http://127.0.0.1:8000/api/company-near-misses/?format=json", {
-      headers: {
-        'Authorization': 'Token a860caa1717c3ce1b47474728f10677aa04c440c'
-      }
+    mounted() {
+    const userStore = useUserStore();
+    const userCompanyCode = userStore.companyCode;
 
-    })
-	
-		.then(response => {
-		  const rows = response.data;
+    if (!userCompanyCode) {
+      console.error("Error: No company code found for the user.");
+      return; // companyCodeがない場合、処理を中断
+    }
+
+    const url = `http://127.0.0.1:8000/api/nearMiss/nearMissByCompany/?companyCode=${userCompanyCode}`;
+
+    axios.get(url)
+    .then(response => {
+      const nearMissData = response.data;
+      let rows = [];
+
+      // nearMissData の全ての要素（各会社）をループ処理
+      for (const companyData of nearMissData) {
+        // 各会社の nearMissList をループ処理
+        for (const nearMiss of companyData.nearMissList) {
+          // ここで nearMiss の各データを rows に追加
+          rows.push(nearMiss);
+        }
+      }
   
 		  // departmentの各要素に番号を振り、順序を保持する
 		  const departmentMap = {};

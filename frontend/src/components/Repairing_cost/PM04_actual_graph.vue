@@ -1,100 +1,99 @@
 <template>
-    <div>
-      <v-card>
-        <v-card-title>PM04 Actual cost</v-card-title>
-        <div id="rpcPM04"></div>
-      </v-card>
-    </div>
-  </template>
-  
-  <script>
-  import Plotly from "plotly.js-dist-min";
-  import axios from "axios";
-  import { useUserStore } from '@/stores/userStore'; // Piniaストアをインポート
-  
-  
-  export default {
-    data() {
-      return {
-        RepairingCostData: [],
-      };
-    },
-  
-    mounted() {
-      const getRepairingCostData = async () => {
-          try {
-              const response = await axios.get('http://127.0.0.1:8000/api/repairingCost/APM04ByCompany/?format=json');
-              let repairingCostData = response.data;
+  <div>
+    <v-card>
+      <v-card-title>PM04 Actual cost</v-card-title>
+      <div id="rpcPM04"></div>
+    </v-card>
+  </div>
+</template>
 
-              // Pinia ストアから companyCode を取得
-              const userStore = useUserStore();
-              const userCompanyCode = userStore.companyCode;
+<script>
+import Plotly from "plotly.js-dist-min";
+import axios from "axios";
+import { useUserStore } from '@/stores/userStore'; // Piniaストアをインポート
 
-              // ユーザーの companyCode に基づいてデータをフィルタリング
-              if (userCompanyCode) {
-                  repairingCostData = repairingCostData.filter(companyData => companyData.companyCode === userCompanyCode);
-              }
 
-              // 各工場のデータごとに処理
-              for (const companyData of repairingCostData) {
-                  for (const plantData of companyData.actualPM04List) {
-                      const actualPM04Data = plantData.actualPM04;
+export default {
+  data() {
+    return {
+      RepairingCostData: [],
+    };
+  },
 
-                      // 各月ごとのデータを新しい形式に変換
-                      actualPM04Data.forEach(yearData => {
-                          const months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec","commitment","totalCost"];
-                          let monthCosts = [];
-                          months.forEach(month => {
-                              if (yearData[month]) {
-                                  monthCosts.push({
-                                      month: month,
-                                      cost: parseFloat(yearData[month])
-                                  });
-                              }
-                          });
+  mounted() {
+    const getRepairingCostData = async () => {
+      try {
+        const userStore = useUserStore();
+        const userCompanyCode = userStore.companyCode;
 
-                          this.RepairingCostData.push({
-                              plant: plantData.plant,
-                              data: monthCosts
-                          });
-                      });
-                  }
-              }
-          } catch (error) {
-              console.error('Error fetching RepairingCost data:', error);
-          }
-      };
+        if (!userCompanyCode) {
+          console.error("Error: No company code found for the user.");
+          return; // 処理を中断
+        }
 
-      // 上記関数の実行
-      getRepairingCostData()
-          .then(() => {
-              // 取得したデータを使ってグラフを描画
-              const plotData = this.RepairingCostData.map(plantData => {
-                  const xValues = plantData.data.map(entry => entry.month);
-                  const yValues = plantData.data.map(entry => entry.cost);
+        const url = `http://127.0.0.1:8000/api/repairingCost/APM04ByCompany/?format=json&companyCode=${userCompanyCode}`;
+        const response = await axios.get(url);
+        console.log("Fetched RepairingCost Data:", response.data); // データ取得ログ
 
-                  let trace = {
-                      x: xValues,
-                      y: yValues,
-                      name: plantData.plant,
-                  };
+        let repairingCostData = response.data;
+        for (const companyData of repairingCostData) {
+          for (const plantData of companyData.actualPM04List) {
+            const actualPM04Data = plantData.actualPM04;
 
-                  return trace;
+            // 各月ごとのデータを新しい形式に変換
+            actualPM04Data.forEach(yearData => {
+              const months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec", "commitment", "totalCost"];
+              let monthCosts = [];
+              months.forEach(month => {
+                if (yearData[month]) {
+                  monthCosts.push({
+                    month: month,
+                    cost: parseFloat(yearData[month])
+                  });
+                }
               });
-  
-          const layout = {
-            height: 500,
-            width: 600,
-            title: 'Repairing Cost',
+
+              this.RepairingCostData.push({
+                plant: plantData.plant,
+                data: monthCosts
+              });
+            });
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching RepairingCost data:', error);
+      }
+    };
+
+    // 上記関数の実行
+    getRepairingCostData()
+      .then(() => {
+        // 取得したデータを使ってグラフを描画
+        const plotData = this.RepairingCostData.map(plantData => {
+          const xValues = plantData.data.map(entry => entry.month);
+          const yValues = plantData.data.map(entry => entry.cost);
+
+          let trace = {
+            x: xValues,
+            y: yValues,
+            name: plantData.plant,
           };
-  
-          Plotly.newPlot('rpcPM04', plotData, layout);
-        })
-        .catch(error => {
-          console.error('Error plotting Repairing Cost graph:', error);
-          throw error;
+
+          return trace;
         });
-    },
-  };
-  </script>
-  
+
+        const layout = {
+          height: 500,
+          width: 600,
+          title: 'Repairing Cost',
+        };
+
+        Plotly.newPlot('rpcPM04', plotData, layout);
+      })
+      .catch(error => {
+        console.error('Error plotting Repairing Cost graph:', error);
+        throw error;
+      });
+  },
+};
+</script>

@@ -15,7 +15,7 @@
   // register Handsontable's modules
   registerAllModules();
   
-  const URL = "http://127.0.0.1:8000/api/repairingCost/APM02ByCompany/?format=json";
+
   
   const TableComponent = defineComponent({
     data() {
@@ -116,24 +116,25 @@
     },
   
     methods: {
-      getDataAxios() {
-        axios.get(URL, {
-          headers: {
-            "Content-Type": "application/json"
-          },
-          withCredentials: true
-        })
-          .then(response => {
-            let actualCostData = response.data;
-  
-            // Pinia ストアから companyCode を取得
-            const userStore = useUserStore();
-            const userCompanyCode = userStore.companyCode;
-  
-            // ユーザーの companyCode に基づいてデータをフィルタリング
-            if (userCompanyCode) {
-              actualCostData = actualCostData.filter(companyData => companyData.companyCode === userCompanyCode);
-            }
+    getDataAxios() {
+      const userStore = useUserStore();
+      const userCompanyCode = userStore.companyCode;
+
+      if (!userCompanyCode) {
+        console.error("Error: No company code found for the user.");
+        return;
+      }
+
+      const url = `http://127.0.0.1:8000/api/repairingCost/APM02ByCompany/?format=json&companyCode=${userCompanyCode}`;
+      
+      axios.get(url, {
+        headers: {
+          "Content-Type": "application/json"
+        },
+        withCredentials: true
+      })
+      .then(response => {
+        const actualCostData = response.data;
   
             //データ抽出
             const months = ["year","jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec", "commitment",];
