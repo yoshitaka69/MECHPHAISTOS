@@ -18,6 +18,21 @@ class Equipment(models.Model):
         return f'{self.equipment}'
     
 
+class Machine(models.Model):
+
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='machine_companyCode',null=True, blank=True)
+    companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='machine_companyName', null=True, blank=True)
+    machineName = models.CharField(verbose_name='machineName', max_length=200,null=True,blank=True)
+
+    class Meta:
+        verbose_name = 'Machine'
+        verbose_name_plural = 'Machine'
+        ordering = ('companyCode',) 
+
+    def __str__(self):
+        return f'{self.machineName}'
+    
+
 class CeList(models.Model):
 
     #accountsから取得
@@ -28,7 +43,7 @@ class CeList(models.Model):
     #Celistの項目
     ceList_Id = models.CharField(verbose_name='ceListNo', max_length=200,null=True,blank=True,default=0)
     equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='ceList_equipment',null=True, blank=True)
-    machineName = models.CharField(verbose_name='machineName',max_length=200,blank=True,null=True)
+    machineName = models.ForeignKey(Machine, on_delete=models.CASCADE, related_name='ceList_machine',null=True, blank=True)
  
     class Meta:
         verbose_name = 'Critical equipment list'

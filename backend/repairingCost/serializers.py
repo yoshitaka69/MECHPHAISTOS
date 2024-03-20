@@ -3,7 +3,6 @@ from accounts.models import CompanyCode
 from .models import PlannedPM02,ActualPM02,PlannedPM03,ActualPM03,ActualPM04,PlannedPM05,ActualPM05,CalTablePlannedPM02,CalTableActualPM02,CalTablePlannedPM03,CalTableActualPM03,CalTableActualPM04,CalTablePlannedPM05,CalTableActualPM05,SummedCost
 
 from accounts.models import CompanyCode,Plant
-from taskList.models import TaskList
 from module.serializers import CommonSerializerMethodMixin
 
 
@@ -472,6 +471,27 @@ class CompanyCodeCalPPM04Serializer(serializers.ModelSerializer):
     class Meta:
         model = CompanyCode
         fields = ['companyCode', 'calPPM04List']
+
+
+
+
+class CalTablePPM05Serializer(serializers.ModelSerializer):
+    no1RepairingCost = serializers.SerializerMethodField()
+    no2RepairingCost = serializers.SerializerMethodField()
+    no3RepairingCost = serializers.SerializerMethodField()
+    no4RepairingCost = serializers.SerializerMethodField()
+    no5RepairingCost = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = CalTablePlannedPM05
+        fields = '__all__'
+
+
+class CompanyCodeCalPPM05Serializer(serializers.ModelSerializer):
+    calPPM05List = CalTablePPM05Serializer(many=True, read_only=True, source='calTablePlannedPM05_companyCode')
+    class Meta:
+        model = CompanyCode
+        fields = ['companyCode', 'calPPM05List']
 
 
 
