@@ -4,9 +4,9 @@ from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.request import Request
 
-from .models import PlannedPM02,ActualPM02,PlannedPM03,ActualPM03,ActualPM04,PlannedPM05,ActualPM05
+from .models import PlannedPM02,ActualPM02,PlannedPM03,ActualPM03,ActualPM04,PlannedPM05,ActualPM05,SummedCost
 from accounts.models import CompanyCode
-from .serializers import PlannedPM02Serializer,CompanyCodePPM02Serializer,ActualPM02Serializer,CompanyCodeAPM02Serializer,PlannedPM03Serializer,CompanyCodePPM03Serializer,ActualPM03Serializer,CompanyCodeAPM03Serializer,ActualPM04Serializer,CompanyCodeAPM04Serializer,PlannedPM05Serializer,CompanyCodePPM05Serializer,ActualPM05Serializer,CompanyCodeAPM05Serializer
+from .serializers import PlannedPM02Serializer,CompanyCodePPM02Serializer,ActualPM02Serializer,CompanyCodeAPM02Serializer,PlannedPM03Serializer,CompanyCodePPM03Serializer,ActualPM03Serializer,CompanyCodeAPM03Serializer,ActualPM04Serializer,CompanyCodeAPM04Serializer,PlannedPM05Serializer,CompanyCodePPM05Serializer,ActualPM05Serializer,CompanyCodeAPM05Serializer,SummedCostSerializer
 
 
 #PM02-Plan
@@ -92,3 +92,15 @@ class CompanyCodeAPM05ViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         return CompanyCode.objects.prefetch_related('actualPM05_companyCode').all()
+
+
+
+class SummedCostViewSet(viewsets.ModelViewSet):
+    queryset = SummedCost.objects.all()
+    serializer_class = SummedCostSerializer
+
+class CompanyCodeSummedCostViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = SummedCostSerializer
+
+    def get_queryset(self):
+        return CompanyCode.objects.prefetch_related('summedCost_companyCode').all()

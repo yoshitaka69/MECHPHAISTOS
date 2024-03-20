@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from accounts.models import CompanyCode
-from .models import PlannedPM02,ActualPM02,PlannedPM03,ActualPM03,ActualPM04,PlannedPM05,ActualPM05,CalTablePlannedPM02,CalTableActualPM02,CalTablePlannedPM03,CalTableActualPM03,CalTableActualPM04,CalTablePlannedPM05,CalTableActualPM05
+from .models import PlannedPM02,ActualPM02,PlannedPM03,ActualPM03,ActualPM04,PlannedPM05,ActualPM05,CalTablePlannedPM02,CalTableActualPM02,CalTablePlannedPM03,CalTableActualPM03,CalTableActualPM04,CalTablePlannedPM05,CalTableActualPM05,SummedCost
 
 from accounts.models import CompanyCode,Plant
 from taskList.models import TaskList
@@ -364,6 +364,7 @@ class CompanyCodeAPM05Serializer(serializers.ModelSerializer):
 
 
 
+
 #ここからCalTable
 #PM02
 class CalTablePPM02Serializer(serializers.ModelSerializer):
@@ -376,35 +377,6 @@ class CalTablePPM02Serializer(serializers.ModelSerializer):
     class Meta:
         model = CalTablePlannedPM02
         fields = '__all__'
-
-
-    def get_repairing_cost_info(self, rank):
-        try:
-            task_list = TaskList.objects.order_by('-laborCostOfPM')[:5]  # laborCostOfPMで降順にソートし、上位5位までを取得
-            if len(task_list) > rank:
-                task = task_list[rank]
-                return {'taskName': task.taskName, 'repairingCost': task.laborCostOfPM}
-            return None
-        except Exception as e:
-            # 例外が発生した場合、エラーログを記録する
-            print(f'Error in get_repairing_cost_info: {e}')
-            return None
-
-
-    def get_no1RepairingCost(self, obj):
-        return self.get_repairing_cost_info(0)
-
-    def get_no2RepairingCost(self, obj):
-        return self.get_repairing_cost_info(1)
-
-    def get_no3RepairingCost(self, obj):
-        return self.get_repairing_cost_info(2)
-
-    def get_no4RepairingCost(self, obj):
-        return self.get_repairing_cost_info(3)
-
-    def get_no5RepairingCost(self, obj):
-        return self.get_repairing_cost_info(4)
 
         
 class CompanyCodeCalPPM02Serializer(serializers.ModelSerializer):
@@ -425,36 +397,6 @@ class CalTableAPM02Serializer(serializers.ModelSerializer):
     class Meta:
         model = CalTableActualPM02
         fields = '__all__'
-        
-    def get_repairing_cost_info(self, rank):
-        try:
-            task_list = TaskList.objects.order_by('-laborCostOfPM')[:5]  # laborCostOfPMで降順にソートし、上位5位までを取得
-            if len(task_list) > rank:
-                task = task_list[rank]
-                return {'taskName': task.taskName, 'repairingCost': task.laborCostOfPM}
-            return None
-        except Exception as e:
-            # 例外が発生した場合、エラーログを記録する
-            print(f'Error in get_repairing_cost_info: {e}')
-            return None
-
-        
-
-    def get_no1RepairingCost(self, obj):
-        return self.get_repairing_cost_info(0)
-
-    def get_no2RepairingCost(self, obj):
-        return self.get_repairing_cost_info(1)
-
-    def get_no3RepairingCost(self, obj):
-        return self.get_repairing_cost_info(2)
-
-    def get_no4RepairingCost(self, obj):
-        return self.get_repairing_cost_info(3)
-
-    def get_no5RepairingCost(self, obj):
-        return self.get_repairing_cost_info(4)
-
 
 
 
@@ -478,34 +420,6 @@ class CalTablePPM03Serializer(serializers.ModelSerializer):
     class Meta:
         model = CalTablePlannedPM03
         fields = '__all__'
-
-    def get_repairing_cost_info(self, rank):
-        try:
-            task_list = TaskList.objects.order_by('-laborCostOfPM')[:5]  # laborCostOfPMで降順にソートし、上位5位までを取得
-            if len(task_list) > rank:
-                task = task_list[rank]
-                return {'taskName': task.taskName, 'repairingCost': task.laborCostOfPM}
-            return None
-        except Exception as e:
-            # 例外が発生した場合、エラーログを記録する
-            print(f'Error in get_repairing_cost_info: {e}')
-            return None
-
-
-    def get_no1RepairingCost(self, obj):
-        return self.get_repairing_cost_info(0)
-
-    def get_no2RepairingCost(self, obj):
-        return self.get_repairing_cost_info(1)
-
-    def get_no3RepairingCost(self, obj):
-        return self.get_repairing_cost_info(2)
-
-    def get_no4RepairingCost(self, obj):
-        return self.get_repairing_cost_info(3)
-
-    def get_no5RepairingCost(self, obj):
-        return self.get_repairing_cost_info(4)
 
         
         
@@ -531,35 +445,6 @@ class CalTableAPM03Serializer(serializers.ModelSerializer):
         fields = '__all__'
 
         
-    def get_repairing_cost_info(self, rank):
-        try:
-            task_list = TaskList.objects.order_by('-laborCostOfPM')[:5]  # laborCostOfPMで降順にソートし、上位5位までを取得
-            if len(task_list) > rank:
-                task = task_list[rank]
-                return {'taskName': task.taskName, 'repairingCost': task.laborCostOfPM}
-            return None
-        except Exception as e:
-            # 例外が発生した場合、エラーログを記録する
-            print(f'Error in get_repairing_cost_info: {e}')
-            return None
-
-
-    def get_no1RepairingCost(self, obj):
-        return self.get_repairing_cost_info(0)
-
-    def get_no2RepairingCost(self, obj):
-        return self.get_repairing_cost_info(1)
-
-    def get_no3RepairingCost(self, obj):
-        return self.get_repairing_cost_info(2)
-
-    def get_no4RepairingCost(self, obj):
-        return self.get_repairing_cost_info(3)
-
-    def get_no5RepairingCost(self, obj):
-        return self.get_repairing_cost_info(4)
-
-        
 class CompanyCodeCalAPM03Serializer(serializers.ModelSerializer):
     calAPM03List = CalTableAPM03Serializer(many=True, read_only=True, source='calTableActualPM03_companyCode')
     class Meta:
@@ -581,92 +466,12 @@ class CalTableAPM04Serializer(serializers.ModelSerializer):
         model = CalTableActualPM04
         fields = '__all__'
 
-    def get_repairing_cost_info(self, rank):
-        try:
-            task_list = TaskList.objects.order_by('-laborCostOfPM')[:5]  # laborCostOfPMで降順にソートし、上位5位までを取得
-            if len(task_list) > rank:
-                task = task_list[rank]
-                return {'taskName': task.taskName, 'repairingCost': task.laborCostOfPM}
-            return None
-        except Exception as e:
-            # 例外が発生した場合、エラーログを記録する
-            print(f'Error in get_repairing_cost_info: {e}')
-            return None
-
-
-    def get_no1RepairingCost(self, obj):
-        return self.get_repairing_cost_info(0)
-
-    def get_no2RepairingCost(self, obj):
-        return self.get_repairing_cost_info(1)
-
-    def get_no3RepairingCost(self, obj):
-        return self.get_repairing_cost_info(2)
-
-    def get_no4RepairingCost(self, obj):
-        return self.get_repairing_cost_info(3)
-
-    def get_no5RepairingCost(self, obj):
-        return self.get_repairing_cost_info(4)
-
-
         
-class CompanyCodeCalAPM04Serializer(serializers.ModelSerializer):
-    calAPM04List = CalTableAPM04Serializer(many=True, read_only=True, source='calTableActualPM04_companyCode')
+class CompanyCodeCalPPM04Serializer(serializers.ModelSerializer):
+    calPPM04List = CalTableAPM04Serializer(many=True, read_only=True, source='calTablePlanPM04_companyCode')
     class Meta:
         model = CompanyCode
-        fields = ['companyCode', 'calAPM04List']
-
-
-
-
-
-#PM05
-class CalTablePPM05Serializer(serializers.ModelSerializer):
-    no1RepairingCost = serializers.SerializerMethodField()
-    no2RepairingCost = serializers.SerializerMethodField()
-    no3RepairingCost = serializers.SerializerMethodField()
-    no4RepairingCost = serializers.SerializerMethodField()
-    no5RepairingCost = serializers.SerializerMethodField()
-
-    class Meta:
-        model = CalTablePlannedPM05
-        fields = '__all__'
-
-    def get_repairing_cost_info(self, rank):
-        try:
-            task_list = TaskList.objects.order_by('-laborCostOfPM')[:5]  # laborCostOfPMで降順にソートし、上位5位までを取得
-            if len(task_list) > rank:
-                task = task_list[rank]
-                return {'taskName': task.taskName, 'repairingCost': task.laborCostOfPM}
-            return None
-        except Exception as e:
-            # 例外が発生した場合、エラーログを記録する
-            print(f'Error in get_repairing_cost_info: {e}')
-            return None
-
-        
-    def get_no1RepairingCost(self, obj):
-        return self.get_repairing_cost_info(0)
-
-    def get_no2RepairingCost(self, obj):
-        return self.get_repairing_cost_info(1)
-
-    def get_no3RepairingCost(self, obj):
-        return self.get_repairing_cost_info(2)
-
-    def get_no4RepairingCost(self, obj):
-        return self.get_repairing_cost_info(3)
-
-    def get_no5RepairingCost(self, obj):
-        return self.get_repairing_cost_info(4)
-
-        
-class CompanyCodeCalPPM05Serializer(serializers.ModelSerializer):
-    calPPM05List = CalTablePPM05Serializer(many=True, read_only=True, source='calTablePlanPM05_companyCode')
-    class Meta:
-        model = CompanyCode
-        fields = ['companyCode', 'calPPM05List']
+        fields = ['companyCode', 'calPPM04List']
 
 
 
@@ -683,38 +488,25 @@ class CalTableAPM05Serializer(serializers.ModelSerializer):
         model = CalTableActualPM05
         fields = '__all__'
 
-    def get_repairing_cost_info(self, rank):
-        try:
-            task_list = TaskList.objects.order_by('-laborCostOfPM')[:5]  # laborCostOfPMで降順にソートし、上位5位までを取得
-            if len(task_list) > rank:
-                task = task_list[rank]
-                return {'taskName': task.taskName, 'repairingCost': task.laborCostOfPM}
-            return None
-        except Exception as e:
-            # 例外が発生した場合、エラーログを記録する
-            print(f'Error in get_repairing_cost_info: {e}')
-            return None
-
-
-    def get_no1RepairingCost(self, obj):
-        return self.get_repairing_cost_info(0)
-
-    def get_no2RepairingCost(self, obj):
-        return self.get_repairing_cost_info(1)
-
-    def get_no3RepairingCost(self, obj):
-        return self.get_repairing_cost_info(2)
-
-    def get_no4RepairingCost(self, obj):
-        return self.get_repairing_cost_info(3)
-
-    def get_no5RepairingCost(self, obj):
-        return self.get_repairing_cost_info(4)
-
-
 
 class CompanyCodeCalAPM05Serializer(serializers.ModelSerializer):
     calAPM05List = CalTableAPM05Serializer(many=True, read_only=True, source='calTableActualPM05_companyCode')
     class Meta:
         model = CompanyCode
         fields = ['companyCode', 'calAPM05List']
+
+
+
+
+
+class SummedCostSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = SummedCost
+        fields = '__all__'
+
+class CompanyCodeSummedCostSerializer(serializers.ModelSerializer):
+    summedCostList = SummedCostSerializer(many=True, read_only=True, source='summedCost_companyCode')
+    class Meta:
+        model = CompanyCode
+        fields = ['companyCode', 'summedCostList']

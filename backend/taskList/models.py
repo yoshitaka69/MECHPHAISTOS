@@ -1,27 +1,29 @@
 from django.db import models
-from django.utils import timezone
-from accounts.models import CompanyCode,CompanyName
-#from ceList.models import Plant,Equipment,Machine,TypeOfPM
+from accounts.models import CompanyCode,CompanyName,Plant
+from ceList.models import Equipment,CeList
 
 
 
 class TaskList(models.Model):
 
+    #accountsより
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='taskList_companyCode',null=True, blank=True)
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='taskList_companyName', null=True, blank=True)
-    #plant = models.ForeignKey(Plant, on_delete=models.CASCADE,related_name='taskList_plant', null=True, blank=True)
-    #equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='taskList_equipment', null=True, blank=True)
-    #machineName = models.ForeignKey(Machine, on_delete=models.CASCADE, related_name='taskList_function', null=True, blank=True)
+    plant = models.ForeignKey(Plant, on_delete=models.CASCADE,related_name='taskList_plant', null=True, blank=True)
+
+    #CeListより
+    equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='taskList_equipment',null=True, blank=True)
+    machineName = models.ForeignKey(CeList, on_delete=models.CASCADE, related_name='taskList_machineName',null=True, blank=True)
 
     taskCode = models.CharField(verbose_name='taskCode',max_length=200,blank=True,null=True)
-    #typeOfPM = models.ForeignKey(TypeOfPM, on_delete=models.PROTECT, related_name='taskList_typeOfPM', null=True, blank=True)#これは絶対PROTECT
     taskName = models.CharField(verbose_name='taskName',max_length=200,blank=True,null=True)
+    typeOfPM = models.CharField(verbose_name='typeOfPM',max_length=200,blank=True,null=True)
     laborCostOfPM = models.DecimalField(verbose_name='laborCostOfPM',max_digits=10,decimal_places=5,blank=True,null=True,default=0.00)
-
     countOfPM = models.PositiveSmallIntegerField(verbose_name='countOfPM',blank=True,null=True,default=0)
     latestPM = models.DateField(verbose_name='latestPM',blank=True,null=True)
     periodOfPM = models.IntegerField(verbose_name='periodOfPM', blank=True, null=True)  # 整数フィールドに変更
     
+
     #Probability of failure
     constructionPeriod = models.IntegerField(verbose_name='constructionPeriod', blank=True, null=True)  # 整数フィールドに変更
     nextEventDate = models.DateField(verbose_name='nextEventDate',blank=True,null=True)

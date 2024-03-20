@@ -1,29 +1,8 @@
 from rest_framework import serializers
-from .models import SpareParts,Company,Category,Location,Classification
+from .models import SpareParts
+from accounts.models import CompanyCode
+
 from django.db.models import Max
-
-
-
-class CategorySerializer(serializers.ModelSerializer):
-        
-    class Meta:
-        model = Category #呼び出すモデル名
-        fields = '__all__'# API上に表示するモデルのデータ項目
-
-
-class LocationSerializer(serializers.ModelSerializer):
-        
-    class Meta:
-        model = Location 
-        fields = '__all__'
-
-
-class ClassificationSerializer(serializers.ModelSerializer):
-        
-    class Meta:
-        model = Classification
-        fields = '__all__'
-
 
 
 class SparePartsSerializer(serializers.ModelSerializer):
@@ -55,8 +34,8 @@ class SparePartsSerializer(serializers.ModelSerializer):
 
 class CompanyCodeSPSerializer(serializers.ModelSerializer):
     sparePartsList = SparePartsSerializer(many=True, read_only=True, source='spareParts_companyCode')#ここのsourceは本当に注意
-
+    
     class Meta:
-        model = Company
+        model = CompanyCode
         fields = ['companyCode', 'sparePartsList']
 

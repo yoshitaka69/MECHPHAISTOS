@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import PlannedPM02,ActualPM02,PlannedPM03,ActualPM03,ActualPM04,PlannedPM05,ActualPM05,CalTablePlannedPM02,CalTableActualPM02,CalTablePlannedPM03,CalTableActualPM03,CalTableActualPM04,CalTablePlannedPM05,CalTableActualPM05
+from .models import PlannedPM02,ActualPM02,PlannedPM03,ActualPM03,ActualPM04,PlannedPM05,ActualPM05,CalTablePlannedPM02,CalTableActualPM02,CalTablePlannedPM03,CalTableActualPM03,CalTableActualPM04,CalTablePlannedPM05,CalTableActualPM05,SummedCost
 class PlannedPM02Admin(admin.ModelAdmin):
     list_display = ('companyCode','companyName','plant','year','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
     search_fields = ('companyCode','companyName','plant','year','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','commitment','totalCost',)
@@ -139,6 +139,17 @@ class CalTabelActualPM05Admin(admin.ModelAdmin):
     list_per_page = 50 
 
 
+class SummedCostAdmin(admin.ModelAdmin):
+    list_display = ('companyCode','plant','year','sumJan','sumFeb','sumMar','sumApr','sumMay','sumJun','sumJul','sumAug','sumSep','sumOct','sumNov','sumDec','sumCommitment','totalActualPM02','totalActualPM03','totalActualPM04','totalActualPM05','totalActualCost',)
+    search_fields = ('companyCode','plant','year','sumJan','sumFeb','sumMar','sumApr','sumMay','sumJun','sumJul','sumAug','sumSep','sumOct','sumNov','sumDec','sumCommitment','totalActualPM02','totalActualPM03','totalActualPM04','totalActualPM05','totalActualCost',)
+    list_filter = ('companyCode','plant','year','sumJan','sumFeb','sumMar','sumApr','sumMay','sumJun','sumJul','sumAug','sumSep','sumOct','sumNov','sumDec','sumCommitment','totalActualPM02','totalActualPM03','totalActualPM04','totalActualPM05','totalActualCost',)
+    ordering = ('companyCode',)
+    save_on_top = True
+
+    list_per_page = 50 
+
+
+
 
 
 # 以下でadminサイトに表示させる
@@ -160,3 +171,5 @@ admin.site.register(CalTableActualPM03,CalTabelActualPM03Admin)
 admin.site.register(CalTableActualPM04,CalTabelActualPM04Admin)
 admin.site.register(CalTablePlannedPM05,CalTablePlannedPM05Admin)
 admin.site.register(CalTableActualPM05,CalTabelActualPM05Admin)
+
+admin.site.register(SummedCost,SummedCostAdmin)

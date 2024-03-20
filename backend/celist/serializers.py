@@ -1,37 +1,16 @@
 from rest_framework import serializers
-
 from django.db.models import Max
-from .models import CeList,CompanyCode,Plant,Equipment,Machine,TypeOfPM,TotalRepairingCost
-
-class PlantSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Plant #呼び出すモデル名
-        fields = '__all__'# API上に表示するモデルのデータ項目
-
-class EquipmentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Equipment 
-        fields = '__all__'
-
-class MachineSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Machine 
-        fields = '__all__'
-
-class TypeOfPMSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TypeOfPM 
-        fields = '__all__'
+from .models import CeList,CompanyCode
 
 
 
 
-class CeSerializer(serializers.ModelSerializer):
+class CeListSerializer(serializers.ModelSerializer):
     ceList_id = serializers.SerializerMethodField()#連番ID
 
     class Meta:
         model = CeList
-        fields = '__all__'
+        fields = ["companyCode","companyName","plant","ceList_Id","equipment","machineName"]
 
     def get_custom_id(self, obj):
         # companyCode を基に最大のカスタム ID を検索
@@ -42,7 +21,7 @@ class CeSerializer(serializers.ModelSerializer):
 
         return f"{obj.companyCode}-{new_id}"
     
-
+    
     def create(self, validated_data):
         # カスタム ID を計算（例として 'companyCode' がモデル内に存在すると仮定）
         company_code = validated_data['companyCode']
@@ -63,21 +42,11 @@ class CeSerializer(serializers.ModelSerializer):
 
 
 
-class CompanyCodeCeSerializer(serializers.ModelSerializer):
-    ceList = CeSerializer(many=True, read_only=True, source='ce_set')
+class CompanyCodeCeListSerializer(serializers.ModelSerializer):
+    ceList = CeListSerializer(many=True, read_only=True, source='ceList_companyCode')
 
     class Meta:
         model = CompanyCode
         fields = ['companyCode', 'ceList']
 
-
-class RepairingCostSumSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TotalRepairingCost
-        fields = ['task', 'repairingCost']
-
-    def create(self, validated_data):
-        instance = TotalRepairingCost.objects.create(**validated_data)
-        instance.calculate_repairing_cost()
-        return instance
 

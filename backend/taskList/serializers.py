@@ -1,10 +1,12 @@
 from rest_framework import serializers
-from .models import TaskList,CompanyCode
+from .models import TaskList
+from accounts.models import CompanyCode
 from datetime import timedelta, datetime
 
 
 
-class TaskSerializer(serializers.ModelSerializer):
+
+class TaskListSerializer(serializers.ModelSerializer):
     taskCode = serializers.CharField(read_only=True)
     nextEventDate = serializers.DateField(read_only=True)
     situation = serializers.CharField(read_only=True)
@@ -34,8 +36,10 @@ class TaskSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TaskList #呼び出すモデル名
-        fields = '__all__'# API上に表示するモデルのデータ項目
+        fields = ["companyCode","companyName","plant","equipment","machineName","taskCode","taskName","typeOfPM","laborCostOfPM","countOfPM","latestPM","periodOfPM","constructionPeriod","nextEventDate","situation","thisYear","thisYear1later","thisYear2later","thisYear3later","thisYear4later","thisYear5later","thisYear6later","thisYear7later","thisYear8later","thisYear9later","thisYear10later",]# API上に表示するモデルのデータ項目
         
+
+    #situationを判定する関数
     def validate(self, data):
         latest_pm = data.get('latestPM')
         period_of_pm = data.get('periodOfPM')
@@ -56,10 +60,9 @@ class TaskSerializer(serializers.ModelSerializer):
         
         return data
     
-
-
+    # taskCodeの生成
     def create(self, validated_data):
-        # taskCodeの生成
+        
         company_code = validated_data.get('company', {}).get('companyCode', '')
         last_task = TaskList.objects.filter(taskCode__startswith=company_code).order_by('-taskCode').first()
 
@@ -97,8 +100,8 @@ class TaskSerializer(serializers.ModelSerializer):
         return instance
 
 
-class CompanyTaskSerializer(serializers.ModelSerializer):
-    taskList = TaskSerializer(many=True, read_only=True, source='taskList_companyCode')#ここのsourceは注意
+class CompanyTaskListSerializer(serializers.ModelSerializer):
+    taskList = TaskListSerializer(many=True, read_only=True, source='taskList_companyCode')#ここのsourceは注意
 
     class Meta:
         model = CompanyCode

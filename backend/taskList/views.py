@@ -1,29 +1,15 @@
-from django.shortcuts import render
 from rest_framework import viewsets
-from django.shortcuts import get_object_or_404
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from rest_framework.request import Request
-
 
 from .models import TaskList,CompanyCode
-from .serializers import TaskSerializer,CompanyTaskSerializer
-
+from .serializers import TaskListSerializer,CompanyTaskListSerializer
 
 #Critical equipment list
 class TaskListViewSet(viewsets.ModelViewSet):
     queryset = TaskList.objects.all()
-    serializer_class = TaskSerializer
+    serializer_class = TaskListSerializer
 
-class TaskListByCompanyViewSet(viewsets.ReadOnlyModelViewSet):
-    serializer_class = TaskSerializer
+class CompanyCodeTaskListViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = CompanyTaskListSerializer
 
     def get_queryset(self):
-        companyCode_slug = self.kwargs['companyCode_slug']
-        return TaskList.objects.filter(companyCode__slug=companyCode_slug)
-
-@api_view(['GET'])
-def company_task_list(request):
-    companies = CompanyCode.objects.all()
-    serializer = CompanyTaskSerializer(companies, many=True)
-    return Response(serializer.data)
+        return CompanyCode.objects.prefetch_related('taskList_companyCode').all()

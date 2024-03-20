@@ -1,16 +1,11 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import SparePartsViewSet,CompanyCodeSPViewSet,CategoryViewSet,LocationViewSet,ClassificationViewSet
+from .views import SparePartsViewSet,CompanyCodeSPViewSet
 
 
 router = DefaultRouter()
 router.register(r'spareParts', SparePartsViewSet, basename='spareParts')
-router.register(r'companyCode-spareParts', CompanyCodeSPViewSet, basename='companyCode-spareParts')
-
-router.register(r'category', CategoryViewSet, basename='category')
-router.register(r'location', LocationViewSet, basename='location')
-router.register(r'classification', ClassificationViewSet, basename='classification')
-
+router.register(r'sparePartsByCompany', CompanyCodeSPViewSet, basename='companyCode-spareParts')
 
 
 urlpatterns = [
