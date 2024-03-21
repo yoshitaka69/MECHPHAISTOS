@@ -36,6 +36,15 @@ class MasterDataTableViewSet(viewsets.ModelViewSet):
     queryset = MasterDataTable.objects.all()
     serializer_class = MasterDataTableSerializer
 
+    def get_queryset(self):
+        return MasterDataTable.objects.prefetch_related(
+            'masterDataTable_taskPM02',
+            'masterDataTable_taskPM03',
+            'masterDataTable_taskPM04',
+            'masterDataTable_taskPM05',
+            'bomlist_set'
+        ).all()
+
 class CompanyCodeMDTViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = CompanyCodeMDTSerializer
 
