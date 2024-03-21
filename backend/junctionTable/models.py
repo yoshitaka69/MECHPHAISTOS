@@ -69,3 +69,20 @@ class MasterDataTable(models.Model):
     thisYear8later = models.BooleanField(verbose_name='thisYear8later',default=False)
     thisYear9later = models.BooleanField(verbose_name='thisYear9later',default=False)
     thisYear10later = models.BooleanField(verbose_name='thisYear10later',default=False)
+
+
+def combine_and_save_to_master(task_pm02_instance, task_pm03_instance,):
+    # データの取得
+    data = {
+        'thisYear1later': task_pm02_instance.thisYear1later or task_pm03_instance.thisYear1later,
+        'thisYear2later': task_pm02_instance.thisYear2later or task_pm03_instance.thisYear2later,
+        'thisYear3later': task_pm02_instance.thisYear3later or task_pm03_instance.thisYear3later,
+        # ... その他のフィールドも同様に
+        'thisYear10later': task_pm02_instance.thisYear10later or task_pm03_instance.thisYear10later,
+    }
+
+    # MasterDataTableに保存
+    master_data_instance = MasterDataTable.objects.create(**data)
+    return master_data_instance
+
+
