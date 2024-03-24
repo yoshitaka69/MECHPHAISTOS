@@ -84,21 +84,22 @@ class TaskListPM02Serializer(serializers.ModelSerializer):
         current_year = datetime.now().year
         instance.thisYear = str(current_year)
 
-if latest_pm:
-    for i in range(1, 11):
-        next_event_date = latest_pm + timedelta(days=period_pm * i)
-        # ここでの条件は、計算されたイベント日付が現在の年数 + i年に該当するかどうかをチェック
-        if next_event_date.year <= current_year + i:
-            setattr(instance, f'thisYear{i}later', True)
+        if latest_pm:
+            for i in range(1, 11):
+                next_event_date = latest_pm + timedelta(days=period_pm * i)
+                # ここでの条件は、計算されたイベント日付が現在の年数 + i年に該当するかどうかをチェック
+                if next_event_date.year <= current_year + i:
+                    setattr(instance, f'thisYear{i}later', True)
+                else:
+                    setattr(instance, f'thisYear{i}later', False)
         else:
-            setattr(instance, f'thisYear{i}later', False)
-else:
-    # latestPM が提供されていない場合、全てのフィールドを False に設定
-    for i in range(1, 11):
-        setattr(instance, f'thisYear{i}later', False)
+            # latestPM が提供されていない場合、全てのフィールドを False に設定
+            for i in range(1, 11):
+                setattr(instance, f'thisYear{i}later', False)
 
-instance.save()
-return instance
+        instance.save()
+        return instance
+
 
 
 class CompanyTaskListPM02Serializer(serializers.ModelSerializer):

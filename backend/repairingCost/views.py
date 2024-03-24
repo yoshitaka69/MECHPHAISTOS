@@ -14,7 +14,7 @@ class PlannedPM02ViewSet(viewsets.ModelViewSet):
     queryset = PlannedPM02.objects.all()
     serializer_class = PlannedPM02Serializer
 
-class CompanyCodePPM02ViewSet(viewsets.ReadOnlyModelViewSet):
+class CompanyCodePPM02ViewSet(viewsets.ModelViewSet):
     serializer_class = CompanyCodePPM02Serializer
 
     def get_queryset(self):
@@ -26,7 +26,7 @@ class ActualPM02ViewSet(viewsets.ModelViewSet):
     queryset = ActualPM02.objects.all()
     serializer_class = ActualPM02Serializer
 
-class CompanyCodeAPM02ViewSet(viewsets.ReadOnlyModelViewSet):
+class CompanyCodeAPM02ViewSet(viewsets.ModelViewSet):
     serializer_class = CompanyCodeAPM02Serializer
 
     def get_queryset(self):
@@ -39,7 +39,7 @@ class PlannedPM03ViewSet(viewsets.ModelViewSet):
     queryset = PlannedPM03.objects.all()
     serializer_class = PlannedPM03Serializer
 
-class CompanyCodePPM03ViewSet(viewsets.ReadOnlyModelViewSet):
+class CompanyCodePPM03ViewSet(viewsets.ModelViewSet):
     serializer_class = CompanyCodePPM03Serializer
 
     def get_queryset(self):
@@ -51,7 +51,7 @@ class ActualPM03ViewSet(viewsets.ModelViewSet):
     queryset = ActualPM03.objects.all()
     serializer_class = ActualPM03Serializer
 
-class CompanyCodeAPM03ViewSet(viewsets.ReadOnlyModelViewSet):
+class CompanyCodeAPM03ViewSet(viewsets.ModelViewSet):
     serializer_class = CompanyCodeAPM03Serializer
 
     def get_queryset(self):
@@ -59,11 +59,13 @@ class CompanyCodeAPM03ViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 
+
+
 class ActualPM04ViewSet(viewsets.ModelViewSet):
     queryset = ActualPM04.objects.all()
     serializer_class = ActualPM04Serializer
 
-class CompanyCodeAPM04ViewSet(viewsets.ReadOnlyModelViewSet):
+class CompanyCodeAPM04ViewSet(viewsets.ModelViewSet):
     serializer_class = CompanyCodeAPM04Serializer
 
     def get_queryset(self):
@@ -71,11 +73,13 @@ class CompanyCodeAPM04ViewSet(viewsets.ReadOnlyModelViewSet):
 
 
     
+
+        
 class PlannedPM05ViewSet(viewsets.ModelViewSet):
     queryset = PlannedPM05.objects.all()
     serializer_class = PlannedPM05Serializer
 
-class CompanyCodePPM05ViewSet(viewsets.ReadOnlyModelViewSet):
+class CompanyCodePPM05ViewSet(viewsets.ModelViewSet):
     serializer_class = CompanyCodePPM05Serializer
 
     def get_queryset(self):
@@ -87,7 +91,7 @@ class ActualPM05ViewSet(viewsets.ModelViewSet):
     queryset = ActualPM05.objects.all()
     serializer_class = ActualPM05Serializer
 
-class CompanyCodeAPM05ViewSet(viewsets.ReadOnlyModelViewSet):
+class CompanyCodeAPM05ViewSet(viewsets.ModelViewSet):
     serializer_class = CompanyCodeAPM05Serializer
 
     def get_queryset(self):
@@ -99,7 +103,7 @@ class SummedCostViewSet(viewsets.ModelViewSet):
     queryset = SummedCost.objects.all()
     serializer_class = SummedCostSerializer
 
-class CompanyCodeSummedCostViewSet(viewsets.ReadOnlyModelViewSet):
+class CompanyCodeSummedCostViewSet(viewsets.ModelViewSet):
     serializer_class = SummedCostSerializer
 
     def get_queryset(self):

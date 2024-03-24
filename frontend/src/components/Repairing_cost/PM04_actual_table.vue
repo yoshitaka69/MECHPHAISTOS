@@ -1,6 +1,7 @@
 <template>
-  <div id="PM04actualtable">
+  <div id="PM03actualtable">
       <hot-table ref="hotTableComponent" :settings="hotSettings"></hot-table>
+	  <button v-on:click="updateData" class="controls">Update Data</button>
   </div>
 </template>
 
@@ -111,77 +112,146 @@
     },
   
     created() {
-      this.getDataAxios();
-    },
-  
-    methods: {
-    getDataAxios() {
-      const userStore = useUserStore();
-      const userCompanyCode = userStore.companyCode;
+		this.getDataAxios();
+	},
 
-      if (!userCompanyCode) {
-        console.error("Error: No company code found for the user.");
-        return;
-      }
+	methods: {
 
-      const url = `http://127.0.0.1:8000/api/repairingCost/APM04ByCompany/?format=json&companyCode=${userCompanyCode}`;
-      
-      axios.get(url, {
-        headers: {
-          "Content-Type": "application/json"
-        },
-        withCredentials: true
-      })
-      .then(response => {
-        const actualCostData = response.data;
-  
-            //データ抽出
-            const months = ["year","jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec", "commitment",];
-            const tableData = actualCostData.flatMap(companyData =>
-              companyData.actualPM04List.flatMap(plantData =>
-                plantData.actualPM04.map(yearData => {
-                  const rowData = { plant: plantData.plant, year: yearData.year };
-                  months.forEach(month => {
-                    rowData[month] = parseFloat(yearData[month]) || 0;
-                  });
-                  rowData["totalCost"] = parseFloat(yearData["totalCost"]) || 0;
-                  return rowData;
-                })
-              )
-            );
-  
-            // columns の設定
-            const columns = [
-              { data: "plant" },
-              { data: "year" },
-              { data: "jan" },
-              { data: "feb" },
-              { data: "mar" },
-              { data: "apr" },
-              { data: "may" },
-              { data: "jun" },
-              { data: "jul" },
-              { data: "aug" },
-              { data: "sep" },
-              { data: "oct" },
-              { data: "nov" },
-              { data: "dec" },
-              { data: "commitment" },
-              { data: "totalCost" },
-            ];
-            console.log("Table Data:", tableData); // テーブルデータをログに出力
-  
-            //table setting
-            this.$refs.hotTableComponent.hotInstance.updateSettings({
-              data: tableData,
-              columns,
-            });
-          })
-          .catch(error => {
-            console.error("Error fetching data:", error);
-          });
-      },
-    },
+		addRow() {
+			const hotInstance = this.$refs.hotTableComponent.hotInstance;
+			hotInstance.alter('insert_row', hotInstance.countRows());
+		},
+
+
+
+
+		getDataAxios() {
+			const userStore = useUserStore();
+			const userCompanyCode = userStore.companyCode;
+
+			if (!userCompanyCode) {
+				console.error("Error: No company code found for the user.");
+				return;
+			}
+
+			const url = `http://127.0.0.1:8000/api/repairingCost/APM04ByCompany/?format=json&companyCode=${userCompanyCode}`;
+
+			axios.get(url, {
+				headers: {
+					"Content-Type": "application/json"
+				},
+				withCredentials: true
+			})
+				.then(response => {
+					const actualCostData = response.data;
+
+					//データ抽出
+					const months = ["year", "jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec", "commitment",];
+					const tableData = actualCostData.flatMap(companyData =>
+						companyData.actualPM04List.flatMap(plantData =>
+							plantData.actualPM04.map(yearData => {
+								const rowData = { plant: plantData.plant, year: yearData.year };
+								months.forEach(month => {
+									rowData[month] = parseFloat(yearData[month]) || 0;
+								});
+								rowData["totalCost"] = parseFloat(yearData["totalCost"]) || 0;
+								return rowData;
+							})
+						)
+					);
+
+					// columns の設定
+					const columns = [
+						{ data: "plant" },
+						{ data: "year" },
+						{ data: "jan" },
+						{ data: "feb" },
+						{ data: "mar" },
+						{ data: "apr" },
+						{ data: "may" },
+						{ data: "jun" },
+						{ data: "jul" },
+						{ data: "aug" },
+						{ data: "sep" },
+						{ data: "oct" },
+						{ data: "nov" },
+						{ data: "dec" },
+						{ data: "commitment" },
+						{ data: "totalCost", readOnly: true },
+					];
+					console.log("Table Data:", tableData); // テーブルデータをログに出力
+
+					//table setting
+					this.$refs.hotTableComponent.hotInstance.updateSettings({
+						data: tableData,
+						columns,
+					});
+				})
+				.catch(error => {
+					console.error("Error fetching data:", error);
+				});
+		},
+
+
+		updateData: function () {
+			const userStore = useUserStore();
+			const userCompanyCode = userStore.companyCode;
+
+			if (!userCompanyCode) {
+				console.error("Error: No company code found for the user.");
+				return;
+			}
+
+			const tableData = this.$refs.hotTableComponent.hotInstance.getData();
+
+			let actualPM04List = {};
+
+			tableData.forEach(row => {
+				let plantName = row[0];
+				if (!actualPM04List[plantName]) {
+					actualPM04List[plantName] = {
+						plant: plantName,
+						actualPM04: []  // このプラントに関するすべての年次データを保持
+					};
+				}
+
+				// 年次データを追加
+				actualPM04List[plantName].actualPM04.push({
+					companyCode: userCompanyCode,
+					plant: plantName,
+					year: row[1],
+					jan: row[2],
+					feb: row[3],
+					mar: row[4],
+					apr: row[5],
+					may: row[6],
+					jun: row[7],
+					aug: row[8],
+					sep: row[9],
+					oct: row[10],
+					nov: row[11],
+					dec: row[14],
+					commitment: row[15],
+					totalCost: row[15]
+				});
+			});
+
+			let postData = {
+				companyCode: userCompanyCode,
+				actualPM04List: Object.values(actualPM04List)
+			};
+			console.log("postData", postData);
+
+			axios.post('http://127.0.0.1:8000/api/repairingCost/APM04ByCompany/', postData)
+				.then(response => {
+					console.log("Data posted successfully", response.data);
+				})
+				.catch(error => {
+					console.error("Error in posting data", error);
+				});
+		}
+
+	},
     components: {
       HotTable,
     },

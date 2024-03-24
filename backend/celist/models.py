@@ -52,8 +52,7 @@ class CeList(models.Model):
     
 
     def __str__(self):
-        return f'{self.companyName}'
-
+        return str('CeList')
 
 
 

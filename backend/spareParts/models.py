@@ -30,11 +30,13 @@ class SpareParts(models.Model):
     numberOf = models.CharField(verbose_name='numberOf',max_length=200,blank=True,null=True)
     unit = models.CharField(verbose_name='unit',max_length=200,blank=True,null=True)
 
+    taskCode = models.CharField(verbose_name='taskCode', max_length=20,blank=True,null=True)
+
     #物理的な状況
     location = models.CharField(verbose_name='location',max_length=200,blank=True,null=True)
     stock = models.CharField(verbose_name='stock', max_length=200,null=True,blank=True)
     partsDeliveryTime = models.DateField(verbose_name='partsDeliveryTime', blank=True,null=True,default=timezone.now)
-    order = models.CharField(verbose_name='order',max_length=20,blank=True,null=True)
+    orderAlert = models.CharField(verbose_name='order',max_length=20,blank=True,null=True)
     orderSituation = models.BooleanField(verbose_name='orderSituation', default=False)
 
     #部品の説明

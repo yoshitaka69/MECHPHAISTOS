@@ -38,11 +38,10 @@ class MasterDataTableViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return MasterDataTable.objects.prefetch_related(
-            'masterDataTable_taskPM02',
-            'masterDataTable_taskPM03',
-            'masterDataTable_taskPM04',
-            'masterDataTable_taskPM05',
-            'bomlist_set'
+            'taskPM02',
+            'taskPM03',
+            'taskPM04',
+            'taskPM05',
         ).all()
 
 class CompanyCodeMDTViewSet(viewsets.ReadOnlyModelViewSet):

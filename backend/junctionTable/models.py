@@ -24,7 +24,7 @@ class MasterDataTable(models.Model):
     multiTask = models.BooleanField(verbose_name='multiTask',default=False)
 
     #BomList
-    bomCode = models.ForeignKey(BomList, on_delete=models.CASCADE, related_name='bomList_companyCode', null=True, blank=True)
+    bomCode = models.ForeignKey(BomList, on_delete=models.CASCADE, related_name='masterDataTable_bomList', null=True, blank=True)
     bomCost = models.DecimalField(verbose_name='bomCost',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
     maxPartsDeliveryTimeInBom = models.PositiveIntegerField(verbose_name='maxPartsDeliveryTimeInBom', null=True,blank=True,default=0)
 
@@ -84,5 +84,9 @@ def combine_and_save_to_master(task_pm02_instance, task_pm03_instance,):
     # MasterDataTableに保存
     master_data_instance = MasterDataTable.objects.create(**data)
     return master_data_instance
+
+
+
+
 
 
