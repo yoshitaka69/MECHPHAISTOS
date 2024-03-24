@@ -14,35 +14,37 @@ class SpareParts(models.Model):
     equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='spareParts_equipment',null=True, blank=True)
     machineName = models.ForeignKey(CeList, on_delete=models.CASCADE, related_name='spareParts_machineName',null=True, blank=True)
 
+    partsNo = models.CharField(verbose_name='partsNo', max_length=20,blank=True,null=True)
+
     #画像
     image = models.ImageField(verbose_name='image',null=True,blank=True)
 
     #parts 基本情報
     bomCode = models.PositiveIntegerField(verbose_name='bomNo',null=True,blank=True,default=0)
-    partsNo = models.CharField(verbose_name='partsName', max_length=20,blank=True,null=True)
+
     partsName = models.CharField(verbose_name='partsName', max_length=100,blank=True,null=True)
     partsModel = models.CharField(verbose_name='partsModel',max_length=50,blank=True,null=True)
     serialNumber = models.CharField(verbose_name='serialNumber',max_length=30,blank=True,null=True)
     category = models.CharField(verbose_name='category',max_length=50,blank=True,null=True)
 
     #部品コスト
-    partsCost = models.DecimalField(verbose_name='partsCost',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
-    numberOf = models.CharField(verbose_name='numberOf',max_length=200,blank=True,null=True)
-    unit = models.CharField(verbose_name='unit',max_length=200,blank=True,null=True)
+    partsCost = models.DecimalField(verbose_name='partsCost',max_digits=10,decimal_places=2,blank=True,null=True,default=0.00)
+    numberOf = models.CharField(verbose_name='numberOf',max_length=50,blank=True,null=True)
+    unit = models.CharField(verbose_name='unit',max_length=20,blank=True,null=True)
 
     taskCode = models.CharField(verbose_name='taskCode', max_length=20,blank=True,null=True)
 
     #物理的な状況
     location = models.CharField(verbose_name='location',max_length=200,blank=True,null=True)
     stock = models.CharField(verbose_name='stock', max_length=200,null=True,blank=True)
-    partsDeliveryTime = models.DateField(verbose_name='partsDeliveryTime', blank=True,null=True,default=timezone.now)
+    partsDeliveryTime = models.PositiveIntegerField(verbose_name='partsDeliveryTime', blank=True,null=True,default=0)
     orderAlert = models.CharField(verbose_name='order',max_length=20,blank=True,null=True)
     orderSituation = models.BooleanField(verbose_name='orderSituation', default=False)
 
     #部品の説明
-    classification = models.CharField(verbose_name='classification',max_length=200,blank=True,null=True)
-    inventoryTurnover = models.CharField(verbose_name='inventoryTurnover',max_length=200,blank=True,null=True)
-    partsDescription = models.TextField(verbose_name='partsDescription',blank=True,null=True,max_length=1000)
+    classification = models.CharField(verbose_name='classification',max_length=100,blank=True,null=True)
+    inventoryTurnover = models.CharField(verbose_name='inventoryTurnover',max_length=30,blank=True,null=True)
+    partsDescription = models.TextField(verbose_name='partsDescription',max_length=1000,blank=True,null=True,)
 
 
     class Meta:
