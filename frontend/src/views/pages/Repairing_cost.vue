@@ -157,7 +157,7 @@ import PM04_actual_graph from '@/components/Repairing_cost/PM04_actual_graph.vue
 import PM04_actual_table from '@/components/Repairing_cost/PM04_actual_table.vue'
 import PM05_actual_graph from '@/components/Repairing_cost/PM05_actual_graph.vue'
 import PM05_actual_table from '@/components/Repairing_cost/PM05_actual_table.vue'
-import Task_list from '@/components/Repairing_cost/Task_list.vue'
+import Task_list from '@/components/Task_of_maintenance/Task_list.vue'
 
 export default {
 	components: {

@@ -46,22 +46,21 @@ class CompanyCodeSPSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         spare_parts_data = validated_data.pop('spareParts_companyCode', [])
-
-        for attr, value in validated_data.items():
-            setattr(instance, attr, value)
-        instance.save()
+        
+        # 既存のSparePartsのpartsNoを取得
+        existing_parts_nos = set(instance.spareParts_companyCode.values_list('partsNo', flat=True))
 
         for part_data in spare_parts_data:
-            part_no = part_data.get('partsNo')
-            part_instance = SpareParts.objects.filter(companyCode=instance, partsNo=part_no).first()
+            parts_no = part_data.get('partsNo')
 
-            if part_instance:
-                # 既存のSparePartsを更新
+            if parts_no in existing_parts_nos:
+                # 既存のSparePartsインスタンスを更新
+                spare_part_instance = instance.spareParts_companyCode.get(partsNo=parts_no)
                 for key, value in part_data.items():
-                    setattr(part_instance, key, value)
-                part_instance.save()
+                    setattr(spare_part_instance, key, value)
+                spare_part_instance.save()
             else:
-                # 新規のSparePartsを追加
+                # 新しいSparePartsインスタンスを追加
                 SpareParts.objects.create(companyCode=instance, **part_data)
 
         return instance

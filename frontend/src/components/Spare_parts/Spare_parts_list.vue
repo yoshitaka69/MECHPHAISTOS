@@ -55,65 +55,56 @@ const SparePartsComponent = defineComponent({
 
 				],
 				colHeaders: [
-					"Image", "BOM <br>No.", "Parts Name", "Category", "Model", "Serial Number", "Task Name", "Price", "Number <br>of ~", "Unit", "Location", "Delivery <br>Time", "Alert <br>order", "Order <br>situation", "Description"
+					"parts No", "Image", "BOM <br>Code.", "Parts Name", "Category", "Model", "Serial Number", "Task Code", "Price", "Number <br>of ~", "Unit", "Location", "Delivery <br>Time", "Alert <br>order", "Order <br>situation", 'classification', 'inventoryTurnover', "Description"
 				],
 
 				columns: [
-					{//Image
-
-
-					},
-					{//BOM No.
+					{//Parts No
 						type: "numeric",
-
+					},
+					{//Image
+					},
+					{//BOM Code.
+						type: "numeric",
 					},
 					{//PartsName
 						type: "text",
 						className: 'htCenter',
-
 					},
 					{//Category
 						className: 'htRight',
 						type: 'dropdown',
 						source: ['Standard', 'Inventory', 'consumables']
-
 					},
 					{//Model
 						type: 'text',
-
 					},
 					{//SerialNumber
 						type: 'text',
 						className: 'htRight',
-
 					},
-					{//TaskName
+					{//TaskCode
 						type: 'text',
 						className: 'htCenter',
-
 					},
 					{//PartsCost
 						type: 'numeric',
 						className: 'htRight',
-
 					},
 					{//Number of ~
 						width: 60,
 						className: 'htRight',
 						type: 'numeric',
-
 					},
 					{//Unit
 						width: 60,
 						type: 'numeric',
 						className: 'htRight',
-
 					},
 					{//Location
 						className: 'htRight',
 						type: 'text',
 						className: 'htRight',
-
 					},
 					{//Delivery Parts time
 						width: 60,
@@ -130,6 +121,16 @@ const SparePartsComponent = defineComponent({
 						width: 100,
 						className: 'htCenter',
 						type: 'checkbox'
+					},
+					{//classification
+						width: 100,
+						className: 'htCenter',
+						type: 'text'
+					},
+					{//inventoryTurnover
+						width: 100,
+						className: 'htCenter',
+						type: 'text'
 					},
 					{//Description
 						className: 'htCenter',
@@ -161,43 +162,35 @@ const SparePartsComponent = defineComponent({
 	},
 
 	created() {
-		this.getData();
+		this.getDataAxios();
 	},
 
 	methods: {
-		swapHotData: function () {
-			console.log("swapHotData: Loading new data into Handsontable");
-			// 新しいデータをロード
-			this.$refs.hotTableComponent.hotInstance.loadData([['new', 'data']]);
-		},
 
-		getData: function () {
-			console.log("getData: Initiating data retrieval");
-
+		getDataAxios() {
 			const userStore = useUserStore();
 			const userCompanyCode = userStore.companyCode;
 
 			if (!userCompanyCode) {
-				console.error("getData Error: No company code found for the user.");
+				console.error("Error: No company code found for the user.");
 				return;
 			}
 
-			console.log("getData: Using company code", userCompanyCode);
-
 			const url = `http://127.0.0.1:8000/api/spareParts/sparePartsByCompany/?format=json&companyCode=${userCompanyCode}`;
-			console.log("getData: Requesting data from", url);
 
-			axios.get(url)
+			axios.get(url, {
+				headers: {
+					"Content-Type": "application/json"
+				},
+				withCredentials: true
+			})
 				.then(response => {
-					console.log("getData: Data retrieved successfully", response.data);
-
-					// 応答データの初期処理
 					const sparePartsData = response.data;
 
 
 
 					// データ抽出
-					const index = ['image', 'bomCode', 'partsName', 'category', 'partsModel', 'serialNumber', 'taskCode', 'partsCost', 'numberOf', 'unit', 'location', 'partsDeliveryTime', 'orderAlert', 'orderSituation', 'classification'];
+					const index = ['partsNo', 'image', 'bomCode', 'partsName', 'category', 'partsModel', 'serialNumber', 'taskCode', 'partsCost', 'numberOf', 'unit', 'location', 'partsDeliveryTime', 'orderAlert', 'orderSituation', 'classification', "inventoryTurnover", "partsDescription"];
 
 					const tableData = sparePartsData.flatMap(companyData =>
 						companyData.sparePartsList.flatMap(partData => {
@@ -212,6 +205,7 @@ const SparePartsComponent = defineComponent({
 
 					// columns の設定
 					const columns = [
+						{ data: "partsNo" , type: 'text'},
 						{ data: "image" },
 						{ data: "bomCode" },
 						{ data: "partsName" },
@@ -224,10 +218,11 @@ const SparePartsComponent = defineComponent({
 						{ data: "unit" },
 						{ data: "location" },
 						{ data: "partsDeliveryTime" },
-						{ data: "overAlert" },
-						{ data: "orderSituation" },
+						{ data: "orderAlert", renderer: customRendererForAlertOrder, readOnly: true },
+						{ data: "orderSituation", readOnly: true },
 						{ data: "classification" },
-						{ data: "inventoryTurnover" },
+						{ data: "inventoryTurnover", readOnly: true },
+						{ data: "partsDescription" },
 					];
 					console.log("Table Data:", tableData); // テーブルデータをログに出力
 
@@ -245,41 +240,83 @@ const SparePartsComponent = defineComponent({
 
 
 		updateData: function () {
-			console.log("updateData: Initiating data update");
-
 			const userStore = useUserStore();
 			const userCompanyCode = userStore.companyCode;
 
 			if (!userCompanyCode) {
-				console.error("updateData Error: No company code found for the user.");
+				console.error("Error: No company code found for the user.");
 				return;
 			}
 
-			console.log("updateData: Using company code", userCompanyCode);
+			const tableData = this.$refs.hotTableComponent.hotInstance.getData();
+			let sparePartsList = [];
 
-			const jsonData = this.$refs.hotTableComponent.hotInstance.getData();
-			console.log("updateData: Data to be sent", jsonData);
+			tableData.forEach(row => {
+				let partsNo = row[0]; // partsナンバー
+				let image = row[1]; // 画像
+				let bomCode = row[2]; // BOMコード
+				let partsName = row[3]; // パーツネーム
+				let category = row[4]; // カテゴリー
+				let partsModel = row[5]; // 型式
+				let serialNumber = row[6]; // シリアルナンバー
+				let taskCode = row[7]; // タスクコード
+				let partsCost = row[8]; // パーツコスト
+				let numberOf = row[9]; // 個数
+				let unit = row[10]; // カテゴリー
+				let location = row[11]; // 型式
+				let partsDeliveryTime = row[12]; // シリアルナンバー
+				let orderAlert = row[13]; // タスクコード
+				let orderSituation = row[14]; // パーツコスト
+				let classification = row[15]; // 区分
+				let inventoryTurnover = row[16]; // 在庫回転率
+				let partsDescription = row[17]; // 詳細
+
+				sparePartsList.push({
+					companyCode: userCompanyCode,
+					partsNo: partsNo,
+					image: image,
+					bomCode: bomCode, 
+					partsName: partsName,
+					category: category,
+					partsModel: partsModel,
+					serialNumber: serialNumber,
+					taskCode: taskCode,
+					partsCost: partsCost,
+					numberOf: numberOf,
+					unit: unit,
+					location: location,
+					partsDeliveryTime: partsDeliveryTime,
+					orderAlert: orderAlert,
+					orderSituation: orderSituation,
+					classification: classification,
+					inventoryTurnover: inventoryTurnover,
+					partsDescription: partsDescription
+				});
+			});
+
+			let postData = {
+				companyCode: userCompanyCode,
+				sparePartsList: sparePartsList
+			};
+			console.log("postData",postData)
 
 			const backendUrl = `http://127.0.0.1:8000/api/spareParts/sparePartsByCompany/?format=json&companyCode=${userCompanyCode}`;
-			console.log("updateData: Sending data to", backendUrl);
-
-			axios.post(backendUrl, jsonData)
+			axios.post(backendUrl, postData)
 				.then(response => {
-					console.log("updateData: Data updated successfully", response.data);
+					console.log("Data posted successfully", response.data);
 				})
 				.catch(error => {
-					console.error("updateData Error: An error occurred during the request", error);
-					if (error.response) {
-						console.error("updateData Error: Server response", error.response);
-					}
+					console.error("Error in posting data", error);
 				});
-		}
+		},
 	},
 
 	components: {
 		HotTable,
 	},
-});
+}
+);
 
 export default SparePartsComponent;
+
 </script>

@@ -148,6 +148,7 @@ const TableComponent = defineComponent({
 
 					//データ抽出
 					const months = ["year", "jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec", "commitment",];
+					
 					const tableData = actualCostData.flatMap(companyData =>
 						companyData.actualPM02List.flatMap(plantData =>
 							plantData.actualPM02.map(yearData => {
