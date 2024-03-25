@@ -1,7 +1,7 @@
 from django.db import models
 from accounts.models import CompanyCode,CompanyName,Plant
-from ceList.models import Equipment,CeList
-
+from ceList.models import Equipment,Machine
+from spareParts.models import BomList
 
 
 class TaskListPM02(models.Model):
@@ -13,7 +13,7 @@ class TaskListPM02(models.Model):
 
     #CeListより
     equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='taskListPM02_equipment',null=True, blank=True)
-    machineName = models.ForeignKey(CeList, on_delete=models.CASCADE, related_name='taskListPM02_machineName',null=True, blank=True)
+    machineName = models.ForeignKey(Machine, on_delete=models.CASCADE, related_name='taskListPM02_machineName',null=True, blank=True)
 
     taskCode = models.CharField(verbose_name='taskCode',max_length=200,blank=True,null=True)
     taskName = models.CharField(verbose_name='taskName',max_length=200,blank=True,null=True)
@@ -70,7 +70,7 @@ class TaskListPM03(models.Model):
 
     #CeListより
     equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='taskListPM03_equipment',null=True, blank=True)
-    machineName = models.ForeignKey(CeList, on_delete=models.CASCADE, related_name='taskListPM03_machineName',null=True, blank=True)
+    machineName = models.ForeignKey(Machine, on_delete=models.CASCADE, related_name='taskListPM03_machineName',null=True, blank=True)
 
     taskCode = models.CharField(verbose_name='taskCode',max_length=200,blank=True,null=True)
     taskName = models.CharField(verbose_name='taskName',max_length=200,blank=True,null=True)
@@ -129,7 +129,7 @@ class TaskListPM04(models.Model):
 
     #CeListより
     equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='taskListPM04_equipment',null=True, blank=True)
-    machineName = models.ForeignKey(CeList, on_delete=models.CASCADE, related_name='taskListPM04_machineName',null=True, blank=True)
+    machineName = models.ForeignKey(Machine, on_delete=models.CASCADE, related_name='taskListPM04_machineName',null=True, blank=True)
 
     taskCode = models.CharField(verbose_name='taskCode',max_length=200,blank=True,null=True)
     taskName = models.CharField(verbose_name='taskName',max_length=200,blank=True,null=True)
@@ -148,9 +148,6 @@ class TaskListPM04(models.Model):
 
 
 
-
-
-
 class TaskListPM05(models.Model):
 
     #accountsより
@@ -160,7 +157,7 @@ class TaskListPM05(models.Model):
 
     #CeListより
     equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='taskListPM05_equipment',null=True, blank=True)
-    machineName = models.ForeignKey(CeList, on_delete=models.CASCADE, related_name='taskListPM05_machineName',null=True, blank=True)
+    machineName = models.ForeignKey(Machine, on_delete=models.CASCADE, related_name='taskListPM05_machineName',null=True, blank=True)
 
     taskCode = models.CharField(verbose_name='taskCode',max_length=200,blank=True,null=True)
     taskName = models.CharField(verbose_name='taskName',max_length=200,blank=True,null=True)
@@ -205,3 +202,73 @@ class TaskListPM05(models.Model):
 
     def __str__(self):
             return f'{self.taskName}'
+    
+
+
+class TypicalTaskList(models.Model):
+
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='typicalTaskList_companyCode',null=True, blank=True)
+    taskCode = models.CharField(verbose_name='taskCode', max_length=100,blank=True,null=True)
+    typicalTask = models.CharField(verbose_name='typicalTask', max_length=200,blank=True,null=True)
+    typicalTaskCost = models.DecimalField(verbose_name='typicalTaskCost',max_digits=10,decimal_places=5,blank=True,null=True,default=0.00)
+    typicalLatestDate = models.DateField(verbose_name='typicalLatestDate',blank=True,null=True)
+    typicalConstPeriod = models.IntegerField(verbose_name='typicalConstPeriod', blank=True, null=True)
+    typicalNextEventDate = models.DateField(verbose_name='typicalNextEventDate',blank=True,null=True)
+    multiTasking = models.BooleanField(verbose_name='multiTasking',default=False)
+    
+    class Meta:
+        verbose_name = 'Typical Task List'
+        verbose_name_plural = 'Typical Task List'
+        ordering = ('taskCode',) 
+        
+    def __str__(self):
+        return str('TypicalTaskList')
+
+
+class TaskList(models.Model):
+    
+    #accounts
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='taskList_companyCode',null=True, blank=True)
+
+    #CeList
+    plant = models.ForeignKey(Plant, on_delete=models.CASCADE,related_name='taskList_plant', null=True, blank=True)
+    equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='taskList_equipment',null=True, blank=True)
+    machineName = models.ForeignKey(Machine, on_delete=models.CASCADE, related_name='taskList_equipment',null=True, blank=True)
+
+    #Typical Task 
+    typicalLatestDate = models.ForeignKey(TypicalTaskList, on_delete=models.CASCADE, related_name='taskList_typicalLatestDate',null=True, blank=True)
+    typicalTask = models.ForeignKey(TypicalTaskList, on_delete=models.CASCADE, related_name='taskList_typicalTask',null=True, blank=True)
+    typicalTaskCost = models.ForeignKey(TypicalTaskList, on_delete=models.CASCADE, related_name='taskList_typicalTaskCost',null=True, blank=True)
+    typicalConstPeriod = models.ForeignKey(TypicalTaskList, on_delete=models.CASCADE, related_name='taskList_typicalConstPeriod',null=True, blank=True)
+    multiTasking = models.ForeignKey(TypicalTaskList, on_delete=models.CASCADE, related_name='taskList_multiTasking',null=True, blank=True)
+    typicalNextEventDate = models.ForeignKey(TypicalTaskList, on_delete=models.CASCADE, related_name='taskList_typicalNextEventDate',null=True, blank=True)
+    typicalSituation = models.ForeignKey(TypicalTaskList, on_delete=models.CASCADE, related_name='taskList_typicalSituation',null=True, blank=True)
+
+    #bomCode
+    bomCode =  models.ForeignKey(BomList, on_delete=models.CASCADE, related_name='taskList_bomCode',null=True, blank=True)
+    bomCodeCost = models.ForeignKey(BomList, on_delete=models.CASCADE, related_name='taskList_bomCodeCost',null=True, blank=True)
+
+    #あとで下はmethodFieldに変更する。
+    thisYear = models.CharField(verbose_name='thisYear', max_length=200,blank=True,null=True)
+    thisYear1later = models.BooleanField(verbose_name='thisYear1later',default=False)
+    thisYear2later = models.BooleanField(verbose_name='thisYear2later',default=False)
+    thisYear3later = models.BooleanField(verbose_name='thisYear3later',default=False)
+    thisYear4later = models.BooleanField(verbose_name='thisYear4later',default=False)
+    thisYear5later = models.BooleanField(verbose_name='thisYear5later',default=False)
+    thisYear6later = models.BooleanField(verbose_name='thisYear6later',default=False)
+    thisYear7later = models.BooleanField(verbose_name='thisYear7later',default=False)
+    thisYear8later = models.BooleanField(verbose_name='thisYear8later',default=False)
+    thisYear9later = models.BooleanField(verbose_name='thisYear9later',default=False)
+    thisYear10later = models.BooleanField(verbose_name='thisYear10later',default=False)
+
+
+    class Meta:
+        verbose_name = 'Task List'
+        verbose_name_plural = 'Task List'
+        ordering = ('companyCode',) 
+         
+
+    def __str__(self):
+        return str('Task List')
+
+

@@ -1,10 +1,21 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import TaskListPM02ViewSet,CompanyCodeTaskListPM02ViewSet,TaskListPM03ViewSet,CompanyCodeTaskListPM03ViewSet,TaskListPM04ViewSet,CompanyCodeTaskListPM04ViewSet,TaskListPM05ViewSet,CompanyCodeTaskListPM05ViewSet
+from .views import (TaskListPM02ViewSet,CompanyCodeTaskListPM02ViewSet,
+                    TaskListPM03ViewSet,CompanyCodeTaskListPM03ViewSet,
+                    TaskListPM04ViewSet,CompanyCodeTaskListPM04ViewSet,
+                    TaskListPM05ViewSet,CompanyCodeTaskListPM05ViewSet,
+                    TypicalTaskListViewSet,CompanyCodeTypicalTaskListViewSet,
+                    TaskListViewSet,CompanyCodeTaskListViewSet)
 
 
 
 router = DefaultRouter()
+router.register(r'typicalTaskList', TypicalTaskListViewSet, basename='typicalTaskList')
+router.register(r'typicalTaskListByCompany', CompanyCodeTypicalTaskListViewSet, basename='companyCode-typicalTaskList')
+
+router.register(r'taskList', TaskListViewSet, basename='taskList')
+router.register(r'taskListByCompany', CompanyCodeTaskListViewSet, basename='companyCode-taskList')
+
 router.register(r'taskListPM02', TaskListPM02ViewSet, basename='taskListPM02')
 router.register(r'taskListPM02ByCompany', CompanyCodeTaskListPM02ViewSet, basename='companyCode-taskListPM02')
 router.register(r'taskListPM03', TaskListPM03ViewSet, basename='taskListPM03')

@@ -1,7 +1,23 @@
 from django.db import models
 from django.utils import timezone
 from accounts.models import CompanyCode,CompanyName,Plant
-from ceList.models import Equipment,CeList
+from ceList.models import Equipment,Machine
+
+class BomList(models.Model):
+    bomCode = models.CharField(verbose_name='bomCode', max_length=50,blank=True,null=True)
+    bomCost = models.DecimalField(verbose_name='bomCost',max_digits=10,decimal_places=2,blank=True,null=True,default=0.00)
+    maxPartsDeliveryTimeInBom = models.IntegerField(verbose_name='maxPartsDeliveryTimeInBom', default=0, null=True, blank=True)
+     
+    class Meta:
+        verbose_name = 'Bom List'
+        verbose_name_plural = 'Bom List'
+        ordering = ('bomCode',) 
+
+    def __str__(self):
+        return f'{self.bomCode}'
+
+
+
 
 
 class SpareParts(models.Model):
@@ -12,7 +28,7 @@ class SpareParts(models.Model):
 
     #CeListより
     equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='spareParts_equipment',null=True, blank=True)
-    machineName = models.ForeignKey(CeList, on_delete=models.CASCADE, related_name='spareParts_machineName',null=True, blank=True)
+    machineName = models.ForeignKey(Machine, on_delete=models.CASCADE, related_name='spareParts_machineName',null=True, blank=True)
 
     partsNo = models.CharField(verbose_name='partsNo', max_length=20,blank=True,null=True)
 
@@ -20,7 +36,7 @@ class SpareParts(models.Model):
     image = models.ImageField(verbose_name='image',null=True,blank=True)
 
     #parts 基本情報
-    bomCode = models.PositiveIntegerField(verbose_name='bomNo',null=True,blank=True,default=0)
+    bomCode = models.ForeignKey(BomList, on_delete=models.CASCADE, related_name='spareParts_bomCode', null=True, blank=True)
 
     partsName = models.CharField(verbose_name='partsName', max_length=100,blank=True,null=True)
     partsModel = models.CharField(verbose_name='partsModel',max_length=50,blank=True,null=True)
@@ -59,16 +75,3 @@ class SpareParts(models.Model):
    
 
 
-class BomList(models.Model):
-    bomCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='bomList_companyCode', null=True, blank=True)
-    bomCost = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='bomList_companyName', null=True, blank=True)
-    maxPartsDeliveryTimeInBom = models.IntegerField(verbose_name='maxPartsDeliveryTimeInBom', default=0, null=True, blank=True)
-     
-    class Meta:
-        verbose_name = 'Bom List'
-        verbose_name_plural = 'Bom List'
-        ordering = ('bomCode',) 
-
-
-    def __str__(self):
-        return f'{self.bomCode}'
