@@ -366,7 +366,7 @@ class TypicalTaskListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TypicalTaskList #呼び出すモデル名
-        fields = ["taskCode", 'typicalTask', 'typicalTaskCode', 'typicalLatestDate', 'typicalConstPeriod', 'typicalNextEventDate', 'multiTasking']# API上に表示するモデルのデータ項目
+        fields = ["taskCode", 'typicalTaskName', 'typicalTaskCode', 'typicalLatestDate', 'typicalConstPeriod', 'typicalNextEventDate', 'multiTasking']# API上に表示するモデルのデータ項目
         
 class CompanyTypicalTaskListSerializer(serializers.ModelSerializer):
     typicalTaskList = TypicalTaskListSerializer(many=True, read_only=True, source='typicalTaskList_companyCode')#ここのsourceは注意
@@ -382,7 +382,7 @@ class TaskListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TaskList #呼び出すモデル名
-        fields = ["companyCode", 'plant', 'equipment', 'machineName', 'typicalLatestDate', 'typicalTask', 'typicalTaskCost', 'typicalConstPeriod', 'multiTasking', 'typicalNextEventDate', 'typicalSituation', 'bomCode', 'bomCodeCost', 'thisYear', 'thisYear1later', 'thisYear2later', 'thisYear3later', 'thisYear4later', 'thisYear5later', 'thisYear6later', 'thisYear7later', 'thisYear8later', 'thisYear9later', 'thisYear10later', ]# API上に表示するモデルのデータ項目
+        fields = ["companyCode", 'plant', 'equipment', 'machineName', 'taskListNo', 'typicalLatestDate', 'typicalTaskName', 'typicalTaskCost', 'typicalConstPeriod', 'multiTasking', 'typicalNextEventDate', 'typicalSituation', 'bomCode', 'bomCost', 'totalCost', 'thisYear', 'thisYear1later', 'thisYear2later', 'thisYear3later', 'thisYear4later', 'thisYear5later', 'thisYear6later', 'thisYear7later', 'thisYear8later', 'thisYear9later', 'thisYear10later', ]# API上に表示するモデルのデータ項目
 
 
 class CompanyTaskListSerializer(serializers.ModelSerializer):

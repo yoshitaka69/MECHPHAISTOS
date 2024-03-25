@@ -209,7 +209,7 @@ class TypicalTaskList(models.Model):
 
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='typicalTaskList_companyCode',null=True, blank=True)
     taskCode = models.CharField(verbose_name='taskCode', max_length=100,blank=True,null=True)
-    typicalTask = models.CharField(verbose_name='typicalTask', max_length=200,blank=True,null=True)
+    typicalTaskName = models.CharField(verbose_name='typicalTaskName', max_length=200,blank=True,null=True)
     typicalTaskCost = models.DecimalField(verbose_name='typicalTaskCost',max_digits=10,decimal_places=5,blank=True,null=True,default=0.00)
     typicalLatestDate = models.DateField(verbose_name='typicalLatestDate',blank=True,null=True)
     typicalConstPeriod = models.IntegerField(verbose_name='typicalConstPeriod', blank=True, null=True)
@@ -236,8 +236,10 @@ class TaskList(models.Model):
     machineName = models.ForeignKey(Machine, on_delete=models.CASCADE, related_name='taskList_equipment',null=True, blank=True)
 
     #Typical Task 
+    taskListNo = models.CharField(verbose_name='taskListNo', max_length=100,blank=True,null=True)
+
     typicalLatestDate = models.ForeignKey(TypicalTaskList, on_delete=models.CASCADE, related_name='taskList_typicalLatestDate',null=True, blank=True)
-    typicalTask = models.ForeignKey(TypicalTaskList, on_delete=models.CASCADE, related_name='taskList_typicalTask',null=True, blank=True)
+    typicalTaskName = models.ForeignKey(TypicalTaskList, on_delete=models.CASCADE, related_name='taskList_typicalTaskName',null=True, blank=True)
     typicalTaskCost = models.ForeignKey(TypicalTaskList, on_delete=models.CASCADE, related_name='taskList_typicalTaskCost',null=True, blank=True)
     typicalConstPeriod = models.ForeignKey(TypicalTaskList, on_delete=models.CASCADE, related_name='taskList_typicalConstPeriod',null=True, blank=True)
     multiTasking = models.ForeignKey(TypicalTaskList, on_delete=models.CASCADE, related_name='taskList_multiTasking',null=True, blank=True)
@@ -246,10 +248,12 @@ class TaskList(models.Model):
 
     #bomCode
     bomCode =  models.ForeignKey(BomList, on_delete=models.CASCADE, related_name='taskList_bomCode',null=True, blank=True)
-    bomCodeCost = models.ForeignKey(BomList, on_delete=models.CASCADE, related_name='taskList_bomCodeCost',null=True, blank=True)
+    bomCost = models.ForeignKey(BomList, on_delete=models.CASCADE, related_name='taskList_bomCost',null=True, blank=True)
+
+    totalCost  = models.DecimalField(verbose_name='totalCost',max_digits=10,decimal_places=5,blank=True,null=True,default=0.00)
 
     #あとで下はmethodFieldに変更する。
-    thisYear = models.CharField(verbose_name='thisYear', max_length=200,blank=True,null=True)
+    thisYear = models.BooleanField(verbose_name='thisYear',default=False)
     thisYear1later = models.BooleanField(verbose_name='thisYear1later',default=False)
     thisYear2later = models.BooleanField(verbose_name='thisYear2later',default=False)
     thisYear3later = models.BooleanField(verbose_name='thisYear3later',default=False)

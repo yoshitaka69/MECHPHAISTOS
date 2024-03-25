@@ -76,6 +76,8 @@ class CompanyCodeTypicalTaskListViewSet(viewsets.ModelViewSet):
 
 
 
+
+
 #TaskList
 class TaskListViewSet(viewsets.ModelViewSet):
     queryset = TaskList.objects.all()
