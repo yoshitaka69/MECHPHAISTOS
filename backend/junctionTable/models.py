@@ -2,7 +2,7 @@ from django.db import models
 from accounts.models import CompanyCode,CompanyName,Plant
 from ceList.models import Equipment,CeList
 from spareParts.models import BomList
-from taskList.models import TaskListPM02,TaskListPM03,TaskListPM04,TaskListPM05
+from taskList.models import TaskListPM02,TaskListPM03,TaskListPM04,TaskListPM05,TypicalTaskList
 
 
 class MasterDataTable(models.Model):
@@ -13,21 +13,49 @@ class MasterDataTable(models.Model):
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='masterDataTable_plant',null=True, blank=True)
 
     #Celist
+    ceListNo = models.ForeignKey(CeList, on_delete=models.CASCADE, related_name='masterDataTable_ceListNo',null=True, blank=True)
     equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='masterDataTable_equipment',null=True, blank=True)
     machineName = models.ForeignKey(CeList, on_delete=models.CASCADE, related_name='masterDataTable_machineName',null=True, blank=True)
 
     #TaskList
     taskPM02 = models.ForeignKey(TaskListPM02, on_delete=models.CASCADE, related_name='masterDataTable_taskPM02',null=True, blank=True)
+    countOfPM02 = models.ForeignKey(TaskListPM02, on_delete=models.CASCADE, related_name='masterDataTable_countOfPM02',null=True, blank=True)
+    latestPM02 = models.ForeignKey(TaskListPM02, on_delete=models.CASCADE, related_name='masterDataTable_latestPM02',null=True, blank=True)
+    laborCostOfPM02 = models.ForeignKey(TaskListPM02, on_delete=models.CASCADE, related_name='masterDataTable_laborCostOfPM02',null=True, blank=True)
+
     taskPM03 = models.ForeignKey(TaskListPM03, on_delete=models.CASCADE, related_name='masterDataTable_taskPM03',null=True, blank=True)
+    countOfPM03 = models.ForeignKey(TaskListPM03, on_delete=models.CASCADE, related_name='masterDataTable_countOfPM03',null=True, blank=True)
+    latestPM03 = models.ForeignKey(TaskListPM03, on_delete=models.CASCADE, related_name='masterDataTable_latestPM03',null=True, blank=True)
+    laborCostOfPM03 = models.ForeignKey(TaskListPM03, on_delete=models.CASCADE, related_name='masterDataTable_laborCostOfPM03',null=True, blank=True)
+
     taskPM04 = models.ForeignKey(TaskListPM04, on_delete=models.CASCADE, related_name='masterDataTable_taskPM04',null=True, blank=True)
+    countOfPM04 = models.ForeignKey(TaskListPM04, on_delete=models.CASCADE, related_name='masterDataTable_countOfPM04',null=True, blank=True)
+    latestPM04 = models.ForeignKey(TaskListPM04, on_delete=models.CASCADE, related_name='masterDataTable_latestPM04',null=True, blank=True)
+    laborCostOfPM04 = models.ForeignKey(TaskListPM04, on_delete=models.CASCADE, related_name='masterDataTable_laborCostOfPM04',null=True, blank=True)
+
     taskPM05 = models.ForeignKey(TaskListPM05, on_delete=models.CASCADE, related_name='masterDataTable_taskPM05',null=True, blank=True)
-    multiTask = models.BooleanField(verbose_name='multiTask',default=False)
+    countOfPM05 = models.ForeignKey(TaskListPM05, on_delete=models.CASCADE, related_name='masterDataTable_countOfPM05',null=True, blank=True)
+    latestPM05 = models.ForeignKey(TaskListPM05, on_delete=models.CASCADE, related_name='masterDataTable_latestPM05',null=True, blank=True)
+    laborCostOfPM05 = models.ForeignKey(TaskListPM05, on_delete=models.CASCADE, related_name='masterDataTable_laborCostOfPM05',null=True, blank=True)
+
+
+    #TypicalTaskList
+    typicalTaskName = models.ForeignKey(TypicalTaskList, on_delete=models.CASCADE, related_name='masterDataTable_typicalTaskName',null=True, blank=True)
+    typicalConstPeriod = models.ForeignKey(TypicalTaskList, on_delete=models.CASCADE, related_name='masterDataTable_typicalConstPeriod',null=True, blank=True)
+    typicalTaskCost = models.ForeignKey(TypicalTaskList, on_delete=models.CASCADE, related_name='masterDataTable_typicalTaskCost',null=True, blank=True)
+    typicalNextEventDate = models.ForeignKey(TypicalTaskList, on_delete=models.CASCADE, related_name='masterDataTable_typicalNextEventDate',null=True, blank=True)
+    typicalSituation = models.ForeignKey(TypicalTaskList, on_delete=models.CASCADE, related_name='masterDataTable_typicalSituation',null=True, blank=True)
+    multiTask = models.ForeignKey(TypicalTaskList, on_delete=models.CASCADE, related_name='masterDataTable_multiTask',null=True, blank=True)
+
 
     #BomList
     bomCode = models.ForeignKey(BomList, on_delete=models.CASCADE, related_name='masterDataTable_bomList', null=True, blank=True)
     bomCost = models.DecimalField(verbose_name='bomCost',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
-    maxPartsDeliveryTimeInBom = models.PositiveIntegerField(verbose_name='maxPartsDeliveryTimeInBom', null=True,blank=True,default=0)
+    bomStock = models.DecimalField(verbose_name='bomStock',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
+    maxPartsDeliveryTimeInBom = models.ForeignKey(BomList, on_delete=models.CASCADE, related_name='masterDataTable_maxPartsDeliveryTimeInBom', null=True, blank=True)
 
+    #将来的にcalかここで計算させる。
+    totalCost = models.CharField(verbose_name='totalCost', max_length=200, blank=True,null=True,)
 
     #Impact
     levelSetValue = models.PositiveIntegerField(verbose_name='levelSetValue', null=True,blank=True,default=0)
@@ -58,7 +86,7 @@ class MasterDataTable(models.Model):
     thisYear3ago = models.BooleanField(verbose_name='thisYear3ago',default=False)
     thisYear2ago = models.BooleanField(verbose_name='thisYear2ago',default=False)
     thisYear1ago = models.BooleanField(verbose_name='thisYear1ago',default=False)
-    thisYear = models.CharField(verbose_name='thisYear', max_length=200,blank=True,null=True)
+    thisYear = models.BooleanField(verbose_name='thisYear',default=False)
     thisYear1later = models.BooleanField(verbose_name='thisYear1later',default=False)
     thisYear2later = models.BooleanField(verbose_name='thisYear2later',default=False)
     thisYear3later = models.BooleanField(verbose_name='thisYear3later',default=False)
@@ -71,21 +99,14 @@ class MasterDataTable(models.Model):
     thisYear10later = models.BooleanField(verbose_name='thisYear10later',default=False)
 
 
-def combine_and_save_to_master(task_pm02_instance, task_pm03_instance,):
-    # データの取得
-    data = {
-        'thisYear1later': task_pm02_instance.thisYear1later or task_pm03_instance.thisYear1later,
-        'thisYear2later': task_pm02_instance.thisYear2later or task_pm03_instance.thisYear2later,
-        'thisYear3later': task_pm02_instance.thisYear3later or task_pm03_instance.thisYear3later,
-        # ... その他のフィールドも同様に
-        'thisYear10later': task_pm02_instance.thisYear10later or task_pm03_instance.thisYear10later,
-    }
+    class Meta:
+        verbose_name = 'Master Data Table'
+        verbose_name_plural = 'Master Data Table'
+        ordering = ('ceListNo',) #モデルのクエリセットを取得した際にどのような順番でフィールドを並べ変えるかを決める。
+    
 
-    # MasterDataTableに保存
-    master_data_instance = MasterDataTable.objects.create(**data)
-    return master_data_instance
-
-
+    def __str__(self):
+        return str('Master Data Table')
 
 
 

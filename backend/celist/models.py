@@ -41,7 +41,7 @@ class CeList(models.Model):
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='ceList_plant',null=True, blank=True)
     
     #Celistの項目
-    ceList_Id = models.CharField(verbose_name='ceListNo', max_length=200,null=True,blank=True,default=0)
+    ceListNo = models.CharField(verbose_name='ceListNo', max_length=200,null=True,blank=True,default=0)
     equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='ceList_equipment',null=True, blank=True)
     machineName = models.ForeignKey(Machine, on_delete=models.CASCADE, related_name='ceList_machine',null=True, blank=True)
  

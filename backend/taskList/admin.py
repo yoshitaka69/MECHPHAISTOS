@@ -42,8 +42,8 @@ class TaskListPM05Admin(admin.ModelAdmin):
 
 
 class TypicalTaskListAdmin(admin.ModelAdmin):
-    list_display = ('companyCode', 'taskCode', 'typicalTaskName', 'typicalTaskCost', 'typicalLatestDate', 'typicalConstPeriod', 'typicalNextEventDate', 'multiTasking')
-    search_fields = ('companyCode', 'taskCode', 'typicalTaskName', 'typicalTaskCost', 'typicalLatestDate', 'typicalConstPeriod', 'typicalNextEventDate', 'multiTasking')
+    list_display = ('companyCode', 'taskCode', 'typicalTaskName', 'typicalTaskCost', 'typicalLatestDate', 'typicalConstPeriod', 'typicalNextEventDate', 'multiTasking', 'typicalSituation')
+    search_fields = ('companyCode', 'taskCode', 'typicalTaskName', 'typicalTaskCost', 'typicalLatestDate', 'typicalConstPeriod', 'typicalNextEventDate', 'multiTasking', 'typicalSituation')
     list_filter = ('companyCode', "taskCode",) # adminで右側にあるフィルターBOXのこと
     ordering = ('companyCode',) # 表示する順番
     save_on_top = True #上部にもsaveボタンを配置

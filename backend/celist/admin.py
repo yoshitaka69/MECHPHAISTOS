@@ -25,9 +25,9 @@ class MachineAdmin(admin.ModelAdmin):
 
 
 class CeListAdmin(admin.ModelAdmin):
-    list_display = ('companyCode', 'companyName','plant','ceList_Id','equipment','machineName',)
-    search_fields = ('companyCode', 'companyName','plant','ceList_Id','equipment','machineName',)
-    list_filter = ('companyCode', 'companyName','plant','ceList_Id','equipment','machineName',) # adminで右側にあるフィルターBOXのこと
+    list_display = ('companyCode', 'companyName','plant','ceListNo','equipment','machineName',)
+    search_fields = ('companyCode', 'companyName','plant','ceListNo','equipment','machineName',)
+    list_filter = ('companyCode', 'companyName','plant','ceListNo','equipment','machineName',) # adminで右側にあるフィルターBOXのこと
     ordering = ('companyCode',) # 表示する順番
     save_on_top = True #上部にもsaveボタンを配置
    

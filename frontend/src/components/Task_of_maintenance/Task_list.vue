@@ -7,14 +7,13 @@
 
 
 <script>
-import Handsontable from 'handsontable';
+import Handsontable from 'handsontable'; //独自のレンダラーを使用するときに使う。
 import { defineComponent } from 'vue';
 import { HotTable } from '@handsontable/vue3';
 import { registerAllModules } from 'handsontable/registry';
 import 'handsontable/dist/handsontable.full.css';
 import axios from "axios";
 import { useUserStore } from '@/stores/userStore'; // Piniaストアをインポート
-import Planned_vs_actual from '@/components/Repairing_cost/Planned_vs_actual_graph.vue';
 
 // register Handsontable's modules
 registerAllModules();
@@ -27,27 +26,30 @@ const TaskListComponent = defineComponent({
                     ['PlantA', 'Dryer', 'blower', '2018-10-20', 'Change bearing', '5000', '5', 'true', 'BomCode-1', '58090', '111222', '', '遅延', 'true', '', '', '', '', '', '', '', '', '', 'true',],//1
                     ['PlantA', 'Dryer', 'blower', '2018-10-20', 'Change bearing', '5000', '5', 'true', 'BomCode-1', '58090', '111222', '', '遅延', 'true', '', '', '', '', '', '', '', '', '', 'true',],//2
                     ['PlantA', 'Dryer', 'blower', '2018-10-20', 'Change bearing', '5000', '5', 'true', 'BomCode-1', '58090', '111222', '', '遅延', 'true', '', '', '', '', '', '', '', '', '', 'true',],//3
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//4
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//5
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//6
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//7
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//8
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//9
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//10
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//11
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//12
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//13
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//14
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//15
+                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//4
+                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//5
+                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//6
+                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//7
+                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//8
+                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//9
+                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//10
+                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//11
+                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//12
+                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//13
+                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//14
+                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//15
 
                 ],
                 colHeaders: this.generateColHeaders(), // ヘッダーを生成するメソッドを使用 消すな‼
 
                 columns: [
+                    {//taskListNo
+                        data: 'taskListNo',
+                        type: "text",
+                    },
                     {//plant
                         data: 'plant',
                         type: "text",
-
                     },
                     {//Equipment
                         data: 'equipment',
@@ -67,7 +69,7 @@ const TaskListComponent = defineComponent({
                         readOnly: true,
                     },
                     {//TaskName
-                        data: 'typicalTask',
+                        data: 'typicalTaskName',
                         type: "text",
                     },
                     {//TaskLaborCost
@@ -194,7 +196,7 @@ const TaskListComponent = defineComponent({
             const futureYears = Array.from({ length: 11 }, (_, index) => (currentYear + index).toString());
 
             return [
-                'Plant', 'Equipment', 'MachineName', 'LatestDate<br>PM', 'TaskName', 'TaskLabor<br>Cost', 'TaskConstruction<br>Cost',
+                'TaskListNo', 'Plant', 'Equipment', 'MachineName', 'LatestDate<br>PM', 'TaskName', 'TaskLabor<br>Cost', 'TaskConstruction<br>Period',
                 'Multi<br>Tasking', 'BomCode', 'BomCost', 'TotalCost', 'Next Even<br>date', 'Situation', ...futureYears
             ];
         },
@@ -230,39 +232,78 @@ const TaskListComponent = defineComponent({
                     console.error("Error fetching data:", error);
                 });
         },
-        updateData() {
-            const dataToPost = this.prepareDataForPost();
 
-            if (!dataToPost) {
-                console.error("Error: No data to post.");
+        updateData() {
+            const userStore = useUserStore();
+            const userCompanyCode = userStore.companyCode;
+
+            if (!userCompanyCode) {
+                console.error("Error: No company code found for the user.");
                 return;
             }
 
-            const url = `http://127.0.0.1:8000/api/task/taskListByCompany/?format=json&companyCode=${userCompanyCode}`; // APIのURL
+            const hotInstance = this.$refs.hotTableComponent.hotInstance;
+            const rowCount = hotInstance.countRows();
+            let taskList = [];
 
-            axios.post(url, dataToPost, {
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                withCredentials: true
-            })
+            for (let i = 0; i < rowCount; i++) {
+                let rowData = hotInstance.getDataAtRow(i);
+                let taskListNo = i + 1; // 0-indexedから1-indexedに変更
+
+                let taskListItem = {
+                    companyCode: userCompanyCode,
+                    taskListNo: taskListNo,
+                    plant: rowData[1],
+                    equipment: rowData[2],
+                    machineName: rowData[3],
+                    typicalLatestDatePM: rowData[4],
+                    typicalTaskName: rowData[5],
+                    typicalTaskCost: rowData[6],
+                    typicalConstPeriod: rowData[7],
+                    multiTasking: rowData[8],
+                    bomCode: rowData[9],
+                    bomCodeCost: rowData[10],
+                    totalCost: rowData[11],
+                    typicalNextEventDate: rowData[12],
+                    typicalSituation: rowData[13],
+                    thisYear: rowData[14],
+                    thisYear1later: rowData[15],
+                    thisYear2later: rowData[16],
+                    thisYear3later: rowData[17],
+                    thisYear4later: rowData[18],
+                    thisYear5later: rowData[19],
+                    thisYear6later: rowData[20],
+                    thisYear7later: rowData[21],
+                    thisYear8later: rowData[22],
+                    thisYear9later: rowData[23],
+                    thisYear10later: rowData[24],
+                };
+
+                taskList.push(taskListItem);
+            }
+
+            let postData = {
+                companyCode: userCompanyCode,
+                taskList: taskList
+            };
+
+            console.log("postData", postData);
+
+            const backendUrl = `http://127.0.0.1:8000/api/task/taskListByCompany/?format=json&companyCode=${userCompanyCode}`;
+            axios.post(backendUrl, postData)
                 .then(response => {
-                    console.log("Data successfully posted:", response);
+                    console.log("Data posted successfully", response.data);
                 })
                 .catch(error => {
-                    console.error("Error posting data:", error);
+                    console.error("Error in posting data", error);
                 });
-        },
-    },
+        }
 
+    },
     components: {
         HotTable,
     },
 }
 );
-
-
 export default TaskListComponent;
-
-
 </script>

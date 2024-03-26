@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import TaskListPM02,TaskListPM03,TaskListPM04,TaskListPM05,TypicalTaskList,TaskList
-from accounts.models import CompanyCode
+from accounts.models import CompanyCode,Plant
+from ceList.models import Equipment,Machine
 from datetime import timedelta, datetime
 
 
@@ -366,7 +367,7 @@ class TypicalTaskListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TypicalTaskList #呼び出すモデル名
-        fields = ["taskCode", 'typicalTaskName', 'typicalTaskCode', 'typicalLatestDate', 'typicalConstPeriod', 'typicalNextEventDate', 'multiTasking']# API上に表示するモデルのデータ項目
+        fields = ["taskCode", 'typicalTaskName', 'typicalTaskCode', 'typicalLatestDate', 'typicalConstPeriod', 'typicalNextEventDate', 'multiTasking','typicalSituation']# API上に表示するモデルのデータ項目
         
 class CompanyTypicalTaskListSerializer(serializers.ModelSerializer):
     typicalTaskList = TypicalTaskListSerializer(many=True, read_only=True, source='typicalTaskList_companyCode')#ここのsourceは注意
@@ -378,8 +379,31 @@ class CompanyTypicalTaskListSerializer(serializers.ModelSerializer):
 
 #TaskList
 
-class TaskListSerializer(serializers.ModelSerializer):
+#ForeignKeyを文字列で返すslugフィールを関数化する。
+def create_slug_related_field(field_name, queryset):
+    return serializers.SlugRelatedField(
+        slug_field=field_name, 
+        queryset=queryset
+    )
 
+
+class TaskListSerializer(serializers.ModelSerializer):
+    companyCode = create_slug_related_field('companyCode', CompanyCode.objects.all())
+    plant = create_slug_related_field('plant', Plant.objects.all())
+    equipment = create_slug_related_field('equipment', Equipment.objects.all())
+    machineName = create_slug_related_field('machineName', Machine.objects.all())
+    typicalLatestDate = create_slug_related_field('typicalLatestDate', TypicalTaskList.objects.all())
+    typicalTaskName = create_slug_related_field('typicalTaskName', TypicalTaskList.objects.all())
+    typicalTaskCost = create_slug_related_field('typicalTaskCost', TypicalTaskList.objects.all())
+    typicalConstPeriod = create_slug_related_field('typicalConstPeriod', TypicalTaskList.objects.all())
+    multiTasking = create_slug_related_field('multiTasking', TypicalTaskList.objects.all())
+    typicalNextEventDate = create_slug_related_field('typicalNextEventDate', TypicalTaskList.objects.all())
+    typicalSituation = create_slug_related_field('typicalSituation', TypicalTaskList.objects.all())
+
+    bomCode = create_slug_related_field('bomCode', TypicalTaskList.objects.all())
+    bomCost = create_slug_related_field('bomCost', TypicalTaskList.objects.all())
+
+    
     class Meta:
         model = TaskList #呼び出すモデル名
         fields = ["companyCode", 'plant', 'equipment', 'machineName', 'taskListNo', 'typicalLatestDate', 'typicalTaskName', 'typicalTaskCost', 'typicalConstPeriod', 'multiTasking', 'typicalNextEventDate', 'typicalSituation', 'bomCode', 'bomCost', 'totalCost', 'thisYear', 'thisYear1later', 'thisYear2later', 'thisYear3later', 'thisYear4later', 'thisYear5later', 'thisYear6later', 'thisYear7later', 'thisYear8later', 'thisYear9later', 'thisYear10later', ]# API上に表示するモデルのデータ項目

@@ -1,61 +1,59 @@
 from rest_framework import serializers
 from .models import MasterDataTable
-from taskList.models import TaskListPM02,TaskListPM03,TaskListPM04,TaskListPM05
+from taskList.models import TypicalTaskList,TaskListPM02,TaskListPM03,TaskListPM04,TaskListPM05
 from spareParts.models import BomList
-from accounts.models import CompanyCode
-
-class TaskListPM02MasterSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = TaskListPM02 #呼び出すモデル名
-        fields = ['companyCode','companyName','plant','equipment','machineName','taskCode','taskName','laborCostOfPM','countOfPM','latestPM','periodOfPM','constructionPeriod','nextEventDate','situation','thisYear10ago','thisYear9ago','thisYear8ago','thisYear7ago','thisYear6ago','thisYear5ago','thisYear4ago','thisYear3ago','thisYear2ago','thisYear1ago','thisYear','thisYear1later','thisYear2later','thisYear3later','thisYear4later','thisYear5later','thisYear6later','thisYear7later','thisYear8later','thisYear9later','thisYear10later',]# API上に表示するモデルのデータ項目
+from accounts.models import CompanyCode,Plant
+from ceList.models import Equipment, Machine
 
 
-class TaskListPM03MasterSerializer(serializers.ModelSerializer):
 
-    class Meta:
-        model = TaskListPM03 #呼び出すモデル名
-        fields = ['companyCode','companyName','plant','equipment','machineName','taskCode','taskName','laborCostOfPM','countOfPM','latestPM','periodOfPM','constructionPeriod','nextEventDate','situation','thisYear10ago','thisYear9ago','thisYear8ago','thisYear7ago','thisYear6ago','thisYear5ago','thisYear4ago','thisYear3ago','thisYear2ago','thisYear1ago','thisYear','thisYear1later','thisYear2later','thisYear3later','thisYear4later','thisYear5later','thisYear6later','thisYear7later','thisYear8later','thisYear9later','thisYear10later',]# API上に表示するモデルのデータ項目
-
-
-class TaskListPM04MasterSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = TaskListPM04 #呼び出すモデル名
-        fields = ["companyCode","companyName","plant","equipment","machineName","taskCode","taskName","laborCostOfPM","countOfPM","latestPM","constructionPeriod",]# API上に表示するモデルのデータ項目
-
-
-class TaskListPM05MasterSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = TaskListPM05 #呼び出すモデル名
-        fields = ['companyCode','companyName','plant','equipment','machineName','taskCode','taskName','laborCostOfPM','countOfPM','latestPM','periodOfPM','constructionPeriod','nextEventDate','situation','thisYear10ago','thisYear9ago','thisYear8ago','thisYear7ago','thisYear6ago','thisYear5ago','thisYear4ago','thisYear3ago','thisYear2ago','thisYear1ago','thisYear','thisYear1later','thisYear2later','thisYear3later','thisYear4later','thisYear5later','thisYear6later','thisYear7later','thisYear8later','thisYear9later','thisYear10later',]# API上に表示するモデルのデータ項目
-
-class BomListMasterSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = BomList #呼び出すモデル名
-        fields = ['bomCode','bomCost',]# API上に表示するモデルのデータ項目
+#ForeignKeyを文字列で返すslugフィールを関数化する。
+def create_slug_related_field(field_name, queryset):
+    return serializers.SlugRelatedField(
+        slug_field=field_name, 
+        queryset=queryset
+    )
 
 class MasterDataTableSerializer(serializers.ModelSerializer):
-    taskPM02List = TaskListPM02MasterSerializer(source='taskPM02')#ここのsourceは本当に注意
-    taskPM03List = TaskListPM03MasterSerializer(source='taskPM03')#ここのsourceは本当に注意
-    taskPM04List = TaskListPM04MasterSerializer(source='taskPM04')#ここのsourceは本当に注意
-    taskPM05List = TaskListPM05MasterSerializer(source='taskPM05')#ここのsourceは本当に注意
+    companyCode = create_slug_related_field('companyCode', CompanyCode.objects.all())
+    plant = create_slug_related_field('plant', Plant.objects.all())
+    equipment = create_slug_related_field('equipment', Equipment.objects.all())
+    machineName = create_slug_related_field('machineName', Machine.objects.all())
 
-    bomCodeList = BomListMasterSerializer(source='bomCode')#ここのsourceは本当に注意
-    class Meta:
-        model = MasterDataTable #呼び出すモデル名
-        fields = ['companyCode','companyName','plant','equipment','machineName','taskPM02List','taskPM03List','taskPM04List','taskPM05List','multiTask','bomCodeList','bomCost','maxPartsDeliveryTimeInBom','levelSetValue','mttr','possibilityOfProductionLv','impactForProduction','probabilityOfFailure','assessment','rcaOrReplace','sparePartsOrAlternative','coveredFromTask','twoways','ceDescription']# API上に表示するモデルのデータ項目
+    typicalConstPeriod = create_slug_related_field('typicalConstPeriod', TypicalTaskList.objects.all())
+    #typicalLatestDate = create_slug_related_field('typicalLatestDate', TypicalTaskList.objects.all())
+    typicalTaskName = create_slug_related_field('typicalTaskName', TypicalTaskList.objects.all())
+    typicalTaskCost = create_slug_related_field('typicalTaskCost', TypicalTaskList.objects.all())
+    
+    #multiTasking = create_slug_related_field('multiTasking', TypicalTaskList.objects.all())
+    typicalNextEventDate = create_slug_related_field('typicalNextEventDate', TypicalTaskList.objects.all())
+    typicalSituation = create_slug_related_field('typicalSituation', TypicalTaskList.objects.all())
 
-class CompanyCodeMDTSerializer(serializers.ModelSerializer):
-    masterDataTableList = MasterDataTableSerializer(many=True, read_only=True, source='masterDataTable_companyCode')#ここのsourceは本当に注意
+    bomCode = create_slug_related_field('bomCode', BomList.objects.all())
+    #bomCost = create_slug_related_field('bomCost', BomList.objects.all())
+    maxPartsDeliveryTimeInBom = create_slug_related_field('maxPartsDeliveryTimeInBom', BomList.objects.all())
+
+    countOfPM02 = create_slug_related_field('countOfPM02', TaskListPM02.objects.all())
+    latestPM02 = create_slug_related_field('latestPM02', TaskListPM02.objects.all())
+    countOfPM03 = create_slug_related_field('countOfPM03', TaskListPM03.objects.all())
+    latestPM03 = create_slug_related_field('latestPM03', TaskListPM03.objects.all())
+    countOfPM04 = create_slug_related_field('countOfPM04', TaskListPM04.objects.all())
+    latestPM04 = create_slug_related_field('latestPM04', TaskListPM04.objects.all())
+
+
+
     
     class Meta:
+        model = MasterDataTable #呼び出すモデル名
+        fields = ["companyCode", 'ceListNo', 'plant', 'equipment', 'machineName', 'levelSetValue', 'typicalConstPeriod', 'maxPartsDeliveryTimeInBom', 'mttr', 'probabilityOfFailure', 'countOfPM02', 'latestPM02', 'countOfPM03', 'latestPM03', 'countOfPM04', 'latestPM04', 'impactForProduction', 'probabilityOfFailure', 'assessment', 'typicalTaskName', 'typicalTaskCost', 'typicalConstPeriod', 'typicalNextEventDate', 'typicalSituation', 'bomCode', 'bomStock', 'rcaOrReplace', 'sparePartsOrAlternative', 'coveredFromTask', 'twoways', 'ceDescription']# API上に表示するモデルのデータ項目
+
+
+class CompanyCodeMDTSerializer(serializers.ModelSerializer):
+    MasterDataTable = MasterDataTableSerializer(many=True, read_only=True, source='masterDataTable_companyCode')#ここのsourceは注意
+
+    class Meta:
         model = CompanyCode
-        fields = ['companyCode', 'masterDataTableList']
-
-
+        fields = ['companyCode', 'MasterDataTable']
 
 
 

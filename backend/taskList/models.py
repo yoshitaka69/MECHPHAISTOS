@@ -17,10 +17,10 @@ class TaskListPM02(models.Model):
 
     taskCode = models.CharField(verbose_name='taskCode',max_length=200,blank=True,null=True)
     taskName = models.CharField(verbose_name='taskName',max_length=200,blank=True,null=True)
-    laborCostOfPM = models.DecimalField(verbose_name='laborCostOfPM',max_digits=10,decimal_places=5,blank=True,null=True,default=0.00)
-    countOfPM = models.PositiveSmallIntegerField(verbose_name='countOfPM',blank=True,null=True,default=0)
-    latestPM = models.DateField(verbose_name='latestPM',blank=True,null=True)
-    periodOfPM = models.IntegerField(verbose_name='periodOfPM', blank=True, null=True)  # 整数フィールドに変更
+    laborCostOfPM02 = models.DecimalField(verbose_name='laborCostOfPM02',max_digits=10,decimal_places=5,blank=True,null=True,default=0.00)
+    countOfPM02 = models.PositiveSmallIntegerField(verbose_name='countOfPM02',blank=True,null=True,default=0)
+    latestPM02 = models.DateField(verbose_name='latestPM02',blank=True,null=True)
+    periodOfPM02 = models.IntegerField(verbose_name='periodOfPM02', blank=True, null=True)  # 整数フィールドに変更
     
     #Probability of failure
     constructionPeriod = models.IntegerField(verbose_name='constructionPeriod', blank=True, null=True)  # 整数フィールドに変更
@@ -74,10 +74,10 @@ class TaskListPM03(models.Model):
 
     taskCode = models.CharField(verbose_name='taskCode',max_length=200,blank=True,null=True)
     taskName = models.CharField(verbose_name='taskName',max_length=200,blank=True,null=True)
-    laborCostOfPM = models.DecimalField(verbose_name='laborCostOfPM',max_digits=10,decimal_places=5,blank=True,null=True,default=0.00)
-    countOfPM = models.PositiveSmallIntegerField(verbose_name='countOfPM',blank=True,null=True,default=0)
-    latestPM = models.DateField(verbose_name='latestPM',blank=True,null=True)
-    periodOfPM = models.IntegerField(verbose_name='periodOfPM', blank=True, null=True)  # 整数フィールドに変更
+    laborCostOfPM03 = models.DecimalField(verbose_name='laborCostOfPM03',max_digits=10,decimal_places=5,blank=True,null=True,default=0.00)
+    countOfPM03 = models.PositiveSmallIntegerField(verbose_name='countOfPM03',blank=True,null=True,default=0)
+    latestPM03 = models.DateField(verbose_name='latestPM03',blank=True,null=True)
+    periodOfPM03 = models.IntegerField(verbose_name='periodOfPM03', blank=True, null=True)  # 整数フィールドに変更
     
     #Probability of failure
     constructionPeriod = models.IntegerField(verbose_name='constructionPeriod', blank=True, null=True)  # 整数フィールドに変更
@@ -133,9 +133,9 @@ class TaskListPM04(models.Model):
 
     taskCode = models.CharField(verbose_name='taskCode',max_length=200,blank=True,null=True)
     taskName = models.CharField(verbose_name='taskName',max_length=200,blank=True,null=True)
-    laborCostOfPM = models.DecimalField(verbose_name='laborCostOfPM',max_digits=10,decimal_places=5,blank=True,null=True,default=0.00)
-    countOfPM = models.PositiveSmallIntegerField(verbose_name='countOfPM',blank=True,null=True,default=0)
-    latestPM = models.DateField(verbose_name='latestPM',blank=True,null=True)
+    laborCostOfPM04 = models.DecimalField(verbose_name='laborCostOfPM04',max_digits=10,decimal_places=5,blank=True,null=True,default=0.00)
+    countOfPM04 = models.PositiveSmallIntegerField(verbose_name='countOfPM04',blank=True,null=True,default=0)
+    latestPM04 = models.DateField(verbose_name='latestPM04',blank=True,null=True)
     constructionPeriod = models.IntegerField(verbose_name='constructionPeriod', blank=True, null=True)
 
     class Meta:
@@ -161,10 +161,10 @@ class TaskListPM05(models.Model):
 
     taskCode = models.CharField(verbose_name='taskCode',max_length=200,blank=True,null=True)
     taskName = models.CharField(verbose_name='taskName',max_length=200,blank=True,null=True)
-    laborCostOfPM = models.DecimalField(verbose_name='laborCostOfPM',max_digits=10,decimal_places=5,blank=True,null=True,default=0.00)
-    countOfPM = models.PositiveSmallIntegerField(verbose_name='countOfPM',blank=True,null=True,default=0)
-    latestPM = models.DateField(verbose_name='latestPM',blank=True,null=True)
-    periodOfPM = models.IntegerField(verbose_name='periodOfPM', blank=True, null=True)  # 整数フィールドに変更
+    laborCostOfPM05 = models.DecimalField(verbose_name='laborCostOfPM05',max_digits=10,decimal_places=5,blank=True,null=True,default=0.00)
+    countOfPM05 = models.PositiveSmallIntegerField(verbose_name='countOfPM05',blank=True,null=True,default=0)
+    latestPM05 = models.DateField(verbose_name='latestPM05',blank=True,null=True)
+    periodOfPM05 = models.IntegerField(verbose_name='periodOfPM05', blank=True, null=True)  # 整数フィールドに変更
     
     #Probability of failure
     constructionPeriod = models.IntegerField(verbose_name='constructionPeriod', blank=True, null=True)  # 整数フィールドに変更
@@ -215,6 +215,7 @@ class TypicalTaskList(models.Model):
     typicalConstPeriod = models.IntegerField(verbose_name='typicalConstPeriod', blank=True, null=True)
     typicalNextEventDate = models.DateField(verbose_name='typicalNextEventDate',blank=True,null=True)
     multiTasking = models.BooleanField(verbose_name='multiTasking',default=False)
+    typicalSituation = models.CharField(verbose_name='typicalSituation', max_length=200,blank=True,null=True)
     
     class Meta:
         verbose_name = 'Typical Task List'
@@ -223,6 +224,8 @@ class TypicalTaskList(models.Model):
         
     def __str__(self):
         return str('TypicalTaskList')
+
+
 
 
 class TaskList(models.Model):
@@ -264,6 +267,17 @@ class TaskList(models.Model):
     thisYear8later = models.BooleanField(verbose_name='thisYear8later',default=False)
     thisYear9later = models.BooleanField(verbose_name='thisYear9later',default=False)
     thisYear10later = models.BooleanField(verbose_name='thisYear10later',default=False)
+
+
+    def save(self, *args, **kwargs):
+        if not self.taskListNo:
+            # 最新のtaskListNoを取得し、1を加算して新しいtaskListNoを生成
+            last_task = TaskList.objects.order_by('taskListNo').last()
+            if last_task:
+                self.taskListNo = f"{int(last_task.taskListNo) + 1:04d}"  # 例: '0005'
+            else:
+                self.taskListNo = '0001'
+        super().save(*args, **kwargs)
 
 
     class Meta:

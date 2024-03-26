@@ -63,6 +63,18 @@ class SpareParts(models.Model):
     partsDescription = models.TextField(verbose_name='partsDescription',max_length=1000,blank=True,null=True,)
 
 
+
+    def save(self, *args, **kwargs):
+        if not self.partsNo:
+            # 最新のpartsNoを取得し、1を加算して新しいpartsNoを生成
+            last_part = SpareParts.objects.order_by('partsNo').last()
+            if last_part:
+                self.partsNo = f"{int(last_part.partsNo) + 1:05d}"  # 例: '0005'
+            else:
+                self.partsNo = '0001'
+        super().save(*args, **kwargs)
+
+
     class Meta:
         verbose_name = 'Spare Parts List'
         verbose_name_plural = 'Spare Parts List'

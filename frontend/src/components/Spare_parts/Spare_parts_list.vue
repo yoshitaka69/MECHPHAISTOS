@@ -205,7 +205,7 @@ const SparePartsComponent = defineComponent({
 
 					// columns の設定
 					const columns = [
-						{ data: "partsNo" , type: 'text'},
+						{ data: "partsNo" , type: 'text', readOnly:true},
 						{ data: "image" },
 						{ data: "bomCode" },
 						{ data: "partsName" },
