@@ -1,7 +1,12 @@
 
 from rest_framework import serializers
 from accounts.models import CompanyCode
-from .models import PlannedPM02,ActualPM02,PlannedPM03,ActualPM03,ActualPM04,PlannedPM05,ActualPM05,CalTablePlannedPM02,CalTableActualPM02,CalTablePlannedPM03,CalTableActualPM03,CalTableActualPM04,CalTablePlannedPM05,CalTableActualPM05,SummedCost
+from .models import (PlannedPM02,ActualPM02,
+PlannedPM03,ActualPM03,
+ActualPM04,
+PlannedPM05,ActualPM05,
+CalTablePlannedPM02,CalTableActualPM02,CalTablePlannedPM03,CalTableActualPM03,CalTableActualPM04,CalTablePlannedPM05,CalTableActualPM05,
+SummedCost)
 
 from accounts.models import CompanyCode,Plant
 from module.serializers import CommonSerializerMethodMixin
@@ -12,8 +17,8 @@ import logging
 
 
 
-class PlannedPM02Serializer(CommonSerializerMethodMixin,serializers.ModelSerializer):
-    totalCost = serializers.SerializerMethodField(read_only=True)
+class PlannedPM02Serializer(serializers.ModelSerializer):
+
     
     class Meta:
         model = PlannedPM02
@@ -29,18 +34,8 @@ class PlannedPM02Serializer(CommonSerializerMethodMixin,serializers.ModelSeriali
         queryset=Plant.objects.all()
     )
 
-    def update(self, instance, validated_data):
-        # instanceのフィールドを更新
-        instance = super().update(instance, validated_data)
-        
-        # totalCostを再計算して保存
-        self.save_total_cost(instance)
-
-        return instance
-
-
 class PlantPPM02Serializer(serializers.ModelSerializer):
-    plannedPM02 = PlannedPM02Serializer(many=True, source='plannedPM02_plant')  # Co2 モデルの related_name
+    plannedPM02 = PlannedPM02Serializer(many=True, source='plannedPM02_plant')
 
     class Meta:
         model = Plant
@@ -157,8 +152,7 @@ class CompanyCodePPM02Serializer(serializers.ModelSerializer):
 
 
 #Actual PM02 cost
-class ActualPM02Serializer(CommonSerializerMethodMixin,serializers.ModelSerializer):
-    totalCost = serializers.SerializerMethodField
+class ActualPM02Serializer(serializers.ModelSerializer):
 
     companyCode = serializers.SlugRelatedField(
         slug_field='companyCode', 
@@ -168,15 +162,6 @@ class ActualPM02Serializer(CommonSerializerMethodMixin,serializers.ModelSerializ
         slug_field='plant', 
         queryset=Plant.objects.all()
     )
-
-    def update(self, instance, validated_data):
-        # instanceのフィールドを更新
-        instance = super().update(instance, validated_data)
-        
-        # totalCostを再計算して保存
-        self.save_total_cost(instance)
-
-        return instance
     
     class Meta:
         model = ActualPM02
@@ -311,8 +296,7 @@ class CompanyCodeAPM02Serializer(serializers.ModelSerializer):
 
 
 #plannedPM03
-class PlannedPM03Serializer(CommonSerializerMethodMixin,serializers.ModelSerializer):
-    totalCost = serializers.SerializerMethodField(read_only=True)
+class PlannedPM03Serializer(serializers.ModelSerializer):
     class Meta:
         model = PlannedPM03
         fields = ['companyCode','plant','year','jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec','commitment','totalCost',]
@@ -326,15 +310,6 @@ class PlannedPM03Serializer(CommonSerializerMethodMixin,serializers.ModelSeriali
         slug_field='plant', 
         queryset=Plant.objects.all()
     )
-
-    def update(self, instance, validated_data):
-        # instanceのフィールドを更新
-        instance = super().update(instance, validated_data)
-        
-        # totalCostを再計算して保存
-        self.save_total_cost(instance)
-
-        return instance
 
 class PlantPPM03Serializer(serializers.ModelSerializer):
     plannedPM03 = PlannedPM03Serializer(many=True, source='plannedPM03_plant') 
@@ -437,13 +412,8 @@ class CompanyCodePPM03Serializer(serializers.ModelSerializer):
 
 
 
-
-
-
 #PM03-actual
-
 class ActualPM03Serializer(serializers.ModelSerializer):
-
     class Meta:
         model = ActualPM03
         fields = ['companyCode','plant','year','jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec','commitment','totalCost',]
@@ -560,8 +530,7 @@ class CompanyCodeAPM03Serializer(serializers.ModelSerializer):
 
 
 #PM04-actual
-class ActualPM04Serializer(CommonSerializerMethodMixin,serializers.ModelSerializer):
-    totalCost = serializers.SerializerMethodField
+class ActualPM04Serializer(serializers.ModelSerializer):
     class Meta:
         model = ActualPM04
         fields = ['companyCode','plant','year','jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec','commitment','totalCost',]
@@ -576,16 +545,7 @@ class ActualPM04Serializer(CommonSerializerMethodMixin,serializers.ModelSerializ
         queryset=Plant.objects.all()
     )
 
-    def update(self, instance, validated_data):
-        # instanceのフィールドを更新
-        instance = super().update(instance, validated_data)
-        
-        # totalCostを再計算して保存
-        self.save_total_cost(instance)
-
-        return instance
     
-
 class PlantAPM04Serializer(serializers.ModelSerializer):
     actualPM04 = ActualPM04Serializer(many=True, source='actualPM04_plant') 
 
@@ -686,8 +646,7 @@ class CompanyCodeAPM04Serializer(serializers.ModelSerializer):
 
 
 
-class PlannedPM05Serializer(CommonSerializerMethodMixin,serializers.ModelSerializer):
-    totalCost = serializers.SerializerMethodField
+class PlannedPM05Serializer(serializers.ModelSerializer):
     class Meta:
         model = PlannedPM05
         fields = ['companyCode','plant','year','jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec','commitment','totalCost',]
@@ -701,14 +660,6 @@ class PlannedPM05Serializer(CommonSerializerMethodMixin,serializers.ModelSeriali
         queryset=Plant.objects.all()
     )
 
-    def update(self, instance, validated_data):
-        # instanceのフィールドを更新
-        instance = super().update(instance, validated_data)
-        
-        # totalCostを再計算して保存
-        self.save_total_cost(instance)
-
-        return instance
 
 class PlantPPM05Serializer(serializers.ModelSerializer):
     plannedPM05 = PlannedPM05Serializer(many=True, source='plannedPM05_plant') 
@@ -810,8 +761,7 @@ class CompanyCodePPM05Serializer(serializers.ModelSerializer):
 
 
 #PM05^actual
-class ActualPM05Serializer(CommonSerializerMethodMixin,serializers.ModelSerializer):
-    totalCost = serializers.SerializerMethodField
+class ActualPM05Serializer(serializers.ModelSerializer):
     class Meta:
         model = ActualPM05
         fields = ['companyCode','plant','year','jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec','commitment','totalCost',]
@@ -826,14 +776,6 @@ class ActualPM05Serializer(CommonSerializerMethodMixin,serializers.ModelSerializ
         queryset=Plant.objects.all()
     )
 
-    def update(self, instance, validated_data):
-        # instanceのフィールドを更新
-        instance = super().update(instance, validated_data)
-        
-        # totalCostを再計算して保存
-        self.save_total_cost(instance)
-
-        return instance
 
 class PlantAPM05Serializer(serializers.ModelSerializer):
     actualPM05 = ActualPM05Serializer(many=True, source='actualPM05_plant')  # Co2 モデルの related_name
@@ -1085,8 +1027,6 @@ class CompanyCodeCalAPM05Serializer(serializers.ModelSerializer):
     class Meta:
         model = CompanyCode
         fields = ['companyCode', 'calAPM05List']
-
-
 
 
 
