@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Company,CustomUser,Payment,CompanyCode,CompanyName,AreaCode,CommunityGroup
+from .models import Company,CustomUser,Payment,CompanyCode,CompanyName,AreaCode,CommunityGroup,Plant
 
 class PaymentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -43,11 +43,35 @@ class CompanySerializer(serializers.ModelSerializer):
 
 
 
+
+class PlantSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Plant
+        fields = ['companyCode', 'plant']
+
+    companyCode = serializers.SlugRelatedField(
+        slug_field='companyCode', 
+        queryset=CompanyCode.objects.all()
+    )
+
+class CompanyPlantSerializer(serializers.ModelSerializer):
+    plantList = PlantSerializer(many=True, source='plant_companyCode')  
+    class Meta:
+        model = CompanyCode
+        fields = ['companyCode', 'plantList']
+
+
+
+
+
+
 #CustomUserSerializer
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ['userName','email','payment']
+
+
 
 class CompanyCodeUserSerializer(serializers.ModelSerializer):
     users = CustomUserSerializer(many=True, read_only=True, source='customUser_companyCode')  # sourceはCustomUserモデルのrelated_name

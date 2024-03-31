@@ -1,12 +1,22 @@
 from django.shortcuts import render
-from rest_framework import viewsets
+from rest_framework import viewsets, mixins, status
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
-from rest_framework.request import Request
+from django.http import JsonResponse
+from rest_framework.decorators import api_view
+
+import logging
+from rest_framework.decorators import action
+import json
+from django.views.decorators.csrf import csrf_exempt
+
+
 
 from .models import PlannedPM02,ActualPM02,PlannedPM03,ActualPM03,ActualPM04,PlannedPM05,ActualPM05,SummedCost
-from accounts.models import CompanyCode
+from accounts.models import CompanyCode,Plant
 from .serializers import PlannedPM02Serializer,CompanyCodePPM02Serializer,ActualPM02Serializer,CompanyCodeAPM02Serializer,PlannedPM03Serializer,CompanyCodePPM03Serializer,ActualPM03Serializer,CompanyCodeAPM03Serializer,ActualPM04Serializer,CompanyCodeAPM04Serializer,PlannedPM05Serializer,CompanyCodePPM05Serializer,ActualPM05Serializer,CompanyCodeAPM05Serializer,SummedCostSerializer
+
+logger = logging.getLogger(__name__)
 
 
 #PM02-Plan
@@ -47,6 +57,8 @@ class CompanyCodePPM03ViewSet(viewsets.ModelViewSet):
 
 
 
+
+#PM03-Actual
 class ActualPM03ViewSet(viewsets.ModelViewSet):
     queryset = ActualPM03.objects.all()
     serializer_class = ActualPM03Serializer
@@ -56,6 +68,15 @@ class CompanyCodeAPM03ViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return CompanyCode.objects.prefetch_related('actualPM03_companyCode').all()
+
+
+
+
+
+
+
+        
+
 
 
 

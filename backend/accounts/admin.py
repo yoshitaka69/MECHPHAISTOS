@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import CustomUser, Company, Payment,CompanyCode,CompanyName,AreaCode,CommunityGroup
+from .models import CustomUser, Company, Payment,CompanyCode,CompanyName,AreaCode,CommunityGroup,Plant
 
 class CustomUserAdmin(admin.ModelAdmin):
     list_display = ('userName', 'firstName', 'familyName', 'email', 'phoneNumber', 'is_active', 'is_staff', 'companyName', 'payment','createdDay', 'updateDay')
@@ -28,6 +28,14 @@ class CompanyCodeAdmin(admin.ModelAdmin):
     list_filter = ('companyCode','description',) # adminで右側にあるフィルターBOXのこと
     save_on_top = True #上部にもsaveボタンを配置
     ordering = ('companyCode',)
+
+class PlantAdmin(admin.ModelAdmin):
+    list_display = ('companyCode','plant',)
+    search_fields = ('companyCode','plant',)
+    list_filter = ('companyCode','plant',) # adminで右側にあるフィルターBOXのこと
+    save_on_top = True #上部にもsaveボタンを配置
+    ordering = ('companyCode',)
+
 
 class CompanyNameAdmin(admin.ModelAdmin):
     list_display = ('companyName','description',)
@@ -58,3 +66,4 @@ admin.site.register(CompanyCode, CompanyCodeAdmin)
 admin.site.register(CompanyName, CompanyNameAdmin)
 admin.site.register(AreaCode, AreaCodeAdmin)
 admin.site.register(CommunityGroup, CommunityGroupAdmin)
+admin.site.register(Plant, PlantAdmin)

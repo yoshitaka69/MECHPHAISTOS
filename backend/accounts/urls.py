@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import CompanyViewSet,CustomUserViewSet,PaymentViewSet,CompanyCodeViewSet,CompanyNameViewSet,AreaCodeViewSet,CommunityGroupViewSet,CompanyCodeUserViewSet
+from .views import CompanyViewSet,CustomUserViewSet,PaymentViewSet,CompanyCodeViewSet,CompanyNameViewSet,AreaCodeViewSet,CommunityGroupViewSet,CompanyCodeUserViewSet,PlantViewSet,CompanyPlantViewSet
 
 from rest_framework_simplejwt.views import (TokenObtainPairView,TokenRefreshView,TokenVerifyView)
 
@@ -11,6 +11,8 @@ router.register(r'company', CompanyViewSet, basename='company')
 router.register(r'payment', PaymentViewSet, basename='payments')
 router.register(r'companyCode', CompanyCodeViewSet, basename='companyCode')
 router.register(r'companyName', CompanyNameViewSet, basename='companyName')
+router.register(r'plant', PlantViewSet, basename='plant')
+router.register(r'companyPlant', CompanyPlantViewSet, basename='companyPlant')
 router.register(r'areaCode', AreaCodeViewSet, basename='areaCode')
 router.register(r'communityGroup', CommunityGroupViewSet, basename='communityGroup')
 

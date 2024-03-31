@@ -4,8 +4,8 @@ from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.request import Request
 
-from .models import CustomUser, Company, Payment,CompanyCode,CompanyName,AreaCode,CommunityGroup
-from .serializers import CustomUserSerializer, CompanySerializer, PaymentSerializer,CompanyCodeSerializer,CompanyNameSerializer,AreaCodeSerializer,CommunityGroupSerializer,CompanyCodeUserSerializer
+from .models import CustomUser, Company, Payment,CompanyCode,CompanyName,AreaCode,CommunityGroup,Plant
+from .serializers import CustomUserSerializer, CompanySerializer, PaymentSerializer,CompanyCodeSerializer,CompanyNameSerializer,AreaCodeSerializer,CommunityGroupSerializer,CompanyCodeUserSerializer,PlantSerializer,CompanyPlantSerializer
 
 class CustomUserViewSet(viewsets.ModelViewSet):
     queryset = CustomUser.objects.all()
@@ -108,8 +108,22 @@ class CommunityGroupViewSet(viewsets.ModelViewSet):
     
 
 
-class CompanyCodeUserViewSet(viewsets.ReadOnlyModelViewSet):
+class CompanyCodeUserViewSet(viewsets.ModelViewSet):
     serializer_class = CompanyCodeUserSerializer
 
     def get_queryset(self):
         return CompanyCode.objects.prefetch_related('customUser_companyCode').all()
+
+
+
+
+
+class PlantViewSet(viewsets.ModelViewSet):
+    queryset = Plant.objects.all()
+    serializer_class = PlantSerializer
+
+class CompanyPlantViewSet(viewsets.ModelViewSet):
+    serializer_class = CompanyPlantSerializer
+
+    def get_queryset(self):
+        return CompanyCode.objects.prefetch_related('plant_companyCode').all()

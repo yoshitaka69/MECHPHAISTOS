@@ -3,7 +3,7 @@
 		<hot-table ref="hotTableComponent" :settings="hotSettings"></hot-table>
 		<button v-on:click="updateData" class="controls">Update Data</button>
 	</div>
-  </template>
+</template>
 
 <script>
 import { defineComponent } from 'vue';
@@ -118,14 +118,6 @@ const TableComponent = defineComponent({
 
 	methods: {
 
-		addRow() {
-			const hotInstance = this.$refs.hotTableComponent.hotInstance;
-			hotInstance.alter('insert_row', hotInstance.countRows());
-		},
-
-
-
-
 		getDataAxios() {
 			const userStore = useUserStore();
 			const userCompanyCode = userStore.companyCode;
@@ -147,8 +139,8 @@ const TableComponent = defineComponent({
 					const actualCostData = response.data;
 
 					//データ抽出
-					const months = ["year", "jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec", "commitment",];
-					
+					const months = ["year", "jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec", "commitment"];
+
 					const tableData = actualCostData.flatMap(companyData =>
 						companyData.actualPM02List.flatMap(plantData =>
 							plantData.actualPM02.map(yearData => {
@@ -164,28 +156,32 @@ const TableComponent = defineComponent({
 
 					// columns の設定
 					const columns = [
-						{ data: "plant", type: 'numeric'},
-						{ data: "year", type: 'numeric'},
-						{ data: "jan" , type: 'numeric'},
-						{ data: "feb" , type: 'numeric'},
-						{ data: "mar" , type: 'numeric'},
-						{ data: "apr" , type: 'numeric'},
-						{ data: "may" , type: 'numeric'},
-						{ data: "jun" , type: 'numeric'},
-						{ data: "jul" , type: 'numeric'},
-						{ data: "aug" , type: 'numeric'},
-						{ data: "sep" , type: 'numeric'},
-						{ data: "oct" , type: 'numeric'},
-						{ data: "nov" , type: 'numeric'},
-						{ data: "dec" , type: 'numeric'},
-						{ data: "commitment" , type: 'numeric'},
-						{ data: "totalCost", readOnly: true },
+						{ data: "plant", type: 'text' },
+						{ data: "year", type: 'numeric' },
+						{ data: "jan", type: 'numeric' },
+						{ data: "feb", type: 'numeric' },
+						{ data: "mar", type: 'numeric' },
+						{ data: "apr", type: 'numeric' },
+						{ data: "may", type: 'numeric' },
+						{ data: "jun", type: 'numeric' },
+						{ data: "jul", type: 'numeric' },
+						{ data: "aug", type: 'numeric' },
+						{ data: "sep", type: 'numeric' },
+						{ data: "oct", type: 'numeric' },
+						{ data: "nov", type: 'numeric' },
+						{ data: "dec", type: 'numeric' },
+						{ data: "commitment", type: 'numeric' },
+						{ data: "totalCost", type: 'numeric', readOnly: true },
 					];
 					console.log("Table Data:", tableData); // テーブルデータをログに出力
 
+					// 空行を追加
+					const blankRows = Array.from({ length: 5 }, () => ({}));
+					const newData = tableData.concat(blankRows);
+
 					//table setting
 					this.$refs.hotTableComponent.hotInstance.updateSettings({
-						data: tableData,
+						data: newData,
 						columns,
 					});
 				})
@@ -193,6 +189,7 @@ const TableComponent = defineComponent({
 					console.error("Error fetching data:", error);
 				});
 		},
+
 
 
 		updateData: function () {

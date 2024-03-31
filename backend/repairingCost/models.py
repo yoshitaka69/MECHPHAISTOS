@@ -138,21 +138,6 @@ class ActualPM03(models.Model):
     def __str__(self):
         return str('actualPm03')
     
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        self.update_summed_cost()
-
-    def update_summed_cost(self):
-        # SummedCostの更新ロジックをここに記述
-        # 例:
-        summed_cost, _ = SummedCost.objects.get_or_create(
-            companyCode=self.companyCode, 
-            plant=self.plant, 
-            year=self.year
-        )
-        # ここでsummed_costを更新
-        summed_cost.calculate_and_save_totals()
-
 
 class ActualPM04(models.Model):
 

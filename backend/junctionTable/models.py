@@ -1,6 +1,6 @@
 from django.db import models
 from accounts.models import CompanyCode,CompanyName,Plant
-from ceList.models import Equipment,CeList
+from ceList.models import Equipment,CeList,Machine
 from spareParts.models import BomList
 from taskList.models import TaskListPM02,TaskListPM03,TaskListPM04,TaskListPM05,TypicalTaskList
 
@@ -15,7 +15,7 @@ class MasterDataTable(models.Model):
     #Celist
     ceListNo = models.ForeignKey(CeList, on_delete=models.CASCADE, related_name='masterDataTable_ceListNo',null=True, blank=True)
     equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='masterDataTable_equipment',null=True, blank=True)
-    machineName = models.ForeignKey(CeList, on_delete=models.CASCADE, related_name='masterDataTable_machineName',null=True, blank=True)
+    machineName = models.ForeignKey(Machine, on_delete=models.CASCADE, related_name='masterDataTable_machineName',null=True, blank=True)
 
     #TaskList
     taskPM02 = models.ForeignKey(TaskListPM02, on_delete=models.CASCADE, related_name='masterDataTable_taskPM02',null=True, blank=True)
