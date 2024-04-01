@@ -169,9 +169,10 @@ const CriticalEquipmentComponent = defineComponent({
                 ],
 
                 columns: [
-                    {//CeListNo
+                    {//CeListNo　backend側で連番処理させる。
                         data: "ceListNo",
                         type: "text",
+                        readOnly: true,
 
                     },
                     {//Plant
@@ -218,7 +219,6 @@ const CriticalEquipmentComponent = defineComponent({
 
                     },
                     {//Counts of PM02
-
                         data: "countOfPM02",
                         width: 100,
                         className: 'htRight',
@@ -311,12 +311,14 @@ const CriticalEquipmentComponent = defineComponent({
                         type: 'date',
                         dateFormat: 'YYYY-MM-DD',
                         correctFormat: false,
+                        readOnly: true,
 
                     },
                     {//situation
                         data: "typicalSituation",
                         className: 'htCenter',
                         renderer: customRendererForSituation,
+                        readOnly: true,
 
                     },
                     {//BomCode
@@ -424,9 +426,6 @@ const CriticalEquipmentComponent = defineComponent({
         console.error("Error fetching data:", error);
     });
 },
-
-
-        
 
     },
 
