@@ -390,10 +390,25 @@ const CriticalEquipmentComponent = defineComponent({
 
     created() {
         this.getDataAxios();
-
     },
 
+
     methods: {
+  initHandsontable() {
+    const container = this.$el;
+    this.hot = new Handsontable(container, {
+      // Handsontableの設定（列定義、データソース等）
+      afterChange: (changes, source) => {
+        if (source !== 'loadData') {
+          const data = this.hot.getData();
+          this.updateData(data);
+        }
+      }
+    }); // このカッコが閉じる位置を修正しました
+  },
+
+                                  
+        
         getDataAxios() {
     const userStore = useUserStore();
     const userCompanyCode = userStore.companyCode;
@@ -426,14 +441,22 @@ const CriticalEquipmentComponent = defineComponent({
         console.error("Error fetching data:", error);
     });
 },
-        function updateData(data, userCompanyCode) {
-  const url = `http://127.0.0.1:8000/api/junctionTable/masterDataTableByCompany/?format=json&companyCode=${userCompanyCode}`;
-  const payload = { companyCode: userCompanyCode, masterDataTable: data };
 
-  axios.post(url, payload)
-    .then(response => console.log('Data successfully updated:', response))
-    .catch(error => console.error('Error updating data:', error));
-        },
+    updateData(data) {
+      const userStore = useUserStore();
+      const userCompanyCode = userStore.companyCode;
+      const url = `http://127.0.0.1:8000/api/junctionTable/masterDataTableByCompany/?format=json&companyCode=${userCompanyCode}`;
+      const payload = { companyCode: userCompanyCode, masterDataTable: data };
+
+      axios.post(url, payload)
+        .then(response => console.log('Data successfully updated:', response))
+        .catch(error => console.error('Error updating data:', error));
+    },
+
+    sendData() {
+      const data = this.$refs.hotTableComponent.hotInstance.getSourceData();
+      this.updateData(data);
+    }
 
     },
 
