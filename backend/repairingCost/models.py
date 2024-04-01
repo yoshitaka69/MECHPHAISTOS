@@ -66,16 +66,6 @@ class ActualPM02(models.Model):
         super().save(*args, **kwargs)
         self.update_summed_cost()
 
-    def update_summed_cost(self):
-        # SummedCostの更新ロジックをここに記述
-        # 例:
-        summed_cost, _ = SummedCost.objects.get_or_create(
-            companyCode=self.companyCode, 
-            plant=self.plant, 
-            year=self.year
-        )
-        # ここでsummed_costを更新
-        summed_cost.calculate_and_save_totals()
     
 
 
@@ -172,16 +162,7 @@ class ActualPM04(models.Model):
         super().save(*args, **kwargs)
         self.update_summed_cost()
 
-    def update_summed_cost(self):
-        # SummedCostの更新ロジックをここに記述
-        # 例:
-        summed_cost, _ = SummedCost.objects.get_or_create(
-            companyCode=self.companyCode, 
-            plant=self.plant, 
-            year=self.year
-        )
-        # ここでsummed_costを更新
-        summed_cost.calculate_and_save_totals()
+
 
 class PlannedPM05(models.Model):
 
@@ -210,7 +191,8 @@ class PlannedPM05(models.Model):
         ordering = ('plant',)      
     def __str__(self):
         return str('plannedPm05}')
-    
+
+
 class ActualPM05(models.Model):
 
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='actualPM05_companyCode', null=True, blank=True)
@@ -243,16 +225,6 @@ class ActualPM05(models.Model):
         super().save(*args, **kwargs)
         self.update_summed_cost()
 
-    def update_summed_cost(self):
-        # SummedCostの更新ロジックをここに記述
-        # 例:
-        summed_cost, _ = SummedCost.objects.get_or_create(
-            companyCode=self.companyCode, 
-            plant=self.plant, 
-            year=self.year
-        )
-        # ここでsummed_costを更新
-        summed_cost.calculate_and_save_totals()
 
 
 #項目が多くなるが、将来的にいろいろな企業が参加してくることを考慮し、ここは細かく設定するぞ！
@@ -292,7 +264,8 @@ class CalTableActualPM02(models.Model):
         verbose_name_plural = 'CalTableActualPM02'
     def __str__(self):
         return str('CalTableActualPM02')
-    
+
+
 
 class CalTablePlannedPM03(models.Model):
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='calTablePlanPM03_companyCode', null=True, blank=True)
@@ -350,6 +323,8 @@ class CalTableActualPM04(models.Model):
     def __str__(self):
         return str('CalTableActualPM04')
 
+
+
 class CalTablePlannedPM05(models.Model):
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='calTablePlanPM05_companyCode', null=True, blank=True)
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='calTablePlanPM05_companyName', null=True, blank=True)
@@ -367,6 +342,7 @@ class CalTablePlannedPM05(models.Model):
         verbose_name_plural = 'CalTablePlanPm05'
     def __str__(self):
         return str('CalTablePlanPM05')
+
 
 
 class CalTableActualPM05(models.Model):
