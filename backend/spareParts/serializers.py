@@ -22,7 +22,8 @@ class SparePartsSerializer(serializers.ModelSerializer):
 
 class CompanyCodeSPSerializer(serializers.ModelSerializer):
     sparePartsList = SparePartsSerializer(many=True, source='spareParts_companyCode')#ここのsourceは本当に注意
-    
+
+    #sparePartsNo更新
     def update(self, instance, validated_data):
         spare_parts_data = validated_data.pop('spareParts_companyCode', [])
 
@@ -48,3 +49,19 @@ class CompanyCodeSPSerializer(serializers.ModelSerializer):
 
 
 
+class BomCodeSerializer(serializers.ModelSerializer):
+        companyCode = serializers.SlugRelatedField(
+        slug_field='companyCode',  # companyCode モデルの表示したい文字列フィールド
+        queryset=CompanyCode.objects.all()
+    )
+
+    class Meta:
+        model = BomCode #呼び出すモデル名
+        fields = ['companyCode','bomCode','bomCost', 'maxPartsDeliveryTimeInBom',]
+
+class CompanyBomCodeSerializer(serializer.ModelSerializer):
+    bomCodeList = BomCodeSerializer(many=True, source='bomCode_companyCode')#ここのsourceは本当に注意
+
+    calss Meta:
+        model = CompanyCode
+        field = ['companyCode', 'bomCodeList']
