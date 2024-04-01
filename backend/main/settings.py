@@ -31,7 +31,7 @@ INSTALLED_APPS = [
     'repairingCost',
     'junctionTable',
     'module',
-    'calculation',
+    'calculation.apps.CalculationConfig',
     'agora',
     'worldIndicators',
 ]

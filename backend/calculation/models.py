@@ -10,11 +10,17 @@ class CalTablePlannedPM02(models.Model):
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE,related_name='calTablePlannedPM02_plant', null=True, blank=True)
     
     no1HighCost = models.DecimalField(verbose_name='no1HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no1HighCostTask = models.CharField(verbose_name='no1HighCostTask', max_length=100, blank=True,null=True,)
     no2HighCost = models.DecimalField(verbose_name='no2HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no2HighCostTask = models.CharField(verbose_name='no2HighCostTask', max_length=100, blank=True,null=True,)
     no3HighCost = models.DecimalField(verbose_name='no3HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no3HighCostTask = models.CharField(verbose_name='no3HighCostTask', max_length=100, blank=True,null=True,)
     no4HighCost = models.DecimalField(verbose_name='no4HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no4HighCostTask = models.CharField(verbose_name='no4HighCostTask', max_length=100, blank=True,null=True,)
     no5HighCost = models.DecimalField(verbose_name='no5HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no5HighCostTask = models.CharField(verbose_name='no5HighCostTask', max_length=100, blank=True,null=True,)
     no1LowCost = models.DecimalField(verbose_name='no1LowCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no1LowCostTask = models.CharField(verbose_name='no1LowCostTask', max_length=100, blank=True,null=True,)
     averageCost = models.DecimalField(verbose_name='averageCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
 
     class Meta:
@@ -32,13 +38,18 @@ class CalTableActualPM02(models.Model):
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE,related_name='calTableActualPM02_plant', null=True, blank=True)
     
     no1HighCost = models.DecimalField(verbose_name='no1HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no1HighCostTask = models.CharField(verbose_name='no1HighCostTask', max_length=100, blank=True,null=True,)
     no2HighCost = models.DecimalField(verbose_name='no2HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no2HighCostTask = models.CharField(verbose_name='no2HighCostTask', max_length=100, blank=True,null=True,)
     no3HighCost = models.DecimalField(verbose_name='no3HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no3HighCostTask = models.CharField(verbose_name='no3HighCostTask', max_length=100, blank=True,null=True,)
     no4HighCost = models.DecimalField(verbose_name='no4HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no4HighCostTask = models.CharField(verbose_name='no4HighCostTask', max_length=100, blank=True,null=True,)
     no5HighCost = models.DecimalField(verbose_name='no5HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no5HighCostTask = models.CharField(verbose_name='no5HighCostTask', max_length=100, blank=True,null=True,)
     no1LowCost = models.DecimalField(verbose_name='no1LowCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no1LowCostTask = models.CharField(verbose_name='no1LowCostTask', max_length=100, blank=True,null=True,)
     averageCost = models.DecimalField(verbose_name='averageCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
-
     class Meta:
         verbose_name_plural = 'CalTableActualPM02'
     def __str__(self):
@@ -52,11 +63,17 @@ class CalTablePlannedPM03(models.Model):
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE,related_name='calTablePlannedPM03_plant', null=True, blank=True)
     
     no1HighCost = models.DecimalField(verbose_name='no1HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no1HighCostTask = models.CharField(verbose_name='no1HighCostTask', max_length=100, blank=True,null=True,)
     no2HighCost = models.DecimalField(verbose_name='no2HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no2HighCostTask = models.CharField(verbose_name='no2HighCostTask', max_length=100, blank=True,null=True,)
     no3HighCost = models.DecimalField(verbose_name='no3HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no3HighCostTask = models.CharField(verbose_name='no3HighCostTask', max_length=100, blank=True,null=True,)
     no4HighCost = models.DecimalField(verbose_name='no4HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no4HighCostTask = models.CharField(verbose_name='no4HighCostTask', max_length=100, blank=True,null=True,)
     no5HighCost = models.DecimalField(verbose_name='no5HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no5HighCostTask = models.CharField(verbose_name='no5HighCostTask', max_length=100, blank=True,null=True,)
     no1LowCost = models.DecimalField(verbose_name='no1LowCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no1LowCostTask = models.CharField(verbose_name='no1LowCostTask', max_length=100, blank=True,null=True,)
     averageCost = models.DecimalField(verbose_name='averageCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
 
     class Meta:
@@ -71,11 +88,17 @@ class CalTableActualPM03(models.Model):
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE,related_name='calTableActualPM03_plant', null=True, blank=True)
     
     no1HighCost = models.DecimalField(verbose_name='no1HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no1HighCostTask = models.CharField(verbose_name='no1HighCostTask', max_length=100, blank=True,null=True,)
     no2HighCost = models.DecimalField(verbose_name='no2HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no2HighCostTask = models.CharField(verbose_name='no2HighCostTask', max_length=100, blank=True,null=True,)
     no3HighCost = models.DecimalField(verbose_name='no3HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no3HighCostTask = models.CharField(verbose_name='no3HighCostTask', max_length=100, blank=True,null=True,)
     no4HighCost = models.DecimalField(verbose_name='no4HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no4HighCostTask = models.CharField(verbose_name='no4HighCostTask', max_length=100, blank=True,null=True,)
     no5HighCost = models.DecimalField(verbose_name='no5HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no5HighCostTask = models.CharField(verbose_name='no5HighCostTask', max_length=100, blank=True,null=True,)
     no1LowCost = models.DecimalField(verbose_name='no1LowCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no1LowCostTask = models.CharField(verbose_name='no1LowCostTask', max_length=100, blank=True,null=True,)
     averageCost = models.DecimalField(verbose_name='averageCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
 
     class Meta:
@@ -90,11 +113,17 @@ class CalTableActualPM04(models.Model):
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE,related_name='calTableActualPM04_plant', null=True, blank=True)
     
     no1HighCost = models.DecimalField(verbose_name='no1HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no1HighCostTask = models.CharField(verbose_name='no1HighCostTask', max_length=100, blank=True,null=True,)
     no2HighCost = models.DecimalField(verbose_name='no2HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no2HighCostTask = models.CharField(verbose_name='no2HighCostTask', max_length=100, blank=True,null=True,)
     no3HighCost = models.DecimalField(verbose_name='no3HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no3HighCostTask = models.CharField(verbose_name='no3HighCostTask', max_length=100, blank=True,null=True,)
     no4HighCost = models.DecimalField(verbose_name='no4HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no4HighCostTask = models.CharField(verbose_name='no4HighCostTask', max_length=100, blank=True,null=True,)
     no5HighCost = models.DecimalField(verbose_name='no5HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no5HighCostTask = models.CharField(verbose_name='no5HighCostTask', max_length=100, blank=True,null=True,)
     no1LowCost = models.DecimalField(verbose_name='no1LowCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no1LowCostTask = models.CharField(verbose_name='no1LowCostTask', max_length=100, blank=True,null=True,)
     averageCost = models.DecimalField(verbose_name='averageCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
 
     class Meta:
@@ -110,11 +139,17 @@ class CalTablePlannedPM05(models.Model):
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE,related_name='calTablePlanPM05_plant', null=True, blank=True)
     
     no1HighCost = models.DecimalField(verbose_name='no1HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no1HighCostTask = models.CharField(verbose_name='no1HighCostTask', max_length=100, blank=True,null=True,)
     no2HighCost = models.DecimalField(verbose_name='no2HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no2HighCostTask = models.CharField(verbose_name='no2HighCostTask', max_length=100, blank=True,null=True,)
     no3HighCost = models.DecimalField(verbose_name='no3HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no3HighCostTask = models.CharField(verbose_name='no3HighCostTask', max_length=100, blank=True,null=True,)
     no4HighCost = models.DecimalField(verbose_name='no4HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no4HighCostTask = models.CharField(verbose_name='no4HighCostTask', max_length=100, blank=True,null=True,)
     no5HighCost = models.DecimalField(verbose_name='no5HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no5HighCostTask = models.CharField(verbose_name='no5HighCostTask', max_length=100, blank=True,null=True,)
     no1LowCost = models.DecimalField(verbose_name='no1LowCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no1LowCostTask = models.CharField(verbose_name='no1LowCostTask', max_length=100, blank=True,null=True,)
     averageCost = models.DecimalField(verbose_name='averageCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
 
     class Meta:
@@ -130,11 +165,17 @@ class CalTableActualPM05(models.Model):
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE,related_name='calTableActualPM05_plant', null=True, blank=True)
     
     no1HighCost = models.DecimalField(verbose_name='no1HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no1HighCostTask = models.CharField(verbose_name='no1HighCostTask', max_length=100, blank=True,null=True,)
     no2HighCost = models.DecimalField(verbose_name='no2HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no2HighCostTask = models.CharField(verbose_name='no2HighCostTask', max_length=100, blank=True,null=True,)
     no3HighCost = models.DecimalField(verbose_name='no3HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no3HighCostTask = models.CharField(verbose_name='no3HighCostTask', max_length=100, blank=True,null=True,)
     no4HighCost = models.DecimalField(verbose_name='no4HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no4HighCostTask = models.CharField(verbose_name='no4HighCostTask', max_length=100, blank=True,null=True,)
     no5HighCost = models.DecimalField(verbose_name='no5HighCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no5HighCostTask = models.CharField(verbose_name='no5HighCostTask', max_length=100, blank=True,null=True,)
     no1LowCost = models.DecimalField(verbose_name='no1LowCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    no1LowCostTask = models.CharField(verbose_name='no1LowCostTask', max_length=100, blank=True,null=True,)
     averageCost = models.DecimalField(verbose_name='averageCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
 
     class Meta:
