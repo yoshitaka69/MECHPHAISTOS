@@ -4,24 +4,26 @@ from .models import Company,CustomUser,Payment,CompanyCode,CompanyName,AreaCode,
 class PaymentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payment # 呼び出すモデル
-        fields = '__all__' # API上に表示するモデルのデータ項目
+        fields = ['paymentType','description'] # API上に表示するモデルのデータ項目
 
 class CompanyCodeSerializer(serializers.ModelSerializer):
     createdDay = serializers.DateTimeField(format="%Y-%m-%d")
     class Meta:
         model = CompanyCode
-        fields = '__all__'
+        fields = ['companyCode','description','createDay']
 
 class CompanyNameSerializer(serializers.ModelSerializer):
     createdDay = serializers.DateTimeField(format="%Y-%m-%d")
     class Meta:
         model = CompanyName
-        fields = '__all__'
+        fields = ['companyCode','companyName','description','createDay']
+
+
 
 class AreaCodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = AreaCode
-        fields = '__all__'
+        fields = ['companyCode','companyName','country','zipCode','description']
 
 
 class CommunityGroupSerializer(serializers.ModelSerializer):
@@ -29,7 +31,7 @@ class CommunityGroupSerializer(serializers.ModelSerializer):
     updateDay = serializers.DateTimeField(format="%Y-%m-%d")
     class Meta:
         model = CommunityGroup
-        fields = '__all__'
+        fields = ['companyCode','companyName','communityGroup','createDay','updateDay']
 
 
 class CompanySerializer(serializers.ModelSerializer):
@@ -37,7 +39,7 @@ class CompanySerializer(serializers.ModelSerializer):
     updateDay = serializers.DateTimeField(format="%Y-%m-%d")
     class Meta:
         model = Company
-        fields = '__all__'
+        fields = ['compnayCode','companyListNo','companyName','country','zipCode','payment','communityGropu','createDay','updateDay']
 
 
 
@@ -69,7 +71,9 @@ class CompanyPlantSerializer(serializers.ModelSerializer):
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ['userName','email','payment']
+        fields = '__all___'
+
+
 
 
 
