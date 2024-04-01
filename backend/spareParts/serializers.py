@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import SpareParts
+from .models import SpareParts,BomList
 
 from accounts.models import CompanyCode
 from django.db.models import Max
@@ -49,19 +49,19 @@ class CompanyCodeSPSerializer(serializers.ModelSerializer):
 
 
 
-class BomCodeSerializer(serializers.ModelSerializer):
-        companyCode = serializers.SlugRelatedField(
+class BomListSerializer(serializers.ModelSerializer):
+    companyCode = serializers.SlugRelatedField(
         slug_field='companyCode',  # companyCode モデルの表示したい文字列フィールド
         queryset=CompanyCode.objects.all()
     )
-
+        
     class Meta:
-        model = BomCode #呼び出すモデル名
+        model = BomList #呼び出すモデル名
         fields = ['companyCode','bomCode','bomCost', 'maxPartsDeliveryTimeInBom',]
 
-class CompanyBomCodeSerializer(serializer.ModelSerializer):
-    bomCodeList = BomCodeSerializer(many=True, source='bomCode_companyCode')#ここのsourceは本当に注意
+class CompanyBomListSerializer(serializers.ModelSerializer):
+    bomList = BomListSerializer(many=True, source='bomList_companyCode')#ここのsourceは本当に注意
 
-    calss Meta:
+    class Meta:
         model = CompanyCode
-        field = ['companyCode', 'bomCodeList']
+        field = ['companyCode', 'bomList']

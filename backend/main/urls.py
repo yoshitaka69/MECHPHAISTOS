@@ -19,4 +19,5 @@ urlpatterns = [
     path("api/", include('spareParts.urls')),
     path("api/", include('taskList.urls')),
     path("api/", include('junctionTable.urls')),
+    path("api/", include('calculation.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import PlannedPM02ViewSet, CompanyCodePPM02ViewSet, ActualPM02ViewSet, CompanyCodeAPM02ViewSet, PlannedPM03ViewSet, CompanyCodePPM03ViewSet,ActualPM03ViewSet, CompanyCodeAPM03ViewSet, ActualPM04ViewSet, CompanyCodeAPM04ViewSet,PlannedPM05ViewSet,CompanyCodePPM05ViewSet, ActualPM05ViewSet,CompanyCodeAPM05ViewSet,SummedCostViewSet,CompanyCodeSummedCostViewSet
+from .views import PlannedPM02ViewSet, CompanyCodePPM02ViewSet, ActualPM02ViewSet, CompanyCodeAPM02ViewSet, PlannedPM03ViewSet, CompanyCodePPM03ViewSet,ActualPM03ViewSet, CompanyCodeAPM03ViewSet, ActualPM04ViewSet, CompanyCodeAPM04ViewSet,PlannedPM05ViewSet,CompanyCodePPM05ViewSet, ActualPM05ViewSet,CompanyCodeAPM05ViewSet
 
 router = DefaultRouter()
 router.register(r'plannedPM02', PlannedPM02ViewSet, basename='plannedPM02')
@@ -25,8 +25,7 @@ router.register(r'actualPM05', ActualPM05ViewSet, basename='actualPM05')
 router.register(r'APM05ByCompany', CompanyCodeAPM05ViewSet, basename='companyCode-APM05')
 
 
-router.register(r'summedCost', SummedCostViewSet, basename='summedCost')
-router.register(r'summedByCompany', CompanyCodeSummedCostViewSet, basename='companyCode-summedCost')
+
 
 urlpatterns = [
     path('repairingCost/', include(router.urls)),

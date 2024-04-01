@@ -5,5 +5,3 @@ class RepairingcostConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "repairingCost"
 
-    def ready(self):
-        import repairingCost.signals

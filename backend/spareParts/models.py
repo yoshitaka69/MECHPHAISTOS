@@ -4,7 +4,7 @@ from accounts.models import CompanyCode,CompanyName,Plant
 from ceList.models import Equipment,Machine
 
 class BomList(models.Model):
-    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='bomCode_companyCode', null=True, blank=True)
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='bomList_companyCode', null=True, blank=True)
     bomCode = models.CharField(verbose_name='bomCode', max_length=50,blank=True,null=True)
     bomCost = models.DecimalField(verbose_name='bomCost',max_digits=10,decimal_places=2,blank=True,null=True,default=0.00)
     maxPartsDeliveryTimeInBom = models.IntegerField(verbose_name='maxPartsDeliveryTimeInBom', default=0, null=True, blank=True)

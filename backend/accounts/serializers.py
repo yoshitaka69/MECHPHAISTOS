@@ -39,7 +39,7 @@ class CompanySerializer(serializers.ModelSerializer):
     updateDay = serializers.DateTimeField(format="%Y-%m-%d")
     class Meta:
         model = Company
-        fields = ['compnayCode','companyListNo','companyName','country','zipCode','payment','communityGropu','createDay','updateDay']
+        fields = ['companyCode','companyListNo','companyName','country','zipCode','payment','communityGroup','createDay','updateDay']
 
 
 

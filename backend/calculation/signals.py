@@ -1,6 +1,7 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from .models import ActualPM02, ActualPM03, ActualPM04, ActualPM05, SummedCost
+from repairingCost.models import ActualPM02, ActualPM03, ActualPM04, ActualPM05
+from .models import SummedCost
 
 
 @receiver(post_save, sender=ActualPM02)

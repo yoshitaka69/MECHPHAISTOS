@@ -12,10 +12,9 @@ from django.views.decorators.csrf import csrf_exempt
 
 
 
-from .models import PlannedPM02,ActualPM02,PlannedPM03,ActualPM03,ActualPM04,PlannedPM05,ActualPM05,SummedCost
+from .models import PlannedPM02,ActualPM02,PlannedPM03,ActualPM03,ActualPM04,PlannedPM05,ActualPM05
 from accounts.models import CompanyCode,Plant
-from .serializers import PlannedPM02Serializer,CompanyCodePPM02Serializer,ActualPM02Serializer,CompanyCodeAPM02Serializer,PlannedPM03Serializer,CompanyCodePPM03Serializer,ActualPM03Serializer,CompanyCodeAPM03Serializer,ActualPM04Serializer,CompanyCodeAPM04Serializer,PlannedPM05Serializer,CompanyCodePPM05Serializer,ActualPM05Serializer,CompanyCodeAPM05Serializer,SummedCostSerializer
-
+from .serializers import PlannedPM02Serializer,CompanyCodePPM02Serializer,ActualPM02Serializer,CompanyCodeAPM02Serializer,PlannedPM03Serializer,CompanyCodePPM03Serializer,ActualPM03Serializer,CompanyCodeAPM03Serializer,ActualPM04Serializer,CompanyCodeAPM04Serializer,PlannedPM05Serializer,CompanyCodePPM05Serializer,ActualPM05Serializer,CompanyCodeAPM05Serializer
 logger = logging.getLogger(__name__)
 
 
@@ -95,7 +94,6 @@ class CompanyCodeAPM04ViewSet(viewsets.ModelViewSet):
 
     
 
-        
 class PlannedPM05ViewSet(viewsets.ModelViewSet):
     queryset = PlannedPM05.objects.all()
     serializer_class = PlannedPM05Serializer
@@ -120,12 +118,3 @@ class CompanyCodeAPM05ViewSet(viewsets.ModelViewSet):
 
 
 
-class SummedCostViewSet(viewsets.ModelViewSet):
-    queryset = SummedCost.objects.all()
-    serializer_class = SummedCostSerializer
-
-class CompanyCodeSummedCostViewSet(viewsets.ModelViewSet):
-    serializer_class = SummedCostSerializer
-
-    def get_queryset(self):
-        return CompanyCode.objects.prefetch_related('summedCost_companyCode').all()

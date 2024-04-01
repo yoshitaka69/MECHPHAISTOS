@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from rest_framework import viewsets
 
-from .models import SpareParts
+from .models import SpareParts,BomList
 from accounts.models import CompanyCode
-from .serializers import SparePartsSerializer,CompanyCodeSPSerializer
+from .serializers import SparePartsSerializer,CompanyCodeSPSerializer,BomListSerializer,CompanyBomListSerializer
 
 
 
@@ -25,15 +25,15 @@ class CompanyCodeSPViewSet(viewsets.ModelViewSet):
 
 
 #BomCode
-class BomCodeViewSet(viewsets.ModelViewSet):
-    queryset = BomCode.objects.all()
-    serializer_class = BomCodeSerializer
+class BomListViewSet(viewsets.ModelViewSet):
+    queryset = BomList.objects.all()
+    serializer_class = BomListSerializer
 
-class CompanyBomCodeViewSet(viewsets.ModelViewSet):
+class CompanyBomListViewSet(viewsets.ModelViewSet):
     queryset = CompanyCode.objects.all()
-    serializer_class = CompanyBomCodeSerializer
+    serializer_class = CompanyBomListSerializer
 
     #これで無駄なデータのやり取りをなくす。
     def get_queryset(self):
-        return CompanyCode.objects.prefetch_related('bomCode_companyCode').all()
+        return CompanyCode.objects.prefetch_related('bomList_companyCode').all()
 
