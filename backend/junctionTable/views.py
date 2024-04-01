@@ -12,7 +12,7 @@ class MasterDataTableViewSet(viewsets.ModelViewSet):
     serializer_class = MasterDataTableSerializer
 
 
-class CompanyCodeMDTViewSet(viewsets.ReadOnlyModelViewSet):
+class CompanyCodeMDTViewSet(viewsets.ModelViewSet):
     serializer_class = CompanyCodeMDTSerializer
 
     def get_queryset(self):
