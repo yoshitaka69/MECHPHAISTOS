@@ -426,6 +426,14 @@ const CriticalEquipmentComponent = defineComponent({
         console.error("Error fetching data:", error);
     });
 },
+        function updateData(data, userCompanyCode) {
+  const url = `http://127.0.0.1:8000/api/junctionTable/masterDataTableByCompany/?format=json&companyCode=${userCompanyCode}`;
+  const payload = { companyCode: userCompanyCode, masterDataTable: data };
+
+  axios.post(url, payload)
+    .then(response => console.log('Data successfully updated:', response))
+    .catch(error => console.error('Error updating data:', error));
+        },
 
     },
 
