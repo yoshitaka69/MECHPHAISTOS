@@ -22,3 +22,14 @@ class CompanyCodeSPViewSet(viewsets.ModelViewSet):
         if company_code is not None:
             return CompanyCode.objects.filter(companyCode=company_code).prefetch_related('spareParts_companyCode')
         return CompanyCode.objects.all()
+
+
+#BomCode
+class BomCodeViewSet(viewsets.ModelViewSet):
+    queryset = BomCode.objects.all()
+    serializer_class = BomCodeSerializer
+
+class CompanyCodeViewSet(viewsets.ModelViewSet):
+    queryset = CompanyCode.objects.all()
+    serializer_class = CompanyBomCodeSerializer
+
