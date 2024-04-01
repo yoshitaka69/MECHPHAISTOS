@@ -29,11 +29,11 @@ class BomCodeViewSet(viewsets.ModelViewSet):
     queryset = BomCode.objects.all()
     serializer_class = BomCodeSerializer
 
-class CompanyCodeViewSet(viewsets.ModelViewSet):
+class CompanyBomCodeViewSet(viewsets.ModelViewSet):
     queryset = CompanyCode.objects.all()
     serializer_class = CompanyBomCodeSerializer
 
     #これで無駄なデータのやり取りをなくす。
     def get_queryset(self):
-        return CompanyCode.objects.prefetch_related('actualPM03_companyCode').all()
+        return CompanyCode.objects.prefetch_related('bomCode_companyCode').all()
 
