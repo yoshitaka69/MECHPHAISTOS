@@ -33,3 +33,7 @@ class CompanyCodeViewSet(viewsets.ModelViewSet):
     queryset = CompanyCode.objects.all()
     serializer_class = CompanyBomCodeSerializer
 
+    #これで無駄なデータのやり取りをなくす。
+    def get_queryset(self):
+        return CompanyCode.objects.prefetch_related('actualPM03_companyCode').all()
+
