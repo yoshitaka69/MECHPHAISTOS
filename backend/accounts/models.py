@@ -164,6 +164,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         verbose_name_plural = 'User List'
         ordering = ('id',)
 
+
+    #userName自動生成コード
     def save(self, *args, **kwargs):
         # userNameが空の場合、firstNameとfamilyNameを組み合わせる
         if not self.userName:
