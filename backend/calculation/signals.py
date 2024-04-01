@@ -13,6 +13,23 @@ def update_or_create_cal_table(sender, instance, **kwargs):
         defaults={
             'no1HighCost': instance.laborCostOfPM02,
             'no1HighCostTask': instance.taskName,
+            
+            'no2HighCost': instance.laborCostOfPM02,
+            'no2HighCostTask': instance.taskName,
+
+            'no3HighCost': instance.laborCostOfPM02,
+            'no3HighCostTask': instance.taskName,
+
+            'no4HighCost': instance.laborCostOfPM02,
+            'no4HighCostTask': instance.taskName,
+
+            'no5HighCost': instance.laborCostOfPM02,
+            'no5HighCostTask': instance.taskName,
+
+            'no1LowCost' : instance.laborCostOfPM02,
+            'no1LowCostTask' : instance.taskName,
+
+            
         }
     )
 
@@ -25,8 +42,25 @@ def update_or_create_cal_table(sender, instance, **kwargs):
             print(f"no1HighCost を更新します: 古い値={cal_table.no1HighCost}, 新しい値={instance.laborCostOfPM02}")
             cal_table.no1HighCost = instance.laborCostOfPM02
             cal_table.no1HighCostTask = instance.taskName
+            
         # no2HighCost, no3HighCost...等の同様のロジックを実装
-        # ...
+            cal_table.no2HighCost = instance.laborCostOfPM02
+            cal_table.no2HighCostTask = instance.taskName
+
+            cal_table.no3HighCost = instance.laborCostOfPM02
+            cal_table.no3HighCostTask = instance.taskName
+
+            cal_table.no4HighCost = instance.laborCostOfPM02
+            cal_table.no4HighCostTask = instance.taskName
+
+            cal_table.no5HighCost = instance.laborCostOfPM02
+            cal_table.no5HighCostTask = instance.taskName
+        
+        # 最低コストの更新
+        if instance.laborCostOfPM02 < cal_table.no1LowCost or cal_table.no1LowCost == 0:
+            print(f"no1LowCost を更新します: 古い値={cal_table.no1LowCost}, 新しい値={instance.laborCostOfPM02}")
+            cal_table.no1LowCost = instance.laborCostOfPM02
+            cal_table.no1LowCostTask = instance.taskName
 
     # CalTablePlannedPM02のレコードを更新
     cal_table.save()
