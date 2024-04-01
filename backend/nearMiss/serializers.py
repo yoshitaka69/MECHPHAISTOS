@@ -53,7 +53,7 @@ class CompanyNearMissSerializer(serializers.ModelSerializer):
 
 
 
-
+#ActionItemList
 class ActionItemListSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -61,6 +61,10 @@ class ActionItemListSerializer(serializers.ModelSerializer):
         fields = fields = ['companyCode', 'companyName', 'actionItems', 'solvedActionItems']
 
 
+
+
+
+#SafetyIndicator
 class SafetyIndicatorsSerializer(serializers.ModelSerializer):
 
     safetyIndicators = serializers.SerializerMethodField()
