@@ -39,7 +39,6 @@ def update_or_create_cal_table(sender, instance, **kwargs):
         print(f"既存の CalTablePlannedPM02 のレコードが見つかりました: {cal_table}")
         # レコードが既に存在する場合は、必要に応じて値を更新
         if instance.laborCostOfPM02 > cal_table.no1HighCost:
-            print(f"no1HighCost を更新します: 古い値={cal_table.no1HighCost}, 新しい値={instance.laborCostOfPM02}")
             cal_table.no1HighCost = instance.laborCostOfPM02
             cal_table.no1HighCostTask = instance.taskName
             
@@ -58,7 +57,6 @@ def update_or_create_cal_table(sender, instance, **kwargs):
         
         # 最低コストの更新
         if instance.laborCostOfPM02 < cal_table.no1LowCost or cal_table.no1LowCost == 0:
-            print(f"no1LowCost を更新します: 古い値={cal_table.no1LowCost}, 新しい値={instance.laborCostOfPM02}")
             cal_table.no1LowCost = instance.laborCostOfPM02
             cal_table.no1LowCostTask = instance.taskName
 
