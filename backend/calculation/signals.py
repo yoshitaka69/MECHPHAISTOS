@@ -60,6 +60,15 @@ def update_or_create_cal_table(sender, instance, **kwargs):
         cal_table.no1LowCost = instance.laborCostOfPM02
         cal_table.no1LowCostTask = instance.taskName
 
+    # 指定されたcompanyCodeに対するlaborCostOfPM02の平均値を計算
+    average_cost = TaskListPM02.objects.filter(
+        companyCode=instance.companyCode
+    ).aggregate(Avg('laborCostOfPM02'))['laborCostOfPM02__avg']
+
+    # averageCostの更新
+    if average_cost is not None:
+        cal_table.averageCost = average_cost
+
     # CalTablePlannedPM02のレコードを更新
     cal_table.save()
     print("CalTablePlannedPM02 のレコードが更新されました")
