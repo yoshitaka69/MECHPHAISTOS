@@ -295,41 +295,39 @@ getLastNearMissNo().then(nearMissNo => lastNearMissNo.value = nearMissNo);
 
 
     //axios postの用methods
-    const submitForm = async () => {
-      try {
-
-        // 送信するデータの作成
-        const postData = {
-          nearMissNo:formState.NearMissNo,
-          name: formState.Name,
-          department: formState.Department,
-          date: formState.Date,
-          where: formState.Where,
-          typeOfAccIdent: formState.TypeOfAccIdent,
-          description: formState.Description,
-          factor: formState.Factor,
-          injuredLv: formState.InjuredLv,
-          equipmentDamageLv: formState.EquipmentDamageLv,
-          affectOfEnviroment: formState.AffectOfEnviroment,
-          newsCoverage: formState.NewsCoverage,
-          measures: calculateCategory(),
-        };
-
-        console.log("postData:", postData);  // この行を追加
-        console.log("postData before axios.post:", postData);
-        // Axiosを使用してPOSTリクエストを送信
-        const response = await axios.post("http://127.0.0.1:8000/api/nearMiss/nearMissByCompany/", postData);
-
-        // レスポンスの処理（成功時の処理）
-        console.log(response.data);
-
-
-        // フォームを初期化
-        resetForm();
-      } catch (error) {
-        console.error("Error submitting form:", error.response ? error.response.data : error.message);
-      }
+const submitForm = async () => {
+  try {
+    // 送信するデータの作成
+    const postData = {
+      nearMissNo: lastNearMissNo.value, // 最後のNearMiss番号
+      userName: {
+        userName: formState.Name // ユーザー名
+      },
+      department: formState.Department, // 部署
+      dateOfOccurrence: formState.Date, // 発生日
+      placeOfOccurrence: formState.Where, // 発生場所
+      typeOfAccident: formState.TypeOfAccIdent, // 事故のタイプ
+      factor: formState.Factor, // 事故の要因
+      injuredLv: formState.InjuredLv, // ケガのレベル
+      equipmentDamageLv: formState.EquipmentDamageLv, // 設備損傷のレベル
+      affectOfEnviroment: formState.AffectOfEnviroment, // 環境への影響
+      newsCoverage: formState.NewsCoverage, // メディアへの影響
+      measures: calculateCategory(), // 評価結果
+      description: formState.Description // 説明
     };
+
+    // Axiosを使用してPOSTリクエストを送信
+    const response = await axios.post("http://127.0.0.1:8000/api/nearMiss/nearMissByCompany/", postData);
+
+    // レスポンスの処理
+    console.log(response.data);
+
+    // フォームを初期化
+    resetForm();
+  } catch (error) {
+    console.error("Error submitting form:", error.response ? error.response.data : error.message);
+  }
+};
 
 
     return {
