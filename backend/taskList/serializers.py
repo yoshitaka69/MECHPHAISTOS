@@ -7,7 +7,7 @@ from datetime import timedelta, datetime
 
 
 
-class TaskListPM02Serializer(serializers.ModelSerializer):
+class TaskListPPM02Serializer(serializers.ModelSerializer):
     taskCode = serializers.CharField(read_only=True)
     nextEventDate = serializers.DateField(read_only=True)
     situation = serializers.CharField(read_only=True)
