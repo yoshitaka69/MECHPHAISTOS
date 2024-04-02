@@ -3,8 +3,8 @@ from accounts.models import CompanyCode,CompanyName,Plant
 from ceList.models import Equipment,Machine
 from spareParts.models import BomList
 
-
-class TaskListPM02(models.Model):
+#TaskList PlannedPM02
+class TaskListPPM02(models.Model):
 
     #accountsより
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='taskListPM02_companyCode',null=True, blank=True)
@@ -52,12 +52,50 @@ class TaskListPM02(models.Model):
 
 
     class Meta:
-        verbose_name = 'Task List Pm02'
-        verbose_name_plural = 'Task List Pm02'
+        verbose_name = 'Task List PPm02'
+        verbose_name_plural = 'Task List PPm02'
         ordering = ('taskCode',) #モデルのクエリセットを取得した際にどのような順番でフィールドを並べ変えるかを決める。
 
     def __str__(self):
             return f'{self.taskName}'
+
+
+#TaskListActualPM02
+class TaskListAPM02(models.Model):
+
+    #accountsより
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='taskListPM02_companyCode',null=True, blank=True)
+    companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='taskListPM02_companyName', null=True, blank=True)
+    plant = models.ForeignKey(Plant, on_delete=models.CASCADE,related_name='taskListPM02_plant', null=True, blank=True)
+
+    #CeListより
+    equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='taskListPM02_equipment',null=True, blank=True)
+    machineName = models.ForeignKey(Machine, on_delete=models.CASCADE, related_name='taskListPM02_machineName',null=True, blank=True)
+
+    taskCode = models.CharField(verbose_name='taskCode',max_length=200,blank=True,null=True)
+    taskName = models.CharField(verbose_name='taskName',max_length=200,blank=True,null=True)
+    laborCostOfPM02 = models.DecimalField(verbose_name='laborCostOfPM02',max_digits=10,decimal_places=5,blank=True,null=True,default=0.00)
+    startDatePM02 = models.DateField(verbose_name='startDatePM02',blank=True,null=True)
+    endDatePM02 =models.DateField(verbose_name='endDatePM02',blank=True,null=True)
+    
+    #Probability of failure
+    constructionPeriod = models.IntegerField(verbose_name='constructionPeriod', blank=True, null=True)  # 整数フィールドに変更
+
+    #description
+    description = models.textField(verbose_name='description',blank=True,null=True)
+
+
+    class Meta:
+        verbose_name = 'Task List APm02'
+        verbose_name_plural = 'Task List APm02'
+        ordering = ('taskCode',) #モデルのクエリセットを取得した際にどのような順番でフィールドを並べ変えるかを決める。
+
+    def __str__(self):
+            return f'{self.taskName}'
+
+
+
+
 
 
 
