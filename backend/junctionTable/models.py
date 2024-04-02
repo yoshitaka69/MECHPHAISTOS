@@ -2,7 +2,7 @@ from django.db import models
 from accounts.models import CompanyCode,CompanyName,Plant
 from ceList.models import Equipment,CeList,Machine
 from spareParts.models import BomList
-from taskList.models import TaskListPM02,TaskListPM03,TaskListPM04,TaskListPM05,TypicalTaskList
+from taskList.models import TaskListPPM02,TaskListPPM03,TaskListAPM04,TaskListPPM05,TypicalTaskList
 
 
 class MasterDataTable(models.Model):
@@ -18,25 +18,25 @@ class MasterDataTable(models.Model):
     machineName = models.ForeignKey(Machine, on_delete=models.CASCADE, related_name='masterDataTable_machineName',null=True, blank=True)
 
     #TaskList
-    taskPM02 = models.ForeignKey(TaskListPM02, on_delete=models.CASCADE, related_name='masterDataTable_taskPM02',null=True, blank=True)
-    countOfPM02 = models.ForeignKey(TaskListPM02, on_delete=models.CASCADE, related_name='masterDataTable_countOfPM02',null=True, blank=True)
-    latestPM02 = models.ForeignKey(TaskListPM02, on_delete=models.CASCADE, related_name='masterDataTable_latestPM02',null=True, blank=True)
-    laborCostOfPM02 = models.ForeignKey(TaskListPM02, on_delete=models.CASCADE, related_name='masterDataTable_laborCostOfPM02',null=True, blank=True)
+    taskPM02 = models.ForeignKey(TaskListPPM02, on_delete=models.CASCADE, related_name='masterDataTable_taskPM02',null=True, blank=True)
+    countOfPM02 = models.ForeignKey(TaskListPPM02, on_delete=models.CASCADE, related_name='masterDataTable_countOfPM02',null=True, blank=True)
+    latestPM02 = models.ForeignKey(TaskListPPM02, on_delete=models.CASCADE, related_name='masterDataTable_latestPM02',null=True, blank=True)
+    laborCostOfPM02 = models.ForeignKey(TaskListPPM02, on_delete=models.CASCADE, related_name='masterDataTable_laborCostOfPM02',null=True, blank=True)
 
-    taskPM03 = models.ForeignKey(TaskListPM03, on_delete=models.CASCADE, related_name='masterDataTable_taskPM03',null=True, blank=True)
-    countOfPM03 = models.ForeignKey(TaskListPM03, on_delete=models.CASCADE, related_name='masterDataTable_countOfPM03',null=True, blank=True)
-    latestPM03 = models.ForeignKey(TaskListPM03, on_delete=models.CASCADE, related_name='masterDataTable_latestPM03',null=True, blank=True)
-    laborCostOfPM03 = models.ForeignKey(TaskListPM03, on_delete=models.CASCADE, related_name='masterDataTable_laborCostOfPM03',null=True, blank=True)
+    taskPM03 = models.ForeignKey(TaskListPPM03, on_delete=models.CASCADE, related_name='masterDataTable_taskPM03',null=True, blank=True)
+    countOfPM03 = models.ForeignKey(TaskListPPM03, on_delete=models.CASCADE, related_name='masterDataTable_countOfPM03',null=True, blank=True)
+    latestPM03 = models.ForeignKey(TaskListPPM03, on_delete=models.CASCADE, related_name='masterDataTable_latestPM03',null=True, blank=True)
+    laborCostOfPM03 = models.ForeignKey(TaskListPPM03, on_delete=models.CASCADE, related_name='masterDataTable_laborCostOfPM03',null=True, blank=True)
 
-    taskPM04 = models.ForeignKey(TaskListPM04, on_delete=models.CASCADE, related_name='masterDataTable_taskPM04',null=True, blank=True)
-    countOfPM04 = models.ForeignKey(TaskListPM04, on_delete=models.CASCADE, related_name='masterDataTable_countOfPM04',null=True, blank=True)
-    latestPM04 = models.ForeignKey(TaskListPM04, on_delete=models.CASCADE, related_name='masterDataTable_latestPM04',null=True, blank=True)
-    laborCostOfPM04 = models.ForeignKey(TaskListPM04, on_delete=models.CASCADE, related_name='masterDataTable_laborCostOfPM04',null=True, blank=True)
+    taskPM04 = models.ForeignKey(TaskListAPM04, on_delete=models.CASCADE, related_name='masterDataTable_taskPM04',null=True, blank=True)
+    countOfPM04 = models.ForeignKey(TaskListAPM04, on_delete=models.CASCADE, related_name='masterDataTable_countOfPM04',null=True, blank=True)
+    latestPM04 = models.ForeignKey(TaskListAPM04, on_delete=models.CASCADE, related_name='masterDataTable_latestPM04',null=True, blank=True)
+    laborCostOfPM04 = models.ForeignKey(TaskListAPM04, on_delete=models.CASCADE, related_name='masterDataTable_laborCostOfPM04',null=True, blank=True)
 
-    taskPM05 = models.ForeignKey(TaskListPM05, on_delete=models.CASCADE, related_name='masterDataTable_taskPM05',null=True, blank=True)
-    countOfPM05 = models.ForeignKey(TaskListPM05, on_delete=models.CASCADE, related_name='masterDataTable_countOfPM05',null=True, blank=True)
-    latestPM05 = models.ForeignKey(TaskListPM05, on_delete=models.CASCADE, related_name='masterDataTable_latestPM05',null=True, blank=True)
-    laborCostOfPM05 = models.ForeignKey(TaskListPM05, on_delete=models.CASCADE, related_name='masterDataTable_laborCostOfPM05',null=True, blank=True)
+    taskPM05 = models.ForeignKey(TaskListPPM05, on_delete=models.CASCADE, related_name='masterDataTable_taskPM05',null=True, blank=True)
+    countOfPM05 = models.ForeignKey(TaskListPPM05, on_delete=models.CASCADE, related_name='masterDataTable_countOfPM05',null=True, blank=True)
+    latestPM05 = models.ForeignKey(TaskListPPM05, on_delete=models.CASCADE, related_name='masterDataTable_latestPM05',null=True, blank=True)
+    laborCostOfPM05 = models.ForeignKey(TaskListPPM05, on_delete=models.CASCADE, related_name='masterDataTable_laborCostOfPM05',null=True, blank=True)
 
 
     #TypicalTaskList

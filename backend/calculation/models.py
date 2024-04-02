@@ -24,10 +24,10 @@ class CalTablePlannedPM02(models.Model):
     averageCost = models.DecimalField(verbose_name='averageCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
 
     class Meta:
-        verbose_name_plural = 'CalTablePlanPM02'
+        verbose_name_plural = 'CalTablePlannedPM02'
         
     def __str__(self):
-        return str('CalTablePlanPM02')
+        return str('CalTablePlannedPM02')
 
 
 
@@ -77,9 +77,9 @@ class CalTablePlannedPM03(models.Model):
     averageCost = models.DecimalField(verbose_name='averageCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
 
     class Meta:
-        verbose_name_plural = 'CalTablePlanPM03'
+        verbose_name_plural = 'CalTablePlannedPM03'
     def __str__(self):
-        return str('CalTablePlanPM03')
+        return str('CalTablePlannedPM03')
 
 
 class CalTableActualPM03(models.Model):
@@ -153,9 +153,9 @@ class CalTablePlannedPM05(models.Model):
     averageCost = models.DecimalField(verbose_name='averageCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
 
     class Meta:
-        verbose_name_plural = 'CalTablePlanPM05'
+        verbose_name_plural = 'CalTablePlannedPM05'
     def __str__(self):
-        return str('CalTablePlanPM05')
+        return str('CalTablePlannedPM05')
 
 
 

@@ -98,15 +98,14 @@ class CompanyTaskListPPM02Serializer(serializers.ModelSerializer):
 
 
 #ActualPM02
-class TaskListAPM02Serializer(serializer.ModelSerializer):
-    calss Meta:
+class TaskListAPM02Serializer(serializers.ModelSerializer):
+    class Meta:
         model = TaskListAPM02
         field = ['companyCode','companyName','plant','equipment','machineName','taskCode','taskName','laborCostOfAPM02','startDateAPM02','endDateAPM02','constructionPeriod','description']
 
 class CompanyTaskListAPM02Serializer(serializers.ModelSerializer):
    taskListAPM02 = TaskListAPM02Serializer(many=True, read_only=True, source='taskListAPM02_companyCode')#ここのsourceは注意
-
-    class Meta:
+   class Meta:
         model = CompanyCode
         fields = ['companyCode', 'taskListAPM02']
 
@@ -208,15 +207,15 @@ class CompanyTaskListPPM03Serializer(serializers.ModelSerializer):
 
 
 #ActualPM03
-class TaskListAPM03Serializer(serializer.ModelSerializer):
-    calss Meta:
+class TaskListAPM03Serializer(serializers.ModelSerializer):
+    class Meta:
         model = TaskListAPM03
         field = ['companyCode','companyName','plant','equipment','machineName','taskCode','taskName','laborCostOfAPM03','startDateAPM03','endDateAPM03','constructionPeriod','description']
 
 class CompanyTaskListAPM03Serializer(serializers.ModelSerializer):
    taskListAPM03 = TaskListAPM03Serializer(many=True, read_only=True, source='taskListAPM03_companyCode')#ここのsourceは注意
-
-    class Meta:
+   
+   class Meta:
         model = CompanyCode
         fields = ['companyCode', 'taskListAPM03']
 
@@ -233,8 +232,8 @@ class TaskListAPM04Serializer(serializers.ModelSerializer):
         model = TaskListAPM04 #呼び出すモデル名
         fields = ["companyCode","companyName","plant","equipment","machineName","taskCode","taskName","laborCostOfAPM04","countOfAPM04","latestAPM04","constructionPeriod",]# API上に表示するモデルのデータ項目
 
-class CompanyTaskListPM04Serializer(serializers.ModelSerializer):
-    taskList = TaskListPM04Serializer(many=True, read_only=True, source='taskListPM4_companyCode')#ここのsourceは注意
+class CompanyTaskListAPM04Serializer(serializers.ModelSerializer):
+    taskList = TaskListAPM04Serializer(many=True, read_only=True, source='taskListPM4_companyCode')#ここのsourceは注意
 
     class Meta:
         model = CompanyCode
@@ -336,15 +335,14 @@ class CompanyTaskListPPM05Serializer(serializers.ModelSerializer):
 
 
 #ActualPM05
-class TaskListAPM05Serializer(serializer.ModelSerializer):
-    calss Meta:
+class TaskListAPM05Serializer(serializers.ModelSerializer):
+    class Meta:
         model = TaskListAPM05
         field = ['companyCode','companyName','plant','equipment','machineName','taskCode','taskName','laborCostOfAPM05','startDateAPM05','endDateAPM05','constructionPeriod','description']
 
 class CompanyTaskListAPM05Serializer(serializers.ModelSerializer):
    taskListAPM05 = TaskListAPM05Serializer(many=True, read_only=True, source='taskListAPM05_companyCode')#ここのsourceは注意
-
-    class Meta:
+   class Meta:
         model = CompanyCode
         fields = ['companyCode', 'taskListAPM05']
 

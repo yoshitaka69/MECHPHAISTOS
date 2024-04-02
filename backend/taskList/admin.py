@@ -50,9 +50,9 @@ class TaskListAPM03Admin(admin.ModelAdmin):
 
 #APM04
 class TaskListAPM04Admin(admin.ModelAdmin):
-    list_display = ('companyCode','companyName','plant', 'equipment', 'machineName', 'taskCode', 'taskName', 'laborCostOfAPM04', 'countOfAPM04', 'latestAPM04', 'constructoionPeriod')
-    search_fields = ('companyCode','companyName','plant', 'equipment', 'machineName', 'taskCode', 'taskName', 'laborCostOfAPM04', 'countOfAPM04', 'latestAPM04', 'constructoionPeriod')
-    list_filter = ('companyCode','companyName','plant', 'equipment', 'machineName', 'taskCode', 'taskName', 'laborCostOfAPM04', 'countOfAPM04', 'latestAPM04', 'constructoionPeriod') # adminで右側にあるフィルターBOXのこと
+    list_display = ('companyCode','companyName','plant', 'equipment', 'machineName', 'taskCode', 'taskName', 'laborCostOfAPM04', 'countOfAPM04', 'latestAPM04', 'constructionPeriod')
+    search_fields = ('companyCode','companyName','plant', 'equipment', 'machineName', 'taskCode', 'taskName', 'laborCostOfAPM04', 'countOfAPM04', 'latestAPM04', 'constructionPeriod')
+    list_filter = ('companyCode','companyName','plant', 'equipment', 'machineName', 'taskCode', 'taskName', 'laborCostOfAPM04', 'countOfAPM04', 'latestAPM04', 'constructionPeriod') # adminで右側にあるフィルターBOXのこと
     ordering = ('companyCode',) # 表示する順番
     save_on_top = True #上部にもsaveボタンを配置
 
@@ -72,9 +72,9 @@ class TaskListPPM05Admin(admin.ModelAdmin):
 
 #APM05
 class TaskListAPM05Admin(admin.ModelAdmin):
-    list_display = ('companyCode','companyName','plant', 'equipment', 'machineName', 'taskCode', 'taskName', 'laborCostOfAPM02', 'startDateAPM02', 'endDateAPM02', 'constructionPeriod', 'description')
-    search_fields = ('companyCode','companyName','plant', 'equipment', 'machineName', 'taskCode', 'taskName', 'laborCostOfAPM02', 'startDateAPM02', 'endDateAPM02', 'constructionPeriod', 'description')
-    list_filter = ('companyCode','companyName','plant', 'equipment', 'machineName', 'taskCode', 'taskName', 'laborCostOfAPM02', 'startDateAPM02', 'endDateAPM02', 'constructionPeriod', 'description') # adminで右側にあるフィルターBOXのこと
+    list_display = ('companyCode','companyName','plant', 'equipment', 'machineName', 'taskCode', 'taskName', 'laborCostOfAPM05', 'startDateAPM05', 'endDateAPM05', 'constructionPeriod', 'description')
+    search_fields = ('companyCode','companyName','plant', 'equipment', 'machineName', 'taskCode', 'taskName', 'laborCostOfAPM05', 'startDateAPM05', 'endDateAPM05', 'constructionPeriod', 'description')
+    list_filter = ('companyCode','companyName','plant', 'equipment', 'machineName', 'taskCode', 'taskName', 'laborCostOfAPM05', 'startDateAPM05', 'endDateAPM05', 'constructionPeriod', 'description') # adminで右側にあるフィルターBOXのこと
     ordering = ('companyCode',) # 表示する順番
     save_on_top = True #上部にもsaveボタンを配置
 

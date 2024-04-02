@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import MasterDataTable
-from taskList.models import TypicalTaskList,TaskListPM02,TaskListPM03,TaskListPM04,TaskListPM05
+from taskList.models import TypicalTaskList,TaskListPPM02,TaskListPPM03,TaskListAPM04,TaskListPPM05
 from spareParts.models import BomList
 from accounts.models import CompanyCode,Plant
 from ceList.models import Equipment, Machine
@@ -33,12 +33,12 @@ class MasterDataTableSerializer(serializers.ModelSerializer):
     #bomCost = create_slug_related_field('bomCost', BomList.objects.all())
     maxPartsDeliveryTimeInBom = create_slug_related_field('maxPartsDeliveryTimeInBom', BomList.objects.all())
 
-    countOfPM02 = create_slug_related_field('countOfPM02', TaskListPM02.objects.all())
-    latestPM02 = create_slug_related_field('latestPM02', TaskListPM02.objects.all())
-    countOfPM03 = create_slug_related_field('countOfPM03', TaskListPM03.objects.all())
-    latestPM03 = create_slug_related_field('latestPM03', TaskListPM03.objects.all())
-    countOfPM04 = create_slug_related_field('countOfPM04', TaskListPM04.objects.all())
-    latestPM04 = create_slug_related_field('latestPM04', TaskListPM04.objects.all())
+    countOfPM02 = create_slug_related_field('countOfPM02', TaskListPPM02.objects.all())
+    latestPM02 = create_slug_related_field('latestPM02', TaskListPPM02.objects.all())
+    countOfPM03 = create_slug_related_field('countOfPM03', TaskListPPM03.objects.all())
+    latestPM03 = create_slug_related_field('latestPM03', TaskListPPM03.objects.all())
+    countOfPM04 = create_slug_related_field('countOfPM04', TaskListAPM04.objects.all())
+    latestPM04 = create_slug_related_field('latestPM04', TaskListAPM04.objects.all())
 
 
 

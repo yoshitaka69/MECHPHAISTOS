@@ -33,8 +33,8 @@ router.register(r'taskListPPM03ByCompany', CompanyCodeTaskListPPM03ViewSet, base
 router.register(r'taskListAPM03', TaskListAPM03ViewSet, basename='taskListAPM03')
 router.register(r'taskListAPM03ByCompany', CompanyCodeTaskListAPM03ViewSet, basename='companyCode-taskListAPM03')
 
-router.register(r'taskListPPM04', TaskListPPM04ViewSet, basename='taskListPPM04')
-router.register(r'taskListPPM04ByCompany', CompanyCodeTaskListPPM04ViewSet, basename='companyCode-taskListPPM04')
+router.register(r'taskListPPM04', TaskListAPM04ViewSet, basename='taskListPPM04')
+router.register(r'taskListPPM04ByCompany', CompanyCodeTaskListAPM04ViewSet, basename='companyCode-taskListPPM04')
 
 router.register(r'taskListPPM05', TaskListPPM05ViewSet, basename='taskListPPM05')
 router.register(r'taskListPPM05ByCompany', CompanyCodeTaskListPPM05ViewSet, basename='companyCode-taskListPPM05')

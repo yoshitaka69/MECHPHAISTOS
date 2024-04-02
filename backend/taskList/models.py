@@ -88,7 +88,7 @@ class TaskListAPM02(models.Model):
     constructionPeriod = models.IntegerField(verbose_name='constructionPeriodAPM02', blank=True, null=True)  # 整数フィールドに変更
 
     #description
-    description = models.textField(verbose_name='descriptionAPM02',max_length=1000,blank=True,null=True,)
+    description = models.TextField(verbose_name='descriptionAPM02',max_length=1000,blank=True,null=True,)
 
 
     class Meta:
@@ -179,15 +179,15 @@ class TaskListAPM03(models.Model):
 
     taskCode = models.CharField(verbose_name='taskCodeAPM03',max_length=200,blank=True,null=True)
     taskName = models.CharField(verbose_name='taskNameAPM03',max_length=200,blank=True,null=True)
-    laborCostOfAPM02 = models.DecimalField(verbose_name='laborCostOfAPM03',max_digits=10,decimal_places=5,blank=True,null=True,default=0.00)
-    startDateAPM02 = models.DateField(verbose_name='startDateAPM03',blank=True,null=True)
-    endDateAPM02 =models.DateField(verbose_name='endDateAPM03',blank=True,null=True)
+    laborCostOfAPM03 = models.DecimalField(verbose_name='laborCostOfAPM03',max_digits=10,decimal_places=5,blank=True,null=True,default=0.00)
+    startDateAPM03 = models.DateField(verbose_name='startDateAPM03',blank=True,null=True)
+    endDateAPM03 =models.DateField(verbose_name='endDateAPM03',blank=True,null=True)
     
     #Probability of failure
     constructionPeriod = models.IntegerField(verbose_name='constructionPeriodAPM03', blank=True, null=True)  # 整数フィールドに変更
 
     #description
-    description = models.textField(verbose_name='descriptionAPM03',max_length=1000,blank=True,null=True,)
+    description = models.TextField(verbose_name='descriptionAPM03',max_length=1000,blank=True,null=True,)
 
 
     class Meta:
@@ -250,7 +250,7 @@ class TaskListPPM05(models.Model):
 
     taskCode = models.CharField(verbose_name='taskCodePPM05',max_length=200,blank=True,null=True)
     taskName = models.CharField(verbose_name='taskNamePPM05',max_length=200,blank=True,null=True)
-    laborCostOfPpM05 = models.DecimalField(verbose_name='laborCostOfPPM05',max_digits=10,decimal_places=5,blank=True,null=True,default=0.00)
+    laborCostOfPPM05 = models.DecimalField(verbose_name='laborCostOfPPM05',max_digits=10,decimal_places=5,blank=True,null=True,default=0.00)
     countOfPPM05 = models.PositiveSmallIntegerField(verbose_name='countOfPPM05',blank=True,null=True,default=0)
     latestPPM05 = models.DateField(verbose_name='latestPPM05',blank=True,null=True)
     periodOfPPM05 = models.IntegerField(verbose_name='periodOfPPM05', blank=True, null=True)  # 整数フィールドに変更
@@ -309,15 +309,15 @@ class TaskListAPM05(models.Model):
 
     taskCode = models.CharField(verbose_name='taskCodeAPM05',max_length=200,blank=True,null=True)
     taskName = models.CharField(verbose_name='taskNameAPM05',max_length=200,blank=True,null=True)
-    laborCostOfAPM02 = models.DecimalField(verbose_name='laborCostOfAPM05',max_digits=10,decimal_places=5,blank=True,null=True,default=0.00)
-    startDateAPM02 = models.DateField(verbose_name='startDateAPM05',blank=True,null=True)
-    endDateAPM02 =models.DateField(verbose_name='endDateAPM05',blank=True,null=True)
+    laborCostOfAPM05 = models.DecimalField(verbose_name='laborCostOfAPM05',max_digits=10,decimal_places=5,blank=True,null=True,default=0.00)
+    startDateAPM05 = models.DateField(verbose_name='startDateAPM05',blank=True,null=True)
+    endDateAPM05 =models.DateField(verbose_name='endDateAPM05',blank=True,null=True)
     
     #Probability of failure
     constructionPeriod = models.IntegerField(verbose_name='constructionPeriodAPM05', blank=True, null=True)  # 整数フィールドに変更
 
     #description
-    description = models.textField(verbose_name='descriptionAPM05',max_length=1000,blank=True,null=True,)
+    description = models.TextField(verbose_name='descriptionAPM05',max_length=1000,blank=True,null=True,)
 
 
     class Meta:
