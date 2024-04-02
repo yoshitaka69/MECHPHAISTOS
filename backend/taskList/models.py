@@ -3,6 +3,10 @@ from accounts.models import CompanyCode,CompanyName,Plant
 from ceList.models import Equipment,Machine
 from spareParts.models import BomList
 
+
+#PlannedなのかActualなのかを比較する必要があり。
+
+
 #TaskList PlannedPM02
 class TaskListPPM02(models.Model):
 
