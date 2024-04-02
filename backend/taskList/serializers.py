@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import TaskListPM02,TaskListPM03,TaskListPM04,TaskListPM05,TypicalTaskList,TaskList
+from .models import TaskListPPM02,TaskListAPM02,TaskListPPM03,TaskListAPM03,TaskListAPM04,TaskListPPM05,TaskListAPM05,TypicalTaskList,TaskList
 from accounts.models import CompanyCode,Plant
 from ceList.models import Equipment,Machine
 from datetime import timedelta, datetime
