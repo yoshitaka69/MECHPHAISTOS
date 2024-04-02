@@ -182,6 +182,11 @@
     },
   
     setup(props) {
+　　// Piniaストアの使用
+   　 const userStore = useUserStore();
+
+    // PiniaストアからuserNameを取得、または空白で初期化
+   　 const initialUserName = userStore.userName || '';
       const lastId = ref(0);
   
       const getLastId = async () => {
@@ -209,7 +214,7 @@
       const initialFormState = reactive({
         Id: 0,
         Date: "",
-        Name: "",
+        Name: initialUserName, // NameフィールドにuserNameを割り当て
         Department: "",
         Where: "",
         TypeOfAccIdent: "",
