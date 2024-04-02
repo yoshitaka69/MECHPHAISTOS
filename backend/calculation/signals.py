@@ -38,27 +38,27 @@ def update_or_create_cal_table(sender, instance, **kwargs):
     else:
         print(f"既存の CalTablePlannedPM02 のレコードが見つかりました: {cal_table}")
         # レコードが既に存在する場合は、必要に応じて値を更新
-        if instance.laborCostOfPM02 > cal_table.no1HighCost:
-            cal_table.no1HighCost = instance.laborCostOfPM02
-            cal_table.no1HighCostTask = instance.taskName
+    if instance.laborCostOfPM02 > cal_table.no1HighCost:
+        cal_table.no1HighCost = instance.laborCostOfPM02
+        cal_table.no1HighCostTask = instance.taskName
             
-        # no2HighCost, no3HighCost...等の同様のロジックを実装
-            cal_table.no2HighCost = instance.laborCostOfPM02
-            cal_table.no2HighCostTask = instance.taskName
+    # no2HighCost, no3HighCost...等の同様のロジックを実装
+        cal_table.no2HighCost = instance.laborCostOfPM02
+        cal_table.no2HighCostTask = instance.taskName
 
-            cal_table.no3HighCost = instance.laborCostOfPM02
-            cal_table.no3HighCostTask = instance.taskName
+        cal_table.no3HighCost = instance.laborCostOfPM02
+        cal_table.no3HighCostTask = instance.taskName
 
-            cal_table.no4HighCost = instance.laborCostOfPM02
-            cal_table.no4HighCostTask = instance.taskName
+        cal_table.no4HighCost = instance.laborCostOfPM02
+        cal_table.no4HighCostTask = instance.taskName
 
-            cal_table.no5HighCost = instance.laborCostOfPM02
-            cal_table.no5HighCostTask = instance.taskName
+        cal_table.no5HighCost = instance.laborCostOfPM02
+        cal_table.no5HighCostTask = instance.taskName
         
-        # 最低コストの更新
-        if instance.laborCostOfPM02 < cal_table.no1LowCost or cal_table.no1LowCost == 0:
-            cal_table.no1LowCost = instance.laborCostOfPM02
-            cal_table.no1LowCostTask = instance.taskName
+    # 最低コストの更新
+    if instance.laborCostOfPM02 < cal_table.no1LowCost or cal_table.no1LowCost == 0:
+        cal_table.no1LowCost = instance.laborCostOfPM02
+        cal_table.no1LowCostTask = instance.taskName
 
     # CalTablePlannedPM02のレコードを更新
     cal_table.save()
