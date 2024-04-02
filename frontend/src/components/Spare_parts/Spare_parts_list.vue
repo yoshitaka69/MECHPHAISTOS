@@ -226,9 +226,12 @@ const SparePartsComponent = defineComponent({
 					];
 					console.log("Table Data:", tableData); // テーブルデータをログに出力
 
+					const blankRows = Array.from({ length: 10 }, () => ({}));
+					const newData = tableData.concat(blankRows);
+
 					//table setting
 					this.$refs.hotTableComponent.hotInstance.updateSettings({
-						data: tableData,
+						data: newData,
 						columns,
 					});
 				})
