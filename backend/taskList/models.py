@@ -60,6 +60,8 @@ class TaskListPPM02(models.Model):
             return f'{self.taskName}'
 
 
+
+
 #TaskListActualPM02
 class TaskListAPM02(models.Model):
 
@@ -82,7 +84,7 @@ class TaskListAPM02(models.Model):
     constructionPeriod = models.IntegerField(verbose_name='constructionPeriod', blank=True, null=True)  # 整数フィールドに変更
 
     #description
-    description = models.textField(verbose_name='description',blank=True,null=True)
+    description = models.textField(verbose_name='aPM02Description',max_length=1000,blank=True,null=True,)
 
 
     class Meta:
@@ -99,7 +101,9 @@ class TaskListAPM02(models.Model):
 
 
 
-class TaskListPM03(models.Model):
+
+
+class TaskListPPM03(models.Model):
 
     #accountsより
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='taskListPM03_companyCode',null=True, blank=True)
@@ -147,12 +151,53 @@ class TaskListPM03(models.Model):
 
 
     class Meta:
-        verbose_name = 'Task List Pm03'
-        verbose_name_plural = 'Task List Pm03'
+        verbose_name = 'Task List PPm03'
+        verbose_name_plural = 'Task List PPm03'
         ordering = ('taskCode',) #モデルのクエリセットを取得した際にどのような順番でフィールドを並べ変えるかを決める。
 
     def __str__(self):
             return f'{self.taskName}'
+
+
+
+
+#TaskListActualPM03
+class TaskListAPM03(models.Model):
+
+    #accountsより
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='taskListPM03_companyCode',null=True, blank=True)
+    companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='taskListPM03_companyName', null=True, blank=True)
+    plant = models.ForeignKey(Plant, on_delete=models.CASCADE,related_name='taskListPM03_plant', null=True, blank=True)
+
+    #CeListより
+    equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='taskListPM03_equipment',null=True, blank=True)
+    machineName = models.ForeignKey(Machine, on_delete=models.CASCADE, related_name='taskListPM03_machineName',null=True, blank=True)
+
+    taskCode = models.CharField(verbose_name='taskCode',max_length=200,blank=True,null=True)
+    taskName = models.CharField(verbose_name='taskName',max_length=200,blank=True,null=True)
+    laborCostOfPM02 = models.DecimalField(verbose_name='laborCostOfPM03',max_digits=10,decimal_places=5,blank=True,null=True,default=0.00)
+    startDatePM02 = models.DateField(verbose_name='startDatePM03',blank=True,null=True)
+    endDatePM02 =models.DateField(verbose_name='endDatePM03',blank=True,null=True)
+    
+    #Probability of failure
+    constructionPeriod = models.IntegerField(verbose_name='constructionPeriod', blank=True, null=True)  # 整数フィールドに変更
+
+    #description
+    description = models.textField(verbose_name='aPM02Description',max_length=1000,blank=True,null=True,)
+
+
+    class Meta:
+        verbose_name = 'Task List APm03'
+        verbose_name_plural = 'Task List APm03'
+        ordering = ('taskCode',) #モデルのクエリセットを取得した際にどのような順番でフィールドを並べ変えるかを決める。
+
+    def __str__(self):
+            return f'{self.taskName}'
+
+
+
+
+
 
 
 
@@ -186,7 +231,9 @@ class TaskListPM04(models.Model):
 
 
 
-class TaskListPM05(models.Model):
+
+
+class TaskListPPM05(models.Model):
 
     #accountsより
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='taskListPM05_companyCode',null=True, blank=True)
@@ -241,6 +288,48 @@ class TaskListPM05(models.Model):
     def __str__(self):
             return f'{self.taskName}'
     
+
+
+
+#TaskListActualPM05
+class TaskListAPM05(models.Model):
+
+    #accountsより
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='taskListPM05_companyCode',null=True, blank=True)
+    companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='taskListPM05_companyName', null=True, blank=True)
+    plant = models.ForeignKey(Plant, on_delete=models.CASCADE,related_name='taskListPM05_plant', null=True, blank=True)
+
+    #CeListより
+    equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='taskListPM05_equipment',null=True, blank=True)
+    machineName = models.ForeignKey(Machine, on_delete=models.CASCADE, related_name='taskListPM05_machineName',null=True, blank=True)
+
+    taskCode = models.CharField(verbose_name='taskCode',max_length=200,blank=True,null=True)
+    taskName = models.CharField(verbose_name='taskName',max_length=200,blank=True,null=True)
+    laborCostOfPM02 = models.DecimalField(verbose_name='laborCostOfPM05',max_digits=10,decimal_places=5,blank=True,null=True,default=0.00)
+    startDatePM02 = models.DateField(verbose_name='startDatePM05',blank=True,null=True)
+    endDatePM02 =models.DateField(verbose_name='endDatePM05',blank=True,null=True)
+    
+    #Probability of failure
+    constructionPeriod = models.IntegerField(verbose_name='constructionPeriod', blank=True, null=True)  # 整数フィールドに変更
+
+    #description
+    description = models.textField(verbose_name='aPM05Description',max_length=1000,blank=True,null=True,)
+
+
+    class Meta:
+        verbose_name = 'Task List APm05'
+        verbose_name_plural = 'Task List APm05'
+        ordering = ('taskCode',) #モデルのクエリセットを取得した際にどのような順番でフィールドを並べ変えるかを決める。
+
+    def __str__(self):
+            return f'{self.taskName}'
+
+
+
+
+
+
+
 
 
 class TypicalTaskList(models.Model):
