@@ -8,7 +8,6 @@ from datetime import timedelta, datetime
 
 
 class TaskListPPM02Serializer(serializers.ModelSerializer):
-    taskCode = serializers.CharField(read_only=True)
     nextEventDate = serializers.DateField(read_only=True)
     situation = serializers.CharField(read_only=True)
 
@@ -36,8 +35,8 @@ class TaskListPPM02Serializer(serializers.ModelSerializer):
 
 
     class Meta:
-        model = TaskListPM02 #呼び出すモデル名
-        fields = ["companyCode","companyName","plant","equipment","machineName","taskCode","taskName","laborCostOfPM","countOfPM","latestPM","periodOfPM","constructionPeriod","nextEventDate","situation","thisYear","thisYear1later","thisYear2later","thisYear3later","thisYear4later","thisYear5later","thisYear6later","thisYear7later","thisYear8later","thisYear9later","thisYear10later",]# API上に表示するモデルのデータ項目
+        model = TaskListPPM02 #呼び出すモデル名
+        fields = ["companyCode","companyName","plant","equipment","machineName","taskCode","taskName","laborCostOfPPM02","countOfPPM02","latestPPM02","periodOfPPM02","constructionPeriod","nextEventDate","situation","thisYear","thisYear1later","thisYear2later","thisYear3later","thisYear4later","thisYear5later","thisYear6later","thisYear7later","thisYear8later","thisYear9later","thisYear10later",]# API上に表示するモデルのデータ項目
         
 
     #situationを判定する関数
@@ -60,21 +59,6 @@ class TaskListPPM02Serializer(serializers.ModelSerializer):
                 data['situation'] = '遅延'
         
         return data
-    
-
-    # taskCodeの生成
-    def create(self, validated_data):
-        
-        company_code = validated_data.get('company', {}).get('companyCode', '')
-        last_task = TaskListPM02.objects.filter(taskCode__startswith=company_code).order_by('-taskCode').first()
-
-        if last_task:
-            last_number = int(last_task.taskCode[len(company_code):])
-            new_task_code_number = last_number + 1
-        else:
-            new_task_code_number = 1
-
-        validated_data['taskCode'] = f'{company_code}{str(new_task_code_number).zfill(3)}'
 
 
         # nextEventDateとthisYearXlaterフィールドの設定
@@ -100,15 +84,31 @@ class TaskListPPM02Serializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
-
-
-
-class CompanyTaskListPM02Serializer(serializers.ModelSerializer):
-    taskList = TaskListPM02Serializer(many=True, read_only=True, source='taskListPM02_companyCode')#ここのsourceは注意
+        
+class CompanyTaskListPPM02Serializer(serializers.ModelSerializer):
+    taskListPPM02 = TaskListPPM02Serializer(many=True, read_only=True, source='taskListPPM02_companyCode')#ここのsourceは注意
 
     class Meta:
         model = CompanyCode
-        fields = ['companyCode', 'taskList']
+        fields = ['companyCode', 'taskListPPM02']
+
+
+
+
+
+
+#ActualPM02
+class TaskListAPM02Serializer(serializer.ModelSerializer):
+    calss Meta:
+        model = TaskListAPM02
+        field = ['companyCode','companyName','plant','equipment','machineName','taskCode','taskName','laborCostOfAPM02','startDateAPM02','endDateAPM02','constructionPeriod','description']
+
+class CompanyTaskListAPM02Serializer(serializers.ModelSerializer):
+   taskListAPM02 = TaskListAPM02Serializer(many=True, read_only=True, source='taskListAPM02_companyCode')#ここのsourceは注意
+
+    class Meta:
+        model = CompanyCode
+        fields = ['companyCode', 'taskListAPM02']
 
 
 
@@ -116,9 +116,8 @@ class CompanyTaskListPM02Serializer(serializers.ModelSerializer):
 
 
 
-
-class TaskListPM03Serializer(serializers.ModelSerializer):
-    taskCode = serializers.CharField(read_only=True)
+#planned PM03
+class TaskListPPM03Serializer(serializers.ModelSerializer):
     nextEventDate = serializers.DateField(read_only=True)
     situation = serializers.CharField(read_only=True)
 
@@ -146,8 +145,8 @@ class TaskListPM03Serializer(serializers.ModelSerializer):
 
 
     class Meta:
-        model = TaskListPM03 #呼び出すモデル名
-        fields = ["companyCode","companyName","plant","equipment","machineName","taskCode","taskName","laborCostOfPM","countOfPM","latestPM","periodOfPM","constructionPeriod","nextEventDate","situation","thisYear","thisYear1later","thisYear2later","thisYear3later","thisYear4later","thisYear5later","thisYear6later","thisYear7later","thisYear8later","thisYear9later","thisYear10later",]# API上に表示するモデルのデータ項目
+        model = TaskListPPM03 #呼び出すモデル名
+        fields = ["companyCode","companyName","plant","equipment","machineName","taskCode","taskName","laborCostOfPPM03","countOfPPM03","latestPPM03","periodOfPPM03","constructionPeriod","nextEventDate","situation","thisYear","thisYear1later","thisYear2later","thisYear3later","thisYear4later","thisYear5later","thisYear6later","thisYear7later","thisYear8later","thisYear9later","thisYear10later",]# API上に表示するモデルのデータ項目
         
 
     #situationを判定する関数
@@ -171,19 +170,6 @@ class TaskListPM03Serializer(serializers.ModelSerializer):
         
         return data
     
-    # taskCodeの生成
-    def create(self, validated_data):
-        
-        company_code = validated_data.get('company', {}).get('companyCode', '')
-        last_task = TaskListPM03.objects.filter(taskCode__startswith=company_code).order_by('-taskCode').first()
-
-        if last_task:
-            last_number = int(last_task.taskCode[len(company_code):])
-            new_task_code_number = last_number + 1
-        else:
-            new_task_code_number = 1
-
-        validated_data['taskCode'] = f'{company_code}{str(new_task_code_number).zfill(3)}'
 
 
         # nextEventDateとthisYearXlaterフィールドの設定
@@ -209,39 +195,43 @@ class TaskListPM03Serializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
-
-
-class CompanyTaskListPM03Serializer(serializers.ModelSerializer):
-    taskList = TaskListPM03Serializer(many=True, read_only=True, source='taskListPM03_companyCode')#ここのsourceは注意
+class CompanyTaskListPPM03Serializer(serializers.ModelSerializer):
+    taskListPPM03 = TaskListPPM03Serializer(many=True, read_only=True, source='taskListPPM03_companyCode')#ここのsourceは注意
 
     class Meta:
         model = CompanyCode
-        fields = ['companyCode', 'taskList']
+        fields = ['companyCode', 'taskListPPM03']
 
 
 
-class TaskListPM04Serializer(serializers.ModelSerializer):
-    taskCode = serializers.CharField(read_only=True)
+
+
+
+#ActualPM03
+class TaskListAPM03Serializer(serializer.ModelSerializer):
+    calss Meta:
+        model = TaskListAPM03
+        field = ['companyCode','companyName','plant','equipment','machineName','taskCode','taskName','laborCostOfAPM03','startDateAPM03','endDateAPM03','constructionPeriod','description']
+
+class CompanyTaskListAPM03Serializer(serializers.ModelSerializer):
+   taskListAPM03 = TaskListAPM03Serializer(many=True, read_only=True, source='taskListAPM03_companyCode')#ここのsourceは注意
 
     class Meta:
-        model = TaskListPM04 #呼び出すモデル名
-        fields = ["companyCode","companyName","plant","equipment","machineName","taskCode","taskName","laborCostOfPM","countOfPM","latestPM","constructionPeriod",]# API上に表示するモデルのデータ項目
-        
-    
-    # taskCodeの生成
-    def create(self, validated_data):
-        
-        company_code = validated_data.get('company', {}).get('companyCode', '')
-        last_task = TaskListPM04.objects.filter(taskCode__startswith=company_code).order_by('-taskCode').first()
+        model = CompanyCode
+        fields = ['companyCode', 'taskListAPM03']
 
-        if last_task:
-            last_number = int(last_task.taskCode[len(company_code):])
-            new_task_code_number = last_number + 1
-        else:
-            new_task_code_number = 1
 
-        validated_data['taskCode'] = f'{company_code}{str(new_task_code_number).zfill(3)}'
 
+
+
+
+
+
+#ActualPM04
+class TaskListAPM04Serializer(serializers.ModelSerializer):
+    class Meta:
+        model = TaskListAPM04 #呼び出すモデル名
+        fields = ["companyCode","companyName","plant","equipment","machineName","taskCode","taskName","laborCostOfAPM04","countOfAPM04","latestAPM04","constructionPeriod",]# API上に表示するモデルのデータ項目
 
 class CompanyTaskListPM04Serializer(serializers.ModelSerializer):
     taskList = TaskListPM04Serializer(many=True, read_only=True, source='taskListPM4_companyCode')#ここのsourceは注意
@@ -256,11 +246,8 @@ class CompanyTaskListPM04Serializer(serializers.ModelSerializer):
 
 
 
-
-
-
-class TaskListPM05Serializer(serializers.ModelSerializer):
-    taskCode = serializers.CharField(read_only=True)
+#Planned PM05
+class TaskListPPM05Serializer(serializers.ModelSerializer):
     nextEventDate = serializers.DateField(read_only=True)
     situation = serializers.CharField(read_only=True)
 
@@ -288,8 +275,8 @@ class TaskListPM05Serializer(serializers.ModelSerializer):
 
 
     class Meta:
-        model = TaskListPM05 #呼び出すモデル名
-        fields = ["companyCode","companyName","plant","equipment","machineName","taskCode","taskName","laborCostOfPM","countOfPM","latestPM","periodOfPM","constructionPeriod","nextEventDate","situation","thisYear","thisYear1later","thisYear2later","thisYear3later","thisYear4later","thisYear5later","thisYear6later","thisYear7later","thisYear8later","thisYear9later","thisYear10later",]# API上に表示するモデルのデータ項目
+        model = TaskListPPM05 #呼び出すモデル名
+        fields = ["companyCode","companyName","plant","equipment","machineName","taskCode","taskName","laborCostOfPPM05","countOfPPM05","latestPPM05","periodOfPPM05","constructionPeriod","nextEventDate","situation","thisYear","thisYear1later","thisYear2later","thisYear3later","thisYear4later","thisYear5later","thisYear6later","thisYear7later","thisYear8later","thisYear9later","thisYear10later",]# API上に表示するモデルのデータ項目
         
 
     #situationを判定する関数
@@ -312,20 +299,6 @@ class TaskListPM05Serializer(serializers.ModelSerializer):
                 data['situation'] = '遅延'
         
         return data
-    
-    # taskCodeの生成
-    def create(self, validated_data):
-        
-        company_code = validated_data.get('company', {}).get('companyCode', '')
-        last_task = TaskListPM05.objects.filter(taskCode__startswith=company_code).order_by('-taskCode').first()
-
-        if last_task:
-            last_number = int(last_task.taskCode[len(company_code):])
-            new_task_code_number = last_number + 1
-        else:
-            new_task_code_number = 1
-
-        validated_data['taskCode'] = f'{company_code}{str(new_task_code_number).zfill(3)}'
 
 
         # nextEventDateとthisYearXlaterフィールドの設定
@@ -353,12 +326,32 @@ class TaskListPM05Serializer(serializers.ModelSerializer):
         return instance
 
 
-class CompanyTaskListPM05Serializer(serializers.ModelSerializer):
-    taskList = TaskListPM05Serializer(many=True, read_only=True, source='taskListPM05_companyCode')#ここのsourceは注意
+class CompanyTaskListPPM05Serializer(serializers.ModelSerializer):
+    taskListPPM05 = TaskListPPM05Serializer(many=True, read_only=True, source='taskListPPM05_companyCode')#ここのsourceは注意
 
     class Meta:
         model = CompanyCode
-        fields = ['companyCode', 'taskList']
+        fields = ['companyCode', 'taskListPPM05']
+
+
+
+#ActualPM05
+class TaskListAPM05Serializer(serializer.ModelSerializer):
+    calss Meta:
+        model = TaskListAPM05
+        field = ['companyCode','companyName','plant','equipment','machineName','taskCode','taskName','laborCostOfAPM05','startDateAPM05','endDateAPM05','constructionPeriod','description']
+
+class CompanyTaskListAPM05Serializer(serializers.ModelSerializer):
+   taskListAPM05 = TaskListAPM05Serializer(many=True, read_only=True, source='taskListAPM05_companyCode')#ここのsourceは注意
+
+    class Meta:
+        model = CompanyCode
+        fields = ['companyCode', 'taskListAPM05']
+
+
+
+
+
 
 
 
@@ -385,6 +378,7 @@ def create_slug_related_field(field_name, queryset):
         slug_field=field_name, 
         queryset=queryset
     )
+
 
 
 class TaskListSerializer(serializers.ModelSerializer):
