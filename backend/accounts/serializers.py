@@ -65,8 +65,6 @@ class CompanyPlantSerializer(serializers.ModelSerializer):
 
 
 
-
-
 #CustomUserSerializer
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:

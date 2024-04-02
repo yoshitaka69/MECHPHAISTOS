@@ -38,6 +38,9 @@ class NearMiss(models.Model):
 
 
 
+
+
+
 class ActionItemList(models.Model):
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='actionItemList_companyCode',null=True, blank=True)
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='actionItemList_companyName', null=True, blank=True)
