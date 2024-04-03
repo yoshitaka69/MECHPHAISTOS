@@ -106,3 +106,9 @@ class SafetyIndicators(models.Model):
                 return 'Low'
         return 'Undefined'
 
+    #保存メソッド　モデルインスタンスが保存する際に、SafetyIndicatorを保存するメソッド
+    def save(self, *args, **kwargs):
+        # calculate_safety_indicators メソッドの実行
+        self.safetyIndicators = self.calculate_safety_indicators()
+        super().save(*args, **kwargs)  # 親クラスの save メソッドを呼び出す
+
