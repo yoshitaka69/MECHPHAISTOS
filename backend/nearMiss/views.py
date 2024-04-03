@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from rest_framework import status
 from accounts.models import CustomUser
 from .models import NearMiss, CompanyCode, ActionItemList, SafetyIndicators
-from .serializers import NearMissSerializer, CompanyNearMissSerializer, ActionItemListSerializer, SafetyIndicatorsSerializer
+from .serializers import NearMissSerializer, CompanyNearMissSerializer, SafetyIndicatorsSerializer
 from .service import update_safety_indicator
 
 
@@ -48,14 +48,6 @@ class CompanyNearMissViewSet(viewsets.ModelViewSet):
         #return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
-
-
-
-
-class ActionItemListViewSet(viewsets.ModelViewSet):
-    queryset = ActionItemList.objects.all()
-    serializer_class = ActionItemListSerializer
 
 
 
