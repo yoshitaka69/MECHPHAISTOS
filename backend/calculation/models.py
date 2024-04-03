@@ -274,3 +274,43 @@ class SummedCost(models.Model):
             total_cost += getattr(model_instance, 'commitment', 0)
         return total_cost
 
+#summedCostのtotalCostメソッド
+@receiver(post_save, sender=ActualPM02)
+@receiver(post_save, sender=ActualPM03)
+@receiver(post_save, sender=ActualPM04)
+@receiver(post_save, sender=ActualPM05)
+def update_summed_cost(sender, instance, **kwargs):
+    # companyCode, plant, year は ActualPMxx モデルに適切に定義されていると仮定
+    summed_cost, created = SummedCost.objects.get_or_create(
+        companyCode=instance.companyCode,
+        plant=instance.plant,
+        year=instance.year
+    )
+    summed_cost.calculate_and_save_totals()
+
+
+def on_actual_pm_save(sender, instance, **kwargs):
+    SummedCost.update_or_create_summed_cost(
+        company_code=instance.companyCode,
+        plant=instance.plant,
+        year=instance.year
+    )
+
+def on_actual_pm_save(sender, instance, **kwargs):
+    # SummedCost インスタンスを更新または作成
+    summed_cost, created = SummedCost.objects.get_or_create(
+        companyCode=instance.companyCode,
+        plant=instance.plant,
+        year=instance.year
+    )
+    
+    # calculate_total_for_model メソッドを呼び出して各 ActualPM モデルの合計を計算
+    total_cost = SummedCost.calculate_total_for_model(sender, instance.companyCode, instance.plant, instance.year)
+    
+    # 適切なフィールドに合計値を設定（例: totalActualPM02）
+    # sender に基づいて適切なフィールド名を決定
+    field_name = f"totalActual{sender.__name__}"
+    setattr(summed_cost, field_name, total_cost)
+    
+    # SummedCost インスタンスを保存
+    summed_cost.save()
