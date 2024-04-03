@@ -58,6 +58,15 @@ class ActionItemList(models.Model):
     def __str__(self):
             return f'{self.companyCode}'
 
+    def perform_create(self, serializer):
+        action_item_instance = serializer.save()
+        calculate_and_update_rate_of_action_items(action_item_instance.companyCode.id)
+
+    def perform_update(self, serializer):
+        action_item_instance = serializer.save()
+        calculate_and_update_rate_of_action_items(action_item_instance.companyCode.id)
+
+
 
 
 
