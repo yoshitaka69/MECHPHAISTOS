@@ -1,4 +1,4 @@
-from .models import SafetyIndicators, NearMiss,ActionItems
+from .models import SafetyIndicators, NearMiss
 
 
 def calculate_and_update_rate_of_level_a(company_code):
@@ -15,7 +15,7 @@ def calculate_and_update_rate_of_level_a(company_code):
         rate_of_level_a = 0
     
     # SafetyIndicator インスタンスの取得・更新
-    indicator, created = SafetyIndicator.objects.get_or_create(companyCode=company_code)
+    indicator, created = SafetyIndicators.objects.get_or_create(companyCode=company_code)
     indicator.rateOflevelA = rate_of_level_a
     indicator.save()
 
@@ -27,17 +27,17 @@ def update_safety_indicator(company_code):
     indicator.save()
 
 
-def calculate_and_update_rate_of_action_items(company_code):
+#def calculate_and_update_rate_of_action_items(company_code):
     # 対策アクションアイテムの合計数と解決済み数を取得
-    total_action_items = ActionItems.objects.filter(companyCode=company_code).count()
-    solved_action_items = ActionItems.objects.filter(companyCode=company_code, is_solved=True).count()
+    #total_action_items = ActionItems.objects.filter(companyCode=company_code).count()
+    #solved_action_items = ActionItems.objects.filter(companyCode=company_code, is_solved=True).count()
     
-    if total_action_items > 0:
-        rate_of_action_items = (solved_action_items / total_action_items) * 100
-    else:
-        rate_of_action_items = 0
+    #if total_action_items > 0:
+        #rate_of_action_items = (solved_action_items / total_action_items) * 100
+    #else:
+        #rate_of_action_items = 0
     
     # SafetyIndicator インスタンスの取得・更新
-    indicator, created = SafetyIndicator.objects.get_or_create(companyCode=company_code)
-    indicator.rateOfActionItems = rate_of_action_items
-    indicator.save()
+    #indicator, created = SafetyIndicators.objects.get_or_create(companyCode=company_code)
+    #indicator.rateOfActionItems = rate_of_action_items
+    #indicator.save()
