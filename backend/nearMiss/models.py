@@ -40,36 +40,6 @@ class NearMiss(models.Model):
 
 
 
-
-
-
-class ActionItemList(models.Model):
-    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='actionItemList_companyCode',null=True, blank=True)
-    companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='actionItemList_companyName', null=True, blank=True)
-    actionItems = models.IntegerField(verbose_name='actionItems',null=True,blank=True,default=0)
-    solvedActionItems = models.IntegerField(verbose_name='solvedActionItems',null=True,blank=True,default=0)
-
-    
-    class Meta:
-        verbose_name = 'Action Item List'
-        verbose_name_plural = 'Action Item List'
-        ordering = ('-companyCode',)
-
-    def __str__(self):
-            return f'{self.companyCode}'
-
-    #def perform_create(self, serializer):
-        #action_item_instance = serializer.save()
-        #calculate_and_update_rate_of_action_items(action_item_instance.companyCode.id)
-
-    #def perform_update(self, serializer):
-        #action_item_instance = serializer.save()
-        #calculate_and_update_rate_of_action_items(action_item_instance.companyCode.id)
-
-
-
-
-
 class SafetyIndicators(models.Model):
     
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='safetyIndicators_companyCode',null=True, blank=True)
@@ -77,8 +47,8 @@ class SafetyIndicators(models.Model):
     safetyIndicators = models.CharField(verbose_name='safetyIndicators', max_length=20,null=True,blank=True)
     totalOfNearMiss = models.IntegerField(verbose_name='totalOfNearMiss',null=True,blank=True,default=0)
     rateOflevelA = models.IntegerField(verbose_name='totalOfNearMiss',null=True,blank=True,default=0)
-    ActionItems = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='safetyIndicators_actionItems',null=True, blank=True)
-    solvedActionItems = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='safetyIndicators_solvedActionItems',null=True, blank=True)
+    actionItems = models.IntegerField(verbose_name='actionItems',null=True,blank=True,default=0)
+    ssolvedActionItems = models.IntegerField(verbose_name='solvedActionItems',null=True,blank=True,default=0)
     rateOfActionItems = models.IntegerField(verbose_name='totalOfNearMiss',null=True,blank=True,default=0)
 
    
@@ -112,3 +82,11 @@ class SafetyIndicators(models.Model):
         self.safetyIndicators = self.calculate_safety_indicators()
         super().save(*args, **kwargs)  # 親クラスの save メソッドを呼び出す
 
+
+    #def perform_create(self, serializer):
+        #action_item_instance = serializer.save()
+        #calculate_and_update_rate_of_action_items(action_item_instance.companyCode.id)
+
+    #def perform_update(self, serializer):
+        #action_item_instance = serializer.save()
+        #calculate_and_update_rate_of_action_items(action_item_instance.companyCode.id)
