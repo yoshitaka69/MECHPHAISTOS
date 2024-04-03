@@ -59,24 +59,8 @@ class ActionItemListSerializer(serializers.ModelSerializer):
 
 #SafetyIndicator
 class SafetyIndicatorsSerializer(serializers.ModelSerializer):
-    safetyIndicators = serializers.SerializerMethodField()
-    totalOfNearMiss = serializers.SerializerMethodField()
-    rateOflevelA = serializers.SerializerMethodField()
-    rateOfActionItems = serializers.SerializerMethodField()
-    
+
     class Meta:
         model = SafetyIndicators
         fields = ['companyCode', 'companyName', 'safetyIndicators', 'totalOfNearMiss', 'rateOflevelA', 'ActionItems', 'solvedActionItems', 'rateOfActionItems']
 
-
-    def get_total_of_near_miss(self, obj):
-        return obj.total_of_near_miss()
-
-    def get_rate_of_level_a(self, obj):
-        return obj.rate_of_level_a()
-
-    def get_rate_of_action_items(self, obj):
-        return obj.rate_of_action_items()
-
-    def get_safety_indicators(self, obj):
-        return obj.calculate_safety_indicators()
