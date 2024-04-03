@@ -16,18 +16,20 @@ class NearMissViewSet(viewsets.ModelViewSet):
     queryset = NearMiss.objects.all()
     serializer_class = NearMissSerializer
     
-class CompanyNearMissViewSet(viewsets.ReadOnlyModelViewSet):
+class CompanyNearMissViewSet(viewsets.ModelViewSet):
+    queryset = CompanyCode.objects.all()
     serializer_class = CompanyNearMissSerializer
 
-    def post(self, request, *args, **kwargs):
-        serializer = CompanyNearMissSerializer(data=request.data)
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
 
         if serializer.is_valid():
-            # NearMiss のデータを保存
-            near_miss_instance = serializer.save()
+            # CompanyNearMiss のデータを保存
+            company_near_miss_instance = serializer.save()
 
-            # companyCode を取得
-            company_code = near_miss_instance.companyCode
+            # companyCode の取得方法は、CompanyNearMissSerializer の実装に依存
+            # ここでは、例として company_near_miss_instance の属性から取得
+            company_code = company_near_miss_instance.companyCode
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
