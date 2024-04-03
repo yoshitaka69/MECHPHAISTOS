@@ -59,7 +59,7 @@ class ActionItemListViewSet(viewsets.ModelViewSet):
 
 
 
-class SafetyIndicatorsView(viewsets.ModelViewSet):
+class SafetyIndicatorsViewSet(viewsets.ModelViewSet):
     queryset = SafetyIndicators.objects.all()
     serializer_class = SafetyIndicatorsSerializer
 
