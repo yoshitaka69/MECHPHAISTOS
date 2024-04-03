@@ -12,6 +12,11 @@ class UserSerializer(serializers.ModelSerializer):
         model = CustomUser
         fields = ('userName',)  # ここでユーザー名のみをシリアライズ
 
+    userName = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='userName'  # CustomUser モデルのフィールド名
+    )
+
 class NearMissSerializer(serializers.ModelSerializer):
     userName = UserSerializer() 
     dateOfOccurrence = serializers.DateField(format="%Y-%m-%d")
