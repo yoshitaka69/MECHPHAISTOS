@@ -22,14 +22,12 @@ class CompanyNearMissViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-
         if serializer.is_valid():
-            # CompanyNearMiss のデータを保存
             company_near_miss_instance = serializer.save()
-
-            # companyCode の取得方法は、CompanyNearMissSerializer の実装に依存
-            # ここでは、例として company_near_miss_instance の属性から取得
             company_code = company_near_miss_instance.companyCode
+
+            # サービス層の関数を呼び出して SafetyIndicator を更新
+            safety_indicator_service.update_safety_indicator(company_code)
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
