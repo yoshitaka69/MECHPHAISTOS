@@ -4,7 +4,7 @@ from django.db.models import Avg
 
 from .models import CalTablePlannedPM02,CalTableActualPM02,CalTablePlannedPM03,CalTableActualPM03,CalTableActualPM04,CalTablePlannedPM05,CalTableActualPM05
 from taskList.models import TaskListPPM02,TaskListAPM02,TaskListPPM03,TaskListAPM03,TaskListAPM04,TaskListPPM05,TaskListAPM05
-
+from repairingCost.models import ActualPM02, ActualPM03, ActualPM04, ActualPM05, SummedCost
 
 #taskListPPM02
 @receiver(post_save, sender=TaskListPPM02)
@@ -503,3 +503,20 @@ def update_or_create_cal_table(sender, instance, **kwargs):
     # CalTableActualPM05のレコードを更新
     cal_table.save()
     print("CalTableActualPM05 のレコードが更新されました")
+
+
+
+
+#summedCostのtotalCostメソッド
+@receiver(post_save, sender=ActualPM02)
+@receiver(post_save, sender=ActualPM03)
+@receiver(post_save, sender=ActualPM04)
+@receiver(post_save, sender=ActualPM05)
+def update_summed_cost(sender, instance, **kwargs):
+    # companyCode, plant, year は ActualPMxx モデルに適切に定義されていると仮定
+    summed_cost, created = SummedCost.objects.get_or_create(
+        companyCode=instance.companyCode,
+        plant=instance.plant,
+        year=instance.year
+    )
+    summed_cost.calculate_and_save_totals()
