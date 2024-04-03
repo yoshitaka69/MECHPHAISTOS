@@ -299,6 +299,9 @@ const submitForm = async () => {
   try {
     // 送信するデータの作成
     const postData = {
+      compnayCode:userStore.companyCode,
+      nearMissList:[
+      {
       nearMissNo: lastNearMissNo.value, // 最後のNearMiss番号
       userName: {
         userName: formState.Name // ユーザー名
@@ -314,6 +317,8 @@ const submitForm = async () => {
       newsCoverage: formState.NewsCoverage, // メディアへの影響
       measures: calculateCategory(), // 評価結果
       description: formState.Description // 説明
+              }
+              ]
     };
 
     // Axiosを使用してPOSTリクエストを送信
