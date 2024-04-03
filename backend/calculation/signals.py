@@ -4,7 +4,7 @@ from django.db.models import Avg
 
 from .models import CalTablePlannedPM02,CalTableActualPM02,CalTablePlannedPM03,CalTableActualPM03,CalTableActualPM04,CalTablePlannedPM05,CalTableActualPM05,SummedCost
 from taskList.models import TaskListPPM02,TaskListAPM02,TaskListPPM03,TaskListAPM03,TaskListAPM04,TaskListPPM05,TaskListAPM05
-from repairingCost.models import ActualPM02, ActualPM03, ActualPM04, ActualPM05
+
 
 #taskListPPM02
 @receiver(post_save, sender=TaskListPPM02)
