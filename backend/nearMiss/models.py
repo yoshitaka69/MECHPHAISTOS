@@ -91,29 +91,6 @@ class SafetyIndicators(models.Model):
             return f'{self.safetyIndicators}'
 
 
-
-    #nerMiss総数をカウントメソッド
-    def total_of_near_miss(self):
-        return NearMiss.objects.filter(companyCode=self.companyCode).count()
-
-    #Risk Level A の割合
-    def rate_of_level_a(self):
-        total_near_miss = self.total_of_near_miss()
-        if total_near_miss > 0:
-            level_a_count = NearMiss.objects.filter(companyCode=self.companyCode, measures__contains='A').count()
-            return (level_a_count / total_near_miss) * 100
-        else:
-            return 0
-
-    #対策Actionの有無
-    def rate_of_action_items(self):
-        total_action_items = self.ActionItems.count()
-        solved_action_items = self.solvedActionItems.count()
-        if total_action_items > 0:
-            return (solved_action_items / total_action_items) * 100
-        else:
-            return 0
-
     #Safety indicatorsの設定
     def calculate_safety_indicators(self):
         rate_of_level_a = self.rate_of_level_a()
