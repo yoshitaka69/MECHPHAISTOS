@@ -61,7 +61,8 @@ class ActualPM02(models.Model):
         ordering = ('plant',)
     def __str__(self):
         return str('actualPm02')
-    
+
+    #calculationのsignal発動のため
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         self.update_summed_cost()
@@ -127,6 +128,13 @@ class ActualPM03(models.Model):
         ordering = ('plant',)
     def __str__(self):
         return str('actualPm03')
+
+    
+    #calculationのsignal発動のため
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.update_summed_cost()
+
     
 
 class ActualPM04(models.Model):
@@ -157,7 +165,9 @@ class ActualPM04(models.Model):
         
     def __str__(self):
         return str('actualPm04')
+
     
+    #calculationのsignal発動のため
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         self.update_summed_cost()
@@ -220,7 +230,9 @@ class ActualPM05(models.Model):
         ordering = ('plant',)
     def __str__(self):
         return str('actualPm05')
+
     
+    #calculationのsignal発動のため
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         self.update_summed_cost()
