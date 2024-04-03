@@ -109,5 +109,30 @@ class MasterDataTable(models.Model):
         return str('Master Data Table')
 
 
+class BomToTask(models.Model):
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='masterDataTable_companyCode',null=True, blank=True)
+    companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='masterDataTable_companyName', null=True, blank=True)
+    BomCodeNo =
+    TaskCodeNo =
+    summedCost =
+
+    class Meta:
+        verbose_name = 'Master Data Table'
+        verbose_name_plural = 'Master Data Table'
+        ordering = ('ceListNo',)
 
 
+class AlertSchedule(models.Model):
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='masterDataTable_companyCode',null=True, blank=True)
+    companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='masterDataTable_companyName', null=True, blank=True)
+    plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='masterDataTable_plant',null=True, blank=True)
+    equipment =
+    nextMonthTaskEvent = 
+    orderAlert =
+
+    class Meta:
+        verbose_name = 'Master Data Table'
+        verbose_name_plural = 'Master Data Table'
+        ordering = ('ceListNo',) 
+
+    
