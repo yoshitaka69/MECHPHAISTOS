@@ -15,18 +15,33 @@ from .serializers import NearMissSerializer, CompanyNearMissSerializer, ActionIt
 class NearMissViewSet(viewsets.ModelViewSet):
     queryset = NearMiss.objects.all()
     serializer_class = NearMissSerializer
-    
+
+    #nearMissインスタンスが保存されたときにsafetyindicatorを保存させるメソッド。
+    def perform_create(self, serializer):
+        # NearMiss インスタンスを保存
+        near_miss_instance = serializer.save()
+        # SafetyIndicator の更新
+        update_safety_indicator(near_miss_instance.companyCode.id)
+
+    def perform_update(self, serializer):
+        # NearMiss インスタンスを更新
+        near_miss_instance = serializer.save()
+        # SafetyIndicator の更新
+        update_safety_indicator(near_miss_instance.companyCode.id)
+
+
 class CompanyNearMissViewSet(viewsets.ModelViewSet):
     queryset = CompanyCode.objects.all()
     serializer_class = CompanyNearMissSerializer
 
+    
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             company_near_miss_instance = serializer.save()
             company_code = company_near_miss_instance.companyCode
 
-            # サービス層の関数を呼び出して SafetyIndicator を更新
+            # サービス層の関数を呼び出して SafetyIndicator を更新⇒service層にcompanyCodeを渡す
             safety_indicator_service.update_safety_indicator(company_code)
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -44,17 +59,8 @@ class ActionItemListViewSet(viewsets.ModelViewSet):
 
 
 
-class SafetyIndicatorView(views.APIView):
-    def post(self, request, *args, **kwargs):
-        print("リクエストデータ:", request.data)  # デバッグ情報
+class SafetyIndicatorsView(viewsets.ModelViewSet):
+    queryset = SafetyIndicators.objects.all()
+    serializer_class = SafetyIndicatorsSerializer
 
-        company_code = request.data.get('companyCode')
 
-        serializer = SafetyIndicatorsSerializer(data=request.data)
-        if serializer.is_valid():
-            SafetyIndicators.update_total_of_near_miss(company_code)
-            print("更新された companyCode:", company_code)  # デバッグ情報
-            return Response(serializer.data, status=201)
-        else:
-            print("エラー:", serializer.errors)  # デバッグ情報
-            return Response(serializer.errors, status=400)
