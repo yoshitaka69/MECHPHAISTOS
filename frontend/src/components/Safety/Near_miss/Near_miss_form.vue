@@ -220,13 +220,19 @@ getLastNearMissNo().then(nearMissNo => lastNearMissNo.value = nearMissNo);
 
 
     //A,B,C,D評価を数値化する関数
-    const calculateCategory = () => {
-      const valueMapping = { A: 10, B: 8, C: 3, D: 2, E: 1 };
-      const total = ['InjuredLv', 'EquipmentDamageLv', 'AffectOfEnviroment', 'NewsCoverage']
-        .reduce((acc, key) => acc + valueMapping[formState[key]], 0);
+const calculateCategory = () => {
+  const valueMapping = { A: 10, B: 8, C: 3, D: 2, E: 1 };
+  console.log("FormState values:", formState.InjuredLv, formState.EquipmentDamageLv, formState.AffectOfEnviroment, formState.NewsCoverage); // デバッグ用ログ
 
-      return total >= 11 ? 'A' : total >= 10 ? 'B' : total >= 9 ? 'C' : total >= 5 ? 'D' : 'E';
-    };
+  const total = ['InjuredLv', 'EquipmentDamageLv', 'AffectOfEnviroment', 'NewsCoverage']
+    .reduce((acc, key) => {
+      console.log(`Processing ${key}: ${formState[key]}, mapped value: ${valueMapping[formState[key]]}`); // 各ステップでの値を表示
+      return acc + (valueMapping[formState[key]] || 0); // 値がない場合は0を加算
+    }, 0);
+
+  console.log("Total score:", total); // 合計点のログ
+  return total >= 11 ? 'A' : total >= 10 ? 'B' : total >= 9 ? 'C' : total >= 5 ? 'D' : 'E';
+};
 
 
     const checkValue = reactive({});
