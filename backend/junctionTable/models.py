@@ -109,4 +109,6 @@ class MasterDataTable(models.Model):
         return str('Master Data Table')
 
 
+
+
     
