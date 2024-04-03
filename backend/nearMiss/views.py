@@ -64,6 +64,18 @@ class ActionItemListViewSet(viewsets.ModelViewSet):
     serializer_class = ActionItemListSerializer
 
 
-class SafetyIndicatorsViewSet(viewsets.ModelViewSet):
-    queryset = SafetyIndicators.objects.all()
-    serializer_class = SafetyIndicatorsSerializer
+
+class SafetyIndicatorView(views.APIView):
+    def post(self, request, *args, **kwargs):
+        print("リクエストデータ:", request.data)  # デバッグ情報
+
+        company_code = request.data.get('companyCode')
+
+        serializer = SafetyIndicatorsSerializer(data=request.data)
+        if serializer.is_valid():
+            SafetyIndicators.update_total_of_near_miss(company_code)
+            print("更新された companyCode:", company_code)  # デバッグ情報
+            return Response(serializer.data, status=201)
+        else:
+            print("エラー:", serializer.errors)  # デバッグ情報
+            return Response(serializer.errors, status=400)
