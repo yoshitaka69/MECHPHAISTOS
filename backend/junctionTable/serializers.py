@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import MasterDataTable
+from .models import MasterDataTable,BomToTask,AlertSchedule
 from taskList.models import TypicalTaskList,TaskListPPM02,TaskListPPM03,TaskListAPM04,TaskListPPM05
 from spareParts.models import BomList
 from accounts.models import CompanyCode,Plant
@@ -57,3 +57,36 @@ class CompanyCodeMDTSerializer(serializers.ModelSerializer):
 
 
 
+
+
+class BomToTaskSrrializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = BomToTask
+        field = ['companyCode', 'companyName', 'plant', 'bomCode', 'taskCode', 'bomAndTaskSet', 'bomAndTaskSetCost']
+
+class CompnayBomToTaskSrrializer(serializers.ModelSerializer):
+    BomAndTaskList = BomToTaskSerializer(many=True, read_only=True, source='bomAndTask_companyCode')
+    
+    class Meta:
+        model = CompanyCode
+        field = ['companyCode', 'BomAndTaskList']
+
+
+
+
+class AlertSchedule(models.Model):
+    class Meta:
+        model = AlertSchedule
+        field = ['companyCode', 'companyName', 'plant', 'nextMonthTaskAlert']
+
+class CompnayAlertScheduleSrrializer(serializers.ModelSerializer):
+    AlertScheduleList = AlerrtScheduleSerializer(many=True, read_only=True, source='alertSchedule_companyCode')
+    
+    class Meta:
+        model = companyCode
+        field = ['companyCode', 'AlertScheduleList']
+
+
+
+    
