@@ -15,3 +15,27 @@ class MasterDataTableAdmin(admin.ModelAdmin):
 
 # 以下でadminサイトに表示させる
 admin.site.register(MasterDataTable,MasterDataTableAdmin)
+
+
+class BomAndTask(admin.ModelAdmin):
+
+    list_display = ('companyCode','companyName','plant','bomCode','taskCode','bomAndTaskSet','bomaAndTaskSetCost',)
+    search_fields = ('companyCode','companyName','plant','bomCode','taskCode','bomAndTaskSet','bomaAndTaskSetCost',)
+    list_filter = ('companyCode','companyName','plant','bomCode','taskCode','bomAndTaskSet','bomaAndTaskSetCost',) # adminで右側にあるフィルターBOXのこと
+    ordering = ('companyCode',) # 表示する順番
+    save_on_top = True #上部にもsaveボタンを配置
+
+
+    list_per_page = 50 # １ページあたりに表示するオブジェクト数を指定
+
+
+class AlertSchedule(admin.ModelAdmin):
+
+    list_display = ('companyCode','companyName','plant','nextMonthTaskAlert')
+    search_fields = ('companyCode','companyName','plant','nextMonthTaskAlert')
+    list_filter = ('companyCode','companyName','plant','nextMonthTaskAlert')# adminで右側にあるフィルターBOXのこと
+    ordering = ('companyCode',) # 表示する順番
+    save_on_top = True #上部にもsaveボタンを配置
+
+
+    list_per_page = 50 # １ページあたりに表示するオブジェクト数を指定
