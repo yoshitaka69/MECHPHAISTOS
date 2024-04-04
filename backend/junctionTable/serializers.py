@@ -65,7 +65,7 @@ class BomToTaskSrrializer(serializers.ModelSerializer):
         model = BomToTask
         field = ['companyCode', 'companyName', 'plant', 'bomCode', 'taskCode', 'bomAndTaskSet', 'bomAndTaskSetCost']
 
-class CompnayBomToTaskSrrializer(serializers.ModelSerializer):
+class CompnayCodeBomToTaskSrrializer(serializers.ModelSerializer):
     BomAndTaskList = BomToTaskSerializer(many=True, read_only=True, source='bomAndTask_companyCode')
     
     class Meta:
@@ -80,7 +80,7 @@ class AlertSchedule(models.Model):
         model = AlertSchedule
         field = ['companyCode', 'companyName', 'plant', 'nextMonthTaskAlert']
 
-class CompnayAlertScheduleSrrializer(serializers.ModelSerializer):
+class CompnayCodeAlertScheduleSrrializer(serializers.ModelSerializer):
     AlertScheduleList = AlerrtScheduleSerializer(many=True, read_only=True, source='alertSchedule_companyCode')
     
     class Meta:
