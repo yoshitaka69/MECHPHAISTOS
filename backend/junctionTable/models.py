@@ -134,11 +134,21 @@ class BomAndTask(models.Model):
         return str('BomAndTask')
 
 
+
+
 class AlertSchedule(models.Model):
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='bomToTask_companyCode',null=True, blank=True)
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='bomToTask_companyName', null=True, blank=True)
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='bomToTask_plant',null=True, blank=True)
+    nextMonthTaskAlert = models.DateField(verbose_name='nextMonthAlert', null=True,blank=True, default=timezone.now)
 
-    nextMonthTaskAlert = 
+    class Meta:
+        verbose_name = 'AlertSchedule'
+        verbose_name_plural = 'AlertSchedule'
+        ordering = ('companyCode',) #モデルのクエリセットを取得した際にどのような順番でフィールドを並べ変えるかを決める。
+    
+
+    def __str__(self):
+        return str('AlertSchedule')
 
     
