@@ -8,7 +8,33 @@ from .serializers import  (MasterDataTableSerializer, CompanyCodeMDTSerializer,
                         AlertScheduleSerializer,CompanyCodeAlertScheduleSerializer)
 
 
-    
+#MasterDataTable
+class MasterDataTableViewSet(viewsets.ModelViewSet):
+    queryset = MasterDataTable.objects.all()
+    serializer_class = MasterDataTableSerializer
+
+
+class CompanyCodeMDTViewSet(viewsets.ModelViewSet):
+    serializer_class = CompanyCodeMDTSerializer
+
+    def get_queryset(self):
+        return CompanyCode.objects.prefetch_related('masterDataTable_companyCode').all()#ここでのrelatedNameの間違いは要注意
+
+
+
+#BomAndTask
+class MasterDataTableViewSet(viewsets.ModelViewSet):
+    queryset = MasterDataTable.objects.all()
+    serializer_class = MasterDataTableSerializer
+
+
+class CompanyCodeMDTViewSet(viewsets.ModelViewSet):
+    serializer_class = CompanyCodeMDTSerializer
+
+    def get_queryset(self):
+        return CompanyCode.objects.prefetch_related('masterDataTable_companyCode').all()#ここでのrelatedNameの間違いは要注意
+
+
 class MasterDataTableViewSet(viewsets.ModelViewSet):
     queryset = MasterDataTable.objects.all()
     serializer_class = MasterDataTableSerializer
