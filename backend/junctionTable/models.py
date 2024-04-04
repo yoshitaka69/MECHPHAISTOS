@@ -110,5 +110,35 @@ class MasterDataTable(models.Model):
 
 
 
+class BomAndTask(models.Model):
+    
+#accountsから取得
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='bomToTask_companyCode',null=True, blank=True)
+    companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='bomToTask_companyName', null=True, blank=True)
+    plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='bomToTask_plant',null=True, blank=True)
+
+    bomCode = models.ForeignKey(BomCode, on_delete=models.CASCADE, related_name='bomToTask_bomCode',null=True, blank=True)
+    taskCode = models.ForeignKey(TaskCode, on_delete=models.CASCADE, related_name='bomToTask_taskCode',null=True, blank=True)
+    
+    bomaAndTaskSet = models.CharField(verbose_name='bomAndTaskSet',blank=True,null=True,max_length=100)
+    bomaAndTaskSetCost = models.DecimalField(verbose_name='bomaAndTaskSetCost',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
+    
+
+    class Meta:
+        verbose_name = 'BomAndTask'
+        verbose_name_plural = 'BomAndTask'
+        ordering = ('bomCode',) #モデルのクエリセットを取得した際にどのような順番でフィールドを並べ変えるかを決める。
+    
+
+    def __str__(self):
+        return str('BomAndTask')
+
+
+class AlertSchedule(models.Model):
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='bomToTask_companyCode',null=True, blank=True)
+    companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='bomToTask_companyName', null=True, blank=True)
+    plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='bomToTask_plant',null=True, blank=True)
+
+    nextMonthTaskAlert = 
 
     
