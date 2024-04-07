@@ -16,6 +16,21 @@ import { useUserStore } from '@/stores/userStore'; // Piniaストアをインポ
 // register Handsontable's modules
 registerAllModules();
 
+// totalCostの計算と表示のためのカスタムレンダラー
+function totalCostRenderer(monthColumnIndices, instance, td, row, col, prop, value, cellProperties) {
+  const rowData = instance.getDataAtRow(row);
+  const totalCost = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec', 'commitment']
+    .map(month => parseFloat(rowData[monthColumnIndices[month]]) || 0)
+    .reduce((sum, amount) => sum + amount, 0);
+
+  td.innerText = totalCost.toFixed(2); // 2桁の小数点で表示
+  return td;
+}
+
+const monthColumnIndices = {
+  jan: 3, feb: 4, mar: 5, jun:6, jul:7, aug:8, sep:9, oct:10, nov:11, dec:12, commitment:13// ... 各月のカラムインデックス...
+};
+
 
 
 const TableComponent = defineComponent({
@@ -171,7 +186,7 @@ const TableComponent = defineComponent({
 						{ data: "nov", type: 'numeric' },
 						{ data: "dec", type: 'numeric' },
 						{ data: "commitment", type: 'numeric' },
-						{ data: "totalCost", type: 'numeric', readOnly: true },
+						{ data: 'total', readOnly: true, renderer: (instance, td, row, col, prop, value, cellProperties) => totalCostRenderer(monthColumnIndices, instance, td, row, col, prop, value, cellProperties), },
 					];
 					console.log("Table Data:", tableData); // テーブルデータをログに出力
 

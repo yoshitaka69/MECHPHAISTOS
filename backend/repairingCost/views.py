@@ -26,8 +26,15 @@ class PlannedPM02ViewSet(viewsets.ModelViewSet):
 class CompanyCodePPM02ViewSet(viewsets.ModelViewSet):
     serializer_class = CompanyCodePPM02Serializer
 
+#クエリパラメータでのフィルターリング
     def get_queryset(self):
-        return CompanyCode.objects.prefetch_related('plannedPM02_companyCode').all()
+        queryset = CompanyCode.objects.prefetch_related('plannedPM02_companyCode').all()
+        company_code = self.request.query_params.get('companyCode', None)
+        if company_code:
+            queryset = queryset.filter(companyCode=company_code)
+        return queryset
+
+
 
 
 #PM02-Actual
@@ -38,8 +45,13 @@ class ActualPM02ViewSet(viewsets.ModelViewSet):
 class CompanyCodeAPM02ViewSet(viewsets.ModelViewSet):
     serializer_class = CompanyCodeAPM02Serializer
 
+#クエリパラメータでのフィルターリング
     def get_queryset(self):
-        return CompanyCode.objects.prefetch_related('actualPM02_companyCode').all()
+        queryset = CompanyCode.objects.prefetch_related('actualPM02_companyCode').all()
+        company_code = self.request.query_params.get('companyCode', None)
+        if company_code:
+            queryset = queryset.filter(companyCode=company_code)
+        return queryset
 
 
 
@@ -51,8 +63,13 @@ class PlannedPM03ViewSet(viewsets.ModelViewSet):
 class CompanyCodePPM03ViewSet(viewsets.ModelViewSet):
     serializer_class = CompanyCodePPM03Serializer
 
+#クエリパラメータでのフィルターリング
     def get_queryset(self):
-        return CompanyCode.objects.prefetch_related('plannedPM03_companyCode').all()
+        queryset = CompanyCode.objects.prefetch_related('plannedPM03_companyCode').all()
+        company_code = self.request.query_params.get('companyCode', None)
+        if company_code:
+            queryset = queryset.filter(companyCode=company_code)
+        return queryset
 
 
 
@@ -65,19 +82,13 @@ class ActualPM03ViewSet(viewsets.ModelViewSet):
 class CompanyCodeAPM03ViewSet(viewsets.ModelViewSet):
     serializer_class = CompanyCodeAPM03Serializer
 
+#クエリパラメータでのフィルターリング
     def get_queryset(self):
-        return CompanyCode.objects.prefetch_related('actualPM03_companyCode').all()
-
-
-
-
-
-
-
-        
-
-
-
+        queryset = CompanyCode.objects.prefetch_related('actualPM03_companyCode').all()
+        company_code = self.request.query_params.get('companyCode', None)
+        if company_code:
+            queryset = queryset.filter(companyCode=company_code)
+        return queryset
 
 
 
@@ -88,8 +99,13 @@ class ActualPM04ViewSet(viewsets.ModelViewSet):
 class CompanyCodeAPM04ViewSet(viewsets.ModelViewSet):
     serializer_class = CompanyCodeAPM04Serializer
 
+#クエリパラメータでのフィルターリング
     def get_queryset(self):
-        return CompanyCode.objects.prefetch_related('actualPM04_companyCode').all()
+        queryset = CompanyCode.objects.prefetch_related('actualPM04_companyCode').all()
+        company_code = self.request.query_params.get('companyCode', None)
+        if company_code:
+            queryset = queryset.filter(companyCode=company_code)
+        return queryset
 
 
     
@@ -101,8 +117,13 @@ class PlannedPM05ViewSet(viewsets.ModelViewSet):
 class CompanyCodePPM05ViewSet(viewsets.ModelViewSet):
     serializer_class = CompanyCodePPM05Serializer
 
+#クエリパラメータでのフィルターリング
     def get_queryset(self):
-        return CompanyCode.objects.prefetch_related('plannedPM05_companyCode').all()
+        queryset = CompanyCode.objects.prefetch_related('plannedPM05_companyCode').all()
+        company_code = self.request.query_params.get('companyCode', None)
+        if company_code:
+            queryset = queryset.filter(companyCode=company_code)
+        return queryset
 
 
 
@@ -113,8 +134,13 @@ class ActualPM05ViewSet(viewsets.ModelViewSet):
 class CompanyCodeAPM05ViewSet(viewsets.ModelViewSet):
     serializer_class = CompanyCodeAPM05Serializer
 
+#クエリパラメータでのフィルターリング
     def get_queryset(self):
-        return CompanyCode.objects.prefetch_related('actualPM05_companyCode').all()
+        queryset = CompanyCode.objects.prefetch_related('actualPM05_companyCode').all()
+        company_code = self.request.query_params.get('companyCode', None)
+        if company_code:
+            queryset = queryset.filter(companyCode=company_code)
+        return queryset
 
 
 

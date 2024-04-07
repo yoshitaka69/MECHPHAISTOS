@@ -46,6 +46,7 @@ const TaskListComponent = defineComponent({
                     {//taskListNo
                         data: 'taskListNo',
                         type: "text",
+                        readOnly: true,
                     },
                     {//plant
                         data: 'plant',
@@ -107,6 +108,7 @@ const TaskListComponent = defineComponent({
                     {//Situation
                         data: 'typicalSituation',
                         type: 'text',
+                        readOnly: true,
                     },
                     {//現時点からの10年先まで繰り返し（今）
                         data: 'thisYear',
@@ -222,9 +224,16 @@ const TaskListComponent = defineComponent({
                     const taskListData = response.data.flatMap(companyData => companyData.taskList);
                     console.log("Fetched Task List Data:", taskListData);
 
+                    
+					// 空行を追加
+					const blankRows = Array.from({ length: 20 }, () => ({}));
+					const newData = taskListData.concat(blankRows);
+
+                    
+
                     // Handsontable設定の更新
                     this.$refs.hotTableComponent.hotInstance.updateSettings({
-                        data: taskListData,
+                        data: newData,
                         // ここで他の必要な設定を更新することも可能
                     });
                 })

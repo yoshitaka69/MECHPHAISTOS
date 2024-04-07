@@ -19,9 +19,9 @@ admin.site.register(MasterDataTable,MasterDataTableAdmin)
 
 class BomAndTask(admin.ModelAdmin):
 
-    list_display = ('companyCode','companyName','plant','bomCode','taskCode','bomAndTaskSet','bomaAndTaskSetCost',)
-    search_fields = ('companyCode','companyName','plant','bomCode','taskCode','bomAndTaskSet','bomaAndTaskSetCost',)
-    list_filter = ('companyCode','companyName','plant','bomCode','taskCode','bomAndTaskSet','bomaAndTaskSetCost',) # adminで右側にあるフィルターBOXのこと
+    list_display = ('companyCode','companyName','plant','bomCode','taskCode','bomAndTaskSet','bomAndTaskSetCost',)
+    search_fields = ('companyCode','companyName','plant','bomCode','taskCode','bomAndTaskSet','bomAndTaskSetCost',)
+    list_filter = ('companyCode','companyName','plant','bomCode','taskCode','bomAndTaskSet','bomAndTaskSetCost',) # adminで右側にあるフィルターBOXのこと
     ordering = ('companyCode',) # 表示する順番
     save_on_top = True #上部にもsaveボタンを配置
 

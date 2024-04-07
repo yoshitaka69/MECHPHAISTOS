@@ -3,8 +3,8 @@ from .models import NearMiss,SafetyIndicators
 
 
 class NearMissAdmin(admin.ModelAdmin):
-    list_display = ('companyCode','userName', 'department', 'dateOfOccurrence','createdDay')
-    search_fields = ('companyCode','userName','department', 'dateOfOccurrence')
+    list_display = ('companyCode','userName', 'nearMissNo', 'department','dateOfOccurrence','placeOfOccurrence','typeOfAccident','description','factor','injuredLv','equipmentDamageLv','affectOfEnviroment','newsCoverage','measures','actionItems','solvedActionItems','createdDay','updateDay')
+    search_fields = ('companyCode','userName', 'nearMissNo', 'department','dateOfOccurrence','placeOfOccurrence','typeOfAccident','description','factor','injuredLv','equipmentDamageLv','affectOfEnviroment','newsCoverage','measures','actionItems','solvedActionItems','createdDay','updateDay')
     list_filter = ('companyCode',"userName",) # adminで右側にあるフィルターBOXのこと
     ordering = ('companyCode',) # 表示する順番
     save_on_top = True #上部にもsaveボタンを配置
@@ -15,8 +15,8 @@ class NearMissAdmin(admin.ModelAdmin):
 
 
 class SafetyIndicatorsAdmin(admin.ModelAdmin):
-    list_display = ('companyCode','companyName', 'safetyIndicators', 'totalOfNearMiss','rateOflevelA', 'ActionItems', 'solvedActionItems', 'rateOfActionItems')
-    search_fields = ('companyCode','companyName', 'safetyIndicators', 'totalOfNearMiss','rateOflevelA', 'ActionItems', 'solvedActionItems', 'rateOfActionItems')
+    list_display = ('companyCode', 'companyName', 'safetyIndicators', 'dangerArea','totalOfNearMiss', 'countOfLevelA', 'rateOflevelA', 'countOfActionItems', 'countOfSolvedActionItems', 'rateOfActionItems')
+    search_fields = ('companyCode', 'companyName', 'safetyIndicators', 'dangerArea','totalOfNearMiss', 'countOfLevelA', 'rateOflevelA', 'countOfActionItems', 'countOfSolvedActionItems', 'rateOfActionItems')
     list_filter = ('companyCode','companyName',) # adminで右側にあるフィルターBOXのこと
     ordering = ('companyCode',) # 表示する順番
     save_on_top = True #上部にもsaveボタンを配置

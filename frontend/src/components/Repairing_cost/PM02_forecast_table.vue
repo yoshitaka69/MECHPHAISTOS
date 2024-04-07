@@ -86,9 +86,14 @@
               });
               return rowData;
             });
+
+            					// 空行を追加
+					const blankRows = Array.from({ length: 5 }, () => ({}));
+					const newData = tableData.concat(blankRows);
+
   
             this.$refs.hotTableComponent.hotInstance.updateSettings({
-              data: tableData,
+              data: newData,
             });
           })
           .catch(error => console.log("error"));

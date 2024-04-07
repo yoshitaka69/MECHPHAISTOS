@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import CalTablePlannedPM02,CalTableActualPM02,CalTablePlannedPM03,CalTableActualPM03,CalTableActualPM04,CalTablePlannedPM05,CalTableActualPM05,SummedCost
+from .models import CalTablePlannedPM02,CalTableActualPM02,CalTablePlannedPM03,CalTableActualPM03,CalTableActualPM04,CalTablePlannedPM05,CalTableActualPM05,SummedActualCost
 
 
 
@@ -97,4 +97,4 @@ admin.site.register(CalTableActualPM04,CalTabelActualPM04Admin)
 admin.site.register(CalTablePlannedPM05,CalTablePlannedPM05Admin)
 admin.site.register(CalTableActualPM05,CalTabelActualPM05Admin)
 
-admin.site.register(SummedCost,SummedCostAdmin)
+admin.site.register(SummedActualCost,SummedCostAdmin)

@@ -1,8 +1,9 @@
 from django.db import models
+from django.utils import timezone
 from accounts.models import CompanyCode,CompanyName,Plant
 from ceList.models import Equipment,CeList,Machine
 from spareParts.models import BomList
-from taskList.models import TaskListPPM02,TaskListPPM03,TaskListAPM04,TaskListPPM05,TypicalTaskList
+from taskList.models import TaskListPPM02,TaskListPPM03,TaskListAPM04,TaskListPPM05,TypicalTaskList,TaskList
 
 
 class MasterDataTable(models.Model):
@@ -113,15 +114,15 @@ class MasterDataTable(models.Model):
 class BomAndTask(models.Model):
     
 #accountsから取得
-    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='bomToTask_companyCode',null=True, blank=True)
-    companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='bomToTask_companyName', null=True, blank=True)
-    plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='bomToTask_plant',null=True, blank=True)
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='bomAndTask_companyCode',null=True, blank=True)
+    companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='bomAndTask_companyName', null=True, blank=True)
+    plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='bomAndTask_plant',null=True, blank=True)
 
-    bomCode = models.ForeignKey(BomCode, on_delete=models.CASCADE, related_name='bomToTask_bomCode',null=True, blank=True)
-    taskCode = models.ForeignKey(TaskCode, on_delete=models.CASCADE, related_name='bomToTask_taskCode',null=True, blank=True)
+    bomCode = models.ForeignKey(BomList, on_delete=models.CASCADE, related_name='bomAndTask_bomCode',null=True, blank=True)
+    taskCode = models.ForeignKey(TaskList, on_delete=models.CASCADE, related_name='bomAndTask_taskCode',null=True, blank=True)
     
-    bomaAndTaskSet = models.CharField(verbose_name='bomAndTaskSet',blank=True,null=True,max_length=100)
-    bomaAndTaskSetCost = models.DecimalField(verbose_name='bomaAndTaskSetCost',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
+    bomAndTaskSet = models.CharField(verbose_name='bomAndTaskSet',blank=True,null=True,max_length=100)
+    bomAndTaskSetCost = models.DecimalField(verbose_name='bomAndTaskSetCost',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
     
 
     class Meta:
@@ -137,9 +138,9 @@ class BomAndTask(models.Model):
 
 
 class AlertSchedule(models.Model):
-    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='bomToTask_companyCode',null=True, blank=True)
-    companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='bomToTask_companyName', null=True, blank=True)
-    plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='bomToTask_plant',null=True, blank=True)
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='alertSchedule_companyCode',null=True, blank=True)
+    companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='alertSchedule_companyName', null=True, blank=True)
+    plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='alertSchedule_plant',null=True, blank=True)
     nextMonthTaskAlert = models.DateField(verbose_name='nextMonthAlert', null=True,blank=True, default=timezone.now)
 
     class Meta:

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from accounts.models import CustomUser
-from .models import NearMiss, CompanyCode, ActionItemList, SafetyIndicators
+from .models import NearMiss, CompanyCode,SafetyIndicators
 
 from rest_framework import serializers
 
@@ -33,29 +33,10 @@ class CompanyNearMissSerializer(serializers.ModelSerializer):
 
 
 
-
-
-
-
-
-
-
-#ActionItemList
-class ActionItemListSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = ActionItemList
-        fields = fields = ['companyCode', 'companyName', 'actionItems', 'solvedActionItems']
-
-
-
-
-
-
 #SafetyIndicator
 class SafetyIndicatorsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SafetyIndicators
-        fields = ['companyCode', 'companyName', 'safetyIndicators', 'totalOfNearMiss', 'rateOflevelA', 'ActionItems', 'solvedActionItems', 'rateOfActionItems']
+        fields = ['companyCode', 'companyName', 'safetyIndicators', 'dangerArea','totalOfNearMiss', 'countOfLevelA', 'rateOflevelA', 'countOfActionItems', 'countOfSolvedActionItems', 'rateOfActionItems']
 

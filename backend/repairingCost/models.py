@@ -33,6 +33,12 @@ class PlannedPM02(models.Model):
         ordering = ('plant',)
     def __str__(self):
         return str('plannedPm02')
+    
+
+
+
+
+
 
 
 
@@ -62,6 +68,8 @@ class ActualPM02(models.Model):
         ordering = ('plant',)
     def __str__(self):
         return str('actualPm02')
+
+
 
 
 
@@ -99,6 +107,10 @@ class PlannedPM03(models.Model):
 
 
 
+
+
+
+
 class ActualPM03(models.Model):
 
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='actualPM03_companyCode', null=True, blank=True)
@@ -126,11 +138,13 @@ class ActualPM03(models.Model):
         ordering = ('plant',)
     def __str__(self):
         return str('actualPm03')
+    
 
     
 
 
-    
+
+
 
 class ActualPM04(models.Model):
 
@@ -161,7 +175,8 @@ class ActualPM04(models.Model):
     def __str__(self):
         return str('actualPm04')
 
-    
+
+
 
 
 
@@ -194,6 +209,11 @@ class PlannedPM05(models.Model):
         return str('plannedPm05}')
 
 
+
+
+
+
+
 class ActualPM05(models.Model):
 
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='actualPM05_companyCode', null=True, blank=True)
@@ -221,6 +241,7 @@ class ActualPM05(models.Model):
         ordering = ('plant',)
     def __str__(self):
         return str('actualPm05')
+
 
   
 

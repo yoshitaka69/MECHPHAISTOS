@@ -1,11 +1,11 @@
 
 from rest_framework import serializers
-from accounts.models import CompanyCode
+from accounts.models import CompanyCode,Plant
 from .models import (CalTablePlannedPM02,CalTableActualPM02,
                      CalTablePlannedPM03,CalTableActualPM03,
                      CalTableActualPM04,
                      CalTablePlannedPM05,CalTableActualPM05,
-                     SummedCost)
+                     SummedActualCost)
 
 
 
@@ -171,14 +171,26 @@ class CompanyCodeCalAPM05Serializer(serializers.ModelSerializer):
 
 
 #SummedCost
-class SummedCostSerializer(serializers.ModelSerializer):
+class SummedActualCostSerializer(serializers.ModelSerializer):
     
-    class Meta:
-        model = SummedCost
-        fields = ['year','sumJan','sumFeb','sumMar','sumApr','sumMay','sumJun','sumJul','sumAug','sumSep','sumOct','sumNov','sumDec','sumCommitment','totalActualPM02','totalActualPM03','totalActualPM04','totalActualPM05','totalActualCost']
+    companyCode = serializers.SlugRelatedField(
+    slug_field='companyCode', 
+    queryset=CompanyCode.objects.all()
+    )
 
-class CompanyCodeSummedCostSerializer(serializers.ModelSerializer):
-    summedCostList = SummedCostSerializer(many=True, read_only=True, source='summedCost_companyCode')
+    plant = serializers.SlugRelatedField(
+    slug_field='plant', 
+    queryset=Plant.objects.all()
+)
+
+    class Meta:
+        model = SummedActualCost
+        fields = ['companyCode','plant','year','sumJan','sumFeb','sumMar','sumApr','sumMay','sumJun','sumJul','sumAug','sumSep','sumOct','sumNov','sumDec','sumCommitment','totalActualPM02','totalActualPM03','totalActualPM04','totalActualPM05','totalActualCost']
+
+
+
+class CompanyCodeSummedActualCostSerializer(serializers.ModelSerializer):
+    summedActualCostList = SummedActualCostSerializer(many=True, read_only=True, source='summedActualCost_companyCode')
     class Meta:
         model = CompanyCode
-        fields = ['companyCode', 'summedCostList']
+        fields = ['companyCode', 'summedActualCostList']

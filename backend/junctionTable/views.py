@@ -4,7 +4,7 @@ from rest_framework import viewsets
 from .models import MasterDataTable,BomAndTask,AlertSchedule
 from accounts.models import CompanyCode
 from .serializers import  (MasterDataTableSerializer, CompanyCodeMDTSerializer,
-                        BomAndTaskSerializer,CompanyCodeBomToTaskSerializer,
+                        BomAndTaskSerializer,CompanyCodeBomAndTaskSerializer,
                         AlertScheduleSerializer,CompanyCodeAlertScheduleSerializer)
 
 
@@ -42,7 +42,7 @@ class AlertScheduleViewSet(viewsets.ModelViewSet):
     serializer_class = AlertScheduleSerializer
 
 
-class CompanyCodeAlertScheduleiewSet(viewsets.ModelViewSet):
+class CompanyCodeAlertScheduleViewSet(viewsets.ModelViewSet):
     serializer_class = CompanyCodeAlertScheduleSerializer
 
     def get_queryset(self):
