@@ -33,7 +33,11 @@ class CompanyBomListViewSet(viewsets.ModelViewSet):
     queryset = CompanyCode.objects.all()
     serializer_class = CompanyBomListSerializer
 
-    #これで無駄なデータのやり取りをなくす。
+#クエリパラメータでのフィルターリング
     def get_queryset(self):
-        return CompanyCode.objects.prefetch_related('bomList_companyCode').all()
+        queryset = CompanyCode.objects.prefetch_related('bomList_companyCode').all()
+        company_code = self.request.query_params.get('companyCode', None)
+        if company_code:
+            queryset = queryset.filter(companyCode=company_code)
+        return queryset)
 
