@@ -31,8 +31,15 @@ class CalTablePPM02ViewSet(viewsets.ModelViewSet):
 class CompanyCodeCalTablePPM02ViewSet(viewsets.ModelViewSet):
     serializer_class = CompanyCodeCalPPM02Serializer
 
+#クエリパラメータでのフィルターリング
     def get_queryset(self):
-        return CompanyCode.objects.prefetch_related('calTablePlannedPM02_companyCode').all()
+        queryset = CompanyCode.objects.prefetch_related('calTablePPM02_companyCode').all()
+        company_code = self.request.query_params.get('companyCode', None)
+        if company_code:
+            queryset = queryset.filter(companyCode=company_code)
+        return queryset)
+
+
 
 
 
@@ -45,8 +52,15 @@ class CalTableAPM02ViewSet(viewsets.ModelViewSet):
 class CompanyCodeCalTableAPM02ViewSet(viewsets.ModelViewSet):
     serializer_class = CompanyCodeCalAPM02Serializer
 
+#クエリパラメータでのフィルターリング
     def get_queryset(self):
-        return CompanyCode.objects.prefetch_related('calTableActualPM02_companyCode').all()
+        queryset = CompanyCode.objects.prefetch_related('calTableAPM02_companyCode').all()
+        company_code = self.request.query_params.get('companyCode', None)
+        if company_code:
+            queryset = queryset.filter(companyCode=company_code)
+        return queryset)
+
+
 
 
 
@@ -59,8 +73,16 @@ class CalTablePPM03ViewSet(viewsets.ModelViewSet):
 class CompanyCodeCalTablePPM03ViewSet(viewsets.ModelViewSet):
     serializer_class = CompanyCodeCalPPM03Serializer
 
+  
+#クエリパラメータでのフィルターリング
     def get_queryset(self):
-        return CompanyCode.objects.prefetch_related('calTablePlannedPM03_companyCode').all()
+        queryset = CompanyCode.objects.prefetch_related('calTablePPM03_companyCode').all()
+        company_code = self.request.query_params.get('companyCode', None)
+        if company_code:
+            queryset = queryset.filter(companyCode=company_code)
+        return queryset)
+
+
 
 
 
@@ -73,8 +95,15 @@ class CalTableAPM03ViewSet(viewsets.ModelViewSet):
 class CompanyCodeCalTableAPM03ViewSet(viewsets.ModelViewSet):
     serializer_class = CompanyCodeCalAPM03Serializer
 
+#クエリパラメータでのフィルターリング
     def get_queryset(self):
-        return CompanyCode.objects.prefetch_related('calTableActualPM03_companyCode').all()
+        queryset = CompanyCode.objects.prefetch_related('calTableAPM03_companyCode').all()
+        company_code = self.request.query_params.get('companyCode', None)
+        if company_code:
+            queryset = queryset.filter(companyCode=company_code)
+        return queryset)
+
+
 
 
 
@@ -86,8 +115,14 @@ class CalTableAPM04ViewSet(viewsets.ModelViewSet):
 class CompanyCodeCalTableAPM04ViewSet(viewsets.ModelViewSet):
     serializer_class = CompanyCodeCalAPM04Serializer
 
+#クエリパラメータでのフィルターリング
     def get_queryset(self):
-        return CompanyCode.objects.prefetch_related('calTableActualPM04_companyCode').all()
+        queryset = CompanyCode.objects.prefetch_related('calTableAPM04_companyCode').all()
+        company_code = self.request.query_params.get('companyCode', None)
+        if company_code:
+            queryset = queryset.filter(companyCode=company_code)
+        return queryset)
+
 
 
 
@@ -100,8 +135,15 @@ class CalTablePPM05ViewSet(viewsets.ModelViewSet):
 class CompanyCodeCalTablePPM05ViewSet(viewsets.ModelViewSet):
     serializer_class = CompanyCodeCalPPM05Serializer
 
+#クエリパラメータでのフィルターリング
     def get_queryset(self):
-        return CompanyCode.objects.prefetch_related('calTablePlannedPM05_companyCode').all()
+        queryset = CompanyCode.objects.prefetch_related('calTablePPM05_companyCode').all()
+        company_code = self.request.query_params.get('companyCode', None)
+        if company_code:
+            queryset = queryset.filter(companyCode=company_code)
+        return queryset)
+
+
 
 
 
@@ -114,8 +156,13 @@ class CalTableAPM05ViewSet(viewsets.ModelViewSet):
 class CompanyCodeCalTableAPM05ViewSet(viewsets.ModelViewSet):
     serializer_class = CompanyCodeCalAPM05Serializer
 
+#クエリパラメータでのフィルターリング
     def get_queryset(self):
-        return CompanyCode.objects.prefetch_related('calTableActualPM05_companyCode').all()
+        queryset = CompanyCode.objects.prefetch_related('calTableAPM05_companyCode').all()
+        company_code = self.request.query_params.get('companyCode', None)
+        if company_code:
+            queryset = queryset.filter(companyCode=company_code)
+        return queryset)
 
 
 
