@@ -17,8 +17,13 @@ class MasterDataTableViewSet(viewsets.ModelViewSet):
 class CompanyCodeMDTViewSet(viewsets.ModelViewSet):
     serializer_class = CompanyCodeMDTSerializer
 
+#クエリパラメータでのフィルターリング
     def get_queryset(self):
-        return CompanyCode.objects.prefetch_related('masterDataTable_companyCode').all()#ここでのrelatedNameの間違いは要注意
+        queryset = CompanyCode.objects.prefetch_related('masterDataTable_companyCode').all()
+        company_code = self.request.query_params.get('companyCode', None)
+        if company_code:
+            queryset = queryset.filter(companyCode=company_code)
+        return queryset
 
 
 
@@ -31,8 +36,13 @@ class BomAndTaskViewSet(viewsets.ModelViewSet):
 class CompanyCodeBomAndTaskViewSet(viewsets.ModelViewSet):
     serializer_class = CompanyCodeBomAndTaskSerializer
 
+#クエリパラメータでのフィルターリング
     def get_queryset(self):
-        return CompanyCode.objects.prefetch_related('bomAndTask_companyCode').all()#ここでのrelatedNameの間違いは要注意
+        queryset = CompanyCode.objects.prefetch_related('bomAndTask_companyCode').all()
+        company_code = self.request.query_params.get('companyCode', None)
+        if company_code:
+            queryset = queryset.filter(companyCode=company_code)
+        return queryset
 
 
 
@@ -45,5 +55,10 @@ class AlertScheduleViewSet(viewsets.ModelViewSet):
 class CompanyCodeAlertScheduleViewSet(viewsets.ModelViewSet):
     serializer_class = CompanyCodeAlertScheduleSerializer
 
+#クエリパラメータでのフィルターリング
     def get_queryset(self):
-        return CompanyCode.objects.prefetch_related('alertSchedule_companyCode').all()#ここでのrelatedNameの間違いは要注意
+        queryset = CompanyCode.objects.prefetch_related('alertSchedule_companyCode').all()
+        company_code = self.request.query_params.get('companyCode', None)
+        if company_code:
+            queryset = queryset.filter(companyCode=company_code)
+        return queryset
