@@ -201,3 +201,27 @@ def update_danger_area(company_code_id):
             safety_indicator.dangerArea = most_common_place['placeOfOccurrence']
             safety_indicator.save()
         print(f"Updated SafetyIndicators for CompanyCode {company_code_id}: Danger Area = {most_common_place['placeOfOccurrence']}")
+
+
+
+class TrendSafetyIndicators(models.Model):
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='trendSafetyIndicators_companyCode',null=True, blank=True)
+    companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE,related_name='trendSafetyIndicators_companyName', null=True, blank=True)
+
+    safetyIndicators = models.ForeignKey(SafetyIndicators, on_delete=models.CASCADE,related_name='trendSafetyIndicators_companyName', null=True, blank=True)
+    5yearsAgo = models.CharField(verbose_name='5yearsAgo', max_length=20,null=True,blank=True)
+    4yearsAgo = models.CharField(verbose_name='4yearsAgo', max_length=20,null=True,blank=True)
+    3yearsAgo = models.CharField(verbose_name='3yearsAgo', max_length=20,null=True,blank=True)
+    2yearsAgo = models.CharField(verbose_name='2yearsAgo', max_length=20,null=True,blank=True)
+    1yearsAgo = models.CharField(verbose_name='1yearsAgo', max_length=20,null=True,blank=True)
+    thisYear = models.CharField(verbose_name='thisYeaar', max_length=20,null=True,blank=True)
+
+
+    class Meta:
+        verbose_name = 'Trend Safety Indicators'
+        verbose_name_plural = 'Trend Safety Indicators'
+        ordering = ('companyCode',)
+
+    def __str__(self):
+        return f"{self.companyCode}"
+    
