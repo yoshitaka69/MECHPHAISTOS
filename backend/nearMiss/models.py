@@ -182,6 +182,7 @@ def update_count_of_level_a(company_code_id):
     print(f"Updated SafetyIndicators for CompanyCode {company_code_id}: Count of Level A = {level_a_count}")
 
 
+
 def update_danger_area(company_code_id):
     # companyCodeに基づいてNearMissインスタンスのplaceOfOccurrenceを集計
     most_common_place = NearMiss.objects.filter(companyCode_id=company_code_id) \

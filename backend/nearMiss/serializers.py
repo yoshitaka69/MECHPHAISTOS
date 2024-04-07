@@ -33,6 +33,8 @@ class CompanyNearMissSerializer(serializers.ModelSerializer):
 
 
 
+
+
 #SafetyIndicator
 class SafetyIndicatorsSerializer(serializers.ModelSerializer):
 
@@ -40,3 +42,9 @@ class SafetyIndicatorsSerializer(serializers.ModelSerializer):
         model = SafetyIndicators
         fields = ['companyCode', 'companyName', 'safetyIndicators', 'dangerArea','totalOfNearMiss', 'countOfLevelA', 'rateOflevelA', 'countOfActionItems', 'countOfSolvedActionItems', 'rateOfActionItems']
 
+class CompanySafetyIndicatorsSerializer(serializers.ModelSerializer):
+    safetyIndicatorsList = SafetyIndicatorsSerializer(many=True, read_only=True, source='safetyIndicators_companyCode')
+    
+    class Meta:
+        model = CompanyCode
+        fields = ['companyCode', 'safetyIndicatorsList']
