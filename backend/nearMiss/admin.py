@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import NearMiss,SafetyIndicators
+from .models import NearMiss,SafetyIndicators,TrendSafetyIndicators
 
 
 class NearMissAdmin(admin.ModelAdmin):
@@ -25,6 +25,19 @@ class SafetyIndicatorsAdmin(admin.ModelAdmin):
 
 
 
+class TrendSafetyIndicatorsAdmin(admin.ModelAdmin):
+    list_display = ('companyCode', 'companyName', 'safetyIndicators', '5yearsAgo','4yearsAgo', '3yearsAgo', '2yearsAgo', '1yearsAgo', 'thisYear')
+    search_fields = ('companyCode', 'companyName', 'safetyIndicators', '5yearsAgo','4yearsAgo', '3yearsAgo', '2yearsAgo', '1yearsAgo', 'thisYear')
+    list_filter = ('companyCode','companyName',) # adminで右側にあるフィルターBOXのこと
+    ordering = ('companyCode',) # 表示する順番
+    save_on_top = True #上部にもsaveボタンを配置
+
+    list_per_page = 50 # １ページあたりに表示するオブジェクト数を指定
+
+
+
+
 # 以下でadminサイトに表示させる
 admin.site.register(NearMiss,NearMissAdmin)
 admin.site.register(SafetyIndicators,SafetyIndicatorsAdmin)
+admin.site.register(TrendSafetyIndicators,TrendSafetyIndicatorsAdmin)
