@@ -83,7 +83,7 @@ class CompanyCodeBomAndTaskSerializer(serializers.ModelSerializer):
 class AlertScheduleSerializer(serializers.ModelSerializer):
     class Meta:
         model = AlertSchedule
-        fields = ['companyCode', 'companyName', 'plant', 'partsName', 'eventDate', 'deliveryTime', 'orderAlertDate', 'safetyRate']
+        fields = ['companyCode', 'companyName', 'plant', 'partsName', 'eventDate', 'deliveryTime', 'orderAlertDate', 'safetyRate', 'location']
 
     companyCode = serializers.SlugRelatedField(
         slug_field='companyCode', 
