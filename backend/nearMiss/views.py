@@ -1,7 +1,9 @@
 
 from rest_framework import viewsets
-from .models import NearMiss, CompanyCode, SafetyIndicators
-from .serializers import NearMissSerializer, CompanyNearMissSerializer, SafetyIndicatorsSerializer,CompanySafetyIndicatorsSerializer,TrendSafetyIndicators,CompanyTrendSafetyIndicators
+from .models import NearMiss, CompanyCode, SafetyIndicators,TrendSafetyIndicators
+from .serializers import (NearMissSerializer,CompanyNearMissSerializer,
+                          SafetyIndicatorsSerializer,CompanySafetyIndicatorsSerializer,
+                          TrendSafetyIndicatorsSerializer,CompanyTrendSafetyIndicatorsSerializer)
 
 
 

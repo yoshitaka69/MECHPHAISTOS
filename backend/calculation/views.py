@@ -37,7 +37,7 @@ class CompanyCodeCalTablePPM02ViewSet(viewsets.ModelViewSet):
         company_code = self.request.query_params.get('companyCode', None)
         if company_code:
             queryset = queryset.filter(companyCode=company_code)
-        return queryset)
+        return queryset
 
 
 
@@ -58,7 +58,7 @@ class CompanyCodeCalTableAPM02ViewSet(viewsets.ModelViewSet):
         company_code = self.request.query_params.get('companyCode', None)
         if company_code:
             queryset = queryset.filter(companyCode=company_code)
-        return queryset)
+        return queryset
 
 
 
@@ -80,7 +80,7 @@ class CompanyCodeCalTablePPM03ViewSet(viewsets.ModelViewSet):
         company_code = self.request.query_params.get('companyCode', None)
         if company_code:
             queryset = queryset.filter(companyCode=company_code)
-        return queryset)
+        return queryset
 
 
 
@@ -101,7 +101,7 @@ class CompanyCodeCalTableAPM03ViewSet(viewsets.ModelViewSet):
         company_code = self.request.query_params.get('companyCode', None)
         if company_code:
             queryset = queryset.filter(companyCode=company_code)
-        return queryset)
+        return queryset
 
 
 
@@ -121,7 +121,7 @@ class CompanyCodeCalTableAPM04ViewSet(viewsets.ModelViewSet):
         company_code = self.request.query_params.get('companyCode', None)
         if company_code:
             queryset = queryset.filter(companyCode=company_code)
-        return queryset)
+        return queryset
 
 
 
@@ -141,7 +141,7 @@ class CompanyCodeCalTablePPM05ViewSet(viewsets.ModelViewSet):
         company_code = self.request.query_params.get('companyCode', None)
         if company_code:
             queryset = queryset.filter(companyCode=company_code)
-        return queryset)
+        return queryset
 
 
 
@@ -162,8 +162,9 @@ class CompanyCodeCalTableAPM05ViewSet(viewsets.ModelViewSet):
         company_code = self.request.query_params.get('companyCode', None)
         if company_code:
             queryset = queryset.filter(companyCode=company_code)
-        return queryset)
-
+        return queryset
+    
+    
 
 
 

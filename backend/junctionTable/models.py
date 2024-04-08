@@ -1,5 +1,7 @@
 from django.db import models
 from django.utils import timezone
+from datetime import timedelta
+
 from accounts.models import CompanyCode,CompanyName,Plant
 from ceList.models import Equipment,CeList,Machine
 from spareParts.models import BomList
@@ -141,9 +143,9 @@ class AlertSchedule(models.Model):
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='alertSchedule_companyCode',null=True, blank=True)
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='alertSchedule_companyName', null=True, blank=True)
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='alertSchedule_plant',null=True, blank=True)
-    partsName = models.ForeignKey(BomList, on_delete=models.CASCADE, related_name='alertSchedule_bomList',null=True, blank=True)
-    eventDate = models.models.ForeignKey(BomList, on_delete=models.CASCADE, related_name='alertSchedule_bomList',null=True, blank=True)
-    deliveryTime = models.ForeignKey(BomList, on_delete=models.CASCADE, related_name='alertSchedule_sparePartsList',null=True, blank=True)
+    partsName = models.ForeignKey(BomList, on_delete=models.CASCADE, related_name='alertSchedule_partsName',null=True, blank=True)
+    eventDate = models.ForeignKey(BomList, on_delete=models.CASCADE, related_name='alertSchedule_eventDate',null=True, blank=True)
+    deliveryTime = models.ForeignKey(BomList, on_delete=models.CASCADE, related_name='alertSchedule_deliveryTime',null=True, blank=True)
     orderAlertDate = models.CharField(verbose_name='orderAlertDate',blank=True,null=True,max_length=100)
     safetyRate = models.CharField(verbose_name='safetyRate',blank=True,null=True,max_length=100)
 
@@ -156,7 +158,7 @@ class AlertSchedule(models.Model):
     def __str__(self):
         return str('AlertSchedule')
 
-        def calculate_order_alert_date(self):
+    def calculate_order_alert_date(self):
         if self.eventDate and self.deliveryTime and self.safetyRate:
             try:
                 # 日付の差を計算

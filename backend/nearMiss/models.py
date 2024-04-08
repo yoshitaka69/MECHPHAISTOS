@@ -209,12 +209,12 @@ class TrendSafetyIndicators(models.Model):
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE,related_name='trendSafetyIndicators_companyName', null=True, blank=True)
 
     safetyIndicators = models.ForeignKey(SafetyIndicators, on_delete=models.CASCADE,related_name='trendSafetyIndicators_companyName', null=True, blank=True)
-    5yearsAgo = models.CharField(verbose_name='5yearsAgo', max_length=20,null=True,blank=True)
-    4yearsAgo = models.CharField(verbose_name='4yearsAgo', max_length=20,null=True,blank=True)
-    3yearsAgo = models.CharField(verbose_name='3yearsAgo', max_length=20,null=True,blank=True)
-    2yearsAgo = models.CharField(verbose_name='2yearsAgo', max_length=20,null=True,blank=True)
-    1yearsAgo = models.CharField(verbose_name='1yearsAgo', max_length=20,null=True,blank=True)
-    thisYear = models.CharField(verbose_name='thisYeaar', max_length=20,null=True,blank=True)
+    years5Ago = models.CharField(verbose_name='years5Ago', max_length=20,null=True,blank=True)
+    years4Ago = models.CharField(verbose_name='years4Ago', max_length=20,null=True,blank=True)
+    years3Ago = models.CharField(verbose_name='years3Ago', max_length=20,null=True,blank=True)
+    years2Ago = models.CharField(verbose_name='years2Ago', max_length=20,null=True,blank=True)
+    years1Ago = models.CharField(verbose_name='years1Ago', max_length=20,null=True,blank=True)
+    thisYear = models.CharField(verbose_name='thisYear', max_length=20,null=True,blank=True)
 
 
     class Meta:

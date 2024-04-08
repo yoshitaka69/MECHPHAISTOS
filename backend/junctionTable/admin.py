@@ -33,7 +33,7 @@ class AlertSchedule(admin.ModelAdmin):
 
     list_display = ('companyCode', 'companyName', 'plant', 'partsName', 'eventDate', 'deliveryTime', 'orderAlertDate', 'safetyRate')
     search_fields = ('companyCode', 'companyName', 'plant', 'partsName', 'eventDate', 'deliveryTime', 'orderAlertDate', 'safetyRate')
-    list_filter = ('companyCode', 'companyName', 'plant', 'partsName', 'eventDate', 'deliveryTime', 'orderAlertDate', 'safetyRate'')# adminで右側にあるフィルターBOXのこと
+    list_filter = ('companyCode', 'companyName', 'plant', 'partsName', 'eventDate', 'deliveryTime', 'orderAlertDate', 'safetyRate')# adminで右側にあるフィルターBOXのこと
     ordering = ('companyCode',) # 表示する順番
     save_on_top = True #上部にもsaveボタンを配置
 

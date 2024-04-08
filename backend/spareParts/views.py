@@ -39,5 +39,5 @@ class CompanyBomListViewSet(viewsets.ModelViewSet):
         company_code = self.request.query_params.get('companyCode', None)
         if company_code:
             queryset = queryset.filter(companyCode=company_code)
-        return queryset)
+        return queryset
 
