@@ -123,7 +123,7 @@ class SafetyIndicators(models.Model):
 
 
 # update_total_of_near_miss 関数
-# この関数はモデルの外部に配置し、スタンドアローンの関数として扱います。
+# この関数はモデルの外部に配置し、スタンドアローンの関数として扱います。 CHECK OK
 def update_total_of_near_miss(company_code_id):
     total_near_miss_count = NearMiss.objects.filter(companyCode_id=company_code_id).count()
     safety_indicator, created = SafetyIndicators.objects.get_or_create(
@@ -138,7 +138,7 @@ def update_total_of_near_miss(company_code_id):
 
 
 
-#action itemsのトータル数をカウントする。
+#action itemsのトータル数をカウントする。 CHECK OK
 def update_total_of_action_items(company_code_id):
     action_items_count = NearMiss.objects.filter(companyCode_id=company_code_id).count()
     safety_indicator, created = SafetyIndicators.objects.get_or_create(
@@ -153,7 +153,7 @@ def update_total_of_action_items(company_code_id):
 
 
 
-#solved action itemsのトータル数をカウントする。
+#solved action itemsのトータル数をカウントする。 CHECK OK
 def update_total_of_solved_action_items(company_code_id):
     # ここでのカウントロジックは、NearMissのsolvedActionItemsをどのように扱っているかによります
     # 例えば、solvedActionItemsがブール値フィールドであれば、filter()で条件を指定する
@@ -169,7 +169,7 @@ def update_total_of_solved_action_items(company_code_id):
 
 
 
-# この関数は SafetyIndicators モデルの外部に配置し、スタンドアローンの関数として扱います。
+# この関数は SafetyIndicators モデルの外部に配置し、スタンドアローンの関数として扱います。 CHECK OK
 def update_count_of_level_a(company_code_id):
     level_a_count = NearMiss.objects.filter(companyCode_id=company_code_id, measures='A').count()
     safety_indicator, created = SafetyIndicators.objects.get_or_create(
@@ -183,6 +183,7 @@ def update_count_of_level_a(company_code_id):
 
 
 
+#danger Area 算出関数　CHECK OK
 def update_danger_area(company_code_id):
     # companyCodeに基づいてNearMissインスタンスのplaceOfOccurrenceを集計
     most_common_place = NearMiss.objects.filter(companyCode_id=company_code_id) \

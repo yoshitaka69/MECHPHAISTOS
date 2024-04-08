@@ -83,14 +83,24 @@ class CompanyCodeBomAndTaskSerializer(serializers.ModelSerializer):
 class AlertScheduleSerializer(serializers.ModelSerializer):
     class Meta:
         model = AlertSchedule
-        field = ['companyCode', 'companyName', 'plant', 'partsName', 'eventDate', 'deliveryTime', 'orderAlertDate', 'safetyRate']
+        fields = ['companyCode', 'companyName', 'plant', 'partsName', 'eventDate', 'deliveryTime', 'orderAlertDate', 'safetyRate']
+
+    companyCode = serializers.SlugRelatedField(
+        slug_field='companyCode', 
+        queryset=CompanyCode.objects.all()
+    )
+    plant = serializers.SlugRelatedField(
+        slug_field='plant', 
+        queryset=Plant.objects.all()
+    )
+
 
 class CompanyCodeAlertScheduleSerializer(serializers.ModelSerializer):
     AlertScheduleList = AlertScheduleSerializer(many=True, source='alertSchedule_companyCode')
-    
+
     class Meta:
         model = CompanyCode
-        field = ['companyCode', 'AlertScheduleList']
+        fields = ['companyCode', 'AlertScheduleList']
 
 
 

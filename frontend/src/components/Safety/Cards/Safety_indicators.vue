@@ -1,5 +1,5 @@
 <template>
-  <div class="col-12 lg:col-6 xl:col-4">
+
     <div class="card mb-0">
       <div class="flex justify-content-between mb-3">
         <div>
@@ -15,7 +15,7 @@
       <span class="text-green-500 font-medium">%52+ </span>
       <span class="text-500">since last month</span>
     </div>
-  </div>
+
 </template>
 
 

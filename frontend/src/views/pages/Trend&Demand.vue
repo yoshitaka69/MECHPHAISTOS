@@ -27,7 +27,9 @@
 				<TabView>
 					<TabPanel header="Trend & Demand map">
 						<p class="line-height-3 m-0">
-							<Trend_map/>
+						<div class="col-12 lg:col-6 xl:col-6">
+							<Trend_map />
+						</div>
 						</p>
 					</TabPanel>
 				</TabView>

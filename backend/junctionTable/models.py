@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from datetime import timedelta
+import decimal
 
 from accounts.models import CompanyCode,CompanyName,Plant
 from ceList.models import Equipment,CeList,Machine
@@ -144,9 +145,9 @@ class AlertSchedule(models.Model):
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='alertSchedule_companyName', null=True, blank=True)
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='alertSchedule_plant',null=True, blank=True)
     partsName = models.ForeignKey(BomList, on_delete=models.CASCADE, related_name='alertSchedule_partsName',null=True, blank=True)
-    eventDate = models.ForeignKey(BomList, on_delete=models.CASCADE, related_name='alertSchedule_eventDate',null=True, blank=True)
-    deliveryTime = models.ForeignKey(BomList, on_delete=models.CASCADE, related_name='alertSchedule_deliveryTime',null=True, blank=True)
-    orderAlertDate = models.CharField(verbose_name='orderAlertDate',blank=True,null=True,max_length=100)
+    eventDate = models.DateField(verbose_name='eventDate', blank=True, null=True, default=timezone.now)
+    deliveryTime = models.IntegerField(verbose_name='deliveryTime',null=True,blank=True,default=0)
+    orderAlertDate = models.DateField(verbose_name='orderAlertDate',blank=True,null=True)
     safetyRate = models.CharField(verbose_name='safetyRate',blank=True,null=True,max_length=100)
 
     class Meta:
@@ -158,22 +159,29 @@ class AlertSchedule(models.Model):
     def __str__(self):
         return str('AlertSchedule')
 
+    #orderAlertDateを算出する関数 　 CHECK OK 
     def calculate_order_alert_date(self):
-        if self.eventDate and self.deliveryTime and self.safetyRate:
+        if self.eventDate and self.deliveryTime is not None and self.safetyRate:
             try:
-                # 日付の差を計算
-                days_diff = (self.eventDate - self.deliveryTime).days
+                # deliveryTime を timedelta に変換
+                delivery_timedelta = timedelta(days=self.deliveryTime)
 
-                # 差分日数に safetyRate を掛ける
-                additional_days = int(days_diff * self.safetyRate)
+                # eventDate から deliveryTime を引く
+                estimated_date = self.eventDate - delivery_timedelta
 
-                # eventDate に追加する
-                new_order_alert_date = self.eventDate + timedelta(days=additional_days)
+                # safetyRate を小数に変換（例: "50%" -> 0.5）
+                safety_rate_decimal = decimal.Decimal(self.safetyRate.strip('%')) / 100
+
+                # 差分日数から safetyRate 分を引く（修正された部分）
+                additional_days = int(delivery_timedelta.days * safety_rate_decimal)
+
+                # eventDate から引く（修正された部分）
+                new_order_alert_date = estimated_date - timedelta(days=additional_days)
 
                 # 新しい値を設定
                 self.orderAlertDate = new_order_alert_date.strftime("%Y-%m-%d")
-            except (ValueError, TypeError):
-                # 変換エラーや型エラーの場合は何もしない（あるいはエラーログを出力）
+            except (ValueError, TypeError, decimal.InvalidOperation):
+                # 変換エラーや型エラー、無効な操作の場合は何もしない（あるいはエラーログを出力）
                 pass
 
     def save(self, *args, **kwargs):

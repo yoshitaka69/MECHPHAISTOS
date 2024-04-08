@@ -22,64 +22,32 @@
 			<div class="card card-solid">
 				<!--Tabはsakai-vue-template-->
 				<TabView>
+					<!--Tabの表示-->
 					<TabPanel header="NearMiss List">
 						<p class="line-height-3 m-0" style="background-color: #f0f0f0">
 							<Near_miss_list />
 						</p>
 					</TabPanel>
+
 					<TabPanel header="Analyze">
-						<div class="row"><!--このrow classでカードを横並びにしている-->
-							<div class="col-12 lg:col-6 xl:col-4">
-								<div class="card mb-0">
-									<div class="flex justify-content-between mb-3">
-										<div>
-											<span class="block text-500 font-medium mb-3">Number of near misses</span>
-											<div class="text-900 font-medium text-xl">$2.100</div>
-										</div>
-										<div class="flex align-items-center justify-content-center bg-orange-100 border-round"
-											style="width: 2.5rem; height: 2.5rem">
-											<i class="pi pi-map-marker text-orange-500 text-xl"></i>
-										</div>
-									</div>
-									<span class="text-green-500 font-medium">%52+ </span>
-									<span class="text-500">since last week</span>
-								</div>
+						<div class="row">
+							<!--このrow classでカードを横並びにしている-->
+							<div class="col-12 lg:col-6 xl:col-3">
+								<Safety_indicators_alert />
 							</div>
-							<div class="col-12 lg:col-6 xl:col-4">
-								<div class="card mb-0">
-									<div class="flex justify-content-between mb-3">
-										<div>
-											<span class="block text-500 font-medium mb-3">Assumed risks</span>
-											<div class="text-900 font-medium text-xl">28441</div>
-										</div>
-										<div class="flex align-items-center justify-content-center bg-cyan-100 border-round"
-											style="width: 2.5rem; height: 2.5rem">
-											<i class="pi pi-inbox text-cyan-500 text-xl"></i>
-										</div>
-									</div>
-									<span class="text-green-500 font-medium">520 </span>
-									<span class="text-500">newly registered</span>
-								</div>
+							<div class="col-12 lg:col-6 xl:col-3">
+								<Count_of_nearMiss />
 							</div>
-							<div class="col-12 lg:col-6 xl:col-4">
-								<div class="card mb-0">
-									<div class="flex justify-content-between mb-3">
-										<div>
-											<span class="block text-500 font-medium mb-3">Measures needed</span>
-											<div class="text-900 font-medium text-xl">152 Unread</div>
-										</div>
-										<div class="flex align-items-center justify-content-center bg-purple-100 border-round"
-											style="width: 2.5rem; height: 2.5rem">
-											<i class="pi pi-comment text-purple-500 text-xl"></i>
-										</div>
-									</div>
-									<span class="text-green-500 font-medium">85 </span>
-									<span class="text-500">responded</span>
-								</div>
+							<div class="col-12 lg:col-6 xl:col-3">
+								<Danger_area />
+							</div>
+
+							<div class="col-12 lg:col-6 xl:col-3">
+								<Action_items />
 							</div>
 							<div class="col-12 xl:col-12">
 								<div class="card" style="background-color: #f2f2f2">
-									<Safety_indicator />
+									<Safety_indicator_trend />
 									<Message :closable="false">AI recommendation
 										<br />
 										Now developing
@@ -143,7 +111,12 @@ import Safety_AccidentType_rate from '@/components/Safety/Safety_AccidentType_ra
 import Safety_correlation_diagram from '@/components/Safety/Safety_correlation_diagram.vue';
 import Safety_Measure_trend from '@/components/Safety/Safety_Measure_trend.vue';
 import NearMiss_form from '@/components/Safety/Near_miss/Near_miss_form.vue';
-import Safety_indicator from '@/components/Safety/Safety_indicator.vue'
+import Safety_indicator_trend from '@/components/Safety/Safety_indicator.vue';
+
+import Safety_indicators_alert from '@/components/Safety/Cards/Safety_indicators';
+import Count_of_nearMiss from '@/components/Safety/Cards/Count_of_nearMiss';
+import Danger_area from '@/components/Safety/Cards/Danger_area';
+import Action_items from '@/components/Safety/Cards/Action_items';
 
 export default {
 	components: {
@@ -153,7 +126,12 @@ export default {
 		Safety_correlation_diagram,
 		Safety_Measure_trend,
 		NearMiss_form,
-		Safety_indicator
+		Safety_indicator_trend,
+
+		Safety_indicators_alert,
+		Count_of_nearMiss,
+		Danger_area,
+		Action_items,
 	}
 };
 </script>

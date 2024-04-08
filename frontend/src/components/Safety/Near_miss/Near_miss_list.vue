@@ -50,7 +50,7 @@ const showModal = ref(false)
 const searchField = ref('');
 const searchValue = ref('');
 
-const sortBy: string[] = ["ID No.", "Name", "Department", "Date", "where?", "Type of accident", "Description/Learning", "Factor", "Injured lv", "Equipment damage lv", "Affect of enviroment", "News coverage", "Affect of quality", "Measures", "Need Action?", "Solved Items?",];
+const sortBy: string[] = ["NearMiss No.", "Name", "Department", "Date", "where?", "Type of accident", "Description/Learning", "Factor", "Injured lv", "Equipment damage lv", "Affect of enviroment", "News coverage", "Affect of quality", "Measures", "Need Action?", "Solved Items?",];
 const sortType: SortType[] = ["desc", "asc"];
 
 const NearMiss = ref([]);
