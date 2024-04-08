@@ -23,6 +23,11 @@ const router = createRouter({
 					name:'News',
 					component: () => import('../views/pages/News.vue')
 				},
+		    		{
+					path: '/input_form',
+					name:'Input_form',
+					component: () => import('../views/pages/Input_form.vue')
+				},
 				{
 					path: '/critical_equipment_list',
 					name:'Critical_equipment_list',
