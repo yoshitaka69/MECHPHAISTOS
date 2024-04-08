@@ -141,7 +141,11 @@ class AlertSchedule(models.Model):
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='alertSchedule_companyCode',null=True, blank=True)
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='alertSchedule_companyName', null=True, blank=True)
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='alertSchedule_plant',null=True, blank=True)
-    nextMonthTaskAlert = models.DateField(verbose_name='nextMonthAlert', null=True,blank=True, default=timezone.now)
+    partsName = models.ForeignKey(BomList, on_delete=models.CASCADE, related_name='alertSchedule_bomList',null=True, blank=True)
+    eventDate = models.models.ForeignKey(BomList, on_delete=models.CASCADE, related_name='alertSchedule_bomList',null=True, blank=True)
+    deliveryTime = models.ForeignKey(BomList, on_delete=models.CASCADE, related_name='alertSchedule_sparePartsList',null=True, blank=True)
+    orderAlertDate = models.CharField(verbose_name='orderAlertDate',blank=True,null=True,max_length=100)
+    safetyRate = models.CharField(verbose_name='safetyRate',blank=True,null=True,max_length=100)
 
     class Meta:
         verbose_name = 'AlertSchedule'
