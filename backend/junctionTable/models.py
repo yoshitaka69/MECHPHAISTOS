@@ -156,4 +156,26 @@ class AlertSchedule(models.Model):
     def __str__(self):
         return str('AlertSchedule')
 
+        def calculate_order_alert_date(self):
+        if self.eventDate and self.deliveryTime and self.safetyRate:
+            try:
+                # 日付の差を計算
+                days_diff = (self.eventDate - self.deliveryTime).days
+
+                # 差分日数に safetyRate を掛ける
+                additional_days = int(days_diff * self.safetyRate)
+
+                # eventDate に追加する
+                new_order_alert_date = self.eventDate + timedelta(days=additional_days)
+
+                # 新しい値を設定
+                self.orderAlertDate = new_order_alert_date.strftime("%Y-%m-%d")
+            except (ValueError, TypeError):
+                # 変換エラーや型エラーの場合は何もしない（あるいはエラーログを出力）
+                pass
+
+    def save(self, *args, **kwargs):
+        self.calculate_order_alert_date()
+        super().save(*args, **kwargs)
+
     
