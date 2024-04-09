@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import MasterDataTable,BomAndTask,AlertSchedule
+from .models import MasterDataTable,BomAndTask
 
 class MasterDataTableAdmin(admin.ModelAdmin):
 
@@ -27,20 +27,11 @@ class BomAndTaskAdmin(admin.ModelAdmin):
     list_per_page = 50 # １ページあたりに表示するオブジェクト数を指定
 
 
-class AlertScheduleAdmin(admin.ModelAdmin):
 
-    list_display = ('companyCode', 'companyName', 'plant', 'partsName', 'eventDate', 'deliveryTime', 'orderAlertDate', 'safetyRate', 'location')
-    search_fields = ('companyCode', 'companyName', 'plant', 'partsName', 'eventDate', 'deliveryTime', 'orderAlertDate', 'safetyRate', 'location')
-    list_filter = ('companyCode', 'companyName', 'plant', 'partsName', 'eventDate', 'deliveryTime', 'orderAlertDate', 'safetyRate', 'location')# adminで右側にあるフィルターBOXのこと
-    ordering = ('companyCode',) # 表示する順番
-    save_on_top = True #上部にもsaveボタンを配置
-
-
-    list_per_page = 50 # １ページあたりに表示するオブジェクト数を指定
 
 
 # 以下でadminサイトに表示させる
 admin.site.register(MasterDataTable,MasterDataTableAdmin)
 admin.site.register(BomAndTask,BomAndTaskAdmin)
-admin.site.register(AlertSchedule,AlertScheduleAdmin)
+
 

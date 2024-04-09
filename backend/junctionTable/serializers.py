@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import MasterDataTable,BomAndTask,AlertSchedule
+from .models import MasterDataTable,BomAndTask
 from taskList.models import TypicalTaskList,TaskListPPM02,TaskListPPM03,TaskListAPM04,TaskListPPM05
 from spareParts.models import BomList
 from accounts.models import CompanyCode,Plant
@@ -80,27 +80,7 @@ class CompanyCodeBomAndTaskSerializer(serializers.ModelSerializer):
 
 
 
-class AlertScheduleSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = AlertSchedule
-        fields = ['companyCode', 'companyName', 'plant', 'partsName', 'eventDate', 'deliveryTime', 'orderAlertDate', 'safetyRate', 'location']
 
-    companyCode = serializers.SlugRelatedField(
-        slug_field='companyCode', 
-        queryset=CompanyCode.objects.all()
-    )
-    plant = serializers.SlugRelatedField(
-        slug_field='plant', 
-        queryset=Plant.objects.all()
-    )
-
-
-class CompanyCodeAlertScheduleSerializer(serializers.ModelSerializer):
-    AlertScheduleList = AlertScheduleSerializer(many=True, source='alertSchedule_companyCode')
-
-    class Meta:
-        model = CompanyCode
-        fields = ['companyCode', 'AlertScheduleList']
 
 
 

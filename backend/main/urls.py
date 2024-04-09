@@ -20,4 +20,5 @@ urlpatterns = [
     path("api/", include('taskList.urls')),
     path("api/", include('junctionTable.urls')),
     path("api/", include('calculation.urls')),
+    path("api/", include('agora.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
