@@ -1,6 +1,6 @@
 <script setup>
 import { computed, watch, ref } from 'vue';
-import AppHeader from './AppHeader.vue';
+import AppTopbar from './AppTopbar.vue';
 import AppFooter from './AppFooter.vue';
 import AppSidebar from './AppSidebar.vue';
 import AppConfig from './AppConfig.vue';
@@ -27,8 +27,7 @@ const containerClass = computed(() => {
         'layout-static-inactive': layoutState.staticMenuDesktopInactive.value && layoutConfig.menuMode.value === 'static',
         'layout-overlay-active': layoutState.overlayMenuActive.value,
         'layout-mobile-active': layoutState.staticMenuMobileActive.value,
-        'p-input-filled': layoutConfig.inputStyle.value === 'filled',
-        'p-ripple-disabled': !layoutConfig.ripple.value
+        'p-ripple-disabled': layoutConfig.ripple.value === false
     };
 });
 const bindOutsideClickListener = () => {
@@ -59,7 +58,7 @@ const isOutsideClicked = (event) => {
 
 <template>
     <div class="layout-wrapper" :class="containerClass">
-        <app-header></app-header>
+        <app-topbar></app-topbar>
         <div class="layout-sidebar">
             <app-sidebar></app-sidebar>
         </div>
@@ -72,12 +71,7 @@ const isOutsideClicked = (event) => {
         <app-config></app-config>
         <div class="layout-mask"></div>
     </div>
+    <Toast />
 </template>
 
-<style lang="scss" scoped>
-
-.layout-main-container{
-    overflow-y: scroll;
-}
-
-</style>
+<style lang="scss" scoped></style>

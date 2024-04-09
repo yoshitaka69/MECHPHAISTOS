@@ -5,7 +5,7 @@ import { computed } from 'vue';
 const { layoutConfig } = useLayout();
 
 const logoUrl = computed(() => {
-    return `layout/images/${layoutConfig.darkTheme.value ? 'logo-white' : 'logo-dark'}.svg`;
+    return `/layout/images/${layoutConfig.darkTheme.value ? 'logo-white' : 'logo-dark'}.svg`;
 });
 </script>
 
@@ -16,5 +16,4 @@ const logoUrl = computed(() => {
         <span class="font-medium ml-2">PrimeVue</span>
     </div>
 </template>
-
 <style lang="scss" scoped></style>
