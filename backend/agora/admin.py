@@ -5,6 +5,8 @@ from .models import AlertSchedule
 
 class AlertScheduleAdmin(admin.ModelAdmin):
 
+    readonly_fields = ('orderAlertDate',)
+
     list_display = ('companyCode', 'companyName', 'plant', 'partsName', 'eventDate', 'deliveryTime', 'orderAlertDate', 'safetyRate', 'location')
     search_fields = ('companyCode', 'companyName', 'plant', 'partsName', 'eventDate', 'deliveryTime', 'orderAlertDate', 'safetyRate', 'location')
     list_filter = ('companyCode', 'companyName', 'plant', 'partsName', 'eventDate', 'deliveryTime', 'orderAlertDate', 'safetyRate', 'location')# adminで右側にあるフィルターBOXのこと

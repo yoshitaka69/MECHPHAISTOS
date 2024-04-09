@@ -14,10 +14,6 @@ export default {
         class: null,
         style: null,
         tooltipOptions: null,
-        exact: {
-            type: Boolean,
-            default: true
-        },
         menuId: {
             type: String,
             default: null
@@ -26,11 +22,15 @@ export default {
             type: Number,
             default: 0
         },
-        'aria-label': {
+        breakpoint: {
+            type: String,
+            default: '960px'
+        },
+        ariaLabel: {
             type: String,
             default: null
         },
-        'aria-labelledby': {
+        ariaLabelledby: {
             type: String,
             default: null
         }

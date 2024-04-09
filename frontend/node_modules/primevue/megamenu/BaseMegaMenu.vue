@@ -14,9 +14,9 @@ export default {
             type: String,
             default: 'horizontal'
         },
-        exact: {
-            type: Boolean,
-            default: true
+        breakpoint: {
+            type: String,
+            default: '960px'
         },
         disabled: {
             type: Boolean,
@@ -26,11 +26,11 @@ export default {
             type: Number,
             default: 0
         },
-        'aria-labelledby': {
+        ariaLabelledby: {
             type: String,
             default: null
         },
-        'aria-label': {
+        ariaLabel: {
             type: String,
             default: null
         }

@@ -23,14 +23,14 @@ import { createPinia } from 'pinia';
 import PrimeVue from 'primevue/config';
 import '@/assets/styles.scss';
 
-//あさめしコードをwork order用
-// import 'primevue/resources/themes/bootstrap4-light-blue/theme.css'
-// import 'primevue/resources/themes/nova-vue/theme.css'
+
 import "primevue/resources/themes/tailwind-light/theme.css";
-// import 'primevue/resources/themes/md-light-indigo/theme.css'
 import "/node_modules/primeflex/primeflex.css";
 import "primevue/resources/primevue.min.css";
 import "primeicons/primeicons.css";
+
+
+
 
 //いつかグローバルcssの統一が必要かも…
 import "@/assets/global.scss";
@@ -56,7 +56,7 @@ import Textarea from "primevue/textarea";
 import Checkbox from "primevue/checkbox";
 import Message from 'primevue/message';
 import DataView from 'primevue/dataview';
-import DataViewLayoutOptions from 'primevue/dataviewlayoutoptions'   // optional
+import DataViewLayoutOptions from 'primevue/dataviewlayoutoptions' 
 
 // prime vue Modal
 import Dialog from "primevue/dialog";
@@ -72,12 +72,17 @@ import SplitButton from "primevue/splitbutton";
 import SelectButton from "primevue/selectbutton";
 import Calendar from "primevue/calendar";
 
+import Accordion  from 'primevue/accordion';
+import AccordionTab  from 'primevue/accordion';
+
 //prime vue misc
 import Tag from 'primevue/tag';
 
 // prime vue System Guide View
 import TabView from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
+
+
 
 //vue3-easy-data-table
 import Vue3EasyDataTable from 'vue3-easy-data-table';
@@ -191,6 +196,8 @@ const pinia = createPinia();
 registerPlugins(app)
 
 
+
+app.use(PrimeVue);
 app.use(ToastService);
 // app.use(moment);
 app.component("Button", Button);
@@ -228,6 +235,10 @@ app.directive("Tooltip", Tooltip);
 app.component("DataView",DataView);
 app.component("DataViewLayoutOptions",DataViewLayoutOptions);
 app.component("Tag",Tag);
+app.component("Accordion",Accordion);
+app.component("AccordionTab",AccordionTab);
+
+
 
 //vue3-easy-data-table
 app.component('EasyDataTable', Vue3EasyDataTable);
@@ -247,7 +258,6 @@ registerAllPlugins();
 registerAllModules();
 
 app.use(pinia);
-app.use(ganttastic)
-app.use(PrimeVue,{ripple : true})
-app.use(VueAxios, axios)
+app.use(ganttastic);
+app.use(VueAxios, axios);
 app.mount('#app')

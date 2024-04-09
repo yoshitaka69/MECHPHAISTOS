@@ -14,9 +14,9 @@ export default {
             type: Object,
             default: null
         },
-        exact: {
+        multiple: {
             type: Boolean,
-            default: true
+            default: false
         },
         tabindex: {
             type: Number,

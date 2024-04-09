@@ -10,19 +10,19 @@ export default {
             type: Array,
             default: null
         },
-        exact: {
-            type: Boolean,
-            default: true
-        },
         buttonProps: {
             type: null,
             default: null
         },
-        'aria-labelledby': {
+        breakpoint: {
+            type: String,
+            default: '960px'
+        },
+        ariaLabelledby: {
             type: String,
             default: null
         },
-        'aria-label': {
+        ariaLabel: {
             type: String,
             default: null
         }
