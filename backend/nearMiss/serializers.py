@@ -56,7 +56,7 @@ class TrendSafetyIndicatorsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TrendSafetyIndicators
-        fields = ['companyCode', 'companyName', 'safetyIndicators', '5yearsAgo','4yearsAgo', '3yearsAgo', '2yearsAgo', '1yearsAgo', 'thisYear']
+        fields = ['companyCode', 'companyName', 'safetyIndicators', 'lastUpdateDay',]
 
 class CompanyTrendSafetyIndicatorsSerializer(serializers.ModelSerializer):
     trendSafetyIndicatorsList = TrendSafetyIndicatorsSerializer(many=True, read_only=True, source='trendSafetyIndicators_companyCode')
