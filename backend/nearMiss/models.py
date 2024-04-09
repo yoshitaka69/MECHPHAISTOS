@@ -221,4 +221,29 @@ class TrendSafetyIndicators(models.Model):
 
     def __str__(self):
         return f"{self.companyCode}"
+
+    
+    @receiver(post_save, sender=nearMiss)
+def update_trend_safety_indicators(sender, instance, **kwargs):
+    # nearMissのmeasuresとcreatedDayを取得
+    measures_value = instance.measures
+    created_day = instance.createdDay
+
+    # TrendSafetyIndicatorsのレコードを検索（同じ月のデータがあるか確認）
+    try:
+        trend_indicator = TrendSafetyIndicators.objects.filter(
+            lastUpdateDay__year=created_day.year,
+            lastUpdateDay__month=created_day.month
+        ).latest('lastUpdateDay')
+        # すでに存在する月のレコードを更新
+        trend_indicator.safetyIndicators = measures_value
+        trend_indicator.lastUpdateDay = timezone.now()
+        trend_indicator.save()
+    except TrendSafetyIndicators.DoesNotExist:
+        # 新しい月のデータを作成
+        TrendSafetyIndicators.objects.create(
+            safetyIndicators=measures_value,
+            lastUpdateDay=timezone.now()
+        )
+
     
