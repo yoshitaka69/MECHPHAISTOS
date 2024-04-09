@@ -210,12 +210,8 @@ class TrendSafetyIndicators(models.Model):
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE,related_name='trendSafetyIndicators_companyName', null=True, blank=True)
 
     safetyIndicators = models.ForeignKey(SafetyIndicators, on_delete=models.CASCADE,related_name='trendSafetyIndicators_companyName', null=True, blank=True)
-    years5Ago = models.CharField(verbose_name='years5Ago', max_length=20,null=True,blank=True)
-    years4Ago = models.CharField(verbose_name='years4Ago', max_length=20,null=True,blank=True)
-    years3Ago = models.CharField(verbose_name='years3Ago', max_length=20,null=True,blank=True)
-    years2Ago = models.CharField(verbose_name='years2Ago', max_length=20,null=True,blank=True)
-    years1Ago = models.CharField(verbose_name='years1Ago', max_length=20,null=True,blank=True)
-    thisYear = models.CharField(verbose_name='thisYear', max_length=20,null=True,blank=True)
+    lastUpdateDay = models.DateField(verbose_name='lastUpdateDay', null=True,blank=True, default=timezone.now)
+
 
 
     class Meta:
