@@ -26,8 +26,8 @@ class SafetyIndicatorsAdmin(admin.ModelAdmin):
 
 
 class TrendSafetyIndicatorsAdmin(admin.ModelAdmin):
-    list_display = ('companyCode', 'companyName', 'safetyIndicators', 'years5Ago','years4Ago', 'years3Ago', 'years2Ago', 'years1Ago', 'thisYear')
-    search_fields = ('companyCode', 'companyName', 'safetyIndicators', 'years5Ago','years4Ago', 'years3Ago', 'years2Ago', 'years1Ago', 'thisYear')
+    list_display = ('companyCode', 'companyName', 'safetyIndicators', 'lastUpdateDay')
+    search_fields = ('companyCode', 'companyName', 'safetyIndicators', 'lastUpdateDay')
     list_filter = ('companyCode','companyName',) # adminで右側にあるフィルターBOXのこと
     ordering = ('companyCode',) # 表示する順番
     save_on_top = True #上部にもsaveボタンを配置
