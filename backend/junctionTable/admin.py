@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import MasterDataTable,BomAndTask
+from .models import MasterDataTable,BomAndTask,CeListAndTask
 
 class MasterDataTableAdmin(admin.ModelAdmin):
 
