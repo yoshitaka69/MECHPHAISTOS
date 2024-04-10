@@ -4,7 +4,7 @@ from rest_framework import viewsets
 from .models import MasterDataTable,BomAndTask
 from accounts.models import CompanyCode
 from .serializers import  (MasterDataTableSerializer, CompanyCodeMDTSerializer,
-                        BomAndTaskSerializer,CompanyCodeBomAndTaskSerializer,)
+                        BomAndTaskSerializer,CompanyCodeBomAndTaskSerializer,CeListAndTaskSerializer,CompanyCodeCeListAndTaskSerializer,)
 
 
 #MasterDataTable
