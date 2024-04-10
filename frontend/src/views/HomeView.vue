@@ -1,4 +1,0 @@
-
-<template>
-useTicketStore
-</template>

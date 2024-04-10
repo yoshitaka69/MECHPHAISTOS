@@ -2,6 +2,112 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
 
+//axios
+import axios from 'axios'
+import VueAxios from 'vue-axios'
+
+//pinia
+import { createPinia } from 'pinia';
+
+//vue3-easy-data-table
+import Vue3EasyDataTable from 'vue3-easy-data-table';
+import 'vue3-easy-data-table/dist/style.css';
+
+
+//handsontable
+// the base module
+import Handsontable from 'handsontable/base';
+// cell type modules
+import {
+  AutocompleteCellType,
+  CheckboxCellType,
+  DateCellType,
+  DropdownCellType,
+  HandsontableCellType,
+  NumericCellType,
+  PasswordCellType,
+  TextCellType,
+  TimeCellType,
+} from 'handsontable/cellTypes';
+// renderer modules
+import {
+  baseRenderer,
+  autocompleteRenderer,
+  checkboxRenderer,
+  htmlRenderer,
+  numericRenderer,
+  passwordRenderer,
+  textRenderer,
+} from 'handsontable/renderers';
+// editor modules
+import {
+  AutocompleteEditor,
+  BaseEditor,
+  CheckboxEditor,
+  DateEditor,
+  DropdownEditor,
+  HandsontableEditor,
+  NumericEditor,
+  PasswordEditor,
+  SelectEditor,
+  TextEditor,
+} from 'handsontable/editors';
+// validator modules
+import {
+  autocompleteValidator,
+  dateValidator,
+  numericValidator,
+  timeValidator,
+} from 'handsontable/validators';
+// plugin modules
+import {
+  AutoColumnSize,
+  AutoRowSize,
+  Autofill,
+  BasePlugin,
+  BindRowsWithHeaders,
+  CollapsibleColumns,
+  ColumnSorting,
+  ColumnSummary,
+  Comments,
+  ContextMenu,
+  CopyPaste,
+  CustomBorders,
+  DragToScroll,
+  DropdownMenu,
+  ExportFile,
+  Filters,
+  Formulas,
+  HiddenColumns,
+  HiddenRows,
+  ManualColumnFreeze,
+  ManualColumnMove,
+  ManualColumnResize,
+  ManualRowMove,
+  ManualRowResize,
+  MergeCells,
+  MultiColumnSorting,
+  MultipleSelectionHandles,
+  NestedHeaders,
+  NestedRows,
+  PersistentState,
+  Search,
+  TouchScroll,
+  TrimRows,
+  UndoRedo,
+} from 'handsontable/plugins';
+
+// registering functions that let you quickly register all modules at once
+import {
+  registerAllCellTypes,
+  registerAllRenderers,
+  registerAllEditors,
+  registerAllValidators,
+  registerAllPlugins,
+  registerAllModules,
+} from 'handsontable/registry'
+
+//primeVue
 import PrimeVue from 'primevue/config';
 import AutoComplete from 'primevue/autocomplete';
 import Accordion from 'primevue/accordion';
@@ -28,7 +134,7 @@ import ColumnGroup from 'primevue/columngroup';
 import ConfirmDialog from 'primevue/confirmdialog';
 import ConfirmPopup from 'primevue/confirmpopup';
 import ConfirmationService from 'primevue/confirmationservice';
-import ContextMenu from 'primevue/contextmenu';
+//import ContextMenu from 'primevue/contextmenu';
 import DataTable from 'primevue/datatable';
 import DataView from 'primevue/dataview';
 import DataViewLayoutOptions from 'primevue/dataviewlayoutoptions';
@@ -110,6 +216,7 @@ import '@/assets/styles.scss';
 
 
 const app = createApp(App);
+const pinia = createPinia();
 
 app.use(router);
 app.use(PrimeVue, { ripple: true });
@@ -147,7 +254,7 @@ app.component('Column', Column);
 app.component('ColumnGroup', ColumnGroup);
 app.component('ConfirmDialog', ConfirmDialog);
 app.component('ConfirmPopup', ConfirmPopup);
-app.component('ContextMenu', ContextMenu);
+//app.component('ContextMenu', ContextMenu);
 app.component('DataTable', DataTable);
 app.component('DataView', DataView);
 app.component('DataViewLayoutOptions', DataViewLayoutOptions);
@@ -221,5 +328,23 @@ app.component('TriStateCheckbox', TriStateCheckbox);
 app.component('VirtualScroller', VirtualScroller);
 
 
+//vue3-easy-data-table
+app.component('EasyDataTable', Vue3EasyDataTable);
 
+//Handsontable
+// register all cell types at once
+registerAllCellTypes();
+// register all renderers at once
+registerAllRenderers();
+// register all editors at once
+registerAllEditors();
+// register all validators at once
+registerAllValidators();
+// register all plugins at once
+registerAllPlugins();
+// or, register all of Handsontable's modules at once
+registerAllModules();
+
+app.use(pinia);
+app.use(VueAxios, axios);
 app.mount('#app');
