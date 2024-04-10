@@ -139,6 +139,78 @@ class BomAndTask(models.Model):
 
 
 
+class CeListAndTask(models.Model):
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='ceListAndTask_companyCode',null=True, blank=True)
+    companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='ceListAndTask_companyName', null=True, blank=True)
+    plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='ceListAndTask_plant',null=True, blank=True)
+    equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='ceList_companyCode',null=True, blank=True)
+
+    no1HighLevelEquipment = models.CharField(verbose_name='no1HighLevelEquipment',blank=True,null=True,max_length=100)
+    no1HighPriorityTaskName = models.CharField(verbose_name='no1HighPriorityTaskName',blank=True,null=True,max_length=100)
+
+    no2HighLevelEquipment = models.CharField(verbose_name='no2HighLevelEquipment',blank=True,null=True,max_length=100)
+    no2HighPriorityTaskName = models.CharField(verbose_name='no2HighPriorityTaskName',blank=True,null=True,max_length=100)]
+
+    no3HighLevelEquipment = models.CharField(verbose_name='no3HighLevelEquipment',blank=True,null=True,max_length=100)
+    no3HighPriorityTaskName = models.CharField(verbose_name='no3HighPriorityTaskName',blank=True,null=True,max_length=100)
+
+    no4HighLevelEquipment = models.CharField(verbose_name='no4HighLevelEquipment',blank=True,null=True,max_length=100)
+    no4HighPriorityTaskName = models.CharField(verbose_name='no4HighPriorityTaskName',blank=True,null=True,max_length=100)
+
+    no5HighLevelEquipment = models.CharField(verbose_name='no5HighLevelEquipment',blank=True,null=True,max_length=100)
+    no5HighPriorityTaskName = models.CharField(verbose_name='no5HighPriorityTaskName',blank=True,null=True,max_length=100)
+
+    no6HighLevelEquipment = models.CharField(verbose_name='no6HighLevelEquipment',blank=True,null=True,max_length=100)
+    no6HighPriorityTaskName = models.CharField(verbose_name='no6HighPriorityTaskName',blank=True,null=True,max_length=100)
+
+    no7HighLevelEquipment = models.CharField(verbose_name='no7HighLevelEquipment',blank=True,null=True,max_length=100)
+    no7HighPriorityTaskName = models.CharField(verbose_name='no7HighPriorityTaskName',blank=True,null=True,max_length=100)
+
+    no8HighLevelEquipment = models.CharField(verbose_name='no8HighLevelEquipment',blank=True,null=True,max_length=100)
+    no8HighPriorityTaskName = models.CharField(verbose_name='no8HighPriorityTaskName',blank=True,null=True,max_length=100)
+
+    no9HighLevelEquipment = models.CharField(verbose_name='no9HighLevelEquipment',blank=True,null=True,max_length=100)
+    no9HighPriorityTaskName = models.CharField(verbose_name='no9HighPriorityTaskName',blank=True,null=True,max_length=100)
+
+    no10HighLevelEquipment = models.CharField(verbose_name='no10HighLevelEquipment',blank=True,null=True,max_length=100)
+    no10HighPriorityTaskName = models.CharField(verbose_name='no10HighPriorityTaskName',blank=True,null=True,max_length=100)
+
+    no11HighLevelEquipment = models.CharField(verbose_name='no11HighLevelEquipment',blank=True,null=True,max_length=100)
+    no11HighPriorityTaskName = models.CharField(verbose_name='no11HighPriorityTaskName',blank=True,null=True,max_length=100)
+
+    no12HighLevelEquipment = models.CharField(verbose_name='no12HighLevelEquipment',blank=True,null=True,max_length=100)
+    no12HighPriorityTaskName = models.CharField(verbose_name='no12HighPriorityTaskName',blank=True,null=True,max_length=100)
+
+    no13HighLevelEquipment = models.CharField(verbose_name='no13HighLevelEquipment',blank=True,null=True,max_length=100)
+    no13HighPriorityTaskName = models.CharField(verbose_name='no13HighPriorityTaskName',blank=True,null=True,max_length=100)
+
+    no14HighLevelEquipment = models.CharField(verbose_name='no14HighLevelEquipment',blank=True,null=True,max_length=100)
+    no14HighPriorityTaskName = models.CharField(verbose_name='no14HighPriorityTaskName',blank=True,null=True,max_length=100)
+
+    no15HighLevelEquipment = models.CharField(verbose_name='no15HighLevelEquipment',blank=True,null=True,max_length=100)
+    no15HighPriorityTaskName = models.CharField(verbose_name='no15HighPriorityTaskName',blank=True,null=True,max_length=100)
+
+    no16HighLevelEquipment = models.CharField(verbose_name='no16HighLevelEquipment',blank=True,null=True,max_length=100)
+    no16HighPriorityTaskName = models.CharField(verbose_name='no16HighPriorityTaskName',blank=True,null=True,max_length=100)
+
+    no17HighLevelEquipment = models.CharField(verbose_name='no17HighLevelEquipment',blank=True,null=True,max_length=100)
+    no17HighPriorityTaskName = models.CharField(verbose_name='no17HighPriorityTaskName',blank=True,null=True,max_length=100)
+
+    no18HighLevelEquipment = models.CharField(verbose_name='no18HighLevelEquipment',blank=True,null=True,max_length=100)
+    no18HighPriorityTaskName = models.CharField(verbose_name='no18HighPriorityTaskName',blank=True,null=True,max_length=100)
+
+    no19HighLevelEquipment = models.CharField(verbose_name='no19HighLevelEquipment',blank=True,null=True,max_length=100)
+    no19HighPriorityTaskName = models.CharField(verbose_name='no19HighPriorityTaskName',blank=True,null=True,max_length=100)
+
+    no20HighLevelEquipment = models.CharField(verbose_name='no20HighLevelEquipment',blank=True,null=True,max_length=100)
+    no20HighPriorityTaskName = models.CharField(verbose_name='no20HighPriorityTaskName',blank=True,null=True,max_length=100)
 
 
+    class Meta:
+        verbose_name = 'CeList And Task'
+        verbose_name_plural = 'CeList And Task'
+        ordering = ('companyCode',) #モデルのクエリセットを取得した際にどのような順番でフィールドを並べ変えるかを決める。
     
+
+    def __str__(self):
+        return str('CeList And Task')
