@@ -10,6 +10,7 @@ defineProps({
     }
 });
 
+
 const $primevue = usePrimeVue();
 const inputStyle = computed(() => $primevue.config.inputStyle || 'outlined');
 
