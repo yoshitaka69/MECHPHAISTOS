@@ -1,50 +1,56 @@
 <template>
   <div class="col-12 lg:col-6 xl:col-4">
-    <div class="card mb-0">
-      <div class="flex justify-content-between mb-3">
-        <div>
-          <span class="block text-500 font-medium mb-3">Number of near misses</span>
-          <div class="text-900 font-medium text-xl">{{ totalActualCost }}</div>
-        </div>
-        <div class="flex align-items-center justify-content-center bg-orange-100 border-round"
-          style="width: 2.5rem; height: 2.5rem">
-          <i class="pi pi-map-marker text-orange-500 text-xl"></i>
+    <div class="card mb-0" v-if="filteredCosts.length > 0">
+      <div v-for="(cost, index) in filteredCosts" :key="index">
+        <div class="flex justify-content-between mb-3">
+          <div>
+            <span class="block text-500 font-medium mb-3">Plant: {{ cost.plant }}</span>
+            <span class="block text-500 font-medium mb-3">Year: {{ cost.year }}</span>
+            <span class="block text-500 font-medium mb-3">Total Actual Cost: {{ cost.totalActualCost }}</span>
+          </div>
         </div>
       </div>
-      <span class="text-green-500 font-medium">%52+ </span>
-      <span class="text-500">since last month</span>
+    </div>
+    <div class="card mb-0" v-else>
+      <span>No Data</span>
     </div>
   </div>
 </template>
 
-
 <script>
 import axios from 'axios';
 import { ref, onMounted } from 'vue';
-import { useUserStore } from '@/stores/userStore'; // Piniaストアをインポート
+import { useUserStore } from '@/stores/userStore';
 
 export default {
   setup() {
-    const totalActualCost = ref('0.00'); // 初期値を設定
+    const filteredCosts = ref([]);
+
     const userStore = useUserStore();
 
     const fetchTotalActualCost = async () => {
+      const currentYear = new Date().getFullYear();
       try {
-        const response = await axios.get('http://127.0.0.1:8000/api/nearMiss/trendSafetyIndicatorsByCompany/', {
+        const response = await axios.get('http://127.0.0.1:8000/api/calculation/summedByCompany/?format=json', {
           params: { companyCode: userStore.companyCode }
         });
-        const data = response.data;
-        if (data && data.summedActualCostList && data.summedActualCostList.length > 0) {
-          totalActualCost.value = data.summedActualCostList[0].totalActualCost; // totalActualCostの設定
+        const companyData = response.data.find(company => company.companyCode === userStore.companyCode);
+        if (companyData && companyData.summedActualCostList) {
+          const currentYearCosts = companyData.summedActualCostList.filter(item => item.year === currentYear);
+          if (currentYearCosts.length > 0) {
+            filteredCosts.value = currentYearCosts; // 現在の年に一致するデータをセット
+          } else {
+            filteredCosts.value = []; // "No Data" を表示するために空の配列をセット
+          }
         }
       } catch (error) {
-        console.error('Error fetching total actual cost:', error);
+        console.error('Error fetching data:', error);
       }
     };
 
     onMounted(fetchTotalActualCost);
 
-    return { totalActualCost };
+    return { filteredCosts };
   },
 };
 </script>
