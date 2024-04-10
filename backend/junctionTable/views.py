@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework import viewsets
 
-from .models import MasterDataTable,BomAndTask
+from .models import MasterDataTable,BomAndTask,CeListAndTask
 from accounts.models import CompanyCode
 from .serializers import  (MasterDataTableSerializer, CompanyCodeMDTSerializer,
                         BomAndTaskSerializer,CompanyCodeBomAndTaskSerializer,CeListAndTaskSerializer,CompanyCodeCeListAndTaskSerializer,)
