@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import MasterDataTable,BomAndTask
+from .models import MasterDataTable,BomAndTask,CeListAndTask
 from taskList.models import TypicalTaskList,TaskListPPM02,TaskListPPM03,TaskListAPM04,TaskListPPM05
 from spareParts.models import BomList
 from accounts.models import CompanyCode,Plant
@@ -77,7 +77,18 @@ class CompanyCodeBomAndTaskSerializer(serializers.ModelSerializer):
 
 
 
+class CeListAndTaskSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = CeListAndTask
+        field = ['companyCode', 'companyName', 'plant', 'equipment', 'no1HighLevelEquipment', 'bomAndTaskSet', 'bomAndTaskSetCost']
 
+class CompanyCodeCeListAndTaskSerializer(serializers.ModelSerializer):
+    CeListAndTaskList = CeListAndTaskSerializer(many=True, read_only=True, source='ceListAndTask_companyCode')
+    
+    class Meta:
+        model = CompanyCode
+        field = ['companyCode', 'CeListAndTaskList']
 
 
 
