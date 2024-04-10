@@ -26,6 +26,8 @@ class CompanyCodeMDTViewSet(viewsets.ModelViewSet):
 
 
 
+
+
 #BomAndTask
 class BomAndTaskViewSet(viewsets.ModelViewSet):
     queryset = BomAndTask.objects.all()
@@ -44,6 +46,25 @@ class CompanyCodeBomAndTaskViewSet(viewsets.ModelViewSet):
         return queryset
 
 
+
+
+
+#CeListAndTask
+class CeListAndTaskViewSet(viewsets.ModelViewSet):
+    queryset = CeListAndTask.objects.all()
+    serializer_class = CeListAndTaskSerializer
+
+
+class CompanyCodeCeListAndTaskViewSet(viewsets.ModelViewSet):
+    serializer_class = CompanyCodeCeListAndTaskSerializer
+
+#クエリパラメータでのフィルターリング
+    def get_queryset(self):
+        queryset = CompanyCode.objects.prefetch_related('ceListAndTask_companyCode').all()
+        company_code = self.request.query_params.get('companyCode', None)
+        if company_code:
+            queryset = queryset.filter(companyCode=company_code)
+        return queryset
 
 
 
