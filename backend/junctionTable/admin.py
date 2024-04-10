@@ -32,9 +32,9 @@ class BomAndTaskAdmin(admin.ModelAdmin):
 
 class CeListAndTaskAdmin(admin.ModelAdmin):
 
-    list_display = ('companyCode','companyName','plant','bomCode','taskCode','bomAndTaskSet','bomAndTaskSetCost',)
-    search_fields = ('companyCode','companyName','plant','bomCode','taskCode','bomAndTaskSet','bomAndTaskSetCost',)
-    list_filter = ('companyCode','companyName','plant','bomCode','taskCode','bomAndTaskSet','bomAndTaskSetCost',) # adminで右側にあるフィルターBOXのこと
+    list_display = ('companyCode','companyName', 'plant', 'equipment', 'machine', 'no1HighLevelEquipment', 'no1HighPriorityTaskName', 'no2HighLevelEquipment', 'no2HighPriorityTaskName','no3HighLevelEquipment', 'no3HighPriorityTaskName','no4HighLevelEquipment', 'no4HighPriorityTaskName','no5HighLevelEquipment', 'no5HighPriorityTaskName','no6HighLevelEquipment', 'no6HighPriorityTaskName','no7HighLevelEquipment', 'no7HighPriorityTaskName','no8HighLevelEquipment', 'no8HighPriorityTaskName','no9HighLevelEquipment', 'no9HighPriorityTaskName','no10HighLevelEquipment', 'no10HighPriorityTaskName', )
+    search_fields = ('companyCode','companyName', 'plant', 'equipment', 'machine', 'no1HighLevelEquipment', 'no1HighPriorityTaskName', 'no2HighLevelEquipment', 'no2HighPriorityTaskName','no3HighLevelEquipment', 'no3HighPriorityTaskName','no4HighLevelEquipment', 'no4HighPriorityTaskName','no5HighLevelEquipment', 'no5HighPriorityTaskName','no6HighLevelEquipment', 'no6HighPriorityTaskName','no7HighLevelEquipment', 'no7HighPriorityTaskName','no8HighLevelEquipment', 'no8HighPriorityTaskName','no9HighLevelEquipment', 'no9HighPriorityTaskName','no10HighLevelEquipment', 'no10HighPriorityTaskName', )
+    list_filter = ('companyCode','companyName', 'plant', 'equipment', 'machine', 'no1HighLevelEquipment', 'no1HighPriorityTaskName', 'no2HighLevelEquipment', 'no2HighPriorityTaskName','no3HighLevelEquipment', 'no3HighPriorityTaskName','no4HighLevelEquipment', 'no4HighPriorityTaskName','no5HighLevelEquipment', 'no5HighPriorityTaskName','no6HighLevelEquipment', 'no6HighPriorityTaskName','no7HighLevelEquipment', 'no7HighPriorityTaskName','no8HighLevelEquipment', 'no8HighPriorityTaskName','no9HighLevelEquipment', 'no9HighPriorityTaskName','no10HighLevelEquipment', 'no10HighPriorityTaskName', ) # adminで右側にあるフィルターBOXのこと
     ordering = ('companyCode',) # 表示する順番
     save_on_top = True #上部にもsaveボタンを配置
 
