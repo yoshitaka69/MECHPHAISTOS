@@ -60,7 +60,6 @@ class CompanyCodeMDTSerializer(serializers.ModelSerializer):
 
 
 
-
 class BomAndTaskSerializer(serializers.ModelSerializer):
     
     class Meta:
@@ -77,11 +76,13 @@ class CompanyCodeBomAndTaskSerializer(serializers.ModelSerializer):
 
 
 
+
+
 class CeListAndTaskSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = CeListAndTask
-        field = ['companyCode', 'companyName', 'plant', 'equipment', 'no1HighLevelEquipment', 'bomAndTaskSet', 'bomAndTaskSetCost']
+        field = ['companyCode', 'companyName', 'plant', 'equipment', 'no1HighLevelEquipment', 'no1HighPriorityTaskName', 'no2HighLevelEquipment', 'no2HighPriorityTaskName','no3HighLevelEquipment', 'no3HighPriorityTaskName','no4HighLevelEquipment', 'no4HighPriorityTaskName','no5HighLevelEquipment', 'no5HighPriorityTaskName','no6HighLevelEquipment', 'no6HighPriorityTaskName','no7HighLevelEquipment', 'no7HighPriorityTaskName','no8HighLevelEquipment', 'no8HighPriorityTaskName','no9HighLevelEquipment', 'no9HighPriorityTaskName','no10HighLevelEquipment', 'no10HighPriorityTaskName',]
 
 class CompanyCodeCeListAndTaskSerializer(serializers.ModelSerializer):
     CeListAndTaskList = CeListAndTaskSerializer(many=True, read_only=True, source='ceListAndTask_companyCode')
