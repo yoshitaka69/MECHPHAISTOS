@@ -2,6 +2,11 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useLayout } from '@/layout/composables/layout';
 import { useRouter } from 'vue-router';
+import Modal from '@/components/Modal/test.vue';
+
+//modal test用
+const showModal = ref(false)
+
 
 const { layoutConfig, onMenuToggle } = useLayout();
 
@@ -18,7 +23,7 @@ onBeforeUnmount(() => {
 });
 
 const logoUrl = computed(() => {
-    return `/layout/images/${layoutConfig.darkTheme.value ? 'logo-white' : 'logo-dark'}.svg`;
+    return `layout/images/${layoutConfig.darkTheme.value ? 'logo-white' : 'logo-dark'}.svg`;
 });
 
 const onTopBarMenuButton = () => {
@@ -58,24 +63,37 @@ const isOutsideClicked = (event) => {
 
     return !(sidebarEl.isSameNode(event.target) || sidebarEl.contains(event.target) || topbarEl.isSameNode(event.target) || topbarEl.contains(event.target));
 };
+
+
 </script>
 
 <template>
     <div class="layout-topbar">
         <router-link to="/" class="layout-topbar-logo">
-            <img :src="logoUrl" alt="logo" />
-            <span>SAKAI</span>
+            <span>MECHPHAISTOS&nbsp;βver.
+                <div class="subtitle">
+                    Money,Equipment,People.&nbsp;The best maintenance tool.
+                </div>
+            </span>
+
         </router-link>
 
+        <!--下はサイドバーメニューの開閉ボタン-->
         <button class="p-link layout-menu-button layout-topbar-button" @click="onMenuToggle()">
             <i class="pi pi-bars"></i>
         </button>
-
         <button class="p-link layout-topbar-menu-button layout-topbar-button" @click="onTopBarMenuButton()">
             <i class="pi pi-ellipsis-v"></i>
         </button>
 
+
         <div class="layout-topbar-menu" :class="topbarMenuClasses">
+            <button id="show-modal" @click="showModal = true">Show Modal</button>
+            <Teleport to="body">
+                <!-- use the modal component, pass in the prop -->
+                <modal :show="showModal" @close="showModal = false">
+                </modal>
+            </Teleport>
             <button @click="onTopBarMenuButton()" class="p-link layout-topbar-button">
                 <i class="pi pi-calendar"></i>
                 <span>Calendar</span>
