@@ -105,33 +105,33 @@
 </template>
 
 <script>
-//import Near_miss_list from '@/components/Safety/Near_miss/near_miss_list';
-//import Safety_factor_rate from '@/components/Safety/Safety_factor_rate';
+import Near_miss_list from '@/components/Safety/Near_miss/near_miss_list';
+import Safety_factor_rate from '@/components/Safety/Safety_factor_rate';
 import Safety_AccidentType_rate from '@/components/Safety/Safety_AccidentType_rate.vue';
 import Safety_correlation_diagram from '@/components/Safety/Safety_correlation_diagram.vue';
 import Safety_Measure_trend from '@/components/Safety/Safety_Measure_trend.vue';
 import NearMiss_form from '@/components/Safety/Near_miss/Near_miss_form.vue';
 import Safety_indicator_trend from '@/components/Safety/Safety_indicator.vue';
 
-//import Safety_indicators_alert from '@/components/Safety/Cards/Safety_indicators';
-//import Count_of_nearMiss from '@/components/Safety/Cards/Count_of_nearMiss';
-//import Danger_area from '@/components/Safety/Cards/Danger_area';
-//import Action_items from '@/components/Safety/Cards/Action_items';
+import Safety_indicators_alert from '@/components/Safety/Cards/Safety_indicators';
+import Count_of_nearMiss from '@/components/Safety/Cards/Count_of_nearMiss';
+import Danger_area from '@/components/Safety/Cards/Danger_area';
+import Action_items from '@/components/Safety/Cards/Action_items';
 
 export default {
 	components: {
-		//Near_miss_list,
-		//Safety_factor_rate,
+		Near_miss_list,
+		Safety_factor_rate,
 		Safety_AccidentType_rate,
 		Safety_correlation_diagram,
 		Safety_Measure_trend,
 		NearMiss_form,
 		Safety_indicator_trend,
 
-		//Safety_indicators_alert,
-		//Count_of_nearMiss,
-		//Danger_area,
-		//Action_items,
+		Safety_indicators_alert,
+		Count_of_nearMiss,
+		Danger_area,
+		Action_items,
 	}
 };
 </script>

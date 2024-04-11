@@ -1,11 +1,6 @@
-<!--sakai-vue-templateの転用-->
-
-<script>
-</script>
-
-
 <template>
     <div class="grid">
+
         <!--Priority Taskの転用-->
         <div class="col-12 lg:col-6 xl:col-3">
             <div class="card mb-0">
@@ -43,39 +38,15 @@
         </div>
 
         <div class="col-12 lg:col-6 xl:col-3">
-            <div class="card mb-0">
-                <div class="flex justify-content-between mb-3">
-                    <div>
-                        <span class="block text-500 font-medium mb-3">Danger Point</span>
-                        <div class="text-900 font-medium text-xl">28441</div>
-                    </div>
-                    <div class="flex align-items-center justify-content-center bg-cyan-100 border-round"
-                        style="width: 2.5rem; height: 2.5rem">
-                        <i class="pi pi-inbox text-cyan-500 text-xl"></i>
-                    </div>
-                </div>
-                <span class="text-green-500 font-medium">520 </span>
-                <span class="text-500">newly registered</span>
-            </div>
+            <Cards_Danger_area />
         </div>
+
 
         <div class="col-12 lg:col-6 xl:col-3">
-            <div class="card mb-0">
-                <div class="flex justify-content-between mb-3">
-                    <div>
-                        <span class="block text-500 font-medium mb-3">Repairing Cost/year</span>
-                        <div class="text-900 font-medium text-xl">152 Unread</div>
-                    </div>
-                    <div class="flex align-items-center justify-content-center bg-purple-100 border-round"
-                        style="width: 2.5rem; height: 2.5rem">
-                        <i class="pi pi-comment text-purple-500 text-xl"></i>
-                    </div>
-                </div>
-                <span class="text-green-500 font-medium">85 </span>
-                <span class="text-500">responded</span>
-            </div>
+            <Cards_repairing_cost_per_year />
         </div>
 
+        
         <div class="col-12 xl:col-6">
             <div class="card">
                 <h5>Repairing Cost</h5>
@@ -265,7 +236,8 @@
                 </div>
                 <div class="mt-4 mr-auto md:mt-0 md:mr-0">
                     <a href="https://www.primefaces.org/primeblocks-vue"
-                        class="p-button font-bold px-5 py-3 p-button-warning p-button-rounded p-button-raised"> Get Started
+                        class="p-button font-bold px-5 py-3 p-button-warning p-button-rounded p-button-raised"> Get
+                        Started
                     </a>
                 </div>
             </div>
@@ -275,21 +247,40 @@
 
 
 <script>
-import Trend_map from '@/components/Trend_map/Trend_map.vue'
-//import Safety_indicator from '@/components/Safety/Safety_indicator'
-import Safety_rate from '@/components/Safety/Safety_factor_rate.vue'
-import Safety_correlation_diagram from '@/components/Safety/Safety_correlation_diagram.vue'
+import Trend_map from '@/components/Trend_map/Trend_map.vue';
+import Safety_indicator from '@/components/Safety/Safety_indicator.vue';
+import Safety_rate from '@/components/Safety/Safety_factor_rate.vue';
+import Safety_correlation_diagram from '@/components/Safety/Safety_correlation_diagram.vue';
+
+import Total_graph  from '@/components/Repairing_cost/Total_graph.vue';
+
+
+import Cards_repairing_cost_per_year from '@/components/Repairing_cost/Cards/Repairing_cost_per_year';
+import Cards_Danger_area from '@/components/Safety/Cards/Danger_area';
 
 
 export default {
-	components: {
+    components: {
         Trend_map,
-        //Safety_indicator,
+        Safety_indicator,
         Safety_rate,
         Safety_correlation_diagram,
-	},
+
+        Total_graph,
+        Cards_repairing_cost_per_year,
+        Cards_Danger_area,
+
+
+    },
 }
 
-
-
 </script>
+
+<style>
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+</style>

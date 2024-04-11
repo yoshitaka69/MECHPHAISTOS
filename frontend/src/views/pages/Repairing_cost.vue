@@ -181,3 +181,12 @@ export default {
 	},
 }
 </script>
+
+<style>
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+</style>

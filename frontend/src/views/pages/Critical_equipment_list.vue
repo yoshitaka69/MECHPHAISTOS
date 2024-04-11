@@ -37,6 +37,7 @@
 						<div class="row">
 							<div class="col-12 xl:col-8">
 								<div class="card" style="background-color: #f2f2f2;">
+									priority tasks top 20
 								</div>
 							</div>
 							<div class="col-12 xl:col-4">
@@ -84,3 +85,13 @@ export default {
 	},
 }
 </script>
+
+
+<style>
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+</style>

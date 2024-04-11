@@ -1,5 +1,5 @@
 <template>
-	<div id="OrderAlerttable">
+	<div id="OrderAlertTable">
 		<hot-table ref="hotTableComponent" :settings="hotSettings"></hot-table>
 	</div>
 </template>
@@ -22,33 +22,33 @@ const TableComponent = defineComponent({
 		return {
 			hotSettings: {
 				data: [
-					["", "", "", "", "", "", ],
+					["", "", "", "", "", "",],
 				],
 				colHeaders: ['Order Alert', 'Parts Name', 'Delivery Time', 'Event Date', "Location", "Check",],
 				columns: [
 					{//'Order Alert'
 						type: "text",
-            readOnly : true,
+						readOnly: true,
 
 					},
 					{//'Parts Name'
 						type: 'text',
-            readOnly : true,
+						readOnly: true,
 
 					},
-          {//"Delivery Time"
+					{//"Delivery Time"
 						type: 'numeric',
-            readOnly : true,
+						readOnly: true,
 					},
 					{//'Event Date'
-          type: 'date',
-          dateFormat: 'YYYY-MM-DD',
-            readOnly : true,
+						type: 'date',
+						dateFormat: 'YYYY-MM-DD',
+						readOnly: true,
 
 					},
 					{//"Location"
 						type: 'text',
-            readOnly : true,
+						readOnly: true,
 
 					},
 
@@ -83,64 +83,66 @@ const TableComponent = defineComponent({
 
 	methods: {
 
-getDataAxios() {
-    const userStore = useUserStore();
-    const userCompanyCode = userStore.companyCode;
+		getDataAxios() {
+			const userStore = useUserStore();
+			const userCompanyCode = userStore.companyCode;
 
-    if (!userCompanyCode) {
-        console.error("Error: No company code found for the user.");
-        return;
-    }
+			if (!userCompanyCode) {
+				console.error("Error: No company code found for the user.");
+				return;
+			}
 
-    // URLの更新
-    const url = `http://127.0.0.1:8000/api/junctionTable/alertScheduleByCompany/?format=json&companyCode=${userCompanyCode}`;
+			// URLの更新
+			const url = `http://127.0.0.1:8000/api/junctionTable/alertScheduleByCompany/?format=json&companyCode=${userCompanyCode}`;
 
-    axios.get(url, {
-        headers: {
-            "Content-Type": "application/json"
-        },
-        withCredentials: true
-    })
-    .then(response => {
-        const alertScheduleList = response.data.AlertScheduleList;
+			axios.get(url, {
+				headers: {
+					"Content-Type": "application/json"
+				},
+				withCredentials: true
+			})
+				.then(response => {
+					const alertScheduleList = response.data.AlertScheduleList;
 
-        // データ抽出
-        const tableData = alertScheduleList.map(schedule => ({
-            partsName: schedule.partsName,
-            eventDate: schedule.eventDate,
-            location: schedule.location,
-            deliveryTime: schedule.deliveryTime,
-            orderAlertDate: schedule.orderAlertDate
-        }));
+					// データ抽出
+					const tableData = alertScheduleList.map(schedule => ({
+						partsName: schedule.partsName,
+						eventDate: schedule.eventDate,
+						location: schedule.location,
+						deliveryTime: schedule.deliveryTime,
+						orderAlertDate: schedule.orderAlertDate
+					}));
 
-        // columns の設定
-        const columns = [
-            { data: "partsName" },
-            { data: "eventDate" },
-            { data: "location" },
-            { data: "deliveryTime" },
-            { data: "orderAlertDate" }
-        ];
-        console.log("Table Data:", tableData); // テーブルデータをログに出力
+					// columns の設定
+					const columns = [
+						{ data: "partsName" },
+						{ data: "eventDate" },
+						{ data: "location" },
+						{ data: "deliveryTime" },
+						{ data: "orderAlertDate" }
+					];
+					console.log("Table Data:", tableData); // テーブルデータをログに出力
 
-        // 空行を追加
-        const blankRows = Array.from({ length: 20 }, () => ({}));
-        const newData = tableData.concat(blankRows);
+					// 空行を追加
+					const blankRows = Array.from({ length: 20 }, () => ({}));
+					const newData = tableData.concat(blankRows);
 
-        // table setting
-        this.$refs.hotTableComponent.hotInstance.updateSettings({
-            data: newData,
-            columns,
-        });
-    })
-    .catch(error => {
-        console.error("Error fetching data:", error);
-    });
-}
-	components: {
-		HotTable,
+					// table setting
+					this.$refs.hotTableComponent.hotInstance.updateSettings({
+						data: newData,
+						columns,
+					});
+				})
+				.catch(error => {
+					console.error("Error fetching data:", error);
+				});
+		},
 	},
+	components: {
+			HotTable,
+		},
 });
 
 export default TableComponent;
+
 </script>

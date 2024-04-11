@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<v-card-title></v-card-title>
+		<v-card-title>Demand trend Map</v-card-title>
 		<div id="TRmap"></div>
 	</div>
 </template>

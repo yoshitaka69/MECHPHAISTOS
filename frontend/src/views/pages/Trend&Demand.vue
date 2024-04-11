@@ -22,15 +22,16 @@
 
 		<section class="content">
 			<div class="card card-solid">
-				<!--Tabはsakai-vue-template-->
-
 				<TabView>
 					<TabPanel header="Trend & Demand map">
-						<p class="line-height-3 m-0">
-						<div class="col-12 lg:col-6 xl:col-6">
-							<Trend_map />
-						</div>
-						</p>
+
+							<div class="flex-child col-12 lg:col-6 xl:col-6">
+								<Trend_map />
+							</div>
+							<div class="flex-child col-12 lg:col-6 xl:col-6">
+								<Order_alert />
+							</div>
+
 					</TabPanel>
 				</TabView>
 			</div>
@@ -43,11 +44,17 @@
 <script>
 
 import Trend_map from '@/components/Trend_map/Trend_map.vue'
+import Order_alert from '@/components/Trend_map/Order_alert.vue'
 
 export default {
 	components: {
 		Trend_map,
+		Order_alert,
 	},
 }
 
 </script>
+
+<style>
+
+</style>

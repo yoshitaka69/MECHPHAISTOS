@@ -23,11 +23,10 @@
 		<section class="content">
 			<div class="card card-solid">
 				<!--Tabはsakai-vue-template-->
-
 				<TabView>
 					<TabPanel header="Spare Parts List">
 						<p class="line-height-3 m-0">
-							<div class="row" ><!--このrow classでカードを横並びにしている-->
+						<div class="row"><!--このrow classでカードを横並びにしている-->
 							<div class="col-12 lg:col-6 xl:col-4">
 								<div class="card mb-0">
 									<div class="flex justify-content-between mb-3" style="height: 20px;">
@@ -72,8 +71,9 @@
 							</div>
 							<br>
 							<br>
-							</div>
-							<BOM />
+						</div>
+						
+						<BOM />
 						</p>
 					</TabPanel>
 				</TabView>
@@ -83,12 +83,15 @@
 </template>
 
 
+
 <script>
-//import BOM from '@/components/Spare_parts/Spare_parts_list';
+
+import BOM from '@/components/Spare_parts/Spare_parts_list';
 
 export default {
-    components: {
-        //BOM,
-    },
+	components: {
+		BOM,
+	},
 }
+
 </script>
