@@ -1,7 +1,12 @@
 from django.db import models
-from django.utils import timezone
-from datetime import timedelta
-import decimal
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from random import choice
+from django.conf import settings
+
+
+
+
 
 from accounts.models import CompanyCode,CompanyName,Plant
 from ceList.models import Equipment,CeList,Machine
@@ -150,7 +155,7 @@ class CeListAndTask(models.Model):
     no1HighPriorityTaskName = models.CharField(verbose_name='no1HighPriorityTaskName',blank=True,null=True,max_length=100)
 
     no2HighLevelMachine = models.CharField(verbose_name='no2HighLevelMachine',blank=True,null=True,max_length=100)
-    no2HighPriorityTaskName = models.CharField(verbose_name='no2HighPriorityTaskName',blank=True,null=True,max_length=100)]
+    no2HighPriorityTaskName = models.CharField(verbose_name='no2HighPriorityTaskName',blank=True,null=True,max_length=100)
 
     no3HighLevelMachine = models.CharField(verbose_name='no3HighLevelMachine',blank=True,null=True,max_length=100)
     no3HighPriorityTaskName = models.CharField(verbose_name='no3HighPriorityTaskName',blank=True,null=True,max_length=100)
@@ -215,3 +220,52 @@ class CeListAndTask(models.Model):
 
     def __str__(self):
         return str('CeList And Task')
+    
+    @receiver(post_save, sender=MasterDataTable)
+    def update_ceListAndTask(sender, instance, **kwargs):
+        if settings.DEBUG:
+            print(f"MasterDataTable instance saved: {instance}")
+
+        # assessmentが"High"のエントリを抽出
+        high_assessment_entries = MasterDataTable.objects.filter(assessment='High')
+
+        if not high_assessment_entries.exists():
+            if settings.DEBUG:
+                print("No 'High' assessment entries found.")
+            return
+
+        # 対応するmachineNameをランダムに選択
+        selected_machine_entry = choice(high_assessment_entries)
+        selected_machine_name = selected_machine_entry.machineName
+
+        if settings.DEBUG:
+            print(f"Selected machine name: {selected_machine_name}")
+
+        # 選択されたmachineNameに関連するTypicalTaskListエントリを抽出
+        related_tasks = TypicalTaskList.objects.filter(
+            # ここでのフィルタリング条件は、実際のモデル構造に基づいて調整してください
+            machineName=selected_machine_name
+        )
+
+        if not related_tasks.exists():
+            if settings.DEBUG:
+                print(f"No tasks found for machine name: {selected_machine_name}")
+            return
+
+        # 関連するtypicalTaskNameをランダムに選択
+        selected_task = choice(related_tasks)
+        selected_task_name = selected_task.typicalTaskName
+
+        if settings.DEBUG:
+            print(f"Selected task name: {selected_task_name}")
+
+        # CeListAndTaskの対応するインスタンスを更新
+        ce_list_and_task, created = CeListAndTask.objects.get_or_create(
+            companyCode=instance.companyCode
+        )
+        ce_list_and_task.no1HighLevelMachine = selected_machine_name
+        ce_list_and_task.no1HighPriorityTaskName = selected_task_name
+        ce_list_and_task.save()
+
+        if settings.DEBUG:
+            print("CeListAndTask instance updated with new machine and task names.")
