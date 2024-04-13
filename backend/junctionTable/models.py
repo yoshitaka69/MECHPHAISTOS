@@ -4,10 +4,6 @@ from django.dispatch import receiver
 from random import choice
 from django.conf import settings
 
-
-
-
-
 from accounts.models import CompanyCode,CompanyName,Plant
 from ceList.models import Equipment,CeList,Machine
 from spareParts.models import BomList
@@ -221,3 +217,42 @@ class CeListAndTask(models.Model):
     def __str__(self):
         return str('CeList And Task')
     
+
+
+ 
+    @receiver(post_save, sender=MasterDataTable)
+    def update_ceListAndTask(sender, instance, **kwargs):
+        if settings.DEBUG:
+            print(f"MasterDataTable instance saved: {instance}")
+
+        # assessmentが"High"のエントリを抽出
+        high_assessment_entries = MasterDataTable.objects.filter(assessment='High', companyCode=instance.companyCode)
+        if not high_assessment_entries.exists():
+            if settings.DEBUG:
+                print("No 'High' assessment entries found for companyCode: ", instance.companyCode)
+            return
+
+        for entry in high_assessment_entries:
+            selected_machine = entry.machineName
+            selected_typical_task_name = entry.typicalTaskName  # フィールド名をtypicalTaskからtypicalTaskNameに変更
+
+            if settings.DEBUG:
+                print(f"Selected machine: {selected_machine}")
+                print(f"Selected typical task name: {selected_typical_task_name}")
+
+            # CeListAndTaskの対応するインスタンスを更新
+            ce_list_and_task, created = CeListAndTask.objects.get_or_create(
+                companyCode=instance.companyCode,
+                defaults={
+                    'no1HighLevelMachine': selected_machine,
+                    'no1HighPriorityTaskName': selected_typical_task_name
+                }
+            )
+
+            if not created:
+                ce_list_and_task.no1HighLevelMachine = selected_machine
+                ce_list_and_task.no1HighPriorityTaskName = selected_typical_task_name
+                ce_list_and_task.save()
+
+            if settings.DEBUG:
+                print("CeListAndTask instance updated with new machine and task names.")
