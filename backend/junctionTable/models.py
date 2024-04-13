@@ -217,42 +217,54 @@ class CeListAndTask(models.Model):
     def __str__(self):
         return str('CeList And Task')
     
-
-
  
-    @receiver(post_save, sender=MasterDataTable)
-    def update_ceListAndTask(sender, instance, **kwargs):
+# assessment の優先度を定義
+ASSESSMENT_PRIORITY = {
+    "Very High": 5,
+    "High": 4,
+    "Middle": 3,
+    "Low": 2,
+    "Very Low": 1
+}
+
+# assessment の優先度を定義
+ASSESSMENT_PRIORITY = {
+    "Very High": 5,
+    "High": 4,
+    "Middle": 3,
+    "Low": 2,
+    "Very Low": 1
+}
+
+@receiver(post_save, sender=MasterDataTable)
+def update_ceListAndTask(sender, instance, **kwargs):
+    if settings.DEBUG:
+        print(f"MasterDataTable instance saved: {instance}")
+
+    # assessment が "Very High", "High", "Middle", "Low", "Very Low" のエントリを抽出し、優先度の高い順にソート
+    assessment_entries = MasterDataTable.objects.filter(
+        assessment__in=ASSESSMENT_PRIORITY.keys()
+    ).order_by('-assessment')
+
+    if not assessment_entries.exists():
         if settings.DEBUG:
-            print(f"MasterDataTable instance saved: {instance}")
+            print("No relevant assessment entries found for companyCode: ", instance.companyCode)
+        return
 
-        # assessmentが"High"のエントリを抽出
-        high_assessment_entries = MasterDataTable.objects.filter(assessment='High', companyCode=instance.companyCode)
-        if not high_assessment_entries.exists():
-            if settings.DEBUG:
-                print("No 'High' assessment entries found for companyCode: ", instance.companyCode)
-            return
+    # CeListAndTaskの対応するインスタンスを取得または作成
+    ce_list_and_task, created = CeListAndTask.objects.get_or_create(companyCode=instance.companyCode)
+    
+    # 優先度の高い順に各マシンとタスクを設定
+    for idx, entry in enumerate(assessment_entries[:20], 1):  # 最初の20エントリのみを取得
+        machine_name = entry.machineName.machineName  # Machine インスタンスから machineName 属性を取得
+        setattr(ce_list_and_task, f'no{idx}HighLevelMachine', machine_name)
+        setattr(ce_list_and_task, f'no{idx}HighPriorityTaskName', entry.typicalTaskName)
+        
+        if settings.DEBUG:
+            print(f'Set no{idx}HighLevelMachine to {machine_name}')
+            print(f'Set no{idx}HighPriorityTaskName to {entry.typicalTaskName}')
 
-        for entry in high_assessment_entries:
-            selected_machine = entry.machineName
-            selected_typical_task_name = entry.typicalTaskName  # フィールド名をtypicalTaskからtypicalTaskNameに変更
+    ce_list_and_task.save()
 
-            if settings.DEBUG:
-                print(f"Selected machine: {selected_machine}")
-                print(f"Selected typical task name: {selected_typical_task_name}")
-
-            # CeListAndTaskの対応するインスタンスを更新
-            ce_list_and_task, created = CeListAndTask.objects.get_or_create(
-                companyCode=instance.companyCode,
-                defaults={
-                    'no1HighLevelMachine': selected_machine,
-                    'no1HighPriorityTaskName': selected_typical_task_name
-                }
-            )
-
-            if not created:
-                ce_list_and_task.no1HighLevelMachine = selected_machine
-                ce_list_and_task.no1HighPriorityTaskName = selected_typical_task_name
-                ce_list_and_task.save()
-
-            if settings.DEBUG:
-                print("CeListAndTask instance updated with new machine and task names.")
+    if settings.DEBUG:
+        print("CeListAndTask instance updated with new machine and task names.")
