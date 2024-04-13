@@ -1,39 +1,75 @@
 <template>
-	<div class="card mb-0">
-        <div v-for="(equipment, index) in equipments" :key="index" class="equipment-item">
-		    <div class="text-900 font-medium text-xl">{{ equipment }}</div>
-        </div>
-	</div>
+    <div>
+      <v-card>
+        <v-card-title>Assessment rate</v-card-title>
+        <div id="AssessmentRate"></div>
+      </v-card>
+    </div>
 </template>
 
 <script>
-import { defineComponent } from 'vue';
-import axios from 'axios';
-import { useUserStore } from '@/stores/userStore';
+import Plotly from "plotly.js-dist-min";
+import axios from "axios";
+import { useUserStore } from '@/stores/userStore'; // Pinia ストアをインポート
 
-export default defineComponent({
+export default {
     data() {
         return {
-            equipments: []
+            values: {},
+            error: null,
         };
     },
-    async mounted() {
+
+    mounted() {
         const userStore = useUserStore();
-        const companyCode = userStore.companyCode;
-        const url = `http://127.0.0.1:8000/api/junctionTable/masterDataTableByCompany/?format=json&companyCode=${companyCode}`;
-        
-        try {
-            const response = await axios.get(url);
-            const data = response.data;
-            
-            // データを加工して、ランキング形式の equipment リストを生成
-            this.equipments = data
-                .sort((a, b) => b.countOfPM04 - a.countOfPM04)
-                .slice(0, 20)
-                .map(item => item.equipment);
-        } catch (error) {
-            console.error('Error fetching data:', error);
+        const userCompanyCode = userStore.companyCode;
+
+        if (!userCompanyCode) {
+            console.error("Error: No company code found for the user.");
+            return; // companyCodeがない場合、処理を中断
         }
-    }
-});
+
+        const url = `NEW_URL_HERE/api/assessmentByCompany/?format=json&companyCode=${userCompanyCode}`;
+
+        axios.get(url, {
+            headers: {
+                "Content-Type": "application/json"
+            },
+            withCredentials: true
+        })
+            .then(response => {
+                const assessments = response.data;
+
+                // 各Assessmentの頻度を計算
+                this.values = assessments.reduce((accumulator, item) => {
+                    const assessment = item.Assessment;
+                    accumulator[assessment] = (accumulator[assessment] || 0) + 1;
+                    return accumulator;
+                }, {});
+
+                // グラフのデータ
+                let data = {
+                    type: "pie",
+                    values: Object.values(this.values),
+                    labels: Object.keys(this.values),
+                    textinfo: "label+percent",
+                    insidetextorientation: "radial",
+                };
+
+                const layout = {
+                    width: 500,
+                    height: 500,
+                    automargin: true,
+                };
+
+                const config = { responsive: true };
+
+                // AssessmentRate 要素が存在することを確認してからグラフを描画
+                Plotly.newPlot('AssessmentRate', [data], layout, config);
+            })
+            .catch(error => {
+                console.error("Error fetching data:", error);
+            });
+    },
+};
 </script>

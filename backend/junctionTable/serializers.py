@@ -64,14 +64,14 @@ class BomAndTaskSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = BomAndTask
-        field = ['companyCode', 'companyName', 'plant', 'bomCode', 'taskCode', 'bomAndTaskSet', 'bomAndTaskSetCost']
+        fields = ['companyCode', 'companyName', 'plant', 'bomCode', 'taskCode', 'bomAndTaskSet', 'bomAndTaskSetCost']
 
 class CompanyCodeBomAndTaskSerializer(serializers.ModelSerializer):
     BomAndTaskList = BomAndTaskSerializer(many=True, read_only=True, source='bomAndTask_companyCode')
     
     class Meta:
         model = CompanyCode
-        field = ['companyCode', 'BomAndTaskList']
+        fields = ['companyCode', 'BomAndTaskList']
 
 
 
@@ -82,7 +82,7 @@ class CeListAndTaskSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = CeListAndTask
-        field = ['companyCode', 'companyName', 'plant', 'equipment', 'no1HighLevelEquipment', 'no1HighPriorityTaskName', 'no2HighLevelEquipment', 'no2HighPriorityTaskName','no3HighLevelEquipment', 'no3HighPriorityTaskName','no4HighLevelEquipment', 'no4HighPriorityTaskName','no5HighLevelEquipment', 'no5HighPriorityTaskName','no6HighLevelEquipment', 'no6HighPriorityTaskName','no7HighLevelEquipment', 'no7HighPriorityTaskName','no8HighLevelEquipment', 'no8HighPriorityTaskName','no9HighLevelEquipment', 'no9HighPriorityTaskName','no10HighLevelEquipment', 'no10HighPriorityTaskName', 'no11HighLevelEquipment', 'no11HighPriorityTaskName', 'no12HighLevelEquipment', 'no12HighPriorityTaskName','no13HighLevelEquipment', 'no13HighPriorityTaskName','no14HighLevelEquipment', 'no14HighPriorityTaskName','no15HighLevelEquipment', 'no15HighPriorityTaskName','no16HighLevelEquipment', 'no16HighPriorityTaskName','no17HighLevelEquipment', 'no17HighPriorityTaskName','no18HighLevelEquipment', 'no18HighPriorityTaskName','no19HighLevelEquipment', 'no19HighPriorityTaskName','no20HighLevelEquipment', 'no20HighPriorityTaskName',]
+        fields = ['companyCode', 'companyName', 'plant', 'equipment', 'no1HighLevelEquipment', 'no1HighPriorityTaskName', 'no2HighLevelEquipment', 'no2HighPriorityTaskName','no3HighLevelEquipment', 'no3HighPriorityTaskName','no4HighLevelEquipment', 'no4HighPriorityTaskName','no5HighLevelEquipment', 'no5HighPriorityTaskName','no6HighLevelEquipment', 'no6HighPriorityTaskName','no7HighLevelEquipment', 'no7HighPriorityTaskName','no8HighLevelEquipment', 'no8HighPriorityTaskName','no9HighLevelEquipment', 'no9HighPriorityTaskName','no10HighLevelEquipment', 'no10HighPriorityTaskName', 'no11HighLevelEquipment', 'no11HighPriorityTaskName', 'no12HighLevelEquipment', 'no12HighPriorityTaskName','no13HighLevelEquipment', 'no13HighPriorityTaskName','no14HighLevelEquipment', 'no14HighPriorityTaskName','no15HighLevelEquipment', 'no15HighPriorityTaskName','no16HighLevelEquipment', 'no16HighPriorityTaskName','no17HighLevelEquipment', 'no17HighPriorityTaskName','no18HighLevelEquipment', 'no18HighPriorityTaskName','no19HighLevelEquipment', 'no19HighPriorityTaskName','no20HighLevelEquipment', 'no20HighPriorityTaskName',]
 
 
 class CompanyCodeCeListAndTaskSerializer(serializers.ModelSerializer):
@@ -90,7 +90,7 @@ class CompanyCodeCeListAndTaskSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = CompanyCode
-        field = ['companyCode', 'CeListAndTaskList']
+        fields = ['companyCode', 'CeListAndTaskList']
 
 
 
