@@ -28,29 +28,18 @@
 						<p class="line-height-3 m-0">
 						<div class="row"><!--このrow classでカードを横並びにしている-->
 							<div class="col-12 lg:col-6 xl:col-4">
-								<div class="card mb-0">
-									<div class="flex justify-content-between mb-3" style="height: 20px;">
-										<div>
-											<span class="block text-500 font-medium mb-3">Order List</span>
-											<div class="text-900 font-medium text-xl">$2.100</div>
-										</div>
-										<div class="flex align-items-center justify-content-center bg-orange-100 border-round"
-											style="width: 2.5rem; height: 2.5rem">
-											<i class="pi pi-map-marker text-orange-500 text-xl"></i>
-										</div>
-									</div>
-								</div>
+								<Card_Order_list />
 							</div>
 							<div class="col-12 lg:col-6 xl:col-4">
 								<Card_Order_alert />
 							</div>
 							<div class="col-12 lg:col-6 xl:col-4">
+								<Card_Spare_Parts_Total_Cost />
 
 							</div>
 							<br>
 							<br>
-						</div>
-						
+						</div>		
 						<BOM />
 						</p>
 					</TabPanel>
@@ -66,7 +55,8 @@
 
 import BOM from '@/components/Spare_parts/Spare_parts_list.vue';
 import Card_Order_alert from '@/components/Spare_parts/Cards/Order_alert.vue'
-
+import Card_Spare_Parts_Total_Cost from '@/components/Spare_parts/Cards/Spare_parts_total_cost.vue'
+import Card_Order_list from '@/components/Spare_parts/Cards/Order_list.vue'
 
 
 
@@ -75,6 +65,8 @@ export default {
 		BOM,
 
 		Card_Order_alert,
+		Card_Spare_Parts_Total_Cost,
+		Card_Order_list,
 	},
 }
 

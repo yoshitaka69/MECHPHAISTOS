@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import SpareParts,BomList,SparePartsManagement
 
-from accounts.models import CompanyCode
+from accounts.models import CompanyCode,Plant
 from django.db.models import Max
 
 
@@ -14,9 +14,10 @@ class SparePartsSerializer(serializers.ModelSerializer):
         queryset=CompanyCode.objects.all()
     )
 
+
     class Meta:
         model = SpareParts #呼び出すモデル名
-        fields = ['companyCode','partsNo','image', 'bomCode', 'partsName', 'category', 'partsModel', 'serialNumber', 'taskCode', 'partsCost', 'numberOf', 'summedPartsCost','unit', 'location', 'partsDeliveryTime', 'orderAlert', 'orderSituation', 'classification', 'inventoryTurnover','partsDescription',]# API上に表示するモデルのデータ項目
+        fields = ['companyCode','partsNo','image', 'bomCode', 'partsName', 'category', 'partsModel', 'serialNumber', 'taskCode', 'partsCost', 'numberOf', 'summedPartsCost','unit', 'location', 'partsDeliveryTime', 'orderAlert', 'orderSituation', 'classification', 'partsDescription',]# API上に表示するモデルのデータ項目
 
 
 class CompanyCodeSPSerializer(serializers.ModelSerializer):
@@ -36,6 +37,10 @@ class BomListSerializer(serializers.ModelSerializer):
         slug_field='companyCode',  # companyCode モデルの表示したい文字列フィールド
         queryset=CompanyCode.objects.all()
     )
+    plant = serializers.SlugRelatedField(
+        slug_field='plant', 
+        queryset=Plant.objects.all()
+    )
         
     class Meta:
         model = BomList #呼び出すモデル名
@@ -46,7 +51,7 @@ class CompanyBomListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CompanyCode
-        field = ['companyCode', 'bomList']
+        fields = ['companyCode', 'bomList']
 
 
 
@@ -57,9 +62,13 @@ class SparePartsManagementSerializer(serializers.ModelSerializer):
         slug_field='companyCode',  # companyCode モデルの表示したい文字列フィールド
         queryset=CompanyCode.objects.all()
     )
+    plant = serializers.SlugRelatedField(
+        slug_field='plant', 
+        queryset=Plant.objects.all()
+    )
     class Meta:
         model = SparePartsManagement #呼び出すモデル名
-        fields = ['companyCode','companyName','plant', 'equipment','machineName','totalSparePartsCost']
+        fields = ['companyCode','companyName','plant', 'equipment','machineName','totalSparePartsCost','inventoryTurnover',]
 
 
 class CompanySparePartsManagementSerializer(serializers.ModelSerializer):
@@ -67,4 +76,4 @@ class CompanySparePartsManagementSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CompanyCode
-        field = ['companyCode', 'SparePartsManagementList']
+        fields = ['companyCode', 'SparePartsManagementList']

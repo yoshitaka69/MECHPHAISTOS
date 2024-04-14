@@ -66,7 +66,7 @@ class SpareParts(models.Model):
 
     #部品の説明
     classification = models.CharField(verbose_name='classification',max_length=100,blank=True,null=True)
-    inventoryTurnover = models.CharField(verbose_name='inventoryTurnover',max_length=30,blank=True,null=True)
+    
     partsDescription = models.TextField(verbose_name='partsDescription',max_length=1000,blank=True,null=True,)
 
 
@@ -104,6 +104,7 @@ class SparePartsManagement(models.Model):
     machineName = models.ForeignKey(Machine, on_delete=models.CASCADE, related_name='sparePartsManagement_machineName',null=True, blank=True)
 
     totalSparePartsCost = models.DecimalField(verbose_name='totalSparePartsCost',max_digits=10,decimal_places=2,blank=True,null=True,default=0.000)
+    inventoryTurnover = models.CharField(verbose_name='inventoryTurnover',max_length=30,blank=True,null=True)
 
     class Meta:
         verbose_name = 'Spare Parts Management'
