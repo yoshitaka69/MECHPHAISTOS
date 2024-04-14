@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from rest_framework import viewsets
 
-from .models import SpareParts,BomList
+from .models import SpareParts,BomList,SparePartsManagement
 from accounts.models import CompanyCode
-from .serializers import SparePartsSerializer,CompanyCodeSPSerializer,BomListSerializer,CompanyBomListSerializer
+from .serializers import SparePartsSerializer,CompanyCodeSPSerializer,BomListSerializer,CompanyBomListSerializer,SparePartsManagementSerializer,CompanySparePartsManagementSerializer
 
 
 
@@ -41,3 +41,22 @@ class CompanyBomListViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(companyCode=company_code)
         return queryset
 
+
+
+
+#SparePartsManagement
+class SparePartsManagementViewSet(viewsets.ModelViewSet):
+    queryset = SparePartsManagement.objects.all()
+    serializer_class = SparePartsManagementSerializer
+
+class CompanySparePartsManagementViewSet(viewsets.ModelViewSet):
+    queryset = CompanyCode.objects.all()
+    serializer_class = CompanySparePartsManagementSerializer
+
+#クエリパラメータでのフィルターリング
+    def get_queryset(self):
+        queryset = CompanyCode.objects.prefetch_related('sparePartsManagement_companyCode').all()
+        company_code = self.request.query_params.get('companyCode', None)
+        if company_code:
+            queryset = queryset.filter(companyCode=company_code)
+        return queryset

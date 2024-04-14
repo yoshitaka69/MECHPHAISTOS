@@ -1,10 +1,12 @@
 from django.shortcuts import render
 from rest_framework import viewsets
 
-from .models import MasterDataTable,BomAndTask,CeListAndTask
+from .models import MasterDataTable,BomAndTask,CeListAndTask,BadActorManagement
 from accounts.models import CompanyCode
 from .serializers import  (MasterDataTableSerializer, CompanyCodeMDTSerializer,
-                        BomAndTaskSerializer,CompanyCodeBomAndTaskSerializer,CeListAndTaskSerializer,CompanyCodeCeListAndTaskSerializer,)
+                           BomAndTaskSerializer,CompanyCodeBomAndTaskSerializer,
+                           CeListAndTaskSerializer,CompanyCodeCeListAndTaskSerializer,
+                           BadActorManagementSerializer,CompanyCodeBadActorSerializer)
 
 
 #MasterDataTable
@@ -68,5 +70,21 @@ class CompanyCodeCeListAndTaskViewSet(viewsets.ModelViewSet):
 
 
 
+
+#BadActorManagement
+class BadActorManagementViewSet(viewsets.ModelViewSet):
+    queryset = BadActorManagement.objects.all()
+    serializer_class = BadActorManagementSerializer
+
+class CompanyCodeBadActorViewSet(viewsets.ModelViewSet):
+    serializer_class = CompanyCodeBadActorSerializer
+
+#クエリパラメータでのフィルターリング
+    def get_queryset(self):
+        queryset = CompanyCode.objects.prefetch_related('badActorManagement_companyCode').all()
+        company_code = self.request.query_params.get('companyCode', None)
+        if company_code:
+            queryset = queryset.filter(companyCode=company_code)
+        return queryset
 
 

@@ -42,32 +42,10 @@
 								</div>
 							</div>
 							<div class="col-12 lg:col-6 xl:col-4">
-								<div class="card mb-0">
-									<div class="flex justify-content-between mb-3" style="height: 20px;">
-										<div>
-											<span class="block text-500 font-medium mb-3">Order Alert</span>
-											<div class="text-900 font-medium text-xl">28441</div>
-										</div>
-										<div class="flex align-items-center justify-content-center bg-cyan-100 border-round"
-											style="width: 2.5rem; height: 2.5rem">
-											<i class="pi pi-inbox text-cyan-500 text-xl"></i>
-										</div>
-									</div>
-								</div>
+								<Card_Order_alert />
 							</div>
 							<div class="col-12 lg:col-6 xl:col-4">
-								<div class="card mb-0">
-									<div class="flex justify-content-between mb-3" style="height: 20px;">
-										<div>
-											<span class="block text-500 font-medium mb-3">Spare Parts Total Cost</span>
-											<div class="text-900 font-medium text-xl">152 Unread</div>
-										</div>
-										<div class="flex align-items-center justify-content-center bg-purple-100 border-round"
-											style="width: 2.5rem; height: 2.5rem">
-											<i class="pi pi-comment text-purple-500 text-xl"></i>
-										</div>
-									</div>
-								</div>
+
 							</div>
 							<br>
 							<br>
@@ -86,12 +64,27 @@
 
 <script>
 
-import BOM from '@/components/Spare_parts/Spare_parts_list';
+import BOM from '@/components/Spare_parts/Spare_parts_list.vue';
+import Card_Order_alert from '@/components/Spare_parts/Cards/Order_alert.vue'
+
+
+
 
 export default {
 	components: {
 		BOM,
+
+		Card_Order_alert,
 	},
 }
 
 </script>
+
+<style>
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+</style>

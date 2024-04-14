@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import MasterDataTable,BomAndTask,CeListAndTask
+from .models import MasterDataTable,BomAndTask,CeListAndTask,BadActorManagement
 
 class MasterDataTableAdmin(admin.ModelAdmin):
 
@@ -43,6 +43,17 @@ class CeListAndTaskAdmin(admin.ModelAdmin):
 
 
 
+class BadActorManagementAdmin(admin.ModelAdmin):
+
+    list_display = ('companyCode', 'companyName', 'plant', 'equipment', 'badActor')
+    search_fields = ('companyCode', 'companyName', 'plant', 'equipment', 'badActor')
+    list_filter = ('companyCode', 'companyName', 'plant', 'equipment', 'badActor' ) # adminで右側にあるフィルターBOXのこと
+    ordering = ('companyCode',) # 表示する順番
+    save_on_top = True #上部にもsaveボタンを配置
+
+
+    list_per_page = 50 # １ページあたりに表示するオブジェクト数を指定
+
 
 
 
@@ -50,5 +61,6 @@ class CeListAndTaskAdmin(admin.ModelAdmin):
 admin.site.register(MasterDataTable,MasterDataTableAdmin)
 admin.site.register(BomAndTask,BomAndTaskAdmin)
 admin.site.register(CeListAndTask,CeListAndTaskAdmin)
+admin.site.register(BadActorManagement,BadActorManagementAdmin)
 
 

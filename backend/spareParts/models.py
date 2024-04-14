@@ -88,3 +88,19 @@ class SpareParts(models.Model):
    
 
 
+class SparePartsManagement(models.Model):
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='sparePartsManagement_companyCode', null=True, blank=True)
+    companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='sparePartsManagement_companyName', null=True, blank=True)
+    plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='sparePartsManagement_plant', null=True, blank=True)
+    equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='sparePartsManagement_equipment',null=True, blank=True)
+    machineName = models.ForeignKey(Machine, on_delete=models.CASCADE, related_name='sparePartsManagement_machineName',null=True, blank=True)
+
+    totalSparePartsCost = models.DecimalField(verbose_name='totalSparePartsCost',max_digits=10,decimal_places=2,blank=True,null=True,default=0.000)
+
+    class Meta:
+        verbose_name = 'Spare Parts Management'
+        verbose_name_plural = 'Spare Parts Management'
+        ordering = ('companyCode',) 
+
+    def __str__(self):
+        return f'{self.companyCode}'

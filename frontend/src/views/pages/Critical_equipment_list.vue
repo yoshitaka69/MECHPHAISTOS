@@ -38,6 +38,7 @@
 							<div class="col-12 xl:col-8">
 								<div class="card" style="background-color: #f2f2f2;">
 									priority tasks top 20
+									<Top20_priority_task />
 								</div>
 							</div>
 							<div class="col-12 xl:col-4">
@@ -70,6 +71,7 @@ import Assessment_rate from '@/components/Critical_equipment_list/Assessment_rat
 import Risk_matrix from '@/components/Risk_Matrix/Risk_matrix.vue'
 import Impact_for_production from '@/components/Risk_Matrix/Impact_for_production.vue'
 import Probability_of_failure from '@/components/Risk_Matrix/Probability_of_failure.vue'
+import Top20_priority_task from '@/components/Critical_equipment_list/Top20_priority_task.vue'
 
 
 export default {
@@ -80,7 +82,9 @@ export default {
 
 		Risk_matrix,
 		Impact_for_production,
-		Probability_of_failure
+		Probability_of_failure,
+
+		Top20_priority_task,
 
 	},
 }

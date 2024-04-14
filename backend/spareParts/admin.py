@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import SpareParts,BomList
+from .models import SpareParts,BomList,SparePartsManagement
 
 
 class SparePartsAdmin(admin.ModelAdmin):
@@ -23,5 +23,18 @@ class BomListAdmin(admin.ModelAdmin):
 
 
 
+
+class SparePartsManagementAdmin(admin.ModelAdmin):
+    list_display = ('companyCode','companyName','plant', 'equipment','machineName','totalSparePartsCost')
+    search_fields = ('companyCode','companyName','plant', 'equipment','machineName','totalSparePartsCost')
+    list_filter = ('companyCode','companyName','plant', 'equipment','machineName','totalSparePartsCost') # adminで右側にあるフィルターBOXのこと
+    ordering = ('companyCode',) # 表示する順番
+    save_on_top = True #上部にもsaveボタンを配置\
+
+    list_per_page = 50 # １ページあたりに表示するオブジェクト数を指定
+
+
+
 admin.site.register(SpareParts,SparePartsAdmin)
 admin.site.register(BomList,BomListAdmin)
+admin.site.register(SparePartsManagement,SparePartsManagementAdmin)

@@ -1,7 +1,9 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import (MasterDataTableViewSet,CompanyCodeMDTViewSet,
-                    BomAndTaskViewSet,CompanyCodeBomAndTaskViewSet,CeListAndTaskViewSet,CompanyCodeCeListAndTaskViewSet,)
+                    BomAndTaskViewSet,CompanyCodeBomAndTaskViewSet,
+                    CeListAndTaskViewSet,CompanyCodeCeListAndTaskViewSet,
+                    BadActorManagementViewSet,CompanyCodeBadActorViewSet)
 
 
 router = DefaultRouter()
@@ -13,6 +15,10 @@ router.register(r'bomAndTaskByCompany', CompanyCodeBomAndTaskViewSet, basename='
 
 router.register(r'ceListAndTask', CeListAndTaskViewSet, basename='ceListAndTask')
 router.register(r'ceListAndTaskByCompany', CompanyCodeCeListAndTaskViewSet, basename='companyCode-ceListAndTask')
+
+router.register(r'badActor', BadActorManagementViewSet, basename='badActor')
+router.register(r'badActorByCompany', CompanyCodeBadActorViewSet, basename='companyCode-badActor')
+
 
 urlpatterns = [
     path('junctionTable/', include(router.urls)),

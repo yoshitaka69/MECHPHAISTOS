@@ -2,6 +2,10 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
 
+
+//vuetify追加
+import vuetify from "./plugins/vuetify";
+
 //axios
 import axios from 'axios'
 import VueAxios from 'vue-axios'
@@ -345,6 +349,9 @@ registerAllPlugins();
 // or, register all of Handsontable's modules at once
 registerAllModules();
 
+app.use(vuetify);
 app.use(pinia);
 app.use(VueAxios, axios);
 app.mount('#app');
+
+console.log("Vuetify is applied to the app:", app); // この行を追加

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import MasterDataTable,BomAndTask,CeListAndTask
+from .models import MasterDataTable,BomAndTask,CeListAndTask,BadActorManagement
 from taskList.models import TypicalTaskList,TaskListPPM02,TaskListPPM03,TaskListAPM04,TaskListPPM05
 from spareParts.models import BomList
 from accounts.models import CompanyCode,Plant
@@ -82,7 +82,7 @@ class CeListAndTaskSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = CeListAndTask
-        fields = ['companyCode', 'companyName', 'plant', 'equipment', 'no1HighLevelEquipment', 'no1HighPriorityTaskName', 'no2HighLevelEquipment', 'no2HighPriorityTaskName','no3HighLevelEquipment', 'no3HighPriorityTaskName','no4HighLevelEquipment', 'no4HighPriorityTaskName','no5HighLevelEquipment', 'no5HighPriorityTaskName','no6HighLevelEquipment', 'no6HighPriorityTaskName','no7HighLevelEquipment', 'no7HighPriorityTaskName','no8HighLevelEquipment', 'no8HighPriorityTaskName','no9HighLevelEquipment', 'no9HighPriorityTaskName','no10HighLevelEquipment', 'no10HighPriorityTaskName', 'no11HighLevelEquipment', 'no11HighPriorityTaskName', 'no12HighLevelEquipment', 'no12HighPriorityTaskName','no13HighLevelEquipment', 'no13HighPriorityTaskName','no14HighLevelEquipment', 'no14HighPriorityTaskName','no15HighLevelEquipment', 'no15HighPriorityTaskName','no16HighLevelEquipment', 'no16HighPriorityTaskName','no17HighLevelEquipment', 'no17HighPriorityTaskName','no18HighLevelEquipment', 'no18HighPriorityTaskName','no19HighLevelEquipment', 'no19HighPriorityTaskName','no20HighLevelEquipment', 'no20HighPriorityTaskName',]
+        fields = ['companyCode', 'companyName', 'plant', 'equipment', 'no1HighLevelMachine', 'no1HighPriorityTaskName', 'no2HighLevelMachine', 'no2HighPriorityTaskName','no3HighLevelMachine', 'no3HighPriorityTaskName','no4HighLevelMachine', 'no4HighPriorityTaskName','no5HighLevelMachine', 'no5HighPriorityTaskName','no6HighLevelMachine', 'no6HighPriorityTaskName','no7HighLevelMachine', 'no7HighPriorityTaskName','no8HighLevelMachine', 'no8HighPriorityTaskName','no9HighLevelMachine', 'no9HighPriorityTaskName','no10HighLevelMachine', 'no10HighPriorityTaskName', 'no11HighLevelMachine', 'no11HighPriorityTaskName', 'no12HighLevelMachine', 'no12HighPriorityTaskName','no13HighLevelMachine', 'no13HighPriorityTaskName','no14HighLevelMachine', 'no14HighPriorityTaskName','no15HighLevelMachine', 'no15HighPriorityTaskName','no16HighLevelMachine', 'no16HighPriorityTaskName','no17HighLevelMachine', 'no17HighPriorityTaskName','no18HighLevelMachine', 'no18HighPriorityTaskName','no19HighLevelMachine', 'no19HighPriorityTaskName','no20HighLevelMachine', 'no20HighPriorityTaskName',]
 
 
 class CompanyCodeCeListAndTaskSerializer(serializers.ModelSerializer):
@@ -96,5 +96,17 @@ class CompanyCodeCeListAndTaskSerializer(serializers.ModelSerializer):
 
 
 
-
+class BadActorManagementSerializer(serializers.ModelSerializer):
     
+    class Meta:
+        model = BadActorManagement
+        fields = ['companyCode', 'companyName', 'plant', 'equipment', 'badActor']
+
+
+class CompanyCodeBadActorSerializer(serializers.ModelSerializer):
+    BadActorList = BadActorManagementSerializer(many=True, read_only=True, source='badActorManagement_companyCode')
+    
+    class Meta:
+        model = CompanyCode
+        fields = ['companyCode', 'BadActorList']
+

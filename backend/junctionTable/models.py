@@ -144,8 +144,8 @@ class CeListAndTask(models.Model):
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='ceListAndTask_companyCode',null=True, blank=True)
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='ceListAndTask_companyName', null=True, blank=True)
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='ceListAndTask_plant',null=True, blank=True)
-    equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='ceList_companyCode',null=True, blank=True)
-    machine = models.ForeignKey(Machine, on_delete=models.CASCADE, related_name='machine_companyCode',null=True, blank=True)
+    equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='ceListAndTask_equipment',null=True, blank=True)
+    machine = models.ForeignKey(Machine, on_delete=models.CASCADE, related_name='ceListAndTask_machine',null=True, blank=True)
     
     no1HighLevelMachine = models.CharField(verbose_name='no1HighLevelMachine',blank=True,null=True,max_length=100)
     no1HighPriorityTaskName = models.CharField(verbose_name='no1HighPriorityTaskName',blank=True,null=True,max_length=100)
@@ -227,15 +227,6 @@ ASSESSMENT_PRIORITY = {
     "Very Low": 1
 }
 
-# assessment の優先度を定義
-ASSESSMENT_PRIORITY = {
-    "Very High": 5,
-    "High": 4,
-    "Middle": 3,
-    "Low": 2,
-    "Very Low": 1
-}
-
 @receiver(post_save, sender=MasterDataTable)
 def update_ceListAndTask(sender, instance, **kwargs):
     if settings.DEBUG:
@@ -257,14 +248,36 @@ def update_ceListAndTask(sender, instance, **kwargs):
     # 優先度の高い順に各マシンとタスクを設定
     for idx, entry in enumerate(assessment_entries[:20], 1):  # 最初の20エントリのみを取得
         machine_name = entry.machineName.machineName  # Machine インスタンスから machineName 属性を取得
+        task_name = entry.typicalTaskName.typicalTaskName if entry.typicalTaskName else "No Task"  # None チェックを追加
         setattr(ce_list_and_task, f'no{idx}HighLevelMachine', machine_name)
-        setattr(ce_list_and_task, f'no{idx}HighPriorityTaskName', entry.typicalTaskName)
+        setattr(ce_list_and_task, f'no{idx}HighPriorityTaskName', task_name)
         
         if settings.DEBUG:
             print(f'Set no{idx}HighLevelMachine to {machine_name}')
-            print(f'Set no{idx}HighPriorityTaskName to {entry.typicalTaskName}')
+            print(f'Set no{idx}HighPriorityTaskName to {task_name}')
 
     ce_list_and_task.save()
 
     if settings.DEBUG:
         print("CeListAndTask instance updated with new machine and task names.")
+
+
+
+class BadActorManagement(models.Model):
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='badActorManagement_companyCode',null=True, blank=True)
+    companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='badActorManagement_companyName', null=True, blank=True)
+    plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='badActorManagement_plant',null=True, blank=True)
+    equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='badActorManagement_equipment',null=True, blank=True)
+    machine = models.ForeignKey(Machine, on_delete=models.CASCADE, related_name='badActorManagement_machine',null=True, blank=True)
+
+    badActor = models.CharField(verbose_name='badActor',blank=True,null=True,max_length=100)
+
+
+    class Meta:
+        verbose_name = 'Bad Actor Management'
+        verbose_name_plural = 'Bad Actor Management'
+        ordering = ('companyCode',) #モデルのクエリセットを取得した際にどのような順番でフィールドを並べ変えるかを決める。
+    
+
+    def __str__(self):
+        return str('Bad Actor Management')

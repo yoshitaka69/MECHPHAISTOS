@@ -1,91 +1,33 @@
 <template>
-    <div>
-
-        <div id="AssessmentChart"></div>
-
+    <div class="card mb-0">
+        <div class="flex justify-content-between mb-3" style="height: 20px">
+            <div>
+                <span class="block text-500 font-medium mb-3">Spare Parts Total Cost</span>
+                <div class="text-900 font-medium text-xl">152 Unread</div>
+            </div>
+            <div class="flex align-items-center justify-content-center bg-purple-100 border-round" style="width: 2.5rem; height: 2.5rem">
+                <i class="pi pi-comment text-purple-500 text-xl"></i>
+            </div>
+        </div>
     </div>
-  </template>
-  
-  <script>
-  import Plotly from "plotly.js-dist-min";
-  import axios from "axios";
-  import { useUserStore } from '@/stores/userStore';
-  
-  export default {
-    data() {
-      return {
-        error: null,
-      };
-    },
-  
-    mounted() {
-      this.fetchDataAndPlot();
-    },
-  
-    methods: {
-      fetchDataAndPlot() {
-        const userStore = useUserStore();
-        const companyCode = userStore.companyCode; // Pinia ストアから companyCode を取得
-  
-        if (!companyCode) {
-          this.error = "No company code found for the user.";
-          return;
-        }
-  
-        const url = `http://127.0.0.1:8000/api/junctionTable/masterDataTableByCompany/?format=json&companyCode=${companyCode}`;
-  
-        axios.get(url)
-          .then(response => {
-            const masterData = response.data.find(data => data.companyCode === companyCode)?.MasterDataTable || [];
-            const assessmentCounts = this.countAssessments(masterData);
-  
-            this.plotAssessmentData(assessmentCounts);
-          })
-          .catch(error => {
-            console.error("Error fetching data:", error);
-            this.error = "Failed to fetch data.";
-          });
-      },
-  
-      countAssessments(data) {
-        const assessmentValues = ["Very High", "High", "Middle", "Low", "Very Low"];
-        let counts = {};
-  
-        // Initialize counts
-        assessmentValues.forEach(value => { counts[value] = 0; });
-  
-        data.forEach(item => {
-          if (item.assessment && assessmentValues.includes(item.assessment)) {
-            counts[item.assessment]++;
-          }
-        });
-  
-        return counts;
-      },
-  
-      plotAssessmentData(assessmentCounts) {
-        const data = [{
-          type: "pie",
-          values: Object.values(assessmentCounts),
-          labels: Object.keys(assessmentCounts),
-          textinfo: "label+percent",
-          insidetextorientation: "radial"
-        }];
-  
-        const layout = {
-          title: "Assessment Distribution",
-          width: 500,
-          height: 500,
-          automargin: true
-        };
-  
-        const config = { responsive: true };
-  
-        this.$nextTick(() => {
-          Plotly.newPlot('AssessmentChart', data, layout, config);
-        });
-      }
+</template>
+
+<script setup>
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
+import { useUserStore } from '@/stores/userStore';
+
+const SparePartsTotalCost = ref(0);
+const userStore = useUserStore();
+
+onMounted(async () => {
+    const companyCode = userStore.companyCode;
+    if (!companyCode) {
+        console.error('No company code found.');
+        return;
     }
-  };
-  </script>
-  
+
+    const url = `http://127.0.0.1:8000/api/junctionTable/badActorByCompany/?format=json&companyCode=${companyCode}`;
+
+});
+</script>
