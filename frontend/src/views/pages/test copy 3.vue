@@ -19,7 +19,6 @@ export default {
     const repairingCostData = ref([]);
     const actualCostData = ref([]);
 
-    // 計画コストデータを取得する関数
     const getRepairingCostData = async () => {
       const companyCode = userStore.companyCode;
       if (!companyCode) {
@@ -30,43 +29,16 @@ export default {
       const url = `http://127.0.0.1:8000/api/repairingCost/PPM02ByCompany/?format=json&companyCode=${companyCode}`;
       try {
         const response = await axios.get(url);
-        console.log("Repairing Cost Data:", response.data);
+        console.log("Repairing Cost Data:", response.data);  // レスポンスデータのログ出力
         repairingCostData.value = response.data[0]?.plannedPM02List || [];
+        actualCostData.value = response.data[0]?.actualCostList || []; // 実際のコストリストを取得
       } catch (error) {
         console.error('Error fetching Repairing Cost data:', error);
       }
     };
 
-    // 実際のコストデータを取得する関数
-    const getActualCostData = async () => {
-      const companyCode = userStore.companyCode;
-      if (!companyCode) {
-        console.error('No company code found.');
-        return;
-      }
-
-      const url = `http://127.0.0.1:8000/api/calculation/summedByCompany/?format=json&companyCode=${companyCode}`;
-      try {
-        const response = await axios.get(url);
-        console.log("API Response:", response.data);
-
-        const currentYear = new Date().getFullYear().toString();
-        console.log("Current Year:", currentYear);
-
-        if (response.data.length > 0 && response.data[0].summedActualCostList) {
-          actualCostData.value = response.data[0].summedActualCostList.filter(item => item.year.toString() === currentYear);
-          console.log("Filtered Actual Cost Data:", actualCostData.value);
-        } else {
-          console.log("No valid data found or improper structure");
-        }
-      } catch (error) {
-        console.error('Error fetching actual cost data:', error);
-      }
-    };
-
     onMounted(async () => {
       await getRepairingCostData();
-      await getActualCostData();
       const lineTraces = [];
       const barTraces = [];
 
@@ -86,8 +58,9 @@ export default {
         });
       });
 
+      // 実際のコストのバーチャートを生成
       actualCostData.value.forEach(costData => {
-        const xValues = ['Total Actual Cost'];
+        const xValues = ['Total Actual Cost']; // すべてのバーを同じカテゴリに配置
         const yValues = [parseFloat(costData.totalCost || 0)];
 
         const barTrace = {
@@ -106,6 +79,7 @@ export default {
         width: 900,
       };
 
+      // ラインとバーチャートのトレースを合成してグラフを描画
       Plotly.newPlot('Totalrpc', [...lineTraces, ...barTraces], layout);
     });
 
@@ -116,3 +90,6 @@ export default {
   }
 };
 </script>
+
+
+
