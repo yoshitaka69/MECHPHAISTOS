@@ -185,6 +185,57 @@ class CalTableActualPM05(models.Model):
 
 
 
+
+
+
+
+class SummedPlannedCost(models.Model):
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='summedPlannedCost_companyCode')
+    plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='summedPlannedCost_plant')
+
+    # 各月の合計値
+    year = models.IntegerField(verbose_name='year', default=0, null=True, blank=True)
+    sumJan = models.DecimalField(verbose_name='sumJan', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    sumFeb = models.DecimalField(verbose_name='sumFeb', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    sumMar = models.DecimalField(verbose_name='sumMar', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    sumApr = models.DecimalField(verbose_name='sumApr', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    sumMay = models.DecimalField(verbose_name='sumMar', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    sumJun = models.DecimalField(verbose_name='sumJun', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    sumJul = models.DecimalField(verbose_name='sumJul', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    sumAug = models.DecimalField(verbose_name='sumAug', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    sumSep = models.DecimalField(verbose_name='sumSep', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    sumOct = models.DecimalField(verbose_name='sumOct', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    sumNov = models.DecimalField(verbose_name='sumNov', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    sumDec = models.DecimalField(verbose_name='sumDec', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    sumCommitment = models.DecimalField(verbose_name='sumCommit', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+
+    totalActualPM02 = models.DecimalField(verbose_name='totalActualPM02', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    totalActualPM03 = models.DecimalField(verbose_name='totalActualPM03', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    totalActualPM04 = models.DecimalField(verbose_name='totalActualPM04', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    totalActualPM05 = models.DecimalField(verbose_name='totalActualPM05', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+  
+    totalActualCost = models.DecimalField(verbose_name='totalActualCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+
+    class Meta:
+        verbose_name_plural = 'Total Planned Cost'
+        ordering = ('plant',)
+        
+    def __str__(self):
+        return f'{self.companyCode} {self.plant} {self.year}'
+    
+    def save(self, *args, **kwargs):
+        # 合計値を計算
+        self.totalActualCost = (
+            self.sumJan + self.sumFeb + self.sumMar + self.sumApr + self.sumMay + 
+            self.sumJun + self.sumJul + self.sumAug + self.sumSep + self.sumOct + 
+            self.sumNov + self.sumDec + self.sumCommitment
+        )
+        print(f'Calculated Total Planned Cost: {self.totalPlannedCost}')  # デバッグ情報
+        super().save(*args, **kwargs)  # 親クラスのsaveメソッドを呼び出し
+
+
+
+
 class SummedActualCost(models.Model):
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='summedActualCost_companyCode')
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='summedActualCost_plant')
