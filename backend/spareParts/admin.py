@@ -3,9 +3,10 @@ from .models import SpareParts,BomList,SparePartsManagement
 
 
 class SparePartsAdmin(admin.ModelAdmin):
-    list_display = ('companyCode','companyName','plant','equipment','machineName','image','bomCode','partsNo','partsName','partsModel','serialNumber','category','partsCost','numberOf','unit','location','stock','partsDeliveryTime','classification','inventoryTurnover','partsDescription')
-    search_fields = ('companyCode','companyName','plant','equipment','machineName','image','bomCode','partsNo','partsName','partsModel','serialNumber','category','partsCost','numberOf','unit','location','stock','partsDeliveryTime','classification','inventoryTurnover','partsDescription')
-    list_filter = ('companyCode','companyName','plant','equipment','machineName','image','bomCode','partsNo','partsName','partsModel','serialNumber','category','partsCost','numberOf','unit','location','stock','partsDeliveryTime','classification','inventoryTurnover','partsDescription') # adminで右側にあるフィルターBOXのこと
+
+    list_display = ('companyCode','companyName','plant','equipment','machineName','image','bomCode','partsNo','partsName','partsModel','serialNumber','category','partsCost','numberOf','summedPartsCost','unit','location','stock','partsDeliveryTime','classification','inventoryTurnover','partsDescription')
+    search_fields = ('companyCode','companyName','plant','equipment','machineName','image','bomCode','partsNo','partsName','partsModel','serialNumber','category','partsCost','numberOf','summedPartsCost','unit','location','stock','partsDeliveryTime','classification','inventoryTurnover','partsDescription')
+    list_filter = ('companyCode','companyName','plant','equipment','machineName','image','bomCode','partsNo','partsName','partsModel','serialNumber','category','partsCost','numberOf','summedPartsCost','unit','location','stock','partsDeliveryTime','classification','inventoryTurnover','partsDescription') # adminで右側にあるフィルターBOXのこと
     ordering = ('companyCode',) # 表示する順番
     save_on_top = True #上部にもsaveボタンを配置\
 
