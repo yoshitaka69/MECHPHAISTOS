@@ -1,3 +1,4 @@
+from django.db.models import Prefetch
 
 from rest_framework import viewsets
 from .models import NearMiss, CompanyCode, SafetyIndicators,TrendSafetyIndicators
@@ -52,9 +53,15 @@ class CompanyTrendSafetyIndicatorsViewSet(viewsets.ModelViewSet):
     queryset = CompanyCode.objects.all()
     serializer_class = CompanyTrendSafetyIndicatorsSerializer
 
-    #クエリパラメータでのフィルターリング
     def get_queryset(self):
-        queryset = CompanyCode.objects.prefetch_related('trendSafetyIndicators_companyCode').all()
+        # Prefetch_related でソート順を指定
+        prefetch = Prefetch(
+            'trendSafetyIndicators_companyCode', 
+            queryset=TrendSafetyIndicators.objects.order_by('lastUpdateDay')
+        )
+        queryset = CompanyCode.objects.prefetch_related(prefetch).all()
+        
+        # クエリパラメータでのフィルタリング
         company_code = self.request.query_params.get('companyCode', None)
         if company_code:
             queryset = queryset.filter(companyCode=company_code)

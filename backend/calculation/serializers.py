@@ -11,11 +11,7 @@ from .models import (CalTablePlannedPM02,CalTableActualPM02,
 
 #CalTablePPM02
 class CalTablePPM02Serializer(serializers.ModelSerializer):
-    no1RepairingCost = serializers.SerializerMethodField()
-    no2RepairingCost = serializers.SerializerMethodField()
-    no3RepairingCost = serializers.SerializerMethodField()
-    no4RepairingCost = serializers.SerializerMethodField()
-    no5RepairingCost = serializers.SerializerMethodField()
+
     
     class Meta:
         model = CalTablePlannedPM02
@@ -34,11 +30,7 @@ class CompanyCodeCalPPM02Serializer(serializers.ModelSerializer):
 
 #CalTableAPM02
 class CalTableAPM02Serializer(serializers.ModelSerializer):
-    no1RepairingCost = serializers.SerializerMethodField()
-    no2RepairingCost = serializers.SerializerMethodField()
-    no3RepairingCost = serializers.SerializerMethodField()
-    no4RepairingCost = serializers.SerializerMethodField()
-    no5RepairingCost = serializers.SerializerMethodField()
+ 
     
     class Meta:
         model = CalTableActualPM02
@@ -58,11 +50,7 @@ class CompanyCodeCalAPM02Serializer(serializers.ModelSerializer):
 
 #CalTablePPM03
 class CalTablePPM03Serializer(serializers.ModelSerializer):
-    no1RepairingCost = serializers.SerializerMethodField()
-    no2RepairingCost = serializers.SerializerMethodField()
-    no3RepairingCost = serializers.SerializerMethodField()
-    no4RepairingCost = serializers.SerializerMethodField()
-    no5RepairingCost = serializers.SerializerMethodField()
+
     
     class Meta:
         model = CalTablePlannedPM03
@@ -82,11 +70,7 @@ class CompanyCodeCalPPM03Serializer(serializers.ModelSerializer):
 
 #CalTableAPM03
 class CalTableAPM03Serializer(serializers.ModelSerializer):
-    no1RepairingCost = serializers.SerializerMethodField()
-    no2RepairingCost = serializers.SerializerMethodField()
-    no3RepairingCost = serializers.SerializerMethodField()
-    no4RepairingCost = serializers.SerializerMethodField()
-    no5RepairingCost = serializers.SerializerMethodField()
+
 
     class Meta:
         model = CalTableActualPM03
@@ -105,11 +89,7 @@ class CompanyCodeCalAPM03Serializer(serializers.ModelSerializer):
 
 #CalTableAPM04
 class CalTableAPM04Serializer(serializers.ModelSerializer):
-    no1RepairingCost = serializers.SerializerMethodField()
-    no2RepairingCost = serializers.SerializerMethodField()
-    no3RepairingCost = serializers.SerializerMethodField()
-    no4RepairingCost = serializers.SerializerMethodField()
-    no5RepairingCost = serializers.SerializerMethodField()
+ 
     
     class Meta:
         model = CalTableActualPM04
@@ -127,11 +107,7 @@ class CompanyCodeCalAPM04Serializer(serializers.ModelSerializer):
 
 #CalTablePPM05
 class CalTablePPM05Serializer(serializers.ModelSerializer):
-    no1RepairingCost = serializers.SerializerMethodField()
-    no2RepairingCost = serializers.SerializerMethodField()
-    no3RepairingCost = serializers.SerializerMethodField()
-    no4RepairingCost = serializers.SerializerMethodField()
-    no5RepairingCost = serializers.SerializerMethodField()
+
     
     class Meta:
         model = CalTablePlannedPM05
@@ -149,11 +125,6 @@ class CompanyCodeCalPPM05Serializer(serializers.ModelSerializer):
 
 #CalTableAPM05
 class CalTableAPM05Serializer(serializers.ModelSerializer):
-    no1RepairingCost = serializers.SerializerMethodField()
-    no2RepairingCost = serializers.SerializerMethodField()
-    no3RepairingCost = serializers.SerializerMethodField()
-    no4RepairingCost = serializers.SerializerMethodField()
-    no5RepairingCost = serializers.SerializerMethodField()
     
     class Meta:
         model = CalTableActualPM05

@@ -33,7 +33,7 @@ class CompanyCodeCalTablePPM02ViewSet(viewsets.ModelViewSet):
 
 #クエリパラメータでのフィルターリング
     def get_queryset(self):
-        queryset = CompanyCode.objects.prefetch_related('calTablePPM02_companyCode').all()
+        queryset = CompanyCode.objects.prefetch_related('calTablePlannedPM02_companyCode').all()
         company_code = self.request.query_params.get('companyCode', None)
         if company_code:
             queryset = queryset.filter(companyCode=company_code)
@@ -54,7 +54,7 @@ class CompanyCodeCalTableAPM02ViewSet(viewsets.ModelViewSet):
 
 #クエリパラメータでのフィルターリング
     def get_queryset(self):
-        queryset = CompanyCode.objects.prefetch_related('calTableAPM02_companyCode').all()
+        queryset = CompanyCode.objects.prefetch_related('calTableActualPM02_companyCode').all()
         company_code = self.request.query_params.get('companyCode', None)
         if company_code:
             queryset = queryset.filter(companyCode=company_code)
@@ -76,7 +76,7 @@ class CompanyCodeCalTablePPM03ViewSet(viewsets.ModelViewSet):
   
 #クエリパラメータでのフィルターリング
     def get_queryset(self):
-        queryset = CompanyCode.objects.prefetch_related('calTablePPM03_companyCode').all()
+        queryset = CompanyCode.objects.prefetch_related('calTablePlannedPM03_companyCode').all()
         company_code = self.request.query_params.get('companyCode', None)
         if company_code:
             queryset = queryset.filter(companyCode=company_code)
@@ -97,7 +97,7 @@ class CompanyCodeCalTableAPM03ViewSet(viewsets.ModelViewSet):
 
 #クエリパラメータでのフィルターリング
     def get_queryset(self):
-        queryset = CompanyCode.objects.prefetch_related('calTableAPM03_companyCode').all()
+        queryset = CompanyCode.objects.prefetch_related('calTableActualPM03_companyCode').all()
         company_code = self.request.query_params.get('companyCode', None)
         if company_code:
             queryset = queryset.filter(companyCode=company_code)
@@ -117,7 +117,7 @@ class CompanyCodeCalTableAPM04ViewSet(viewsets.ModelViewSet):
 
 #クエリパラメータでのフィルターリング
     def get_queryset(self):
-        queryset = CompanyCode.objects.prefetch_related('calTableAPM04_companyCode').all()
+        queryset = CompanyCode.objects.prefetch_related('calTableActualPM04_companyCode').all()
         company_code = self.request.query_params.get('companyCode', None)
         if company_code:
             queryset = queryset.filter(companyCode=company_code)
@@ -137,7 +137,7 @@ class CompanyCodeCalTablePPM05ViewSet(viewsets.ModelViewSet):
 
 #クエリパラメータでのフィルターリング
     def get_queryset(self):
-        queryset = CompanyCode.objects.prefetch_related('calTablePPM05_companyCode').all()
+        queryset = CompanyCode.objects.prefetch_related('calTablePlannedPM05_companyCode').all()
         company_code = self.request.query_params.get('companyCode', None)
         if company_code:
             queryset = queryset.filter(companyCode=company_code)
@@ -158,7 +158,7 @@ class CompanyCodeCalTableAPM05ViewSet(viewsets.ModelViewSet):
 
 #クエリパラメータでのフィルターリング
     def get_queryset(self):
-        queryset = CompanyCode.objects.prefetch_related('calTableAPM05_companyCode').all()
+        queryset = CompanyCode.objects.prefetch_related('calTableActualPM05_companyCode').all()
         company_code = self.request.query_params.get('companyCode', None)
         if company_code:
             queryset = queryset.filter(companyCode=company_code)

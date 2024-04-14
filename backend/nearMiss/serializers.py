@@ -51,12 +51,26 @@ class CompanySafetyIndicatorsSerializer(serializers.ModelSerializer):
 
 
 
+
+
+
 #SafetyIndicator Trend
 class TrendSafetyIndicatorsSerializer(serializers.ModelSerializer):
+        
+    companyCode = serializers.SlugRelatedField(
+        slug_field='companyCode',  # companyCode モデルの表示したい文字列フィールド
+        queryset=CompanyCode.objects.all()
+    )
+
+    safetyIndicators = serializers.SlugRelatedField(
+        slug_field='safetyIndicators', 
+        queryset=SafetyIndicators.objects.all()
+    )
 
     class Meta:
         model = TrendSafetyIndicators
         fields = ['companyCode', 'companyName', 'safetyIndicators', 'lastUpdateDay',]
+
 
 class CompanyTrendSafetyIndicatorsSerializer(serializers.ModelSerializer):
     trendSafetyIndicatorsList = TrendSafetyIndicatorsSerializer(many=True, read_only=True, source='trendSafetyIndicators_companyCode')
