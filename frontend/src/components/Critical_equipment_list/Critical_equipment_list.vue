@@ -23,7 +23,7 @@ function customRenderer(instance, td, row, col, prop, value, cellProperties) {
     Handsontable.renderers.TextRenderer.apply(this, arguments);
     // 'Impact for production' 列のインデックス（0から始まる）
     const impactColIndex = 15;
-    // インデックスが 'Impact for production' の列であり、値が 'High+' の場合にスタイルを設定
+    // インデックスが 'Impact for production' の列であり、値が 'High+' などの場合にスタイルを設定
     if (col === impactColIndex) {
         if (value === 'High+') {
             td.style.backgroundColor = '#FF0000'; // 赤
