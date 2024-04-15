@@ -44,7 +44,7 @@ export default {
               return;
           }
 
-          const url = `http://127.0.0.1:8000/api/calculation/summedByCompany/?format=json&companyCode=${companyCode}`;
+          const url = `http://127.0.0.1:8000/api/calculation/summedActualCostByCompany/?format=json&companyCode=${companyCode}`;
           try {
               const response = await axios.get(url);
               const currentYear = new Date().getFullYear().toString();
@@ -85,35 +85,7 @@ export default {
               };
           });
 
-          // バーチャート用のトレースを追加
-          const barTracePM02 = {
-              x: ['planned', 'actual'],
-              y: [100000, 150000],
-              type: 'bar',
-              name: 'PM02 Total'
-          };
-
-          const barTracePM03 = {
-              x: ['planned', 'actual'],
-              y: [100000, 150000],
-              type: 'bar',
-              name: 'PM03 Total'
-          };
-
-          const barTracePM04 = {
-              x: ['planned', 'actual'],
-              y: [100000, 150000],
-              type: 'bar',
-              name: 'PM04 Total'
-          };
-
-          const barTracePM05 = {
-              x: ['planned', 'actual'],
-              y: [100000, 150000],
-              type: 'bar',
-              name: 'PM05 Total'
-          };
-
+ 
           const layout = {
               title: 'Total Graph (Planned vs Actual)',
               barmode: 'stack',
@@ -121,7 +93,7 @@ export default {
               width: 900
           };
 
-          Plotly.newPlot('Totalrpc', [...lineTraces, ...barTraces, barTracePM02, barTracePM03, barTracePM04, barTracePM05], layout);
+          Plotly.newPlot('Totalrpc', [...lineTraces, ...barTraces], layout);
       });
 
       return {
