@@ -18,6 +18,8 @@ export default {
       const userStore = useUserStore();
       const repairingCostData = ref([]);
       const actualCostData = ref([]);
+      const plannedCostDataStack = ref([]);
+      const actualCostDataStack = ref([]);
 
       const getRepairingCostData = async () => {
           const companyCode = userStore.companyCode;
@@ -56,9 +58,42 @@ export default {
           }
       };
 
+    
+
+            const fetchData = async () => {
+            const companyCode = userStore.companyCode;
+            if (!companyCode) {
+                console.error('No company code found.');
+                return;
+            }
+
+            const currentYear = new Date().getFullYear().toString();
+            const plannedURL = `http://127.0.0.1:8000/api/calculation/summedPlannedCostByCompany/?format=json&companyCode=${companyCode}`;
+            const actualURL = `http://127.0.0.1:8000/api/calculation/summedActualCostByCompany/?format=json&companyCode=${companyCode}`;
+
+            try {
+                const [plannedResponse, actualResponse] = await Promise.all([
+                    axios.get(plannedURL),
+                    axios.get(actualURL)
+                ]);
+
+                plannedCostDataStack.value = plannedResponse.data.flatMap(company =>
+                    company.summedPlannedCostList.filter(item => item.year.toString() === currentYear)
+                );
+
+                actualCostDataStack.value = actualResponse.data.flatMap(company =>
+                    company.summedActualCostList.filter(item => item.year.toString() === currentYear)
+                );
+            } catch (error) {
+                console.error('Error fetching cost data:', error);
+            }
+        };
+
       onMounted(async () => {
           await getRepairingCostData();
           await getActualCostData();
+          await fetchData();
+
           const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Commitment', 'TotalCost'];
           const lineTraces = repairingCostData.value.map((plant) => {
               const pmData = plant.plannedPM02[0];
@@ -85,6 +120,57 @@ export default {
               };
           });
 
+            
+        const barTracesStack = [];
+
+            plannedCostDataStack.value.forEach(data => {
+                barTracesStack.push({
+                    x: ['Planned'],
+                    y: [parseFloat(data.totalPlannedPM02)],
+                    name: 'Planned PM02',
+                    type: 'bar'
+                });
+                barTracesStack.push({
+                    x: ['Planned'],
+                    y: [parseFloat(data.totalPlannedPM03)],
+                    name: 'Planned PM03',
+                    type: 'bar'
+                });
+                barTracesStack.push({
+                    x: ['Planned'],
+                    y: [parseFloat(data.totalPlannedPM05)],
+                    name: 'Planned PM05',
+                    type: 'bar'
+                });
+            });
+
+            actualCostDataStack.value.forEach(data => {
+                barTracesStack.push({
+                    x: ['Actual'],
+                    y: [parseFloat(data.totalActualPM02)],
+                    name: 'Actual PM02',
+                    type: 'bar'
+                });
+                barTracesStack.push({
+                    x: ['Actual'],
+                    y: [parseFloat(data.totalActualPM03)],
+                    name: 'Actual PM03',
+                    type: 'bar'
+                });
+                barTracesStack.push({
+                    x: ['Actual'],
+                    y: [parseFloat(data.totalActualPM04)],
+                    name: 'Actual PM04',
+                    type: 'bar'
+                });
+                barTracesStack.push({
+                    x: ['Actual'],
+                    y: [parseFloat(data.totalActualPM05)],
+                    name: 'Actual PM05',
+                    type: 'bar'
+                });
+            });
+
  
           const layout = {
               title: 'Total Graph (Planned vs Actual)',
@@ -93,12 +179,14 @@ export default {
               width: 900
           };
 
-          Plotly.newPlot('Totalrpc', [...lineTraces, ...barTraces], layout);
+          Plotly.newPlot('Totalrpc', [...lineTraces, ...barTraces,barTracesStack], layout);
       });
 
       return {
           repairingCostData,
-          actualCostData
+          actualCostData,
+          plannedCostDataStack,
+          actualCostDataStack
       };
   }
 };
