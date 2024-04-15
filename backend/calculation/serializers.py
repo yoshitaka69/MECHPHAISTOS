@@ -5,6 +5,7 @@ from .models import (CalTablePlannedPM02,CalTableActualPM02,
                      CalTablePlannedPM03,CalTableActualPM03,
                      CalTableActualPM04,
                      CalTablePlannedPM05,CalTableActualPM05,
+                     SummedPlannedCost,
                      SummedActualCost)
 
 
@@ -140,8 +141,37 @@ class CompanyCodeCalAPM05Serializer(serializers.ModelSerializer):
 
 
 
+#SummedPlannedCost
+class SummedPlannedCostSerializer(serializers.ModelSerializer):
+    
+    companyCode = serializers.SlugRelatedField(
+    slug_field='companyCode', 
+    queryset=CompanyCode.objects.all()
+    )
 
-#SummedCost
+    plant = serializers.SlugRelatedField(
+    slug_field='plant', 
+    queryset=Plant.objects.all()
+)
+
+    class Meta:
+        model = SummedPlannedCost
+        fields = ['companyCode','plant','year','sumJan','sumFeb','sumMar','sumApr','sumMay','sumJun','sumJul','sumAug','sumSep','sumOct','sumNov','sumDec','sumCommitment','totalPlannedPM02','totalPlannedPM03','totalPlannedPM04','totalPlannedPM05','totalPlannedCost']
+
+
+
+class CompanyCodeSummedPlannedCostSerializer(serializers.ModelSerializer):
+    summedPlannedCostList = SummedPlannedCostSerializer(many=True, read_only=True, source='summedPlannedCost_companyCode')
+    class Meta:
+        model = CompanyCode
+        fields = ['companyCode', 'summedPlannedCostList']
+
+
+
+
+
+
+#SummedActualCost
 class SummedActualCostSerializer(serializers.ModelSerializer):
     
     companyCode = serializers.SlugRelatedField(

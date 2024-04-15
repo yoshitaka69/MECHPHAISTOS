@@ -1,110 +1,133 @@
 <template>
   <div>
-    <v-flex>
       <v-card>
-        <v-card-title>Total Graph (Planned vs Actual)</v-card-title>
-        <div id="Totalrpc"></div>
+          <v-card-title>Total Graph (Planned vs Actual)</v-card-title>
+          <div id="Totalrpc" style="width: 100%; height: 100%"></div>
       </v-card>
-    </v-flex>
   </div>
 </template>
 
 <script>
-import Plotly from "plotly.js-dist-min";
-import axios from "axios";
+import Plotly from 'plotly.js-dist-min';
+import axios from 'axios';
+import { useUserStore } from '@/stores/userStore';
+import { onMounted, ref } from 'vue';
 
 export default {
-  data() {
-    return {
-      RepairingCostData: [],
-    };
-  },
+  setup() {
+      const userStore = useUserStore();
+      const repairingCostData = ref([]);
+      const actualCostData = ref([]);
 
-  mounted() {
-    // 各工場のデータを取得する関数
-    const getRepairingCostData = async () => {
-      try {
-        // axiosを使用してデータを取得
-        const response = await axios.get('http://localhost:3000/RepairingCost');
-        // RepairingCostデータを取り出す
-        const repairingCostData = response.data;
+      const getRepairingCostData = async () => {
+          const companyCode = userStore.companyCode;
+          if (!companyCode) {
+              console.error('No company code found.');
+              return;
+          }
 
-        // 各工場のデータごとに処理
-        for (const plantData of repairingCostData) {
-          const ActualPM02Data = plantData.ActualPM02;
-          // monthとcostの列だけを抽出して新しいデータ形式に変換
-          const transformedData = ActualPM02Data.map(entry => ({ x: entry.month, y: entry.cost }));
-          // Vueのdataに追加
-          this.RepairingCostData.push({ plant: plantData.plant, data: transformedData });
-        }
-      } catch (error) {
-        console.error('Error fetching RepairingCost data:', error);
-        throw error;
-      }
-    };
+          const url = `http://127.0.0.1:8000/api/repairingCost/PPM02ByCompany/?format=json&companyCode=${companyCode}`;
+          try {
+              const response = await axios.get(url);
+              if (response.data[0]?.plannedPM02List) {
+                  repairingCostData.value = response.data[0].plannedPM02List.filter((plant) => plant.plannedPM02 && plant.plannedPM02.length > 0);
+              }
+          } catch (error) {
+              console.error('Error fetching Repairing Cost data:', error);
+          }
+      };
 
-    // 上記関数の実行
-    getRepairingCostData()
-      .then(() => {
-        // ラインチャート用のトレースを作成
-        const lineTraces = this.RepairingCostData.map((plantData, index) => {
-          const xValues = plantData.data.map(entry => entry.x);
-          const yValues = plantData.data.map(entry => entry.y);
+      const getActualCostData = async () => {
+          const companyCode = userStore.companyCode;
+          if (!companyCode) {
+              console.error('No company code found.');
+              return;
+          }
 
-          let trace = {
-            x: xValues,
-            y: yValues,
-            name: plantData.plant,
-            type: 'scatter', // ラインチャートに変更
-            mode: 'lines+markers',
+          const url = `http://127.0.0.1:8000/api/calculation/summedByCompany/?format=json&companyCode=${companyCode}`;
+          try {
+              const response = await axios.get(url);
+              const currentYear = new Date().getFullYear().toString();
+              if (response.data.length > 0 && response.data[0].summedActualCostList) {
+                  actualCostData.value = response.data[0].summedActualCostList.filter((item) => item.year.toString() === currentYear);
+              }
+          } catch (error) {
+              console.error('Error fetching actual cost data:', error);
+          }
+      };
+
+      onMounted(async () => {
+          await getRepairingCostData();
+          await getActualCostData();
+          const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Commitment', 'TotalCost'];
+          const lineTraces = repairingCostData.value.map((plant) => {
+              const pmData = plant.plannedPM02[0];
+              const yValues = months.map((month) => (pmData[`sum${month}`] ? parseFloat(pmData[`sum${month}`]) : 0));
+              return {
+                  x: months,
+                  y: yValues,
+                  type: 'scatter',
+                  mode: 'lines+markers',
+                  name: plant.plant
+              };
+          });
+
+          const barTraces = actualCostData.value.map((costData) => {
+              const xValues = Object.keys(costData).filter((key) => key.startsWith('sum') || key === 'totalActualCost');
+              const formattedXValues = xValues.map((key) => key.replace('sum', '').replace('totalActualCost', 'TotalCost'));
+              const yValues = xValues.map((key) => parseFloat(costData[key] || 0));
+
+              return {
+                  x: formattedXValues,
+                  y: yValues,
+                  type: 'bar',
+                  name: costData.plant || 'Total Cost'
+              };
+          });
+
+          // バーチャート用のトレースを追加
+          const barTracePM02 = {
+              x: ['planned', 'actual'],
+              y: [100000, 150000],
+              type: 'bar',
+              name: 'PM02 Total'
           };
 
-          return trace;
-        });
+          const barTracePM03 = {
+              x: ['planned', 'actual'],
+              y: [100000, 150000],
+              type: 'bar',
+              name: 'PM03 Total'
+          };
 
-        // バーチャート用のトレースを追加
-        const barTracePM02 = {
-          x: ['planned', 'actual'],
-          y: [100000, 150000],
-          type: 'bar',
-          name: 'PM02 Total',
-        };
+          const barTracePM04 = {
+              x: ['planned', 'actual'],
+              y: [100000, 150000],
+              type: 'bar',
+              name: 'PM04 Total'
+          };
 
-        const barTracePM03 = {
-          x: ['planned', 'actual'],
-          y: [100000, 150000],
-          type: 'bar',
-          name: 'PM03 Total',
-        };
+          const barTracePM05 = {
+              x: ['planned', 'actual'],
+              y: [100000, 150000],
+              type: 'bar',
+              name: 'PM05 Total'
+          };
 
-        const barTracePM04 = {
-          x: ['planned', 'actual'],
-          y: [100000, 150000],
-          type: 'bar',
-          name: 'PM04 Total',
-        };
+          const layout = {
+              title: 'Total Graph (Planned vs Actual)',
+              barmode: 'stack',
+              height: 400,
+              width: 900
+          };
 
-        const barTracePM05 = {
-          x: ['planned', 'actual'],
-          y: [100000, 150000],
-          type: 'bar',
-          name: 'PM05 Total',
-        };
-
-        const layout = {
-          height: 350,
-          width: 900,
-          barmode: 'stack', // スタックされたバーチャート
-        };
-
-        // トレースを合成してグラフを描画
-        Plotly.newPlot('Totalrpc', [...lineTraces, barTracePM02, barTracePM03, barTracePM04, barTracePM05], layout);
-      })
-      .catch(error => {
-        console.error('Error plotting Repairing Cost graph:', error);
-        throw error;
+          Plotly.newPlot('Totalrpc', [...lineTraces, ...barTraces, barTracePM02, barTracePM03, barTracePM04, barTracePM05], layout);
       });
-  },
-};
 
+      return {
+          repairingCostData,
+          actualCostData
+      };
+  }
+};
 </script>

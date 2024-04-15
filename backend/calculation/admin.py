@@ -1,5 +1,9 @@
 from django.contrib import admin
-from .models import CalTablePlannedPM02,CalTableActualPM02,CalTablePlannedPM03,CalTableActualPM03,CalTableActualPM04,CalTablePlannedPM05,CalTableActualPM05,SummedActualCost
+from .models import (CalTablePlannedPM02,CalTableActualPM02,
+                     CalTablePlannedPM03,CalTableActualPM03,
+                     CalTableActualPM04,
+                     CalTablePlannedPM05,CalTableActualPM05,
+                     SummedPlannedCost,SummedActualCost)
 
 
 
@@ -75,7 +79,20 @@ class CalTabelActualPM05Admin(admin.ModelAdmin):
     list_per_page = 50 
 
 
-class SummedCostAdmin(admin.ModelAdmin):
+
+
+class SummedPlannedCostAdmin(admin.ModelAdmin):
+    list_display = ('companyCode','plant','year','sumJan','sumFeb','sumMar','sumApr','sumMay','sumJun','sumJul','sumAug','sumSep','sumOct','sumNov','sumDec','sumCommitment','totalPlannedPM02','totalPlannedPM03','totalPlannedPM04','totalPlannedPM05','totalPlannedCost',)
+    search_fields = ('companyCode','plant','year','sumJan','sumFeb','sumMar','sumApr','sumMay','sumJun','sumJul','sumAug','sumSep','sumOct','sumNov','sumDec','sumCommitment','totalPlannedPM02','totalPlannedPM03','totalPlannedPM04','totalPlannedPM05','totalPlannedCost',)
+    list_filter = ('companyCode','plant','year','sumJan','sumFeb','sumMar','sumApr','sumMay','sumJun','sumJul','sumAug','sumSep','sumOct','sumNov','sumDec','sumCommitment','totalPlannedPM02','totalPlannedPM03','totalPlannedPM04','totalPlannedPM05','totalPlannedCost',)
+    ordering = ('companyCode',)
+    save_on_top = True
+
+    list_per_page = 50 
+
+
+
+class SummedActualCostAdmin(admin.ModelAdmin):
     list_display = ('companyCode','plant','year','sumJan','sumFeb','sumMar','sumApr','sumMay','sumJun','sumJul','sumAug','sumSep','sumOct','sumNov','sumDec','sumCommitment','totalActualPM02','totalActualPM03','totalActualPM04','totalActualPM05','totalActualCost',)
     search_fields = ('companyCode','plant','year','sumJan','sumFeb','sumMar','sumApr','sumMay','sumJun','sumJul','sumAug','sumSep','sumOct','sumNov','sumDec','sumCommitment','totalActualPM02','totalActualPM03','totalActualPM04','totalActualPM05','totalActualCost',)
     list_filter = ('companyCode','plant','year','sumJan','sumFeb','sumMar','sumApr','sumMay','sumJun','sumJul','sumAug','sumSep','sumOct','sumNov','sumDec','sumCommitment','totalActualPM02','totalActualPM03','totalActualPM04','totalActualPM05','totalActualCost',)
@@ -97,4 +114,5 @@ admin.site.register(CalTableActualPM04,CalTabelActualPM04Admin)
 admin.site.register(CalTablePlannedPM05,CalTablePlannedPM05Admin)
 admin.site.register(CalTableActualPM05,CalTabelActualPM05Admin)
 
-admin.site.register(SummedActualCost,SummedCostAdmin)
+admin.site.register(SummedPlannedCost,SummedPlannedCostAdmin)
+admin.site.register(SummedActualCost,SummedActualCostAdmin)

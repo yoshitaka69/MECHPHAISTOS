@@ -7,6 +7,7 @@ from .views import (CalTablePPM02ViewSet,CompanyCodeCalTablePPM02ViewSet,
                     CalTableAPM04ViewSet,CompanyCodeCalTableAPM04ViewSet,
                     CalTablePPM05ViewSet,CompanyCodeCalTablePPM05ViewSet,
                     CalTableAPM05ViewSet,CompanyCodeCalTableAPM05ViewSet,
+                    SummedPlannedCostViewSet,CompanyCodeSummedPlannedCostViewSet,
                     SummedActualCostViewSet,CompanyCodeSummedActualCostViewSet)
 
 
@@ -35,8 +36,11 @@ router.register(r'CalTablePPM05ByCompany', CompanyCodeCalTablePPM05ViewSet, base
 router.register(r'CalTableAPM05', CalTableAPM05ViewSet, basename='CalTableAPM05')
 router.register(r'CalTableAPM05dByCompany', CompanyCodeCalTableAPM05ViewSet, basename='companyCode-CalTableAPM05')
 
-router.register(r'summedCost', SummedActualCostViewSet, basename='summedCost')
-router.register(r'summedByCompany', CompanyCodeSummedActualCostViewSet, basename='companyCode-summedCost')
+router.register(r'summedPlannedCost', SummedPlannedCostViewSet, basename='summedPlannedCost')
+router.register(r'summedPlannedCostByCompany', CompanyCodeSummedPlannedCostViewSet, basename='companyCode-summedPlannedCost')
+
+router.register(r'summedActualCost', SummedActualCostViewSet, basename='summedActualCost')
+router.register(r'summedActualCostByCompany', CompanyCodeSummedActualCostViewSet, basename='companyCode-summedActualCost')
 
 
 urlpatterns = [

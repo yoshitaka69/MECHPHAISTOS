@@ -6,6 +6,7 @@ from .models import (CalTablePlannedPM02,CalTableActualPM02,
                      CalTablePlannedPM03,CalTableActualPM03,
                      CalTableActualPM04,
                      CalTablePlannedPM05,CalTableActualPM05,
+                     SummedPlannedCost,
                      SummedActualCost)
 
 from .serializers import (CalTablePPM02Serializer,CalTableAPM02Serializer,
@@ -20,6 +21,7 @@ from .serializers import (CalTablePPM02Serializer,CalTableAPM02Serializer,
                           CalTablePPM05Serializer,CalTableAPM05Serializer,
                           CompanyCodeCalPPM05Serializer,CompanyCodeCalAPM05Serializer,
 
+                          SummedPlannedCostSerializer,CompanyCodeSummedPlannedCostSerializer,
                           SummedActualCostSerializer,CompanyCodeSummedActualCostSerializer)
 
 
@@ -168,7 +170,28 @@ class CompanyCodeCalTableAPM05ViewSet(viewsets.ModelViewSet):
 
 
 
-#SummedCost
+#SummedPlannedCost
+class SummedPlannedCostViewSet(viewsets.ModelViewSet):
+    queryset = SummedPlannedCost.objects.all()
+    serializer_class = SummedPlannedCostSerializer
+
+
+class CompanyCodeSummedPlannedCostViewSet(viewsets.ModelViewSet):
+    serializer_class = CompanyCodeSummedPlannedCostSerializer
+
+#クエリパラメータでのフィルターリング
+    def get_queryset(self):
+        queryset = CompanyCode.objects.prefetch_related('summedPlannedCost_companyCode').all()
+        company_code = self.request.query_params.get('companyCode', None)
+        if company_code:
+            queryset = queryset.filter(companyCode=company_code)
+        return queryset
+
+
+
+
+
+#SummedActualCost
 class SummedActualCostViewSet(viewsets.ModelViewSet):
     queryset = SummedActualCost.objects.all()
     serializer_class = SummedActualCostSerializer

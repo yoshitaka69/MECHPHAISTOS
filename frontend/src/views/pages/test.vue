@@ -8,111 +8,112 @@
 </template>
 
 <script>
-import Plotly from "plotly.js-dist-min";
-import axios from "axios";
+import Plotly from 'plotly.js-dist-min';
+import axios from 'axios';
 import { useUserStore } from '@/stores/userStore';
 import { onMounted, ref } from 'vue';
 
 export default {
-  setup() {
-    const userStore = useUserStore();
-    const repairingCostData = ref([]);
-    const actualCostData = ref([]);
+    setup() {
+        const userStore = useUserStore();
+        const plannedCostData = ref([]);
+        const actualCostData = ref([]);
 
-    // 計画コストデータを取得する関数
-    const getRepairingCostData = async () => {
-      const companyCode = userStore.companyCode;
-      if (!companyCode) {
-        console.error('No company code found.');
-        return;
-      }
+        const fetchData = async () => {
+            const companyCode = userStore.companyCode;
+            if (!companyCode) {
+                console.error('No company code found.');
+                return;
+            }
 
-      const url = `http://127.0.0.1:8000/api/repairingCost/PPM02ByCompany/?format=json&companyCode=${companyCode}`;
-      try {
-        const response = await axios.get(url);
-        console.log("Repairing Cost Data:", response.data);
-        repairingCostData.value = response.data[0]?.plannedPM02List || [];
-      } catch (error) {
-        console.error('Error fetching Repairing Cost data:', error);
-      }
-    };
+            const currentYear = new Date().getFullYear().toString();
+            const plannedURL = `http://127.0.0.1:8000/api/calculation/summedPlannedCostByCompany/?format=json&companyCode=${companyCode}`;
+            const actualURL = `http://127.0.0.1:8000/api/calculation/summedActualCostByCompany/?format=json&companyCode=${companyCode}`;
 
-    // 実際のコストデータを取得する関数
-    const getActualCostData = async () => {
-      const companyCode = userStore.companyCode;
-      if (!companyCode) {
-        console.error('No company code found.');
-        return;
-      }
+            try {
+                const [plannedResponse, actualResponse] = await Promise.all([
+                    axios.get(plannedURL),
+                    axios.get(actualURL)
+                ]);
 
-      const url = `http://127.0.0.1:8000/api/calculation/summedByCompany/?format=json&companyCode=${companyCode}`;
-      try {
-        const response = await axios.get(url);
-        console.log("API Response:", response.data);
+                plannedCostData.value = plannedResponse.data.flatMap(company =>
+                    company.summedPlannedCostList.filter(item => item.year.toString() === currentYear)
+                );
 
-        const currentYear = new Date().getFullYear().toString();
-        console.log("Current Year:", currentYear);
-
-        if (response.data.length > 0 && response.data[0].summedActualCostList) {
-          actualCostData.value = response.data[0].summedActualCostList.filter(item => item.year.toString() === currentYear);
-          console.log("Filtered Actual Cost Data:", actualCostData.value);
-        } else {
-          console.log("No valid data found or improper structure");
-        }
-      } catch (error) {
-        console.error('Error fetching actual cost data:', error);
-      }
-    };
-
-    onMounted(async () => {
-      await getRepairingCostData();
-      await getActualCostData();
-      const lineTraces = [];
-      const barTraces = [];
-
-      repairingCostData.value.forEach(plant => {
-        plant.plannedPM02.forEach(pmData => {
-          const xValues = Object.keys(pmData).filter(key => key !== 'companyCode' && key !== 'plant' && key !== 'year');
-          const yValues = xValues.map(key => parseFloat(pmData[key] || 0));
-          
-          const trace = {
-            x: xValues,
-            y: yValues,
-            type: 'scatter',
-            mode: 'lines+markers',
-            name: plant.plant
-          };
-          lineTraces.push(trace);
-        });
-      });
-
-      actualCostData.value.forEach(costData => {
-        const xValues = ['Total Actual Cost'];
-        const yValues = [parseFloat(costData.totalCost || 0)];
-
-        const barTrace = {
-          x: xValues,
-          y: yValues,
-          type: 'bar',
-          name: costData.plant
+                actualCostData.value = actualResponse.data.flatMap(company =>
+                    company.summedActualCostList.filter(item => item.year.toString() === currentYear)
+                );
+            } catch (error) {
+                console.error('Error fetching cost data:', error);
+            }
         };
-        barTraces.push(barTrace);
-      });
 
-      const layout = {
-        title: 'Total Graph (Planned vs Actual)',
-        barmode: 'stack',
-        height: 400,
-        width: 900,
-      };
+        onMounted(async () => {
+            await fetchData();
+            const barTraces = [];
 
-      Plotly.newPlot('Totalrpc', [...lineTraces, ...barTraces], layout);
-    });
+            plannedCostData.value.forEach(data => {
+                barTraces.push({
+                    x: ['Planned'],
+                    y: [parseFloat(data.totalPlannedPM02)],
+                    name: 'Planned PM02',
+                    type: 'bar'
+                });
+                barTraces.push({
+                    x: ['Planned'],
+                    y: [parseFloat(data.totalPlannedPM03)],
+                    name: 'Planned PM03',
+                    type: 'bar'
+                });
+                barTraces.push({
+                    x: ['Planned'],
+                    y: [parseFloat(data.totalPlannedPM05)],
+                    name: 'Planned PM05',
+                    type: 'bar'
+                });
+            });
 
-    return {
-      repairingCostData,
-      actualCostData
-    };
-  }
+            actualCostData.value.forEach(data => {
+                barTraces.push({
+                    x: ['Actual'],
+                    y: [parseFloat(data.totalActualPM02)],
+                    name: 'Actual PM02',
+                    type: 'bar'
+                });
+                barTraces.push({
+                    x: ['Actual'],
+                    y: [parseFloat(data.totalActualPM03)],
+                    name: 'Actual PM03',
+                    type: 'bar'
+                });
+                barTraces.push({
+                    x: ['Actual'],
+                    y: [parseFloat(data.totalActualPM04)],
+                    name: 'Actual PM04',
+                    type: 'bar'
+                });
+                barTraces.push({
+                    x: ['Actual'],
+                    y: [parseFloat(data.totalActualPM05)],
+                    name: 'Actual PM05',
+                    type: 'bar'
+                });
+            });
+
+            const layout = {
+                title: 'Total Graph (Planned vs Actual)',
+                barmode: 'stack',
+                height: 400,
+                width: 900
+            };
+
+            Plotly.newPlot('Totalrpc', barTraces, layout);
+        });
+
+        return {
+            plannedCostData,
+            actualCostData
+        };
+    }
 };
 </script>

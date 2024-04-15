@@ -188,7 +188,6 @@ class CalTableActualPM05(models.Model):
 
 
 
-
 class SummedPlannedCost(models.Model):
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='summedPlannedCost_companyCode')
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='summedPlannedCost_plant')
@@ -197,7 +196,7 @@ class SummedPlannedCost(models.Model):
     year = models.IntegerField(verbose_name='year', default=0, null=True, blank=True)
     sumJan = models.DecimalField(verbose_name='sumJan', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     sumFeb = models.DecimalField(verbose_name='sumFeb', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
-    sumMar = models.DecimalField(verbose_name='sumMar', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    sumMar = models.DecimalField(verbose_name='sumMay', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     sumApr = models.DecimalField(verbose_name='sumApr', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     sumMay = models.DecimalField(verbose_name='sumMar', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     sumJun = models.DecimalField(verbose_name='sumJun', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
@@ -209,12 +208,12 @@ class SummedPlannedCost(models.Model):
     sumDec = models.DecimalField(verbose_name='sumDec', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     sumCommitment = models.DecimalField(verbose_name='sumCommit', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
 
-    totalActualPM02 = models.DecimalField(verbose_name='totalActualPM02', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
-    totalActualPM03 = models.DecimalField(verbose_name='totalActualPM03', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
-    totalActualPM04 = models.DecimalField(verbose_name='totalActualPM04', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
-    totalActualPM05 = models.DecimalField(verbose_name='totalActualPM05', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    totalPlannedPM02 = models.DecimalField(verbose_name='totalPlannedPM02', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    totalPlannedPM03 = models.DecimalField(verbose_name='totalPlannedPM03', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    totalPlannedPM04 = models.DecimalField(verbose_name='totalPlannedPM04', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    totalPlannedPM05 = models.DecimalField(verbose_name='totalPlannedPM05', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
   
-    totalActualCost = models.DecimalField(verbose_name='totalActualCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
+    totalPlannedCost = models.DecimalField(verbose_name='totalPlannedCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
 
     class Meta:
         verbose_name_plural = 'Total Planned Cost'
@@ -223,12 +222,14 @@ class SummedPlannedCost(models.Model):
     def __str__(self):
         return f'{self.companyCode} {self.plant} {self.year}'
     
-    def save(self, *args, **kwargs):
-        # 合計値を計算
-        self.totalActualCost = (
-            self.sumJan + self.sumFeb + self.sumMar + self.sumApr + self.sumMay + 
-            self.sumJun + self.sumJul + self.sumAug + self.sumSep + self.sumOct + 
-            self.sumNov + self.sumDec + self.sumCommitment
+    def save(self, *args, **kwargs): #check ok 
+        # 合計値を計算（None 値を考慮）
+        self.totalPlannedCost = (
+            (self.sumJan or 0) + (self.sumFeb or 0) + (self.sumMar or 0) + 
+            (self.sumApr or 0) + (self.sumMay or 0) + (self.sumJun or 0) + 
+            (self.sumJul or 0) + (self.sumAug or 0) + (self.sumSep or 0) + 
+            (self.sumOct or 0) + (self.sumNov or 0) + (self.sumDec or 0) + 
+            (self.sumCommitment or 0)
         )
         print(f'Calculated Total Planned Cost: {self.totalPlannedCost}')  # デバッグ情報
         super().save(*args, **kwargs)  # 親クラスのsaveメソッドを呼び出し
@@ -270,12 +271,14 @@ class SummedActualCost(models.Model):
     def __str__(self):
         return f'{self.companyCode} {self.plant} {self.year}'
     
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs): #check ok 
         # 合計値を計算
         self.totalActualCost = (
-            self.sumJan + self.sumFeb + self.sumMar + self.sumApr + self.sumMay + 
-            self.sumJun + self.sumJul + self.sumAug + self.sumSep + self.sumOct + 
-            self.sumNov + self.sumDec + self.sumCommitment
+            (self.sumJan or 0) + (self.sumFeb or 0) + (self.sumMar or 0) + 
+            (self.sumApr or 0) + (self.sumMay or 0) + (self.sumJun or 0) + 
+            (self.sumJul or 0) + (self.sumAug or 0) + (self.sumSep or 0) + 
+            (self.sumOct or 0) + (self.sumNov or 0) + (self.sumDec or 0) + 
+            (self.sumCommitment or 0)
         )
         print(f'Calculated Total Actual Cost: {self.totalActualCost}')  # デバッグ情報
         super().save(*args, **kwargs)  # 親クラスのsaveメソッドを呼び出し
