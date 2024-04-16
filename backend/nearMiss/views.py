@@ -13,10 +13,18 @@ class NearMissViewSet(viewsets.ModelViewSet):
     queryset = NearMiss.objects.all()
     serializer_class = NearMissSerializer
 
-
 class CompanyNearMissViewSet(viewsets.ModelViewSet):
     queryset = CompanyCode.objects.all()
     serializer_class = CompanyNearMissSerializer
+
+  
+    #クエリパラメータでのフィルターリング
+    def get_queryset(self):
+        queryset = CompanyCode.objects.prefetch_related('safetyIndicators_companyCode').all()
+        company_code = self.request.query_params.get('companyCode', None)
+        if company_code:
+            queryset = queryset.filter(companyCode=company_code)
+        return queryset
 
 
 
@@ -44,10 +52,10 @@ class CompanySafetyIndicatorsViewSet(viewsets.ModelViewSet):
 
 
 
+
 class TrendSafetyIndicatorsViewSet(viewsets.ModelViewSet):
     queryset = TrendSafetyIndicators.objects.all()
     serializer_class = TrendSafetyIndicatorsSerializer
-
 
 class CompanyTrendSafetyIndicatorsViewSet(viewsets.ModelViewSet):
     queryset = CompanyCode.objects.all()
