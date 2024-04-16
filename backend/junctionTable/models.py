@@ -281,7 +281,8 @@ class BadActorManagement(models.Model):
 
     def __str__(self):
         return str('Bad Actor Management')
-    
+
+
 
 
 class EventYearPPM(models.Model):
@@ -291,17 +292,17 @@ class EventYearPPM(models.Model):
     equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='eventYearPPM_equipment',null=True, blank=True)
     machine = models.ForeignKey(Machine, on_delete=models.CASCADE, related_name='eventYearPPM_machine',null=True, blank=True)
 
-    thisYearPPM = models.DecimalField(verbose_name='thisYearPPM',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
-    thisYearPPM1Later = models.DecimalField(verbose_name='thisYearPPM1Later',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
-    thisYearPPM2Later = models.DecimalField(verbose_name='thisYearPPM2Later',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
-    thisYearPPM3Later = models.DecimalField(verbose_name='thisYearPPM3Later',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
-    thisYearPPM4Later = models.DecimalField(verbose_name='thisYearPPM4Later',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
-    thisYearPPM5Later = models.DecimalField(verbose_name='thisYearPPM5Later',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
-    thisYearPPM6Later = models.DecimalField(verbose_name='thisYearPPM6Later',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
-    thisYearPPM7Later = models.DecimalField(verbose_name='thisYearPPM7Later',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
-    thisYearPPM8Later = models.DecimalField(verbose_name='thisYearPPM8Later',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
-    thisYearPPM9Later = models.DecimalField(verbose_name='thisYearPPM9Later',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
-    thisYearPPM10Later = models.DecimalField(verbose_name='thisYearPPM10Later',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
+    PPMThisYearCost = models.DecimalField(verbose_name='PPMThisYearCost',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
+    PPM1LaterCost = models.DecimalField(verbose_name='PPM1LaterCost',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
+    PPM2LaterCost = models.DecimalField(verbose_name='PPM2LaterCost',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
+    PPM3LaterCost = models.DecimalField(verbose_name='PPM3LaterCost',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
+    PPM4LaterCost = models.DecimalField(verbose_name='PPM4LaterCost',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
+    PPM5LaterCost = models.DecimalField(verbose_name='PPM5LaterCost',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
+    PPM6LaterCost = models.DecimalField(verbose_name='PPM6LaterCost',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
+    PPM7LaterCost = models.DecimalField(verbose_name='PPM7LaterCost',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
+    PPM8LaterCost = models.DecimalField(verbose_name='PPM8LaterCost',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
+    PPM9LaterCost = models.DecimalField(verbose_name='PPM9LaterCost',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
+    PPM10LaterCost = models.DecimalField(verbose_name='PPM10LaterCost',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
 
     class Meta:
         verbose_name = 'Event Year PPM'
