@@ -2,7 +2,7 @@ from django.db import models
 from accounts.models import CompanyCode,CompanyName,Plant
 from repairingCost.models import ActualPM02,ActualPM03,ActualPM04,ActualPM05
 
-
+#このモデルはsignal.pyを設定しているから注意
 #項目が多くなるが、将来的にいろいろな企業が参加してくることを考慮し、ここは細かく設定するぞ！
 class CalTablePlannedPM02(models.Model):
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='calTablePlannedPM02_companyCode', null=True, blank=True)
