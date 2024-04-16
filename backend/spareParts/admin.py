@@ -5,6 +5,7 @@ from .models import SpareParts,BomList,SparePartsManagement
 class SparePartsAdmin(admin.ModelAdmin):
 
     list_display = ('companyCode','companyName','plant','equipment','machineName','image','bomCode','partsNo','partsName','partsModel','serialNumber','category','partsCost','numberOf','summedPartsCost','unit','location','stock','partsDeliveryTime','classification','partsDescription')
+    readonly_fields = ('summedPartsCost',) 
     search_fields = ('companyCode','companyName','plant','equipment','machineName','image','bomCode','partsNo','partsName','partsModel','serialNumber','category','partsCost','numberOf','summedPartsCost','unit','location','stock','partsDeliveryTime','classification','partsDescription')
     list_filter = ('companyCode','companyName','plant','equipment','machineName','image','bomCode','partsNo','partsName','partsModel','serialNumber','category','partsCost','numberOf','summedPartsCost','unit','location','stock','partsDeliveryTime','classification','partsDescription') # adminで右側にあるフィルターBOXのこと
     ordering = ('companyCode',) # 表示する順番
@@ -27,6 +28,7 @@ class BomListAdmin(admin.ModelAdmin):
 
 class SparePartsManagementAdmin(admin.ModelAdmin):
     list_display = ('companyCode','companyName','plant', 'equipment','machineName','totalSparePartsCost','inventoryTurnover')
+    readonly_fields = ('totalSparePartsCost','inventoryTurnover',) 
     search_fields = ('companyCode','companyName','plant', 'equipment','machineName','totalSparePartsCost','inventoryTurnover')
     list_filter = ('companyCode','companyName','plant', 'equipment','machineName','totalSparePartsCost','inventoryTurnover') # adminで右側にあるフィルターBOXのこと
     ordering = ('companyCode',) # 表示する順番
