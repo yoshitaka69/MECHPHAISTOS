@@ -281,3 +281,33 @@ class BadActorManagement(models.Model):
 
     def __str__(self):
         return str('Bad Actor Management')
+    
+
+
+class EventYearPPM(models.Model):
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='eventYearPPM_companyCode',null=True, blank=True)
+    companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='eventYearPPM_companyName', null=True, blank=True)
+    plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='eventYearPPM_plant',null=True, blank=True)
+    equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='eventYearPPM_equipment',null=True, blank=True)
+    machine = models.ForeignKey(Machine, on_delete=models.CASCADE, related_name='eventYearPPM_machine',null=True, blank=True)
+
+    thisYearPPM = models.DecimalField(verbose_name='thisYearPPM',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
+    thisYearPPM1Later = models.DecimalField(verbose_name='thisYearPPM1Later',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
+    thisYearPPM2Later = models.DecimalField(verbose_name='thisYearPPM2Later',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
+    thisYearPPM3Later = models.DecimalField(verbose_name='thisYearPPM3Later',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
+    thisYearPPM4Later = models.DecimalField(verbose_name='thisYearPPM4Later',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
+    thisYearPPM5Later = models.DecimalField(verbose_name='thisYearPPM5Later',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
+    thisYearPPM6Later = models.DecimalField(verbose_name='thisYearPPM6Later',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
+    thisYearPPM7Later = models.DecimalField(verbose_name='thisYearPPM7Later',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
+    thisYearPPM8Later = models.DecimalField(verbose_name='thisYearPPM8Later',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
+    thisYearPPM9Later = models.DecimalField(verbose_name='thisYearPPM9Later',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
+    thisYearPPM10Later = models.DecimalField(verbose_name='thisYearPPM10Later',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
+
+    class Meta:
+        verbose_name = 'Event Year PPM'
+        verbose_name_plural = 'Event Year PPM'
+        ordering = ('companyCode',) #モデルのクエリセットを取得した際にどのような順番でフィールドを並べ変えるかを決める。
+    
+
+    def __str__(self):
+        return str('Event Year PPM')

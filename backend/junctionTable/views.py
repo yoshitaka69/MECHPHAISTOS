@@ -1,12 +1,13 @@
 from django.shortcuts import render
 from rest_framework import viewsets
 
-from .models import MasterDataTable,BomAndTask,CeListAndTask,BadActorManagement
+from .models import MasterDataTable,BomAndTask,CeListAndTask,BadActorManagement,EventYearPPM
 from accounts.models import CompanyCode
 from .serializers import  (MasterDataTableSerializer, CompanyCodeMDTSerializer,
                            BomAndTaskSerializer,CompanyCodeBomAndTaskSerializer,
                            CeListAndTaskSerializer,CompanyCodeCeListAndTaskSerializer,
-                           BadActorManagementSerializer,CompanyCodeBadActorSerializer)
+                           BadActorManagementSerializer,CompanyCodeBadActorSerializer,
+                           EventYearPPMSerializer,CompanyCodeEventYearPPMSerializer)
 
 
 #MasterDataTable
@@ -88,3 +89,19 @@ class CompanyCodeBadActorViewSet(viewsets.ModelViewSet):
         return queryset
 
 
+
+
+class EventYearPPMViewSet(viewsets.ModelViewSet):
+    queryset = EventYearPPM.objects.all()
+    serializer_class = EventYearPPMSerializer
+
+class CompanyCodeEventYearPPMViewSet(viewsets.ModelViewSet):
+    serializer_class = CompanyCodeEventYearPPMSerializer
+
+#クエリパラメータでのフィルターリング
+    def get_queryset(self):
+        queryset = CompanyCode.objects.prefetch_related('eventYearPPM_companyCode').all()
+        company_code = self.request.query_params.get('companyCode', None)
+        if company_code:
+            queryset = queryset.filter(companyCode=company_code)
+        return queryset

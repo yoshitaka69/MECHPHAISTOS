@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import MasterDataTable,BomAndTask,CeListAndTask,BadActorManagement
+from .models import MasterDataTable,BomAndTask,CeListAndTask,BadActorManagement,EventYearPPM
 
 class MasterDataTableAdmin(admin.ModelAdmin):
 
@@ -56,11 +56,25 @@ class BadActorManagementAdmin(admin.ModelAdmin):
 
 
 
+class EventYearPPMAdmin(admin.ModelAdmin):
+
+    list_display = ('companyCode', 'companyName', 'plant', 'equipment', 'machine','thisYearPPM', 'thisYearPPM1Later', 'thisYearPPM2Later' ,'thisYearPPM3Later' , 'thisYearPPM4Later' ,'thisYearPPM5Later', 'thisYearPPM6Later', 'thisYearPPM7Later', 'thisYearPPM8Later', 'thisYearPPM9Later', 'thisYearPPM10Later')
+    search_fields = ('companyCode', 'companyName', 'plant', 'equipment', 'machine','thisYearPPM', 'thisYearPPM1Later', 'thisYearPPM2Later' ,'thisYearPPM3Later' , 'thisYearPPM4Later' ,'thisYearPPM5Later', 'thisYearPPM6Later', 'thisYearPPM7Later', 'thisYearPPM8Later', 'thisYearPPM9Later', 'thisYearPPM10Later')
+    list_filter = ('companyCode', 'companyName', 'plant', 'equipment', 'machine','thisYearPPM', 'thisYearPPM1Later', 'thisYearPPM2Later' ,'thisYearPPM3Later' , 'thisYearPPM4Later' ,'thisYearPPM5Later', 'thisYearPPM6Later', 'thisYearPPM7Later', 'thisYearPPM8Later', 'thisYearPPM9Later', 'thisYearPPM10Later') # adminで右側にあるフィルターBOXのこと
+    ordering = ('companyCode',) # 表示する順番
+    save_on_top = True #上部にもsaveボタンを配置
+
+
+    list_per_page = 50 # １ページあたりに表示するオブジェクト数を指定
+
+
+
+
 
 # 以下でadminサイトに表示させる
 admin.site.register(MasterDataTable,MasterDataTableAdmin)
 admin.site.register(BomAndTask,BomAndTaskAdmin)
 admin.site.register(CeListAndTask,CeListAndTaskAdmin)
 admin.site.register(BadActorManagement,BadActorManagementAdmin)
-
+admin.site.register(EventYearPPM,EventYearPPMAdmin)
 

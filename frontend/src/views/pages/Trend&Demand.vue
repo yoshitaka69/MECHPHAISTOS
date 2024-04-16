@@ -24,14 +24,14 @@
 			<div class="card card-solid">
 				<TabView>
 					<TabPanel header="Trend & Demand map">
-
-							<div class="flex-child col-12 lg:col-6 xl:col-6">
+						<div class="row">
+							<div class="flex-child col-12 lg:col-6 xl:col-8">
 								<Trend_map />
 							</div>
-							<div class="flex-child col-12 lg:col-6 xl:col-6">
+							<div class="flex-child col-12 lg:col-6 xl:col-4">
 								<Order_alert />
 							</div>
-
+						</div>
 					</TabPanel>
 				</TabView>
 			</div>
@@ -56,5 +56,10 @@ export default {
 </script>
 
 <style>
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+}
 
 </style>

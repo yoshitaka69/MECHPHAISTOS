@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import MasterDataTable,BomAndTask,CeListAndTask,BadActorManagement
+from .models import MasterDataTable,BomAndTask,CeListAndTask,BadActorManagement,EventYearPPM
 from taskList.models import TypicalTaskList,TaskListPPM02,TaskListPPM03,TaskListAPM04,TaskListPPM05
 from spareParts.models import BomList
 from accounts.models import CompanyCode,Plant
@@ -102,7 +102,6 @@ class BadActorManagementSerializer(serializers.ModelSerializer):
         model = BadActorManagement
         fields = ['companyCode', 'companyName', 'plant', 'equipment', 'badActor']
 
-
 class CompanyCodeBadActorSerializer(serializers.ModelSerializer):
     BadActorList = BadActorManagementSerializer(many=True, read_only=True, source='badActorManagement_companyCode')
     
@@ -110,3 +109,18 @@ class CompanyCodeBadActorSerializer(serializers.ModelSerializer):
         model = CompanyCode
         fields = ['companyCode', 'BadActorList']
 
+
+
+
+class EventYearPPMSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = EventYearPPM
+        fields = ['companyCode', 'companyName', 'plant', 'equipment', 'machine','thisYearPPM', 'thisYearPPM1Later', 'thisYearPPM2Later' ,'thisYearPPM3Later' , 'thisYearPPM4Later' ,'thisYearPPM5Later', 'thisYearPPM6Later', 'thisYearPPM7Later', 'thisYearPPM8Later', 'thisYearPPM9Later', 'thisYearPPM10Later']
+
+class CompanyCodeEventYearPPMSerializer(serializers.ModelSerializer):
+    EventYearPPMList = EventYearPPMSerializer(many=True, read_only=True, source='eventYearPPM_companyCode')
+
+    class Meta:
+        model = CompanyCode
+        fields = ['companyCode', 'EventYearPPMList']

@@ -222,7 +222,8 @@ class SummedPlannedCost(models.Model):
     def __str__(self):
         return f'{self.companyCode} {self.plant} {self.year}'
     
-    def save(self, *args, **kwargs): #check ok 
+     #check ok 
+    def save(self, *args, **kwargs):
         # 合計値を計算（None 値を考慮）
         self.totalPlannedCost = (
             (self.sumJan or 0) + (self.sumFeb or 0) + (self.sumMar or 0) + 
@@ -271,7 +272,8 @@ class SummedActualCost(models.Model):
     def __str__(self):
         return f'{self.companyCode} {self.plant} {self.year}'
     
-    def save(self, *args, **kwargs): #check ok 
+    #check ok
+    def save(self, *args, **kwargs):  
         # 合計値を計算
         self.totalActualCost = (
             (self.sumJan or 0) + (self.sumFeb or 0) + (self.sumMar or 0) + 
@@ -282,3 +284,6 @@ class SummedActualCost(models.Model):
         )
         print(f'Calculated Total Actual Cost: {self.totalActualCost}')  # デバッグ情報
         super().save(*args, **kwargs)  # 親クラスのsaveメソッドを呼び出し
+
+
+

@@ -2,7 +2,7 @@
   <div>
       <v-card>
           <v-card-title>Assessment Distribution</v-card-title>
-          <div id="AssessmentChart"></div>
+          <div id="AssessmentChart" style="width: 100%; height: 100%"></div>
       </v-card>
   </div>
 </template>

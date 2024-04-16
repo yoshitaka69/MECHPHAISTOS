@@ -202,11 +202,6 @@ class TaskListAPM03(models.Model):
 
 
 
-
-
-
-
-
 class TaskListAPM04(models.Model):
 
     #accountsより
@@ -327,9 +322,6 @@ class TaskListAPM05(models.Model):
 
     def __str__(self):
             return f'{self.taskName}'
-
-
-
 
 
 

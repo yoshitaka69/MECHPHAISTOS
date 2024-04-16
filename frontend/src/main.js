@@ -216,6 +216,16 @@ import TreeTable from 'primevue/treetable';
 import TriStateCheckbox from 'primevue/tristatecheckbox';
 import VirtualScroller from 'primevue/virtualscroller';
 import '@/assets/styles.scss';
+import '@/assets/flags.css';
+import "primeflex/primeflex.css";
+// PrimeVue のコアスタイル
+import 'primevue/resources/primevue.min.css';
+// テーマのスタイル
+import 'primevue/resources/themes/saga-blue/theme.css';
+// PrimeIcons のスタイル
+import 'primeicons/primeicons.css';
+
+
 
 
 

@@ -3,7 +3,8 @@ from rest_framework.routers import DefaultRouter
 from .views import (MasterDataTableViewSet,CompanyCodeMDTViewSet,
                     BomAndTaskViewSet,CompanyCodeBomAndTaskViewSet,
                     CeListAndTaskViewSet,CompanyCodeCeListAndTaskViewSet,
-                    BadActorManagementViewSet,CompanyCodeBadActorViewSet)
+                    BadActorManagementViewSet,CompanyCodeBadActorViewSet,
+                    EventYearPPMViewSet,CompanyCodeEventYearPPMViewSet)
 
 
 router = DefaultRouter()
@@ -19,6 +20,8 @@ router.register(r'ceListAndTaskByCompany', CompanyCodeCeListAndTaskViewSet, base
 router.register(r'badActor', BadActorManagementViewSet, basename='badActor')
 router.register(r'badActorByCompany', CompanyCodeBadActorViewSet, basename='companyCode-badActor')
 
+router.register(r'eventYearPPM', EventYearPPMViewSet, basename='eventYearPPM')
+router.register(r'eventYearPPMByCompany', CompanyCodeEventYearPPMViewSet, basename='companyCode-eventYearPPM')
 
 urlpatterns = [
     path('junctionTable/', include(router.urls)),
