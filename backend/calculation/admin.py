@@ -10,6 +10,7 @@ from .models import (CalTablePlannedPM02,CalTableActualPM02,
 # Register your models here.
 class CalTablePlannedPM02Admin(admin.ModelAdmin):
     list_display = ('companyCode','companyName','plant','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',)
+    readonly_fields = ('no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',) 
     search_fields = ('companyCode','companyName','plant','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',)
     list_filter = ('companyCode','companyName','plant','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',)
     ordering = ('plant',)
@@ -20,6 +21,7 @@ class CalTablePlannedPM02Admin(admin.ModelAdmin):
 
 class CalTabelActualPM02Admin(admin.ModelAdmin):
     list_display = ('companyCode','companyName','plant','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',)
+    readonly_fields = ('no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',) 
     search_fields = ('companyCode','companyName','plant','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',)
     list_filter = ('companyCode','companyName','plant','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',)
     ordering = ('plant',)
@@ -30,6 +32,7 @@ class CalTabelActualPM02Admin(admin.ModelAdmin):
 
 class CalTablePlannedPM03Admin(admin.ModelAdmin):
     list_display = ('companyCode','companyName','plant','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',)
+    readonly_fields = ('no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',) 
     search_fields = ('companyCode','companyName','plant','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',)
     list_filter = ('companyCode','companyName','plant','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',)
     ordering = ('plant',)
@@ -41,6 +44,7 @@ class CalTablePlannedPM03Admin(admin.ModelAdmin):
 
 class CalTabelActualPM03Admin(admin.ModelAdmin):
     list_display = ('companyCode','companyName','plant','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',)
+    readonly_fields = ('no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',) 
     search_fields = ('companyCode','companyName','plant','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',)
     list_filter = ('companyCode','companyName','plant','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',)
     ordering = ('plant',)
@@ -51,6 +55,7 @@ class CalTabelActualPM03Admin(admin.ModelAdmin):
 
 class CalTabelActualPM04Admin(admin.ModelAdmin):
     list_display = ('companyCode','companyName','plant','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',)
+    readonly_fields = ('no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',) 
     search_fields = ('companyCode','companyName','plant','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',)
     list_filter = ('companyCode','companyName','plant','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',)
     ordering = ('plant',)
@@ -61,6 +66,7 @@ class CalTabelActualPM04Admin(admin.ModelAdmin):
 
 class CalTablePlannedPM05Admin(admin.ModelAdmin):
     list_display = ('companyCode','companyName','plant','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',)
+    readonly_fields = ('no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',) 
     search_fields = ('companyCode','companyName','plant','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',)
     list_filter = ('companyCode','companyName','plant','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',)
     ordering = ('plant',)
@@ -71,6 +77,7 @@ class CalTablePlannedPM05Admin(admin.ModelAdmin):
 
 class CalTabelActualPM05Admin(admin.ModelAdmin):
     list_display = ('companyCode','companyName','plant','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',)
+    readonly_fields = ('no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',) 
     search_fields = ('companyCode','companyName','plant','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',)
     list_filter = ('companyCode','companyName','plant','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',)
     ordering = ('plant',)
@@ -83,6 +90,7 @@ class CalTabelActualPM05Admin(admin.ModelAdmin):
 
 class SummedPlannedCostAdmin(admin.ModelAdmin):
     list_display = ('companyCode','plant','year','sumJan','sumFeb','sumMar','sumApr','sumMay','sumJun','sumJul','sumAug','sumSep','sumOct','sumNov','sumDec','sumCommitment','totalPlannedPM02','totalPlannedPM03','totalPlannedPM04','totalPlannedPM05','totalPlannedCost',)
+    readonly_fields = ('sumJan','sumFeb','sumMar','sumApr','sumMay','sumJun','sumJul','sumAug','sumSep','sumOct','sumNov','sumDec','sumCommitment','totalPlannedPM02','totalPlannedPM03','totalPlannedPM04','totalPlannedPM05','totalPlannedCost',) 
     search_fields = ('companyCode','plant','year','sumJan','sumFeb','sumMar','sumApr','sumMay','sumJun','sumJul','sumAug','sumSep','sumOct','sumNov','sumDec','sumCommitment','totalPlannedPM02','totalPlannedPM03','totalPlannedPM04','totalPlannedPM05','totalPlannedCost',)
     list_filter = ('companyCode','plant','year','sumJan','sumFeb','sumMar','sumApr','sumMay','sumJun','sumJul','sumAug','sumSep','sumOct','sumNov','sumDec','sumCommitment','totalPlannedPM02','totalPlannedPM03','totalPlannedPM04','totalPlannedPM05','totalPlannedCost',)
     ordering = ('companyCode',)
@@ -94,6 +102,7 @@ class SummedPlannedCostAdmin(admin.ModelAdmin):
 
 class SummedActualCostAdmin(admin.ModelAdmin):
     list_display = ('companyCode','plant','year','sumJan','sumFeb','sumMar','sumApr','sumMay','sumJun','sumJul','sumAug','sumSep','sumOct','sumNov','sumDec','sumCommitment','totalActualPM02','totalActualPM03','totalActualPM04','totalActualPM05','totalActualCost',)
+    readonly_fields = ('sumJan','sumFeb','sumMar','sumApr','sumMay','sumJun','sumJul','sumAug','sumSep','sumOct','sumNov','sumDec','sumCommitment','totalActualPM02','totalActualPM03','totalActualPM04','totalActualPM05','totalActualCost',)
     search_fields = ('companyCode','plant','year','sumJan','sumFeb','sumMar','sumApr','sumMay','sumJun','sumJul','sumAug','sumSep','sumOct','sumNov','sumDec','sumCommitment','totalActualPM02','totalActualPM03','totalActualPM04','totalActualPM05','totalActualCost',)
     list_filter = ('companyCode','plant','year','sumJan','sumFeb','sumMar','sumApr','sumMay','sumJun','sumJul','sumAug','sumSep','sumOct','sumNov','sumDec','sumCommitment','totalActualPM02','totalActualPM03','totalActualPM04','totalActualPM05','totalActualCost',)
     ordering = ('companyCode',)
