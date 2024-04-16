@@ -12,6 +12,15 @@ from .models import (CalTablePlannedPM02,CalTableActualPM02,
 
 #CalTablePPM02
 class CalTablePPM02Serializer(serializers.ModelSerializer):
+    companyCode = serializers.SlugRelatedField(
+    slug_field='companyCode', 
+    queryset=CompanyCode.objects.all()
+    )
+
+    plant = serializers.SlugRelatedField(
+    slug_field='plant', 
+    queryset=Plant.objects.all()
+)
 
     
     class Meta:
@@ -31,6 +40,15 @@ class CompanyCodeCalPPM02Serializer(serializers.ModelSerializer):
 
 #CalTableAPM02
 class CalTableAPM02Serializer(serializers.ModelSerializer):
+    companyCode = serializers.SlugRelatedField(
+    slug_field='companyCode', 
+    queryset=CompanyCode.objects.all()
+    )
+
+    plant = serializers.SlugRelatedField(
+    slug_field='plant', 
+    queryset=Plant.objects.all()
+)
  
     
     class Meta:
@@ -51,8 +69,16 @@ class CompanyCodeCalAPM02Serializer(serializers.ModelSerializer):
 
 #CalTablePPM03
 class CalTablePPM03Serializer(serializers.ModelSerializer):
+    companyCode = serializers.SlugRelatedField(
+    slug_field='companyCode', 
+    queryset=CompanyCode.objects.all()
+    )
 
-    
+    plant = serializers.SlugRelatedField(
+    slug_field='plant', 
+    queryset=Plant.objects.all()
+)
+
     class Meta:
         model = CalTablePlannedPM03
         fields =  ['companyCode','companyName','plant','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost']
@@ -71,6 +97,15 @@ class CompanyCodeCalPPM03Serializer(serializers.ModelSerializer):
 
 #CalTableAPM03
 class CalTableAPM03Serializer(serializers.ModelSerializer):
+    companyCode = serializers.SlugRelatedField(
+    slug_field='companyCode', 
+    queryset=CompanyCode.objects.all()
+    )
+
+    plant = serializers.SlugRelatedField(
+    slug_field='plant', 
+    queryset=Plant.objects.all()
+)
 
 
     class Meta:
@@ -90,6 +125,15 @@ class CompanyCodeCalAPM03Serializer(serializers.ModelSerializer):
 
 #CalTableAPM04
 class CalTableAPM04Serializer(serializers.ModelSerializer):
+    companyCode = serializers.SlugRelatedField(
+    slug_field='companyCode', 
+    queryset=CompanyCode.objects.all()
+    )
+
+    plant = serializers.SlugRelatedField(
+    slug_field='plant', 
+    queryset=Plant.objects.all()
+)
  
     
     class Meta:
@@ -108,8 +152,17 @@ class CompanyCodeCalAPM04Serializer(serializers.ModelSerializer):
 
 #CalTablePPM05
 class CalTablePPM05Serializer(serializers.ModelSerializer):
+  
+    companyCode = serializers.SlugRelatedField(
+    slug_field='companyCode', 
+    queryset=CompanyCode.objects.all()
+    )
 
-    
+    plant = serializers.SlugRelatedField(
+    slug_field='plant', 
+    queryset=Plant.objects.all()
+)
+
     class Meta:
         model = CalTablePlannedPM05
         fields = ['companyCode','companyName','plant','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost']
@@ -126,6 +179,16 @@ class CompanyCodeCalPPM05Serializer(serializers.ModelSerializer):
 
 #CalTableAPM05
 class CalTableAPM05Serializer(serializers.ModelSerializer):
+  
+    companyCode = serializers.SlugRelatedField(
+    slug_field='companyCode', 
+    queryset=CompanyCode.objects.all()
+    )
+
+    plant = serializers.SlugRelatedField(
+    slug_field='plant', 
+    queryset=Plant.objects.all()
+)
     
     class Meta:
         model = CalTableActualPM05
