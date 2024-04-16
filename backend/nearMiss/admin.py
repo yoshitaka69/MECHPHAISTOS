@@ -4,6 +4,7 @@ from .models import NearMiss,SafetyIndicators,TrendSafetyIndicators
 
 class NearMissAdmin(admin.ModelAdmin):
     list_display = ('companyCode','userName', 'nearMissNo', 'department','dateOfOccurrence','placeOfOccurrence','typeOfAccident','description','factor','injuredLv','equipmentDamageLv','affectOfEnviroment','newsCoverage','measures','actionItems','solvedActionItems','createdDay','updateDay')
+    readonly_fields = ('nearMissNo','measures') 
     search_fields = ('companyCode','userName', 'nearMissNo', 'department','dateOfOccurrence','placeOfOccurrence','typeOfAccident','description','factor','injuredLv','equipmentDamageLv','affectOfEnviroment','newsCoverage','measures','actionItems','solvedActionItems','createdDay','updateDay')
     list_filter = ('companyCode',"userName",) # adminで右側にあるフィルターBOXのこと
     ordering = ('companyCode',) # 表示する順番
