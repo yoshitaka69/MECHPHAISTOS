@@ -7,7 +7,7 @@ from .serializers import  (MasterDataTableSerializer, CompanyCodeMDTSerializer,
                            BomAndTaskSerializer,CompanyCodeBomAndTaskSerializer,
                            CeListAndTaskSerializer,CompanyCodeCeListAndTaskSerializer,
                            BadActorManagementSerializer,CompanyCodeBadActorSerializer,
-                           EventYearPPMSerializer,CompanyCodeEventYearPPMSerializer)
+                           EventYearPPMSerializer,CompanyCodeEventYearPPMSerializer,)
 
 
 #MasterDataTable
@@ -105,3 +105,4 @@ class CompanyCodeEventYearPPMViewSet(viewsets.ModelViewSet):
         if company_code:
             queryset = queryset.filter(companyCode=company_code)
         return queryset
+    

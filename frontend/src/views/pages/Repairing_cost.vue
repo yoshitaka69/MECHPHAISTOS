@@ -30,8 +30,7 @@
                                 <Total_cost_table />
                                 <p>actual summary cost (readOnly)</p>
                                 <Actual_summary_table />
-                                <Message :closable="false"
-                                    >AI recommendation
+                                <Message :closable="false">AI recommendation
                                     <br />
                                     Now developing
                                 </Message>
@@ -45,8 +44,7 @@
                                     <div>
                                         <PM02_actual_table />
                                     </div>
-                                    <Message :closable="false"
-                                        >AI recommendation
+                                    <Message :closable="false">AI recommendation
                                         <br />
                                         Now developing
                                     </Message>
@@ -56,8 +54,7 @@
                                 <div class="card" style="background-color: #f2f2f2">
                                     <PM03_actual_graph />
                                     <PM03_actual_table />
-                                    <Message :closable="false"
-                                        >AI recommendation
+                                    <Message :closable="false">AI recommendation
                                         <br />
                                         Now developing
                                     </Message>
@@ -67,8 +64,7 @@
                                 <div class="card" style="background-color: #f2f2f2">
                                     <PM04_actual_graph />
                                     <PM04_actual_table />
-                                    <Message :closable="false"
-                                        >AI recommendation
+                                    <Message :closable="false">AI recommendation
                                         <br />
                                         Now developing
                                     </Message>
@@ -78,8 +74,7 @@
                                 <div class="card" style="background-color: #f2f2f2">
                                     <PM05_actual_graph />
                                     <PM05_actual_table />
-                                    <Message :closable="false"
-                                        >AI recommendation
+                                    <Message :closable="false">AI recommendation
                                         <br />
                                         Now developing
                                     </Message>
@@ -97,7 +92,8 @@
                                             <span class="block text-500 font-medium mb-3">Predict years cost</span>
                                             <div class="text-900 font-medium text-xl">$2.100</div>
                                         </div>
-                                        <div class="flex align-items-center justify-content-center bg-orange-100 border-round" style="width: 2.5rem; height: 2.5rem">
+                                        <div class="flex align-items-center justify-content-center bg-orange-100 border-round"
+                                            style="width: 2.5rem; height: 2.5rem">
                                             <i class="pi pi-map-marker text-orange-500 text-xl"></i>
                                         </div>
                                     </div>
@@ -110,28 +106,20 @@
                                             <span class="block text-500 font-medium mb-3">Next month task event</span>
                                             <div class="text-900 font-medium text-xl">28441</div>
                                         </div>
-                                        <div class="flex align-items-center justify-content-center bg-cyan-100 border-round" style="width: 2.5rem; height: 2.5rem">
+                                        <div class="flex align-items-center justify-content-center bg-cyan-100 border-round"
+                                            style="width: 2.5rem; height: 2.5rem">
                                             <i class="pi pi-inbox text-cyan-500 text-xl"></i>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-12 xl:col-6">
-                                <div class="card" style="background-color: #f2f2f2">
-                                    <Planned_vs_actual />
-                                </div>
+                        </div>
+                        <div class="col-12 xl:col-12">
+                            <div class="card" style="background-color: #f2f2f2">
+                                <Planned_vs_actual_year_graph />
                             </div>
-                            <div class="col-12 xl:col-6">
-                                <div class="card" style="background-color: #f2f2f2">
-                                    <h2>Forecast for 10 years</h2>
-                                    <PM02_forecast_table />
-                                    <br />
-                                    <h2>Actual cost (contain PM02 PM03 PM04 PM05)</h2>
-                                    <Actual_summary_table_year />
-                                </div>
-                                <br />
-                                <br />
-                            </div>
+                        </div>
+                        <div>
                             <Task_list />
                         </div>
                     </TabPanel>
@@ -147,7 +135,7 @@
 <script>
 import Total_graph from '@/components/Repairing_cost/Total_graph.vue';
 import Total_cost_table from '@/components/Repairing_cost/Total_cost_table.vue';
-import Planned_vs_actual from '@/components/Repairing_cost/Planned_vs_actual_graph.vue';
+import Planned_vs_actual_year_graph from '@/components/Repairing_cost/Planned_vs_actual_year_graph.vue';
 import Actual_summary_table from '@/components/Repairing_cost/Actual_summary_table.vue';
 import Actual_summary_table_year from '@/components/Repairing_cost/Actual_summary_table_year.vue';
 import PM02_forecast_table from '@/components/Repairing_cost/PM02_forecast_table.vue';
@@ -167,7 +155,7 @@ export default {
     components: {
         Total_graph,
         Total_cost_table,
-        Planned_vs_actual,
+        Planned_vs_actual_year_graph,
         Actual_summary_table_year,
         Actual_summary_table,
         PM02_forecast_table,

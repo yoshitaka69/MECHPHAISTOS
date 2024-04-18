@@ -5,6 +5,7 @@ from accounts.models import CompanyCode, Plant
 from taskList.models import TaskListPPM02, TaskListPPM03, TaskListPPM05
 from .models import EventYearPPM
 
+#PPM
 @receiver(post_save, sender=TaskListPPM02)
 @receiver(post_save, sender=TaskListPPM03)
 @receiver(post_save, sender=TaskListPPM05)
@@ -42,3 +43,4 @@ def update_ppm_costs(all_ppm_entries):
             print(f"{cost_field_name} を {labor_cost_sum} に設定（{ppm_entry}）")
         ppm_entry.save()
         print("EventYearPPM エントリを保存しました。")
+

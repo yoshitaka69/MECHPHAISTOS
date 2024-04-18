@@ -114,6 +114,15 @@ class CompanyCodeBadActorSerializer(serializers.ModelSerializer):
 
 class EventYearPPMSerializer(serializers.ModelSerializer):
     
+    companyCode = serializers.SlugRelatedField(
+        slug_field='companyCode', 
+        queryset=CompanyCode.objects.all()
+    )
+    plant = serializers.SlugRelatedField(
+        slug_field='plant', 
+        queryset=Plant.objects.all()
+    )
+    
     class Meta:
         model = EventYearPPM
         fields = ['companyCode', 'companyName', 'plant', 'equipment', 'machine','PPM0YearCost', 'PPM1YearCost', 'PPM2YearCost' ,'PPM3YearCost' , 'PPM4YearCost' ,'PPM5YearCost', 'PPM6YearCost', 'PPM7YearCost', 'PPM8YearCost', 'PPM9YearCost', 'PPM10YearCost']
@@ -124,3 +133,8 @@ class CompanyCodeEventYearPPMSerializer(serializers.ModelSerializer):
     class Meta:
         model = CompanyCode
         fields = ['companyCode', 'EventYearPPMList']
+
+
+
+
+
