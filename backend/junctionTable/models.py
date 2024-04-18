@@ -292,17 +292,17 @@ class EventYearPPM(models.Model):
     equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='eventYearPPM_equipment',null=True, blank=True)
     machine = models.ForeignKey(Machine, on_delete=models.CASCADE, related_name='eventYearPPM_machine',null=True, blank=True)
 
-    PPMThisYearCost = models.DecimalField(verbose_name='PPMThisYearCost',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
-    PPM1LaterCost = models.DecimalField(verbose_name='PPM1LaterCost',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
-    PPM2LaterCost = models.DecimalField(verbose_name='PPM2LaterCost',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
-    PPM3LaterCost = models.DecimalField(verbose_name='PPM3LaterCost',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
-    PPM4LaterCost = models.DecimalField(verbose_name='PPM4LaterCost',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
-    PPM5LaterCost = models.DecimalField(verbose_name='PPM5LaterCost',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
-    PPM6LaterCost = models.DecimalField(verbose_name='PPM6LaterCost',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
-    PPM7LaterCost = models.DecimalField(verbose_name='PPM7LaterCost',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
-    PPM8LaterCost = models.DecimalField(verbose_name='PPM8LaterCost',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
-    PPM9LaterCost = models.DecimalField(verbose_name='PPM9LaterCost',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
-    PPM10LaterCost = models.DecimalField(verbose_name='PPM10LaterCost',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
+    PPM0YearCost = models.DecimalField(verbose_name='PPM0YearCost',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
+    PPM1YearCost = models.DecimalField(verbose_name='PPM1YearCost',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
+    PPM2YearCost = models.DecimalField(verbose_name='PPM2YearCost',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
+    PPM3YearCost = models.DecimalField(verbose_name='PPM3YearCost',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
+    PPM4YearCost = models.DecimalField(verbose_name='PPM4YearCost',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
+    PPM5YearCost = models.DecimalField(verbose_name='PPM5YearCost',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
+    PPM6YearCost = models.DecimalField(verbose_name='PPM6YearCost',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
+    PPM7YearCost = models.DecimalField(verbose_name='PPM7YearCost',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
+    PPM8YearCost = models.DecimalField(verbose_name='PPM8YearCost',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
+    PPM9YearCost = models.DecimalField(verbose_name='PPM9YearCost',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
+    PPM10YearCost = models.DecimalField(verbose_name='PPM10YearCost',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
 
     class Meta:
         verbose_name = 'Event Year PPM'

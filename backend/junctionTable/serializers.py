@@ -116,7 +116,7 @@ class EventYearPPMSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = EventYearPPM
-        fields = ['companyCode', 'companyName', 'plant', 'equipment', 'machine','thisYearPPM', 'thisYearPPM1Later', 'thisYearPPM2Later' ,'thisYearPPM3Later' , 'thisYearPPM4Later' ,'thisYearPPM5Later', 'thisYearPPM6Later', 'thisYearPPM7Later', 'thisYearPPM8Later', 'thisYearPPM9Later', 'thisYearPPM10Later']
+        fields = ['companyCode', 'companyName', 'plant', 'equipment', 'machine','PPM0YearCost', 'PPM1YearCost', 'PPM2YearCost' ,'PPM3YearCost' , 'PPM4YearCost' ,'PPM5YearCost', 'PPM6YearCost', 'PPM7YearCost', 'PPM8YearCost', 'PPM9YearCost', 'PPM10YearCost']
 
 class CompanyCodeEventYearPPMSerializer(serializers.ModelSerializer):
     EventYearPPMList = EventYearPPMSerializer(many=True, read_only=True, source='eventYearPPM_companyCode')

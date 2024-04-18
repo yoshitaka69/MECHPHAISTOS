@@ -58,9 +58,9 @@ class BadActorManagementAdmin(admin.ModelAdmin):
 
 class EventYearPPMAdmin(admin.ModelAdmin):
 
-    list_display = ('companyCode', 'companyName', 'plant', 'equipment', 'machine','thisYearPPM', 'thisYearPPM1Later', 'thisYearPPM2Later' ,'thisYearPPM3Later' , 'thisYearPPM4Later' ,'thisYearPPM5Later', 'thisYearPPM6Later', 'thisYearPPM7Later', 'thisYearPPM8Later', 'thisYearPPM9Later', 'thisYearPPM10Later')
-    search_fields = ('companyCode', 'companyName', 'plant', 'equipment', 'machine','thisYearPPM', 'thisYearPPM1Later', 'thisYearPPM2Later' ,'thisYearPPM3Later' , 'thisYearPPM4Later' ,'thisYearPPM5Later', 'thisYearPPM6Later', 'thisYearPPM7Later', 'thisYearPPM8Later', 'thisYearPPM9Later', 'thisYearPPM10Later')
-    list_filter = ('companyCode', 'companyName', 'plant', 'equipment', 'machine','thisYearPPM', 'thisYearPPM1Later', 'thisYearPPM2Later' ,'thisYearPPM3Later' , 'thisYearPPM4Later' ,'thisYearPPM5Later', 'thisYearPPM6Later', 'thisYearPPM7Later', 'thisYearPPM8Later', 'thisYearPPM9Later', 'thisYearPPM10Later') # adminで右側にあるフィルターBOXのこと
+    list_display = ('companyCode', 'companyName', 'plant', 'equipment', 'machine','PPM0YearCost', 'PPM1YearCost', 'PPM2YearCost' ,'PPM3YearCost' , 'PPM4YearCost' ,'PPM5YearCost', 'PPM6YearCost', 'PPM7YearCost', 'PPM8YearCost', 'PPM9YearCost', 'PPM10YearCost')
+    search_fields = ('companyCode', 'companyName', 'plant', 'equipment', 'machine','PPM0YearCost', 'PPM1YearCost', 'PPM2YearCost' ,'PPM3YearCost' , 'PPM4YearCost' ,'PPM5YearCost', 'PPM6YearCost', 'PPM7YearCost', 'PPM8YearCost', 'PPM9YearCost', 'PPM10YearCost')
+    list_filter = ('companyCode', 'companyName', 'plant', 'equipment', 'machine','PPM0YearCost', 'PPM1YearCost', 'PPM2YearCost' ,'PPM3YearCost' , 'PPM4YearCost' ,'PPM5YearCost', 'PPM6YearCost', 'PPM7YearCost', 'PPM8YearCost', 'PPM9YearCost', 'PPM10YearCost') # adminで右側にあるフィルターBOXのこと
     ordering = ('companyCode',) # 表示する順番
     save_on_top = True #上部にもsaveボタンを配置
 
