@@ -18,10 +18,10 @@ import Vue3EasyDataTable from 'vue3-easy-data-table';
 import 'vue3-easy-data-table/dist/style.css';
 
 
-//handsontable
-// the base module
+/*handsontable
+the base module
 import Handsontable from 'handsontable/base';
-// cell type modules
+ cell type modules
 import {
   AutocompleteCellType,
   CheckboxCellType,
@@ -33,17 +33,17 @@ import {
   TextCellType,
   TimeCellType,
 } from 'handsontable/cellTypes';
-// renderer modules
+ renderer modules
 import {
   baseRenderer,
   autocompleteRenderer,
   checkboxRenderer,
   htmlRenderer,
-  numericRenderer,
+ numericRenderer,
   passwordRenderer,
   textRenderer,
 } from 'handsontable/renderers';
-// editor modules
+ editor modules
 import {
   AutocompleteEditor,
   BaseEditor,
@@ -100,6 +100,7 @@ import {
   TrimRows,
   UndoRedo,
 } from 'handsontable/plugins';
+*/
 
 // registering functions that let you quickly register all modules at once
 import {
@@ -218,6 +219,7 @@ import VirtualScroller from 'primevue/virtualscroller';
 import '@/assets/styles.scss';
 import '@/assets/flags.css';
 import "primeflex/primeflex.css";
+
 // PrimeVue のコアスタイル
 import 'primevue/resources/primevue.min.css';
 // テーマのスタイル
@@ -363,5 +365,3 @@ app.use(vuetify);
 app.use(pinia);
 app.use(VueAxios, axios);
 app.mount('#app');
-
-console.log("Vuetify is applied to the app:", app); // この行を追加
