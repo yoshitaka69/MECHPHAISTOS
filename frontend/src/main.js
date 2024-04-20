@@ -13,7 +13,6 @@ import { createPinia } from 'pinia';
 import Vue3EasyDataTable from 'vue3-easy-data-table';
 import 'vue3-easy-data-table/dist/style.css';
 
-
 /*handsontable
 the base module
 import Handsontable from 'handsontable/base';
@@ -216,15 +215,12 @@ import '@/assets/styles.scss';
 import '@/assets/flags.css';
 import "primeflex/primeflex.css";
 
-
 // PrimeVue のコアスタイル
 import 'primevue/resources/primevue.min.css';
 // テーマのスタイル
 import 'primevue/resources/themes/aura-light-green/theme.css'
 // PrimeIcons のスタイル
 import 'primeicons/primeicons.css';
-
-
 
 
 
