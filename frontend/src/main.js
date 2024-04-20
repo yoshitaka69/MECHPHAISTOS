@@ -2,10 +2,6 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
 
-
-//vuetify追加
-import vuetify from "./plugins/vuetify";
-
 //axios
 import axios from 'axios'
 import VueAxios from 'vue-axios'
@@ -220,10 +216,11 @@ import '@/assets/styles.scss';
 import '@/assets/flags.css';
 import "primeflex/primeflex.css";
 
+
 // PrimeVue のコアスタイル
 import 'primevue/resources/primevue.min.css';
 // テーマのスタイル
-import 'primevue/resources/themes/saga-blue/theme.css';
+import 'primevue/resources/themes/aura-light-green/theme.css'
 // PrimeIcons のスタイル
 import 'primeicons/primeicons.css';
 
@@ -361,7 +358,7 @@ registerAllPlugins();
 // or, register all of Handsontable's modules at once
 registerAllModules();
 
-app.use(vuetify);
+
 app.use(pinia);
 app.use(VueAxios, axios);
 app.mount('#app');
