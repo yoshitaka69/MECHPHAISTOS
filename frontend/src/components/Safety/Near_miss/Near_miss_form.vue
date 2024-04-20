@@ -158,6 +158,7 @@
           <Button type="button" label="Save" @click="submitForm"></Button>
         </div>
       </div>
+<<<<<<< HEAD
     </div>
   </Transition>
 </template>
@@ -378,6 +379,210 @@ export default {
         NewsCoverage: ''
       }
     };
+=======
+      </div>
+    </Transition>
+  </template>
+  
+  <script>
+  import { ref, reactive } from "vue";
+  import { notBlank, atLeast } from "@/plugins/validatorOptions";
+  import axios from 'axios';
+  import Level_description from '@/components/Safety/Near_miss/Level_description.vue';
+  
+  export default {
+    props: {
+      show: Boolean
+    },
+  
+    components: {
+      Level_description,
+    },
+  
+    setup(props) {
+　　// Piniaストアの使用
+   　 const userStore = useUserStore();
+
+    // PiniaストアからuserNameを取得、または空白で初期化
+   　 const initialUserName = userStore.userName || '';
+      const lastId = ref(0);
+  
+      const getLastId = async () => {
+        try {
+          const response = await axios.get("http://127.0.0.1:8000/api/v1/nearMiss/");
+          const data = response.data;
+          return data.length > 0 ? Math.max(...data.map(entry => entry.id)) : 0;
+        } catch (error) {
+          console.error("Error getting last Id:", error);
+          throw error;
+        }
+      };
+  
+      getLastId().then(id => lastId.value = id + 1);
+  
+      const calculateCategory = () => {
+        const valueMapping = { A: 10, B: 8, C: 3, D: 2, E: 1 };
+        const total = ['InjuredLv', 'EquipmentDamageLv', 'AffectOfEnviroment', 'NewsCoverage']
+          .reduce((acc, key) => acc + valueMapping[formState[key]], 0);
+  
+        return total >= 11 ? 'A' : total >= 10 ? 'B' : total >= 9 ? 'C' : total >= 5 ? 'D' : 'E';
+      };
+  
+      const checkValue = reactive({});
+      const initialFormState = reactive({
+        Id: 0,
+        Date: "",
+        Name: initialUserName, // NameフィールドにuserNameを割り当て
+        Department: "",
+        Where: "",
+        TypeOfAccIdent: "",
+        Factor: "",
+        InjuredLv: "",
+        EquipmentDamageLv: "",
+        AffectOfEnviroment: "",
+        NewsCoverage: "",
+        Description: "",
+      });
+  
+      const formState = reactive({ ...initialFormState });
+      const resetForm = () => {
+        Object.assign(formState, initialFormState);
+      };
+  
+      const errorMessagesState = reactive({
+        Date: [],
+        Name: [],
+        Department: [],
+        Where: [],
+        TypeOfAccIdent: [],
+        Factor: [],
+        InjuredLv: [],
+        EquipmentDamageLv: [],
+        AffectOfEnviroment: [],
+        NewsCoverage: [],
+        Description: [],
+      });
+  
+      const validatorsState = {
+        Date: [],
+        Name: [notBlank()],
+        Department: [atLeast(5)],
+        Where: [],
+        TypeOfAccIdent: [],
+        Factor: [],
+        InjuredLv: [],
+        EquipmentDamageLv: [],
+        AffectOfEnviroment: [],
+        NewsCoverage: [],
+        Description: [],
+      };
+  
+      const onInputForm = (id, value) => {
+        formState[id] = value;
+        errorMessagesState[id] = validatorsState[id]
+          .map((valiDate) => valiDate(value))
+          .filter((msg) => msg !== "");
+      };
+  
+      //axios postの用methods
+      const submitForm = async () => {
+        try {
+          // 最後のIdを取得
+          const lastIdValue = lastId.value;
+  
+  
+          // 送信するデータの作成
+          const postData = {
+            id: lastIdValue,
+            name: formState.Name,
+            department: formState.Department,
+            date: formState.Date,
+            where: formState.Where,
+            typeOfAccIdent: formState.TypeOfAccIdent,
+            description: formState.Description,
+            factor: formState.Factor,
+            injuredLv: formState.InjuredLv,
+            equipmentDamageLv: formState.EquipmentDamageLv,
+            affectOfEnviroment: formState.AffectOfEnviroment,
+            newsCoverage: formState.NewsCoverage,
+            measures: calculateCategory(),
+            // 他のフォームフィールド ...
+          };
+  
+          console.log("postData:", postData);  // この行を追加
+          console.log("postData before axios.post:", postData);
+          // Axiosを使用してPOSTリクエストを送信
+          const response = await axios.post("http://127.0.0.1:8000/api/v1/nearMiss/", postData);
+  
+          // レスポンスの処理（成功時の処理）
+          console.log(response.data);
+  
+          // lastIdを更新
+          lastId.value += 1;
+  
+          // フォームを初期化
+          resetForm();
+        } catch (error) {
+          console.error("Error submitting form:", error.response ? error.response.data : error.message);
+        }
+      };
+  
+      return {
+        calculateCategory,
+        checkValue,
+        formState,
+        errorMessagesState,
+        validatorsState,
+        onInputForm,
+        submitForm,
+        lastId,
+      };
+    },
+  
+  
+    data() {
+      return {
+        accidentTypes: [
+          'fall down', 'fall/slip', 'collision', 'accidental fall', 'collapse',
+          'hit by something', 'got caught up in', 'cut/Rubbing', 'treading on something sharp',
+          'drown', 'contact with hot or cold objects', 'contact with organic matter',
+          'electric shock', 'explosion', 'rupture', 'conflagration', 'traffic accident',
+          'impossible movement', 'protective equipment violation', 'others'
+        ],
+        factors: ['Person', 'Rule', 'Equipment', 'Methods', 'Others'],
+        injuredLevels: ['A', 'B', 'C', 'D', 'E'],
+        equipmentDamageLevels: ['A', 'B', 'C', 'D', 'E'],
+        affectOfEnviromentLevels: ['A', 'B', 'C', 'D', 'E'],
+        newsCoverageLevels: ['A', 'B', 'C', 'D', 'E'],
+        formState: {
+          TypeOfAccIdent: '',
+          Factor: '',
+          InjuredLv: '',
+          EquipmentDamageLv: '',
+          AffectOfEnviroment: '',
+          NewsCoverage: ''
+        }
+      };
+    },
+  };
+  
+  </script>
+  
+  
+  
+  
+  <style>
+  .modal-mask {
+    position: fixed;
+    z-index: 9998;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    transition: opacity 0.3s ease;
+>>>>>>> 3c1fa7114a4f2ba2fa60465adf06054576761a2c
   }
 };
 </script>
@@ -429,6 +634,7 @@ export default {
    * You can easily play with the modal transition by editing
    * these styles.
    */
+<<<<<<< HEAD
 
 .modal-enter-from {
   opacity: 0;
@@ -444,3 +650,20 @@ export default {
   transform: scale(1.1);
 }
 </style>
+=======
+  
+  .modal-enter-from {
+    opacity: 0;
+  }
+  
+  .modal-leave-to {
+    opacity: 0;
+  }
+  
+  .modal-enter-from .modal-container,
+  .modal-leave-to .modal-container {
+    -webkit-transform: scale(1.1);
+    transform: scale(1.1);
+  }
+  </style>
+>>>>>>> 3c1fa7114a4f2ba2fa60465adf06054576761a2c

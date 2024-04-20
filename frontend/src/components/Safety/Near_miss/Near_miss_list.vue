@@ -56,6 +56,7 @@ const sortType: SortType[] = ["desc", "asc"];
 const NearMiss = ref([]);
 
 const headers: Header[] = [
+<<<<<<< HEAD
   { text: "NearMiss No.", value: "nearMissNo", sortable: true },
   { text: "Name", value: "userName.userName", sortable: true },
   { text: "Department", value: "department", sortable: true },
@@ -73,6 +74,22 @@ const headers: Header[] = [
   { text: "Solved Items?", value: "solvedItems", sortable: true },
   { text: "updateDay", value: "updateDay", sortable: true },
   { text: "Operation", value: "Operation" },
+=======
+    { text: "ID No.", value: "nearMissListNo", sortable: true },
+    { text: "Name", value: "userName.userName", sortable: true },
+    { text: "Department", value: "department", sortable: true },
+    { text: "Date", value: "dateOfOccurrence", sortable: true },
+    { text: "Where?", value: "placeOfOccurrence", sortable: true },
+    { text: "Type of accident", value: "typeOfAccident", sortable: true },
+    { text: "Description/Learning", value: "description", sortable: true },
+    { text: "Factor", value: "factor", sortable: true },
+    { text: "Injured lv.", value: "injuredLv", sortable: true },
+    { text: "Equipment damage lv.", value: "equipmentDamageLv", sortable: true },
+    { text: "Affect of Enviroment", value: "affectOfEnviroment", sortable: true },
+    { text: "News coverage", value: "newsCoverage", sortable: true },
+    { text: "Measures", value: "measures", sortable: true },
+    { text: "Operation", value: "Operation" },
+>>>>>>> 3c1fa7114a4f2ba2fa60465adf06054576761a2c
 ];
 
 const items: Item[] = NearMiss.value;
@@ -117,7 +134,11 @@ onMounted(async () => {
     }
   }
 });
+<<<<<<< HEAD
 
 
 
 </script>
+=======
+</script>
+>>>>>>> 3c1fa7114a4f2ba2fa60465adf06054576761a2c
