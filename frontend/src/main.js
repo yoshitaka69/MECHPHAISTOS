@@ -1,115 +1,14 @@
-import { createApp } from 'vue';
-import App from './App.vue';
-import router from './router';
+import './assets/main.css'
 
-//axios
-import axios from 'axios'
-import VueAxios from 'vue-axios'
+import { createApp } from 'vue'
+import { createPinia } from 'pinia'
 
-//pinia
-import { createPinia } from 'pinia';
-
-//vue3-easy-data-table
-import Vue3EasyDataTable from 'vue3-easy-data-table';
-import 'vue3-easy-data-table/dist/style.css';
-
-
-/*handsontable
-the base module
-import Handsontable from 'handsontable/base';
- cell type modules
-import {
-  AutocompleteCellType,
-  CheckboxCellType,
-  DateCellType,
-  DropdownCellType,
-  HandsontableCellType,
-  NumericCellType,
-  PasswordCellType,
-  TextCellType,
-  TimeCellType,
-} from 'handsontable/cellTypes';
- renderer modules
-import {
-  baseRenderer,
-  autocompleteRenderer,
-  checkboxRenderer,
-  htmlRenderer,
- numericRenderer,
-  passwordRenderer,
-  textRenderer,
-} from 'handsontable/renderers';
- editor modules
-import {
-  AutocompleteEditor,
-  BaseEditor,
-  CheckboxEditor,
-  DateEditor,
-  DropdownEditor,
-  HandsontableEditor,
-  NumericEditor,
-  PasswordEditor,
-  SelectEditor,
-  TextEditor,
-} from 'handsontable/editors';
-// validator modules
-import {
-  autocompleteValidator,
-  dateValidator,
-  numericValidator,
-  timeValidator,
-} from 'handsontable/validators';
-// plugin modules
-import {
-  AutoColumnSize,
-  AutoRowSize,
-  Autofill,
-  BasePlugin,
-  BindRowsWithHeaders,
-  CollapsibleColumns,
-  ColumnSorting,
-  ColumnSummary,
-  Comments,
-  ContextMenu,
-  CopyPaste,
-  CustomBorders,
-  DragToScroll,
-  DropdownMenu,
-  ExportFile,
-  Filters,
-  Formulas,
-  HiddenColumns,
-  HiddenRows,
-  ManualColumnFreeze,
-  ManualColumnMove,
-  ManualColumnResize,
-  ManualRowMove,
-  ManualRowResize,
-  MergeCells,
-  MultiColumnSorting,
-  MultipleSelectionHandles,
-  NestedHeaders,
-  NestedRows,
-  PersistentState,
-  Search,
-  TouchScroll,
-  TrimRows,
-  UndoRedo,
-} from 'handsontable/plugins';
-*/
-
-// registering functions that let you quickly register all modules at once
-import {
-  registerAllCellTypes,
-  registerAllRenderers,
-  registerAllEditors,
-  registerAllValidators,
-  registerAllPlugins,
-  registerAllModules,
-} from 'handsontable/registry'
+import App from './App.vue'
+import router from './router'
 
 //primeVue
 import PrimeVue from 'primevue/config';
+import 'primevue/resources/themes/aura-light-green/theme.css'
 import AutoComplete from 'primevue/autocomplete';
 import Accordion from 'primevue/accordion';
 import AccordionTab from 'primevue/accordiontab';
@@ -212,26 +111,19 @@ import TreeSelect from 'primevue/treeselect';
 import TreeTable from 'primevue/treetable';
 import TriStateCheckbox from 'primevue/tristatecheckbox';
 import VirtualScroller from 'primevue/virtualscroller';
-import '@/assets/styles.scss';
-import '@/assets/flags.css';
-import "primeflex/primeflex.css";
-
-
-// PrimeVue のコアスタイル
-import 'primevue/resources/primevue.min.css';
-// テーマのスタイル
-import 'primevue/resources/themes/aura-light-green/theme.css'
-// PrimeIcons のスタイル
-import 'primeicons/primeicons.css';
+import 'primeicons/primeicons.css'
 
 
 
 
 
-const app = createApp(App);
-const pinia = createPinia();
 
-app.use(router);
+const app = createApp(App)
+
+app.use(createPinia())
+app.use(router)
+
+
 app.use(PrimeVue, { ripple: true });
 app.use(ToastService);
 app.use(DialogService);
@@ -241,8 +133,6 @@ app.directive('tooltip', Tooltip);
 app.directive('badge', BadgeDirective);
 app.directive('ripple', Ripple);
 app.directive('styleclass', StyleClass);
-
-
 
 app.component('Accordion', Accordion);
 app.component('AccordionTab', AccordionTab);
@@ -341,24 +231,4 @@ app.component('TriStateCheckbox', TriStateCheckbox);
 app.component('VirtualScroller', VirtualScroller);
 
 
-//vue3-easy-data-table
-app.component('EasyDataTable', Vue3EasyDataTable);
-
-//Handsontable
-// register all cell types at once
-registerAllCellTypes();
-// register all renderers at once
-registerAllRenderers();
-// register all editors at once
-registerAllEditors();
-// register all validators at once
-registerAllValidators();
-// register all plugins at once
-registerAllPlugins();
-// or, register all of Handsontable's modules at once
-registerAllModules();
-
-
-app.use(pinia);
-app.use(VueAxios, axios);
-app.mount('#app');
+app.mount('#app')

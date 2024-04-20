@@ -1,5 +1,0 @@
-<template>
-
-sample
-
-</template>
