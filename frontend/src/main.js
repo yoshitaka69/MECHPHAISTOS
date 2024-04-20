@@ -1,10 +1,30 @@
-import './assets/main.css'
+import './assets/styles.scss'
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 
 import App from './App.vue'
 import router from './router'
+
+
+//axios
+import axios from 'axios'
+import VueAxios from 'vue-axios'
+
+//vue3-easy-data-table
+import Vue3EasyDataTable from 'vue3-easy-data-table';
+import 'vue3-easy-data-table/dist/style.css';
+
+
+// registering functions that let you quickly register all modules at once
+import {
+    registerAllCellTypes,
+    registerAllRenderers,
+    registerAllEditors,
+    registerAllValidators,
+    registerAllPlugins,
+    registerAllModules,
+  } from 'handsontable/registry'
 
 //primeVue
 import PrimeVue from 'primevue/config';
@@ -115,13 +135,14 @@ import 'primeicons/primeicons.css'
 
 
 
-
-
-
 const app = createApp(App)
 
-app.use(createPinia())
-app.use(router)
+// Pinia ストアを作成して登録
+const pinia = createPinia();
+app.use(pinia);
+
+app.use(router);
+app.use(VueAxios, axios);
 
 
 app.use(PrimeVue, { ripple: true });
@@ -229,6 +250,23 @@ app.component('TreeSelect', TreeSelect);
 app.component('TreeTable', TreeTable);
 app.component('TriStateCheckbox', TriStateCheckbox);
 app.component('VirtualScroller', VirtualScroller);
+
+//vue3-easy-data-table
+app.component('EasyDataTable', Vue3EasyDataTable);
+
+//Handsontable
+// register all cell types at once
+registerAllCellTypes();
+// register all renderers at once
+registerAllRenderers();
+// register all editors at once
+registerAllEditors();
+// register all validators at once
+registerAllValidators();
+// register all plugins at once
+registerAllPlugins();
+// or, register all of Handsontable's modules at once
+registerAllModules();
 
 
 app.mount('#app')
