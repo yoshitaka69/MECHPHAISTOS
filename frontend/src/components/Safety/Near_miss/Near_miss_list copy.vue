@@ -1,4 +1,13 @@
 <template>
+  <div>
+  <button id="show-modal" @click="showModal = true">Show Modal</button>
+  <Teleport to="body">
+    <!-- use the modal component, pass in the prop -->
+    <modal :show="showModal" @close="showModal = false">
+    </modal>
+  </Teleport>
+  <div>
+<template>
   <EasyDataTable
     v-model:server-options="serverOptions"
     :headers="headers"

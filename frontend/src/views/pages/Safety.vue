@@ -56,7 +56,7 @@
 							</div>
 							<div class="col-12 xl:col-6">
 								<div class="card" style="background-color: #f2f2f2">
-									<Safety_factor_rate />
+									<Safety_Factor_rate />
 									<Message :closable="false">AI recommendation
 										<br />
 										Now developing
@@ -105,8 +105,8 @@
 </template>
 
 <script>
-import Near_miss_list from '@/components/Safety/Near_miss/near_miss_list';
-import Safety_factor_rate from '@/components/Safety/Safety_factor_rate';
+import Near_miss_list from '@/components/Safety/Near_miss/Near_miss_list.vue'
+import Safety_Factor_rate from '@/components/Safety/Safety_factor_rate';
 import Safety_AccidentType_rate from '@/components/Safety/Safety_AccidentType_rate.vue';
 import Safety_correlation_diagram from '@/components/Safety/Safety_correlation_diagram.vue';
 import Safety_Measure_trend from '@/components/Safety/Safety_Measure_trend.vue';
@@ -121,7 +121,7 @@ import Action_items from '@/components/Safety/Cards/Action_items';
 export default {
 	components: {
 		Near_miss_list,
-		Safety_factor_rate,
+		Safety_Factor_rate,
 		Safety_AccidentType_rate,
 		Safety_correlation_diagram,
 		Safety_Measure_trend,
