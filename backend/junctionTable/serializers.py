@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import MasterDataTable,BomAndTask,CeListAndTask,BadActorManagement,EventYearPPM
+from .models import MasterDataTable,BomAndTask,CeListAndTask,BadActorManagement,EventYearPPM,GapOfRepairingCost
 from taskList.models import TypicalTaskList,TaskListPPM02,TaskListPPM03,TaskListAPM04,TaskListPPM05
 from spareParts.models import BomList
 from accounts.models import CompanyCode,Plant
@@ -137,4 +137,27 @@ class CompanyCodeEventYearPPMSerializer(serializers.ModelSerializer):
 
 
 
+
+
+class GapOfRepairingCostSerializer(serializers.ModelSerializer):
+    
+    companyCode = serializers.SlugRelatedField(
+        slug_field='companyCode', 
+        queryset=CompanyCode.objects.all()
+    )
+    plant = serializers.SlugRelatedField(
+        slug_field='plant', 
+        queryset=Plant.objects.all()
+    )
+    
+    class Meta:
+        model = GapOfRepairingCost
+        fields = ['companyCode', 'companyName', 'plant', 'equipment', 'machine','companyCode', 'companyName', 'plant', 'equipment', 'machine','PPM10YearCostAgo', 'PPM9YearCostAgo', 'PPM8YearCostAgo' ,'PPM7YearCostAgo' , 'PPM6YearCostAgo' ,'PPM5YearCostAgo', 'PPM4YearCostAgo', 'PPM3YearCostAgo', 'PPM2YearCostAgo', 'PPM1YearCostAgo', 'PPM10YearCost','PPM0YearCost', 'PPM1YearCost', 'PPM2YearCost' ,'PPM3YearCost' , 'PPM4YearCost' ,'PPM5YearCost', 'PPM6YearCost', 'PPM7YearCost', 'PPM8YearCost', 'PPM9YearCost', 'PPM10YearCost']
+
+class CompanyCodeGapOfRepairingCostSerializer(serializers.ModelSerializer):
+    GapOfRepairingCostList = GapOfRepairingCostSerializer(many=True, read_only=True, source='gapOfRepairingCost_companyCode')
+
+    class Meta:
+        model = CompanyCode
+        fields = ['companyCode', 'GapOfRepairingCostList']
 
