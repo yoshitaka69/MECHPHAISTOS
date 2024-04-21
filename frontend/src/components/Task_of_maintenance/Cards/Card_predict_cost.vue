@@ -52,8 +52,5 @@
       }
     };
     </script>
-    
-    <style scoped>
-    /* ここに必要なスタイルを追加 */
-    </style>
+
     

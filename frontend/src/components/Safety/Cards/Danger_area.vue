@@ -3,7 +3,7 @@
     <div class="flex justify-content-between mb-3">
       <div>
         <span class="block text-500 font-medium mb-3">Relatively Dangerous Area</span>
-        <div class="text-900 font-medium text-xl">{{ dangerArea }}</div>
+        <div class="text-900 large-bold-text">{{ dangerArea }}</div>
       </div>
       <div class="flex align-items-center justify-content-center bg-orange-100 border-round"
         style="width: 2.5rem; height: 2.5rem">
@@ -55,9 +55,9 @@ export default {
 
 <style scoped>
 
-.text-900.font-medium.text-xl {
-    font-weight: bold; /* 太字に設定 */
-    font-size: 2em; /* 現在のフォントサイズの2倍 */
+.large-bold-text {
+    font-size: 4rem; /* 更に大きいフォントサイズに調整 */
+    font-weight: bold; /* 太字 */
 }
 
 .block.text-500.font-medium.mb-3 {
