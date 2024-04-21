@@ -5,14 +5,12 @@ from accounts.models import CompanyCode, Plant
 from taskList.models import TaskListPPM02, TaskListPPM03, TaskListPPM05
 from .models import EventYearPPM
 
-#PPM
 @receiver(post_save, sender=TaskListPPM02)
 @receiver(post_save, sender=TaskListPPM03)
 @receiver(post_save, sender=TaskListPPM05)
 def update_event_year_ppm(sender, instance, **kwargs):
     print(f"{instance._meta.model_name} {instance.taskCode} に基づいて EventYearPPM のコストを更新中")
 
-    # CompanyCode と Plant インスタンスを取得または作成
     company_code_instance, _ = CompanyCode.objects.get_or_create(companyCode=instance.companyCode.companyCode)
     plant_instance, _ = Plant.objects.get_or_create(plant=instance.plant.plant)
 
@@ -27,20 +25,37 @@ def update_event_year_ppm(sender, instance, **kwargs):
 
 def update_ppm_costs(all_ppm_entries):
     for ppm_entry in all_ppm_entries:
-        for year_offset in range(11):  # 0年から10年後まで
+        # 未来のコストデータの更新
+        for year_offset in range(11):
             cost_field_name = f'PPM{year_offset}YearCost'
-            labor_cost_sum = 0
-            for model in [TaskListPPM02, TaskListPPM03, TaskListPPM05]:
-                labor_cost_field_name = f'laborCostOfPPM{model.__name__[-2:]}'
-                filter_kwargs = {
-                    f'thisYear{"" if year_offset == 0 else str(year_offset) + "later"}': True,
-                    "companyCode": ppm_entry.companyCode,
-                    "plant": ppm_entry.plant
-                }
-                labor_cost_sum += model.objects.filter(**filter_kwargs).aggregate(total=Sum(labor_cost_field_name))['total'] or 0
+            update_ppm_year_cost(ppm_entry, year_offset, cost_field_name, future=True)
 
-            setattr(ppm_entry, cost_field_name, labor_cost_sum)
-            print(f"{cost_field_name} を {labor_cost_sum} に設定（{ppm_entry}）")
+        # 過去のコストデータの更新
+        for year_offset in range(1, 11):
+            cost_field_name = f'PPM{year_offset}YearCostAgo'
+            update_ppm_year_cost(ppm_entry, year_offset, cost_field_name, future=False)
+            
         ppm_entry.save()
         print("EventYearPPM エントリを保存しました。")
+
+def update_ppm_year_cost(ppm_entry, year_offset, cost_field_name, future=True):
+    labor_cost_sum = 0
+    if year_offset == 0:
+        year_field = 'thisYear'  # 現在の年を表すフィールド
+    else:
+        year_qualifier = "later" if future else "ago"
+        year_field = f'thisYear{year_offset}{year_qualifier}'
+    
+    for model in [TaskListPPM02, TaskListPPM03, TaskListPPM05]:
+        labor_cost_field_name = f'laborCostOfPPM{model.__name__[-2:]}'
+        filter_kwargs = {
+            year_field: True,
+            "companyCode": ppm_entry.companyCode,
+            "plant": ppm_entry.plant
+        }
+        labor_cost_sum += model.objects.filter(**filter_kwargs).aggregate(total=Sum(labor_cost_field_name))['total'] or 0
+
+    setattr(ppm_entry, cost_field_name, labor_cost_sum)
+    print(f"{cost_field_name} を {labor_cost_sum} に設定（{ppm_entry}）")
+
 

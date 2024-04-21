@@ -15,7 +15,6 @@
   </div>
 </template>
 
-
 <script>
 import axios from 'axios';
 import { ref, onMounted } from 'vue';
@@ -33,10 +32,10 @@ export default {
         });
         const dataList = response.data;
 
-        // 対象のcompanyCodeを持つオブジェクトを見つける
+        // Find the object that contains the companyCode
         const targetData = dataList.find(data => data.companyCode === userStore.companyCode);
 
-        // 対象のsafetyIndicatorsListが存在し、要素があるかをチェック
+        // Check if safetyIndicatorsList exists and has elements
         if (targetData && targetData.safetyIndicatorsList && targetData.safetyIndicatorsList.length > 0) {
           dangerArea.value = targetData.safetyIndicatorsList[0].dangerArea;
         } else {
@@ -53,3 +52,17 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+
+.text-900.font-medium.text-xl {
+    font-weight: bold; /* 太字に設定 */
+    font-size: 2em; /* 現在のフォントサイズの2倍 */
+}
+
+.block.text-500.font-medium.mb-3 {
+    font-weight: bold; /* 太字に設定 */
+    font-size: 1.5em; /* 現在のフォントサイズの2倍 */
+    color: black; /* 文字色を黒に設定 */
+}
+</style>

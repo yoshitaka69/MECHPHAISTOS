@@ -63,21 +63,25 @@ export default {
 			console.log("Processed cost data:", this.costData); // 処理後のコストデータログ出力
 			this.drawChart();
 		},
-		processPPMData(data) {
-			const currentYear = new Date().getFullYear();
-			data.forEach(item => {
-				item.EventYearPPMList.forEach(event => {
-					for (let i = 0; i <= 10; i++) {
-						this.ppmData.push({
-							x: currentYear + i,
-							y: parseFloat(event[`PPM${i}YearCost`])
-						});
-					}
-				});
-			});
-			console.log("Processed PPM data:", this.ppmData); // 処理後のPPMデータログ出力
-			this.drawChart();
-		},
+    processPPMData(data) {
+    const currentYear = new Date().getFullYear();
+    data.forEach(item => {
+        item.EventYearPPMList.forEach(event => {
+            // 過去5年から未来10年までのデータを取得するためにループを調整
+            for (let i = -5; i <= 10; i++) {
+                const yearKey = i < 0 ? `PPM${-i}YearCostAgo` : `PPM${i}YearCost`;
+                if (event[yearKey] !== undefined) { // キーが存在する場合のみデータを追加
+                    this.ppmData.push({
+                        x: currentYear + i,
+                        y: parseFloat(event[yearKey])
+                    });
+                }
+            }
+        });
+    });
+    console.log("Processed PPM data:", this.ppmData); // 処理後のPPMデータログ出力
+    this.drawChart();
+},
 		drawChart() {
 			let trace1 = {
 				x: this.years,

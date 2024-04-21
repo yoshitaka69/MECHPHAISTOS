@@ -292,6 +292,17 @@ class EventYearPPM(models.Model):
     equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='eventYearPPM_equipment',null=True, blank=True)
     machine = models.ForeignKey(Machine, on_delete=models.CASCADE, related_name='eventYearPPM_machine',null=True, blank=True)
 
+
+    PPM10YearCostAgo = models.DecimalField(verbose_name='PPM10YearCostAgo',max_digits=10,decimal_places=2,blank=True,null=True,default=0.00)
+    PPM9YearCostAgo = models.DecimalField(verbose_name='PPM9YearCostAgo',max_digits=10,decimal_places=2,blank=True,null=True,default=0.00)  
+    PPM8YearCostAgo = models.DecimalField(verbose_name='PPM8YearCostAgo',max_digits=10,decimal_places=2,blank=True,null=True,default=0.00) 
+    PPM7YearCostAgo = models.DecimalField(verbose_name='PPM7YearCostAgo',max_digits=10,decimal_places=2,blank=True,null=True,default=0.00)  
+    PPM6YearCostAgo = models.DecimalField(verbose_name='PPM6YearCostAgo',max_digits=10,decimal_places=2,blank=True,null=True,default=0.00)
+    PPM5YearCostAgo = models.DecimalField(verbose_name='PPM5YearCostAgo',max_digits=10,decimal_places=2,blank=True,null=True,default=0.00)
+    PPM4YearCostAgo = models.DecimalField(verbose_name='PPM4YearCostAgo',max_digits=10,decimal_places=2,blank=True,null=True,default=0.00)  
+    PPM3YearCostAgo = models.DecimalField(verbose_name='PPM3YearCostAgo',max_digits=10,decimal_places=2,blank=True,null=True,default=0.00) 
+    PPM2YearCostAgo = models.DecimalField(verbose_name='PPM2YearCostAgo',max_digits=10,decimal_places=2,blank=True,null=True,default=0.00)  
+    PPM1YearCostAgo = models.DecimalField(verbose_name='PPM1YearCostAgo',max_digits=10,decimal_places=2,blank=True,null=True,default=0.00)
     PPM0YearCost = models.DecimalField(verbose_name='PPM0YearCost',max_digits=10,decimal_places=2,blank=True,null=True,default=0.00)
     PPM1YearCost = models.DecimalField(verbose_name='PPM1YearCost',max_digits=10,decimal_places=2,blank=True,null=True,default=0.00)
     PPM2YearCost = models.DecimalField(verbose_name='PPM2YearCost',max_digits=10,decimal_places=2,blank=True,null=True,default=0.00)
@@ -314,3 +325,41 @@ class EventYearPPM(models.Model):
         return str('Event Year PPM')
 
 
+class GapOfRepairingCost(models.Model):
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='gapOfRepairingCost_companyCode',null=True, blank=True)
+    companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='gapOfRepairingCost_companyName', null=True, blank=True)
+    plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='gapOfRepairingCost_plant',null=True, blank=True)
+    equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='gapOfRepairingCost_equipment',null=True, blank=True)
+    machine = models.ForeignKey(Machine, on_delete=models.CASCADE, related_name='gapOfRepairingCost_machine',null=True, blank=True)
+
+
+    GapCostPPM10Ago = models.DecimalField(verbose_name='PPM10YearCostAgo',max_digits=10,decimal_places=2,blank=True,null=True,default=0.00)
+    GapCostPPM9Ago  = models.DecimalField(verbose_name='PPM9YearCostAgo',max_digits=10,decimal_places=2,blank=True,null=True,default=0.00)  
+    GapCostPPM8Ago  = models.DecimalField(verbose_name='PPM8YearCostAgo',max_digits=10,decimal_places=2,blank=True,null=True,default=0.00) 
+    GapCostPPM7Ago  = models.DecimalField(verbose_name='PPM7YearCostAgo',max_digits=10,decimal_places=2,blank=True,null=True,default=0.00)  
+    GapCostPPM6Ago  = models.DecimalField(verbose_name='PPM6YearCostAgo',max_digits=10,decimal_places=2,blank=True,null=True,default=0.00)
+    GapCostPPM5Ago  = models.DecimalField(verbose_name='PPM5YearCostAgo',max_digits=10,decimal_places=2,blank=True,null=True,default=0.00)
+    GapCostPPM4Ago  = models.DecimalField(verbose_name='PPM4YearCostAgo',max_digits=10,decimal_places=2,blank=True,null=True,default=0.00)  
+    GapCostPPM3Ago = models.DecimalField(verbose_name='PPM3YearCostAgo',max_digits=10,decimal_places=2,blank=True,null=True,default=0.00) 
+    GapCostPPM2Ago  = models.DecimalField(verbose_name='PPM2YearCostAgo',max_digits=10,decimal_places=2,blank=True,null=True,default=0.00)  
+    GapCostPPM1Ago  = models.DecimalField(verbose_name='PPM1YearCostAgo',max_digits=10,decimal_places=2,blank=True,null=True,default=0.00)
+    GapCostPPM0 = models.DecimalField(verbose_name='GapCostPPM0',max_digits=10,decimal_places=2,blank=True,null=True,default=0.00)
+    GapCostPPM1 = models.DecimalField(verbose_name='GapCostPPM1',max_digits=10,decimal_places=2,blank=True,null=True,default=0.00)
+    GapCostPPM2 = models.DecimalField(verbose_name='GapCostPPM2',max_digits=10,decimal_places=2,blank=True,null=True,default=0.00)
+    GapCostPPM3 = models.DecimalField(verbose_name='GapCostPPM3',max_digits=10,decimal_places=2,blank=True,null=True,default=0.00)
+    GapCostPPM4 = models.DecimalField(verbose_name='GapCostPPM4',max_digits=10,decimal_places=2,blank=True,null=True,default=0.00)
+    GapCostPPM5 = models.DecimalField(verbose_name='GapCostPPM5',max_digits=10,decimal_places=2,blank=True,null=True,default=0.00)
+    GapCostPPM6 = models.DecimalField(verbose_name='GapCostPPM6',max_digits=10,decimal_places=2,blank=True,null=True,default=0.00)
+    GapCostPPM7 = models.DecimalField(verbose_name='GapCostPPM7',max_digits=10,decimal_places=2,blank=True,null=True,default=0.00)
+    GapCostPPM8 = models.DecimalField(verbose_name='GapCostPPM8',max_digits=10,decimal_places=2,blank=True,null=True,default=0.00)
+    GapCostPPM9 = models.DecimalField(verbose_name='GapCostPPM9',max_digits=10,decimal_places=2,blank=True,null=True,default=0.00)
+    GapCostPPM10 = models.DecimalField(verbose_name='GapCostPPM10',max_digits=10,decimal_places=2,blank=True,null=True,default=0.00)
+
+    class Meta:
+        verbose_name = 'GapOfRepairingCost'
+        verbose_name_plural = 'GapOfRepairingCost'
+        ordering = ('companyCode',) #モデルのクエリセットを取得した際にどのような順番でフィールドを並べ変えるかを決める。
+    
+
+    def __str__(self):
+        return str('GapOfRepairingCost')

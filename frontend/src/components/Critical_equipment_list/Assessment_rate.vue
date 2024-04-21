@@ -1,9 +1,9 @@
 <template>
   <div>
-      <Card>
+
           <v-card-title>Assessment Distribution</v-card-title>
           <div id="AssessmentChart" style="width: 100%; height: 100%"></div>
-      </Card>
+
   </div>
 </template>
 
