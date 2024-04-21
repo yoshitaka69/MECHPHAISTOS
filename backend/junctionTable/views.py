@@ -106,3 +106,21 @@ class CompanyCodeEventYearPPMViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(companyCode=company_code)
         return queryset
     
+
+
+
+
+class GapOfRepairingCostViewSet(viewsets.ModelViewSet):
+    queryset = GapOfRepairingCost.objects.all()
+    serializer_class = GapOfRepairingCostSerializer
+
+class CompanyCodeGapOfRepairingCostViewSet(viewsets.ModelViewSet):
+    serializer_class = CompanyCodeGapOfRepairingCostSerializer
+
+#クエリパラメータでのフィルターリング
+    def get_queryset(self):
+        queryset = CompanyCode.objects.prefetch_related('gapOfRepairingCost_companyCode').all()
+        company_code = self.request.query_params.get('companyCode', None)
+        if company_code:
+            queryset = queryset.filter(companyCode=company_code)
+        return queryset
