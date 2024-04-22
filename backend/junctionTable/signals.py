@@ -5,6 +5,10 @@ from accounts.models import CompanyCode, Plant
 from taskList.models import TaskListPPM02, TaskListPPM03, TaskListPPM05
 from .models import EventYearPPM
 
+from django.utils.timezone import now
+from .models import GapOfRepairingCost, EventYearPPM, SummedActualCost
+
+
 @receiver(post_save, sender=TaskListPPM02)
 @receiver(post_save, sender=TaskListPPM03)
 @receiver(post_save, sender=TaskListPPM05)
@@ -59,3 +63,43 @@ def update_ppm_year_cost(ppm_entry, year_offset, cost_field_name, future=True):
     print(f"{cost_field_name} を {labor_cost_sum} に設定（{ppm_entry}）")
 
 
+
+
+*Gap計算用
+@receiver(post_save, sender=GapOfRepairingCost)
+def calculate_gap(sender, instance, **kwargs):
+    current_year = now().year
+
+    # 10年前から10年後までの範囲で処理を行う
+    for i in range(-10, 11):  # -10 は 10 年前、0 は現在年、10 は 10 年後
+        target_year = current_year + i
+        attr_name = f'PPM{-i}YearCost' if i <= 0 else f'PPM{i}YearCostAgo'
+        gap_attr_name = f'GapCostPPM{-i}Ago' if i < 0 else f'GapCostPPM{i}' if i >= 0 else 'GapCostPPM0'
+        
+        try:
+            ppm_data = EventYearPPM.objects.get(year=target_year)
+            ppm_cost = getattr(ppm_data, attr_name, 0)
+        except EventYearPPM.DoesNotExist:
+            print(f"{target_year}年のPPMデータが存在しません。")
+            ppm_cost = 0
+
+        # SummedActualCostから同じ年のデータを取得
+        try:
+            actual_cost_data = SummedActualCost.objects.get(year=target_year)
+            total_actual_cost = actual_cost_data.totalActualCost
+        except SummedActualCost.DoesNotExist:
+            print(f"{target_year}年の実際のコストデータが存在しません。")
+            total_actual_cost = 0
+
+        # 計算結果
+        result = ppm_cost - total_actual_cost
+
+        # 結果を対応するフィールドに保存
+        setattr(instance, gap_attr_name, result)
+
+    instance.save()  # インスタンスの変更を保存
+
+# モデルを保存するためのコード例
+def save_instance():
+    instance = GapOfRepairingCost()
+    instance.save()
