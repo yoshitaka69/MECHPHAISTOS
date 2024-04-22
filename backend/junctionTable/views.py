@@ -1,13 +1,14 @@
 from django.shortcuts import render
 from rest_framework import viewsets
 
-from .models import MasterDataTable,BomAndTask,CeListAndTask,BadActorManagement,EventYearPPM
+from .models import MasterDataTable,BomAndTask,CeListAndTask,BadActorManagement,EventYearPPM,GapOfRepairingCost
 from accounts.models import CompanyCode
 from .serializers import  (MasterDataTableSerializer, CompanyCodeMDTSerializer,
                            BomAndTaskSerializer,CompanyCodeBomAndTaskSerializer,
                            CeListAndTaskSerializer,CompanyCodeCeListAndTaskSerializer,
                            BadActorManagementSerializer,CompanyCodeBadActorSerializer,
-                           EventYearPPMSerializer,CompanyCodeEventYearPPMSerializer,)
+                           EventYearPPMSerializer,CompanyCodeEventYearPPMSerializer,
+                           GapOfRepairingCostSerializer,CompanyCodeGapOfRepairingCostSerializer,)
 
 
 #MasterDataTable

@@ -6,8 +6,8 @@ from taskList.models import TaskListPPM02, TaskListPPM03, TaskListPPM05
 from .models import EventYearPPM
 
 from django.utils.timezone import now
-from .models import GapOfRepairingCost, EventYearPPM, SummedActualCost
-
+from .models import GapOfRepairingCost, EventYearPPM
+from calculation.models import SummedActualCost
 
 @receiver(post_save, sender=TaskListPPM02)
 @receiver(post_save, sender=TaskListPPM03)
@@ -65,41 +65,34 @@ def update_ppm_year_cost(ppm_entry, year_offset, cost_field_name, future=True):
 
 
 
-*Gap計算用
-@receiver(post_save, sender=GapOfRepairingCost)
-def calculate_gap(sender, instance, **kwargs):
+
+#Gap計算用
+@receiver(post_save, sender=EventYearPPM)
+@receiver(post_save, sender=SummedActualCost)
+def update_gap_cost(sender, instance, **kwargs):
     current_year = now().year
 
-    # 10年前から10年後までの範囲で処理を行う
-    for i in range(-10, 11):  # -10 は 10 年前、0 は現在年、10 は 10 年後
-        target_year = current_year + i
-        attr_name = f'PPM{-i}YearCost' if i <= 0 else f'PPM{i}YearCostAgo'
-        gap_attr_name = f'GapCostPPM{-i}Ago' if i < 0 else f'GapCostPPM{i}' if i >= 0 else 'GapCostPPM0'
-        
-        try:
-            ppm_data = EventYearPPM.objects.get(year=target_year)
-            ppm_cost = getattr(ppm_data, attr_name, 0)
-        except EventYearPPM.DoesNotExist:
-            print(f"{target_year}年のPPMデータが存在しません。")
-            ppm_cost = 0
+    # EventYearPPM と GapOfRepairingCost に対する処理を行う
+    try:
+        for i in range(-10, 11):  # 10年前から10年後まで
+            year_diff = i
+            target_year = current_year + i
+            ppm_cost_attr = f'PPM{abs(year_diff)}YearCost' + ('Ago' if year_diff < 0 else '')
+            gap_cost_attr = f'GapCostPPM{abs(year_diff)}' + ('Ago' if year_diff < 0 else '')
 
-        # SummedActualCostから同じ年のデータを取得
-        try:
-            actual_cost_data = SummedActualCost.objects.get(year=target_year)
-            total_actual_cost = actual_cost_data.totalActualCost
-        except SummedActualCost.DoesNotExist:
-            print(f"{target_year}年の実際のコストデータが存在しません。")
-            total_actual_cost = 0
+            # EventYearPPM からコストデータを取得
+            if hasattr(instance, ppm_cost_attr):
+                ppm_cost = getattr(instance, ppm_cost_attr, 0)
+            else:
+                ppm_cost = 0  # PPMデータが存在しない場合
 
-        # 計算結果
-        result = ppm_cost - total_actual_cost
+            # GapOfRepairingCost にデータを保存（全てのインスタンスに対して）
+            gap_instances = GapOfRepairingCost.objects.all()
+            for gap_instance in gap_instances:
+                setattr(gap_instance, gap_cost_attr, ppm_cost)
+                gap_instance.save()
 
-        # 結果を対応するフィールドに保存
-        setattr(instance, gap_attr_name, result)
+            print(f"デバッグ: {target_year}年の {ppm_cost_attr} = {ppm_cost} を {gap_cost_attr} に保存しました。")
 
-    instance.save()  # インスタンスの変更を保存
-
-# モデルを保存するためのコード例
-def save_instance():
-    instance = GapOfRepairingCost()
-    instance.save()
+    except Exception as e:
+        print(f"デバッグ: 処理中にエラーが発生しました。{e}")
