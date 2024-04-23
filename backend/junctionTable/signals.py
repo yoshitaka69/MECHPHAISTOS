@@ -92,7 +92,7 @@ def update_gap_cost(sender, instance, **kwargs):
                 setattr(gap_instance, gap_cost_attr, ppm_cost)
                 gap_instance.save()
 
-            print(f"デバッグ: {target_year}年の {ppm_cost_attr} = {ppm_cost} を {gap_cost_attr} に保存しました。")
+            print(f"デバッグ: {target_year}年 - 属性 {ppm_cost_attr} = {ppm_cost}, 保存先属性 {gap_cost_attr} に値 {ppm_cost} を保存しました。")
 
     except Exception as e:
         print(f"デバッグ: 処理中にエラーが発生しました。{e}")
