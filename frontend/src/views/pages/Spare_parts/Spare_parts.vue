@@ -2,24 +2,6 @@
 	<!--AdminLTE copy-->
 	<div class="base-content"> <!--AdminLTEのcssがわからなかったから適当に作った-->
 
-		<section class="content-header">
-			<div class="container-fluid">
-				<div class="row mb-2">
-					<div class="col-sm-6">
-						<h1>Spare Parts List</h1>
-					</div>
-					<div class="col-sm-6">
-						<ol class="breadcrumb float-sm-right">
-							<li class="breadcrumb-item"><a href="#">How to use detail</a></li>
-							<li class="breadcrumb-item"><a href="#">Spare parts list</a></li>
-							<li class="breadcrumb-item active">MECHPHAISTOS</li>
-						</ol>
-					</div>
-				</div>
-			</div>
-		</section>
-
-
 		<section class="content">
 			<div class="card card-solid">
 				<!--Tabはsakai-vue-template-->
@@ -35,13 +17,15 @@
 							</div>
 							<div class="col-12 lg:col-6 xl:col-4">
 								<Card_Spare_Parts_Total_Cost />
-
 							</div>
 							<br>
 							<br>
-						</div>		
+						</div>
 						<BOM />
 						</p>
+					</TabPanel>
+					<TabPanel header="Order Alert List">
+
 					</TabPanel>
 				</TabView>
 			</div>
@@ -73,10 +57,8 @@ export default {
 </script>
 
 <style>
-
 .row {
-    display: flex;
-    flex-wrap: wrap;
+	display: flex;
+	flex-wrap: wrap;
 }
-
 </style>

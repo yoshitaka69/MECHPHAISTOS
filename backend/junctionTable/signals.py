@@ -66,11 +66,18 @@ def update_ppm_year_cost(ppm_entry, year_offset, cost_field_name, future=True):
 
 
 
-#Gap計算用
+#Gap計算用 これはどちらかのsenderが更新された際に独立したシグナルとして実行される。
 @receiver(post_save, sender=EventYearPPM)
 @receiver(post_save, sender=SummedActualCost)
 def update_gap_cost(sender, instance, **kwargs):
     current_year = now().year
+
+    # companyCodeを取得
+    if hasattr(instance, 'companyCode') and instance.companyCode:
+        company_code = instance.companyCode
+    else:
+        print("デバッグ: companyCodeが取得できません。")
+        return
 
     # EventYearPPM と GapOfRepairingCost に対する処理を行う
     try:
@@ -81,18 +88,25 @@ def update_gap_cost(sender, instance, **kwargs):
             gap_cost_attr = f'GapCostPPM{abs(year_diff)}' + ('Ago' if year_diff < 0 else '')
 
             # EventYearPPM からコストデータを取得
-            if hasattr(instance, ppm_cost_attr):
-                ppm_cost = getattr(instance, ppm_cost_attr, 0)
-            else:
-                ppm_cost = 0  # PPMデータが存在しない場合
+            ppm_data = EventYearPPM.objects.filter(companyCode=company_code).first()
+            ppm_cost = getattr(ppm_data, ppm_cost_attr, 0) if ppm_data else 0
 
-            # GapOfRepairingCost にデータを保存（全てのインスタンスに対して）
-            gap_instances = GapOfRepairingCost.objects.all()
-            for gap_instance in gap_instances:
-                setattr(gap_instance, gap_cost_attr, ppm_cost)
-                gap_instance.save()
+            # SummedActualCost から同じ年のデータを取得
+            try:
+                actual_cost_data = SummedActualCost.objects.get(companyCode=company_code, year=target_year)
+                total_actual_cost = actual_cost_data.totalActualCost
+            except SummedActualCost.DoesNotExist:
+                total_actual_cost = 0
 
-            print(f"デバッグ: {target_year}年 - 属性 {ppm_cost_attr} = {ppm_cost}, 保存先属性 {gap_cost_attr} に値 {ppm_cost} を保存しました。")
+            # 計算結果
+            result = ppm_cost - total_actual_cost
+
+            # GapOfRepairingCost にデータを保存
+            gap_instance, created = GapOfRepairingCost.objects.get_or_create(companyCode=company_code)
+            setattr(gap_instance, gap_cost_attr, result)
+            gap_instance.save()
+
+            print(f"デバッグ: {target_year}年 - 属性 {ppm_cost_attr} = {ppm_cost}, totalActualCost = {total_actual_cost}, 保存先属性 {gap_cost_attr} に値 {result} を保存しました。companyCode={company_code}")
 
     except Exception as e:
         print(f"デバッグ: 処理中にエラーが発生しました。{e}")

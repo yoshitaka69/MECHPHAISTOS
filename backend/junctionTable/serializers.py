@@ -152,7 +152,7 @@ class GapOfRepairingCostSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = GapOfRepairingCost
-        fields = ['companyCode', 'companyName', 'plant', 'equipment', 'machine','companyCode', 'companyName', 'plant', 'equipment', 'machine','PPM10YearCostAgo', 'PPM9YearCostAgo', 'PPM8YearCostAgo' ,'PPM7YearCostAgo' , 'PPM6YearCostAgo' ,'PPM5YearCostAgo', 'PPM4YearCostAgo', 'PPM3YearCostAgo', 'PPM2YearCostAgo', 'PPM1YearCostAgo', 'PPM10YearCost','PPM0YearCost', 'PPM1YearCost', 'PPM2YearCost' ,'PPM3YearCost' , 'PPM4YearCost' ,'PPM5YearCost', 'PPM6YearCost', 'PPM7YearCost', 'PPM8YearCost', 'PPM9YearCost', 'PPM10YearCost']
+        fields = ['companyCode', 'companyName', 'plant', 'equipment', 'machine', 'GapCostPPM10Ago', 'GapCostPPM9Ago', 'GapCostPPM8Ago', 'GapCostPPM7Ago', 'GapCostPPM6Ago', 'GapCostPPM5Ago', 'GapCostPPM4Ago', 'GapCostPPM3Ago', 'GapCostPPM2Ago', 'GapCostPPM1Ago', 'GapCostPPM0', 'GapCostPPM1', 'GapCostPPM2', 'GapCostPPM3', 'GapCostPPM4', 'GapCostPPM5', 'GapCostPPM6', 'GapCostPPM7', 'GapCostPPM8', 'GapCostPPM9', 'GapCostPPM10']
 
 class CompanyCodeGapOfRepairingCostSerializer(serializers.ModelSerializer):
     GapOfRepairingCostList = GapOfRepairingCostSerializer(many=True, read_only=True, source='gapOfRepairingCost_companyCode')

@@ -57,3 +57,16 @@
   });
   </script>
   
+  <style scoped>
+
+.large-bold-text {
+    font-size: 1.5rem; /* 更に大きいフォントサイズに調整 */
+    font-weight: bold; /* 太字 */
+}
+
+.block.text-500.font-medium.mb-3 {
+    font-weight: bold; /* 太字に設定 */
+    font-size: 1.5em; /* 現在のフォントサイズの2倍 */
+    color: black; /* 文字色を黒に設定 */
+}
+</style>

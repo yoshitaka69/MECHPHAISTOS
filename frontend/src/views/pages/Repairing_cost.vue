@@ -108,10 +108,14 @@
                             <div class="card" style="background-color: #f2f2f2">
                                 <Planned_vs_actual_year_graph />
                             </div>
+                            <div>
+                            <Gap_of_repairing_cost />
+                        </div>
                         </div>
                         <div>
                             <Task_list />
                         </div>
+
                     </TabPanel>
                     <TabPanel header="Simulations">
                         <p class="line-height-3 m-0"></p>
@@ -140,6 +144,7 @@ import PM04_actual_table from '@/components/Repairing_cost/PM04_actual_table.vue
 import PM05_actual_graph from '@/components/Repairing_cost/PM05_actual_graph.vue';
 import PM05_actual_table from '@/components/Repairing_cost/PM05_actual_table.vue';
 import Task_list from '@/components/Task_of_maintenance/Task_list.vue';
+import Gap_of_repairing_cost from '@/components/Repairing_cost/Gap_of_repairing_cost.vue';
 
 import Card_predict_cost from '@/components/Task_of_maintenance/Cards/Card_predict_cost.vue';
 
@@ -162,6 +167,7 @@ export default {
         PM05_actual_graph,
         PM05_actual_table,
         Task_list,
+        Gap_of_repairing_cost,
 
         Card_predict_cost
     }

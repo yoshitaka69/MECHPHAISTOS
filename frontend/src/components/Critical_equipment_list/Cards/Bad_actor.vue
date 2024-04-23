@@ -3,7 +3,7 @@
         <div class="flex justify-content-between mb-3">
             <div>
                 <span class="block text-500 font-medium mb-3">Bad Actor</span>
-                <div class="text-900 font-medium text-xl">{{ badActorCount }} items</div>
+                <div class="text-900 large-bold-text">{{ badActorCount }} items</div>
             </div>
             <div class="flex align-items-center justify-content-center bg-orange-100 border-round" style="width: 2.5rem; height: 2.5rem">
                 <i class="pi pi-map-marker text-orange-500 text-xl"></i>
@@ -49,3 +49,17 @@ onMounted(async () => {
     }
 });
 </script>
+
+<style scoped>
+
+.large-bold-text {
+    font-size: 4rem; /* 更に大きいフォントサイズに調整 */
+    font-weight: bold; /* 太字 */
+}
+
+.block.text-500.font-medium.mb-3 {
+    font-weight: bold; /* 太字に設定 */
+    font-size: 1.5em; /* 現在のフォントサイズの2倍 */
+    color: black; /* 文字色を黒に設定 */
+}
+</style>
