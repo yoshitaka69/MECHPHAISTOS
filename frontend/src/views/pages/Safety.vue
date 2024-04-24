@@ -24,9 +24,19 @@
 				<TabView>
 					<!--Tabの表示-->
 					<TabPanel header="NearMiss List">
-						<p class="line-height-3 m-0" style="background-color: #f0f0f0">
+						<div class="row">
+							<div class="col-12 lg:col-6 xl:col-6">
+								<Count_of_nearMiss />
+							</div>
+							<div class="col-12 lg:col-6 xl:col-6">
+								<Action_items />
+							</div>
+						</div>
+						<br>
+						<br>
+						<div>
 							<Near_miss_list />
-						</p>
+						</div>
 					</TabPanel>
 
 					<TabPanel header="Analyze">
@@ -35,16 +45,11 @@
 							<div class="col-12 lg:col-6 xl:col-3">
 								<Safety_indicators_alert />
 							</div>
-							<div class="col-12 lg:col-6 xl:col-3">
-								<Count_of_nearMiss />
-							</div>
+
 							<div class="col-12 lg:col-6 xl:col-3">
 								<Danger_area />
 							</div>
 
-							<div class="col-12 lg:col-6 xl:col-3">
-								<Action_items />
-							</div>
 							<div class="col-12 xl:col-12">
 								<div class="card" style="background-color: #f2f2f2">
 									<Safety_indicator_trend />
@@ -135,3 +140,10 @@ export default {
 	}
 };
 </script>
+
+<style>
+.row {
+	display: flex;
+	flex-wrap: wrap;
+}
+</style>

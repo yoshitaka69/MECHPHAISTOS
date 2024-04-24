@@ -1,17 +1,15 @@
 <template>
   <div class="card mb-0">
-    <div class="flex justify-content-between mb-3">
+    <div class="flex justify-content-between mb-3" style="height: 65px">
       <div>
         <span class="block text-500 font-medium mb-3">Number of near misses</span>
-        <div class="text-900 font-medium text-xl">{{ nearMissTotal }}件</div>
+        <div class="large-bold-text">{{ nearMissTotal }}件</div>
       </div>
       <div class="flex align-items-center justify-content-center bg-orange-100 border-round"
         style="width: 2.5rem; height: 2.5rem">
         <i class="pi pi-map-marker text-orange-500 text-xl"></i>
       </div>
     </div>
-    <span class="text-green-500 font-medium">%52+ </span>
-    <span class="text-500">since last month</span>
   </div>
 </template>
 
@@ -52,11 +50,11 @@ export default {
 
 <style scoped>
 
-.text-900.font-medium.text-xl {
-    font-weight: bold; /* 太字に設定 */
-    font-size: 2em; /* 現在のフォントサイズの2倍 */
-    color: black; /* 文字色を黒に設定 */
+.large-bold-text {
+    font-size: 2rem; /* 更に大きいフォントサイズに調整 */
+    font-weight: bold; /* 太字 */
 }
+
 .block.text-500.font-medium.mb-3 {
     font-weight: bold; /* 太字に設定 */
     font-size: 1.5em; /* 現在のフォントサイズの2倍 */
