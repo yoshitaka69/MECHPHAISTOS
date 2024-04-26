@@ -1,11 +1,6 @@
 <template>
 	<div>
-		<v-flex>
-			<v-card>
-				<v-card-title>Company Cost and PPM Analysis</v-card-title>
 				<div id="chart"></div>
-			</v-card>
-		</v-flex>
 	</div>
 </template>
 

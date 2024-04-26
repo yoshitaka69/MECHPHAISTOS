@@ -1,10 +1,12 @@
 <template>
   <div class="card mb-0">
-    <div class="flex justify-content-between mb-3">
+    <div class="flex justify-content-between mb-3" style="height: 150px">
       <div>
         <span class="block text-500 font-medium mb-3">Safety Indicators</span>
         <!-- PrimeVue Buttonを利用してsafetyIndicatorsの表示 -->
-        <Button :label="safetyIndicators" :class="buttonClass" />
+        <Button :label="safetyIndicators" :class="['custom-button-style', ...buttonClass.split(' ')]" />
+
+
       </div>
       <div class="flex align-items-center justify-content-center bg-orange-100 border-round"
         style="width: 2.5rem; height: 2.5rem">
@@ -92,4 +94,13 @@ export default {
 .blinking {
   animation: blink 1.5s linear infinite;
 }
+
+
+.custom-button-style {
+    width: 150px;       /* ボタンの幅 */
+    height: 50px;       /* ボタンの高さ */
+    font-size: 20px;    /* 文字のサイズ */
+    line-height: 50px;  /* テキストの行高、ボタンの高さに合わせて中央揃え */
+}
+
 </style>

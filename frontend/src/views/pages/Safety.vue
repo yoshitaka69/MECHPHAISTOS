@@ -49,33 +49,34 @@
 							<div class="col-12 lg:col-6 xl:col-3">
 								<Danger_area />
 							</div>
+							<div class="col-12 lg:col-6 xl:col-3">
+								<div class="card mb-0">
+									<div class="flex justify-content-between mb-3" style="height: 150px">
+										<div style="width: 300px; height: 100px; overflow: hidden;">
+											<Safety_Factor_rate />
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="col-12 lg:col-6 xl:col-3">
+								<div class="card mb-0">
+									<div class="flex justify-content-between mb-3" style="height: 150px">
+										<div style="width: 300px; height: 100px; overflow: hidden;">
+											<Safety_AccidentType_rate />
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
 
-							<div class="col-12 xl:col-12">
-								<div class="card" style="background-color: #f2f2f2">
-									<Safety_indicator_trend />
-									<Message :closable="false">AI recommendation
-										<br />
-										Now developing
-									</Message>
-								</div>
-							</div>
-							<div class="col-12 xl:col-6">
-								<div class="card" style="background-color: #f2f2f2">
-									<Safety_Factor_rate />
-									<Message :closable="false">AI recommendation
-										<br />
-										Now developing
-									</Message>
-								</div>
-							</div>
-							<div class="col-12 xl:col-6">
-								<div class="card" style="background-color: #f2f2f2">
-									<Safety_AccidentType_rate />
-									<Message :closable="false">AI recommendation
-										<br />
-										Now developing
-									</Message>
-								</div>
+
+						<div class="col-12 xl:col-12">
+							<div class="card" style="background-color: #f2f2f2">
+								<Safety_indicator_trend />
+								<Message :closable="false">AI recommendation
+									<br />
+									Now developing
+								</Message>
 							</div>
 						</div>
 						<div class="col-12 xl:col-12">

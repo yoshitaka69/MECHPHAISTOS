@@ -38,7 +38,6 @@
                             </div>
                         </div>
                         <div class="row">
-                            <!-- これはいったん消す<p class="line-height-3 m-0">-->
                             <div class="col-12 xl:col-6">
                                 <div class="card" style="background-color: #f2f2f2">
                                     <PM02_actual_graph />
@@ -88,7 +87,6 @@
                         <div class="row">
                             <div class="col-12 lg:col-6 xl:col-6">
                                 <Card_predict_cost />
-
                             </div>
                             <div class="col-12 lg:col-6 xl:col-6">
                                 <div class="card mb-0">
@@ -107,10 +105,14 @@
                         </div>
                         <div class="col-12 xl:col-12">
                             <div class="card" style="background-color: #f2f2f2">
-                                <Planned_vs_actual_year_graph />
-                            </div>
-                            <div>
-                                <Gap_of_repairing_cost />
+                                <div class=row>
+                                    <div class="col-12 lg:col-6 xl:col-6">
+                                        <Planned_vs_actual_year_graph />
+                                    </div>
+                                    <div class="col-12 lg:col-6 xl:col-6">
+                                        <Gap_of_repairing_cost />
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div>

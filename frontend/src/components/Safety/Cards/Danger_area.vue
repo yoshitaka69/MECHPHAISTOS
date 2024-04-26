@@ -1,6 +1,6 @@
 <template>
   <div class="card mb-0">
-    <div class="flex justify-content-between mb-3">
+    <div class="flex justify-content-between mb-3" style="height: 150px">
       <div>
         <span class="block text-500 font-medium mb-3">Relatively Dangerous Area</span>
         <div class="text-900 large-bold-text">{{ dangerArea }}</div>

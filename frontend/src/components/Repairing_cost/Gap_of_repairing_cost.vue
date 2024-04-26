@@ -13,6 +13,7 @@ const plotDiv = ref(null);  // DOM element の ref を作成
 onMounted(async () => {
   const userStore = useUserStore();
   const companyCode = userStore.companyCode;  // Pinia ストアから companyCode を取得
+  const currentYear = new Date().getFullYear();  // 現在の西暦年を取得
 
   // API からデータを取得
   try {
@@ -20,18 +21,35 @@ onMounted(async () => {
       params: { companyCode }
     });
     if (response.data && response.data.length > 0) {
-      const traceData = response.data[0].GapOfRepairingCostList.map(costData => ({
-        x: Object.keys(costData).filter(key => key.startsWith('GapCost')),
-        y: Object.values(costData).filter((value, index) => index > 4 && typeof value === 'string').map(Number),
-        type: 'bar',
-        name: costData.companyCode
-      }));
+      const traceData = response.data[0].GapOfRepairingCostList.map(costData => {
+        const x = [];
+        const y = [];
+        Object.keys(costData).forEach(key => {
+          if (key.startsWith('GapCost')) {
+            const yearsAgo = parseInt(key.match(/GapCostPPM(\d+)?(Ago)?/)[1] || 0);
+            const year = key.includes('Ago') ? currentYear - yearsAgo : currentYear + yearsAgo;
+            x.push(year);
+            y.push(Number(costData[key]));
+          }
+        });
+        return {
+          x: x,
+          y: y,
+          type: 'bar',
+          name: costData.companyCode
+        };
+      });
       const layout = {
         title: 'Cost Gap Analysis',
-        xaxis: {title: 'Period'},
+        xaxis: {
+          title: 'Year',
+          range: [2019, 2034],  // X軸の範囲を2019年から2034年に設定
+          tickmode: 'linear',
+          dtick: 1  // 1年ごとに目盛りを設定
+        },
         yaxis: {title: 'Cost'}
       };
-      Plotly.newPlot(plotDiv.value, traceData, layout);  // refの.valueを使用してDOM要素を指定
+      Plotly.newPlot(plotDiv.value, traceData, layout);
     }
   } catch (error) {
     console.error('API request failed:', error);
