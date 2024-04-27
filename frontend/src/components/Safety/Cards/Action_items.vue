@@ -1,3 +1,49 @@
+<style scoped>
+.swing {
+  display: inline-block;
+  animation: swing ease-in-out 1s infinite alternate;
+}
+
+@keyframes swing {
+  0% {
+    transform: rotate(-10deg);
+  }
+  100% {
+    transform: rotate(10deg);
+  }
+}
+
+.vibrate {
+  display: inline-block;
+  animation: vibrate 0.5s infinite alternate;
+}
+
+@keyframes vibrate {
+  0% {
+    transform: translateY(-5px);
+  }
+  100% {
+    transform: translateY(5px);
+  }
+}
+
+.large-bold-text {
+  font-size: 2rem;
+  /* 更に大きいフォントサイズに調整 */
+  font-weight: bold;
+  /* 太字 */
+}
+
+.block.text-500.font-medium.mb-3 {
+  font-weight: bold;
+  /* 太字に設定 */
+  font-size: 1.5em;
+  /* 現在のフォントサイズの2倍 */
+  color: black;
+  /* 文字色を黒に設定 */
+}
+</style>
+
 <template>
 
   <div class="card mb-0">
@@ -15,9 +61,11 @@
         style="width: 2.5rem; height: 2.5rem">
         <i class="pi pi-map-marker text-orange-500 text-xl"></i>
       </div>
+      
+      <i class="pi pi-thumbs-up swing" style="font-size: 3rem"></i>
+
     </div>
   </div>
-
 </template>
 
 
@@ -67,20 +115,3 @@ export default {
 };
 </script>
 
-<style scoped>
-.large-bold-text {
-  font-size: 2rem;
-  /* 更に大きいフォントサイズに調整 */
-  font-weight: bold;
-  /* 太字 */
-}
-
-.block.text-500.font-medium.mb-3 {
-  font-weight: bold;
-  /* 太字に設定 */
-  font-size: 1.5em;
-  /* 現在のフォントサイズの2倍 */
-  color: black;
-  /* 文字色を黒に設定 */
-}
-</style>

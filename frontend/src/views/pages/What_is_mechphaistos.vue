@@ -76,7 +76,7 @@ import AppConfig from '@/layout/AppConfig.vue';
                                 </p>
 
                                 <figure class="desc-ternary">
-                                    <img src="@/assets/Newplot.jpg" alt="MECHPHAISTOSの概念">
+                                    <img src="@/assets/newplot.jpg" alt="MECHPHAISTOSの概念">
                                 </figure>
                                 <br>
                                 <br>

@@ -6,6 +6,7 @@
     :server-items-length="serverItemsLength"
     :loading="loading"
     buttons-pagination
+    table-class-name="customize-table"
   />
 </template>
 
@@ -21,7 +22,7 @@ export default defineComponent({
     const companyCode = userStore.companyCode; // companyCodeの取得
 
     const headers = ref<Header[]>([
-      { text: "NearMiss No.", value: "nearMissNo" },
+      { text: "NearMiss No.", value: "nearMissNo"},
       { text: "Name", value: "userName.userName" },
       { text: "Department", value: "department" },
       { text: "Date", value: "dateOfOccurrence" },
@@ -87,4 +88,17 @@ export default defineComponent({
 });
 </script>
 
+<style>
+.customize-table {
 
+  --easy-table-border: 1px solid #445269;
+  --easy-table-row-border: 1px solid #445269;
+
+  --easy-table-header-font-size: 14px;
+  --easy-table-header-height: 50px;
+  --easy-table-header-font-color: #c1cad4;
+  --easy-table-header-background-color: #2d3a4f;
+
+
+}
+</style>
