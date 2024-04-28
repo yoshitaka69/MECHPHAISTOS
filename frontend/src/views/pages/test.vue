@@ -1,221 +1,97 @@
 <template>
-  <div id="NearMissInputForm">
-    <hot-table ref="hotTableComponent" :settings="hotSettings"></hot-table><br />
-    <button v-on:click="updateData" class="controls">Update Data</button>
-  </div>
+    <div class="home-contents">
+        <img src="@/assets/MECHPHAISTOS cover.jpg">
+        <h1 class="title">Welcome to MECHPHASTOS</h1>
+    </div>
+
+    <section>
+        <div class="row">
+            <div>
+                <Clock />
+            </div>
+        </div>
+    </section>
+
+    <section>
+
+        <div class="row">
+            <div>
+                <Emphasized_post />
+            </div>
+        </div>
+
+    </section>
+
+    <div class="row">
+        <div>
+            <Featured_articles />
+        </div>
+        </div>
+
+
 </template>
 
 
+
 <script>
-import axios from 'axios';
-import Handsontable from 'handsontable';
-import { defineComponent } from 'vue';
-import { HotTable } from '@handsontable/vue3';
-import { registerAllModules } from 'handsontable/registry';
-import 'handsontable/dist/handsontable.full.css';
-import { useUserStore } from '@/stores/userStore'; // Piniaストアをインポート
 
-// register Handsontable's modules
-registerAllModules();
+import Clock from '@/components/Clock/Clock.vue';
+import Emphasized_post from '@/components/News/Emphasized_post.vue';
+import Featured_articles from '@/components/News/Featured_articles.vue';
 
+export default {
+    components: {
 
-const NearMissInputComponent = defineComponent({
-  data() {
-    return {
-      hotSettings: {
-        data: [
-          ["", "", "", "", "", "", "", "", "", "", "", "", "", "",],//1
-          ["", "", "", "", "", "", "", "", "", "", "", "", "", "",],//2
-          ["", "", "", "", "", "", "", "", "", "", "", "", "", "",],//3
-          ["", "", "", "", "", "", "", "", "", "", "", "", "", "",],//4
-          ["", "", "", "", "", "", "", "", "", "", "", "", "", "",],//5
-          ["", "", "", "", "", "", "", "", "", "", "", "", "", "",],//6
-          ["", "", "", "", "", "", "", "", "", "", "", "", "", "",],//7
-          ["", "", "", "", "", "", "", "", "", "", "", "", "", "",],//8
-          ["", "", "", "", "", "", "", "", "", "", "", "", "", "",],//9
-          ["", "", "", "", "", "", "", "", "", "", "", "", "", "",],//10
-          ["", "", "", "", "", "", "", "", "", "", "", "", "", "",],//11
-          ["", "", "", "", "", "", "", "", "", "", "", "", "", "",],//12
-          ["", "", "", "", "", "", "", "", "", "", "", "", "", "",],//13
-          ["", "", "", "", "", "", "", "", "", "", "", "", "", "",],//14
-          ["", "", "", "", "", "", "", "", "", "", "", "", "", "",],//15
-          ["", "", "", "", "", "", "", "", "", "", "", "", "", "",],//16
-          ["", "", "", "", "", "", "", "", "", "", "", "", "", "",],//17
-          ["", "", "", "", "", "", "", "", "", "", "", "", "", "",],//18
-          ["", "", "", "", "", "", "", "", "", "", "", "", "", "",],//19
-          ["", "", "", "", "", "", "", "", "", "", "", "", "", "",],//20
+        Clock,
+        Emphasized_post,
+        Featured_articles,
+    },
+}
 
-        ],
-        colHeaders: [
-          "Name", "Department", "Date", "Where?", "Type of Accident", "Description", "Factor", "Injured Lv.", "Equipment Damage Lv.", "Effect on Environment", "News Coverage", "Measures", "Action Items", "Solved Actions items"
-        ],
-        columns: [
-          {//Name
-            type: "text",
-            width: 100,
-            className: 'htCenter',
-          },
-          {//Department
-            type: "text",
-            width: 100,
-            className: 'htCenter',
-          },
-          {//Date
-            type: 'date',
-            width: 60,
-            dateFormat: 'YYYY-MM-DD',
-            correctFormat: false,
-          },
-          {//Where?
-            type: "text",
-            width: 100,
-            className: 'htCenter',
-          },
-          {//Type of Accident
-
-          },
-          {//Description
-
-          },
-          {//Factor
-
-          },
-          {//Injured Lv.
-
-          },
-          {//Equipment Damage Lv.
-
-          },
-          {//Effect on Environment
-
-          },
-          {//News Coverage
-
-          },
-          {//Measures
-
-          },
-          {//Action Items
-
-          },
-          {//Solved Actions items
-
-          },
-        ],
-
-        afterGetColHeader: (col, TH) => {
-          if (col === -1) {  // ヘッダー行の場合
-            return;
-          }
-          // 全ヘッダーセルに薄い青色の背景を設定
-          TH.style.backgroundColor = '#E6F7FF'; // 薄い青色
-          TH.style.color = 'black';  // テキスト色を黒に設定
-          TH.style.fontWeight = 'bold';  // テキストを太字に設定
-        },
-
-
-        width: '100%',
-        height: 'auto',
-        stretchH: 'all', // 'none' is default 様子見
-        contextMenu: true,//コンテキストメニュー
-        autoWrapRow: true,
-        autoWrapCol: true,
-        fixedColumnsStart: 2,//カラム固定
-        fixedRowsTop: 2,//列固定
-        manualColumnFreeze: true,//コンテキストメニュー手動でコラム解除
-        manualColumnResize: true,//手動での列幅調整
-        manualRowResize: true,//列の手動高さ調整
-        filters: true,
-        dropdownMenu: true,
-        comments: true,//コメントの有り無し
-        fillHandle: {
-          autoInsertRow: true
-        },
-
-        licenseKey: 'non-commercial-and-evaluation'
-
-      }
-    };
-  },
-
-
-
-  updateData: function () {
-    const userStore = useUserStore();
-    const userCompanyCode = userStore.companyCode;
-
-    if (!userCompanyCode) {
-      console.error("Error: No company code found for the user.");
-      return;
-    }
-
-    const tableData = this.$refs.hotTableComponent.hotInstance.getData();
-    let sparePartsList = [];
-
-    tableData.forEach(row => {
-      let partsNo = row[0]; // partsナンバー
-      let image = row[1]; // 画像
-      let bomCode = row[2]; // BOMコード
-      let partsName = row[3]; // パーツネーム
-      let category = row[4]; // カテゴリー
-      let partsModel = row[5]; // 型式
-      let serialNumber = row[6]; // シリアルナンバー
-      let taskCode = row[7]; // タスクコード
-      let partsCost = row[8]; // パーツコスト
-      let numberOf = row[9]; // 個数
-      let unit = row[10]; // カテゴリー
-      let location = row[11]; // 型式
-      let partsDeliveryTime = row[12]; // シリアルナンバー
-      let orderAlert = row[13]; // タスクコード
-      let orderSituation = row[14]; // パーツコスト
-      let classification = row[15]; // 区分
-      let inventoryTurnover = row[16]; // 在庫回転率
-      let partsDescription = row[17]; // 詳細
-
-      sparePartsList.push({
-        companyCode: userCompanyCode,
-        partsNo: partsNo,
-        image: image,
-        bomCode: bomCode,
-        partsName: partsName,
-        category: category,
-        partsModel: partsModel,
-        serialNumber: serialNumber,
-        taskCode: taskCode,
-        partsCost: partsCost,
-        numberOf: numberOf,
-        unit: unit,
-        location: location,
-        partsDeliveryTime: partsDeliveryTime,
-        orderAlert: orderAlert,
-        orderSituation: orderSituation,
-        classification: classification,
-        inventoryTurnover: inventoryTurnover,
-        partsDescription: partsDescription
-      });
-    });
-
-    let postData = {
-      companyCode: userCompanyCode,
-      sparePartsList: sparePartsList
-    };
-    console.log("postData", postData)
-
-    const backendUrl = `http://127.0.0.1:8000/api/spareParts/sparePartsByCompany/?format=json&companyCode=${userCompanyCode}`;
-    axios.post(backendUrl, postData)
-      .then(response => {
-        console.log("Data posted successfully", response.data);
-      })
-      .catch(error => {
-        console.error("Error in posting data", error);
-      });
-  },
-
-  components: {
-    HotTable,
-  },
-});
-
-export default NearMissInputComponent;
 
 </script>
+
+
+
+
+<style lang="css">
+.home-contents {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    position: relative;
+    /*画像上の文字を中央に配置するため*/
+}
+
+.home-contents img {
+    object-fit: cover;
+    /*画像のトリミングのため*/
+    width: 100%;
+    height: 130px;
+}
+
+/*背景画像を暗くしてもwelcome to…を目立たせる*/
+.home-contents::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+}
+
+
+/*welcome to MECHPHAISTOS*/
+.title {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 0;
+    margin: 0;
+    font-size: 30px;
+    color: #fff;
+}
+</style>

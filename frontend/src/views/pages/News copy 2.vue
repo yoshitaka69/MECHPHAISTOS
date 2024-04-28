@@ -1,10 +1,65 @@
 <template>
+	<div>
 		<div class="home-contents">
 			<img src="@/assets/MECHPHAISTOS cover.jpg">
 			<h1 class="title">Welcome to MECHPHASTOS</h1>
 		</div>
+
+		<section>
+			<div class="clock">
+				<Clock />
+				<div class="information">
+					<information />
+				</div>
+			</div>
+		</section>
+
+		<section class="content">
+			<div class="card card-solid">
+				<!--Tabはsakai-vue-template-->
+				<TabView>
+					<TabPanel header="Critical equipment list">
+						<p class="line-height-3 m-0">
+						</p>
+					</TabPanel>
+					<TabPanel header="Priority Tasks">
+						<p class="line-height-3 m-0">
+						</p>
+					</TabPanel>
+					<TabPanel header="IT">
+						<p class="line-height-3 m-0">
+							<Qiita />
+						</p>
+					</TabPanel>
+				</TabView>
+			</div>
+		</section>
+
+	</div>
 </template>
 
+
+<script>
+import Clock from '@/components/Clock/Clock.vue'
+import News from '@/components/News/News.vue'
+//import Qiita from '@/components/Qiita_api/Qiita_api'
+import Weather from '@/components/Weather/Weather.vue'
+import information from '@/components/information.vue'
+
+
+
+export default {
+	components: {
+		Clock,
+		News,
+		//Qiita,
+		Weather,
+		information
+	},
+
+}
+
+</script>
 
 
 <style lang="css">

@@ -1,92 +1,39 @@
 <template>
-    <div class="container">
-        <div class="clock_hou">
-            <div class="date">
-                <p>{{ year }}/{{ month }}/{{ day }}</p>
-            </div>
-            <div class="time">
-                <p>
-                    {{ hours }}:{{ minutes }}<span class="second">:{{ seconds }}</span>
-                </p>
-            </div>
-        </div>
-    </div>
-</template>
-
-<script>
-export default{
-    name : "Clock",
-    data(){
-        return{
-            date:new Date(),
-        };
-    },
-    computed:{
-        year(){
-            return this.date.getFullYear();
-        },
-
-        month(){
-            return this.date.getMonth() +1;
-        },
-
-        day(){
-            return this.dateTimePadding(this.date.getDate());
-        },
-        hours(){
-            return this.dateTimePadding(this.date.getHours());
-        },
-        minutes(){
-            return this.dateTimePadding(this.date.getMinutes())
-        },
-        seconds(){
-            return this.dateTimePadding(this.date.getSeconds())
-        },
-        },
-        mounted(){
-            this.setDate();
-            setInterval(() => this.setDate(),1000);
-        },
-
-    methods:{
-        dateTimePadding(num){
-            return("0"+num).slice(-2);
-        },
-        setDate(){
-            this.date = new Date();
-        },
-    }
-}
-</script>
-
-<style scoped>
-.container{
-    height:100%;
-    display:flex;
-    flex-flow:column;
-    justify-content: center;
-    align-items:center;
-    background-color: #262626;
-}
-
-p{
-    margin:0px;
-}
-
-.date,
-.time{
-    font-weight: 700;
-    color:#00ff01;
-}
-.date{
-    font-size:16px;
-    text-align: right;
-}
-.time{
-    font-size: 70px;
-}
-.seconds{
-    font-size: 30px;
-}
-
-</style>
+    <svg width="200" height="200">
+      <circle cx="100" cy="100" r="95" fill="none" stroke="black" stroke-width="3" />
+      <line :x1="100" :y1="100" :x2="100" :y2="20" :transform="`rotate(${secondsAngle}, 100, 100)`" stroke="red" stroke-width="2"/>
+      <line :x1="100" :y1="100" :x2="100" :y2="30" :transform="`rotate(${minutesAngle}, 100, 100)`" stroke="black" stroke-width="3"/>
+      <line :x1="100" :y1="100" :x2="100" :y2="40" :transform="`rotate(${hoursAngle}, 100, 100)`" stroke="black" stroke-width="5"/>
+    </svg>
+  </template>
+  
+  <script setup>
+  import { ref, onMounted } from 'vue';
+  
+  const date = ref(new Date());
+  const secondsAngle = ref(0);
+  const minutesAngle = ref(0);
+  const hoursAngle = ref(0);
+  
+  const updateClock = () => {
+      date.value = new Date();
+      secondsAngle.value = date.value.getSeconds() * 6;
+      minutesAngle.value = date.value.getMinutes() * 6 + date.value.getSeconds() * 0.1;
+      hoursAngle.value = (date.value.getHours() % 12) * 30 + date.value.getMinutes() * 0.5;
+  };
+  
+  onMounted(() => {
+      setInterval(updateClock, 1000);
+  });
+  </script>
+  
+  <style>
+  svg {
+      display: block;
+      margin: auto;
+      background-color: #fff;
+      border-radius: 50%;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  }
+  </style>
+  

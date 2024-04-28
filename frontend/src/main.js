@@ -133,8 +133,6 @@ import TriStateCheckbox from 'primevue/tristatecheckbox';
 import VirtualScroller from 'primevue/virtualscroller';
 import 'primeicons/primeicons.css'
 
-
-
 const app = createApp(App)
 
 // Pinia ストアを作成して登録
@@ -149,6 +147,7 @@ app.use(PrimeVue, { ripple: true });
 app.use(ToastService);
 app.use(DialogService);
 app.use(ConfirmationService);
+
 
 app.directive('tooltip', Tooltip);
 app.directive('badge', BadgeDirective);
