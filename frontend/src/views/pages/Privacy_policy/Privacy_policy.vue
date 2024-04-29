@@ -1,209 +1,531 @@
+<style>
+.title {
+    font-size: 18px;
+    /* お一回り大きなサイズ */
+    font-weight: bold;
+    /* 太字 */
+    text-decoration: underline;
+    /* アンダーライン */
+    color: #000;
+    /* 黒色テキスト */
+    margin-bottom: 3px;
+    /* 少し間隔 */
+}
+
+.text-content {
+    margin-left: 20px;
+    /* 右にインデント */
+    font-size: normal;
+    color: #666;
+    /* グレイのテキスト */
+}
+</style>
+
+
+
 <template>
+    <div class="surface-section px-4 py-5 md:px-6 lg:px-8">
+        <div
+            class="flex md:align-items-center md:justify-content-between flex-column md:flex-row pb-4 border-bottom-1 surface-border">
+            <div class="mb-3 lg:mb-0">
+                <div class="title">Define</div> <br><!-- 変更された部分 -->
+                <div class="text-content">
+                    The web app "MECHPHAISTOS" is based in Japan and is entirely run by
+                    Yoshitaka Noto.<br> We will refer to them as "I," "we," and "our company," and refer to our
+                    customers as "USERS" and "companies."<br>
+                    In addition, the applications and services provided by our company are referred to as
+                    "MECHPHAISTOS", "apps", "websites", or "services".<br><br>
 
-<div class="Privacy_policy">
-    <h1>プライバシーポリシー</h1>
+                    As a form provided by the app,<br><br> <!-- 追加されたブランク行 -->
 
-    定義
-Inkdrop は日本を拠点とする松山拓也氏が所有しています。(「私」、「私」、「当社」、または「当社」と呼ばれます)。このサービスの顧客であるあなたは、このポリシーに従って「ユーザー」または「あなた」です。当社が提供するアプリケーションまたはサービスは、「Inkdrop」、「アプリ」、「ウェブサイト」、または「サービス」と呼ばれます。
-
-Inkdrop は私に関するデータをどのように収集しますか?
-Inkdrop はあなたに関するデータを収集します。
-
-Inkdrop Web サイト(inkdrop.app)を閲覧するとき
-Inkdrop アカウントを作成するとき、またはアカウントを更新するとき
-macOS、Windows、Linux、iOS、または Android 用の Inkdrop クライアント アプリを使用する場合
-サポート、プライバシー、法的要求、その他の要求を当社に送信するとき
-現在および潜在的な顧客と協力し、調査する場合
-ipmコマンドを使用してInkdrop のプラグインを公開する場合
-Inkdrop フォーラムにトピックやコメントを投稿するとき
-潜在的な顧客を調査する際、公開されている World Wide Web や有料のビジネス データベースを検索することがあります。それ以外の場合、当社はデータ ブローカーやその他の民間サービスからお客様に関するデータを購入したり受信したりすることはありません。
-
-Inkdrop は私に関してどのようなデータを収集しますか?またその理由は何ですか?
-Inkdrop はノート データを収集します。
-Inkdrop クライアント アプリにメモ、ノートブック、タグ、添付ファイルを追加すると、Inkdrop はそれらをローカル デバイスと Inkdrop サーバーに保存します。データは Inkdrop アカウントに関連付けられています。データが Inkdrop サーバーに保存されると、Inkdrop は転送中および保存中にデータを暗号化するため、サーバー管理者を含む他の人はデータの内容を見ることができません。Inkdrop サーバーはデータを使用して、デバイス間でのデータ同期機能を提供します。この機能は[設定]から無効にできます。クライアント アプリは、データへのオフラインでの迅速なアクセスを提供するために、データをローカル ストレージに保存します。クライアント アプリは、クイック検索機能を提供するために、ローカルに保存されているデータを暗号化しません。
-
-Inkdrop は、Inkdrop サービスの使用方法に関するデータを収集します。
-Inkdrop クライアント アプリ、Inkdrop Web サイト、またはipmコマンドを使用すると、Inkdrop は特定される可能性のあるデータをログに記録します。
-
-ランダムな一意の識別子
-Inkdrop アプリのバージョンと使用しているオペレーティング システム
-日時、IP アドレス、URL などのネットワーク リクエスト データ
-ノート、ノートブック、タグ、ファイルの数とそれらの合計データサイズ
-Inkdrop はこのデータを次の目的で使用します。
-
-サービスを迅速かつ確実に動作させ続ける
-当社のアプリとウェブサイトのデバッグと開発
-Inkdrop サービスを悪用や技術的攻撃から守る
-プラグインの使用状況と人気に関する統計を作成する
-ウェブサイト上の検索結果を改善する
-アプリの使いやすさを向上させる
-Inkdrop は通常、特定可能な情報を含むログ エントリを数週間以内に削除しますが、特定のインシデントの調査など、特定のケースで必要に応じてログをさらに長く保存する場合があります。
-
-Inkdrop は、Web サイトの使用方法に関するデータを収集します。
-inkdrop.app、my.inkdrop.app、docs.inkdrop.app、forum.inkdrop.app 、およびその他の Inkdrop Web サイトにアクセスすると、Inkdrop は Cookie、サーバー ログ、およびその他の方法を使用して、アクセスしたページに関するデータを収集します。いつ。Inkdrop は、お客様が使用するソフトウェアやコンピューターに関する次のような技術情報も収集します。
-
-あなたのIPアドレス
-あなたの好みの言語
-使用している Web ブラウザ ソフトウェア
-あなたが使用しているコンピュータの種類
-あなたを紹介したウェブサイト
-Inkdrop は、Web サイトの使用方法に関するデータを次の目的で使用します。
-
-ウェブサイトを最適化して、素早く簡単に使用できるようにする
-技術的エラーの診断とデバッグ
-ウェブサイトを悪用や技術的攻撃から守る
-パッケージの人気に関する統計を作成する
-訪問者が使用するソフトウェアとコンピュータの種類に関する統計を作成する
-新しい Web サイトのページや機能の開発をガイドするために、訪問者の検索とニーズに関する統計を収集します。
-製品の発表、サービスの変更、新機能について連絡先を決める
-Inkdrop は通常、識別可能な情報を含む Web サイトのログ エントリを数週間以内に削除しますが、Inkdrop アカウントを持つ訪問者のエントリはそれより長く保存されます。Inkdrop は、これらのユーザーのログ エントリを年に 2 回確認し、不要になったエントリを削除します。
-
-Inkdrop は、特定のインシデントの調査など、特定のケースで必要に応じて、あらゆる種類の訪問者のログ エントリをより長く保存することがあります。Inkdrop は集計統計を無期限に保存しますが、それらの統計には個人を特定できるデータは含まれません。
-
-Inkdrop はアカウント データを収集します。
-基本的に、Inkdrop サービスには Inkdrop アカウントが必要です。たとえば、Inkdrop クライアント アプリを使用するには、Inkdrop アカウントが必要です。
-
-Inkdrop アカウントを作成するには、Inkdrop で有効な電子メール アドレスが必要です。Inkdrop はこのデータを使用して、機能へのアクセスを提供し、Inkdrop サービス全体で公開および Inkdrop 内でユーザーを識別します。
-
-Inkdrop アカウントを作成するために、個人名や法人名を指定する必要はありません。代わりに仮名を使用することもできます。複数のアカウントを開設することもできます。
-
-Inkdrop はアカウント データを公開し、このようなユーザー共有メモを全世界に公開します。プラグインを公開している場合、 Inkdrop はInkdrop プラグイン レジストリを通じてアカウント データも公開します。
-
-Inkdrop に個人名やソーシャル メディア名を付ける必要はなく、このデータはいつでも消去できます。
-
-Inkdrop は電子メールを次の目的で使用します。
-
-登録するためのメールアドレスが正しいかどうかを確認してください
-無料トライアルの有効期限が 3 日後に切れることを通知します
-無料トライアルの有効期限が切れたことを通知する
-支払いが失敗したことを通知する
-支払いが失敗したためアカウントが無効になったことを通知します
-有料ユーザーになると、有料ユーザーのみがアクセスできるラウンジにあなたを招待します
-年間サブスクリプションの更新については 3 日前に通知します
-あなたのアカウントに関連する特別な状況であなたに連絡する
-サポートリクエストについて連絡する
-DMCA 削除要求やプライバシー侵害などの法的要求について連絡する
-新しい Inkdrop 製品、サービスの変更、機能を発表する
-Inkdrop は、アカウントが開いている限りアカウント データを保存します。アカウント データがプラグイン データにも含まれる場合、Inkdrop はプラグインを保存している限り、そのデータも保存します。
-
-Inkdrop は共有ノート データを収集します。
-World Wide Web にメモを共有すると、Inkdrop は、メモをオンラインで誰でも利用できるようにするために、暗号化せずにメモの内容に加えて、アカウント データを含むメタデータを収集します。
-
-共有メモを他の人と共有する必要がなくなった場合は、共有メモを非公開にして、Inkdrop のストレージから削除できます。
-
-Inkdrop はプラグイン データを収集します。
-を使用してipm publishプラグインを Inkdrop プラグイン レジストリに公開すると、Inkdrop はプラグインのコンテンツに加えて、アカウント データを含むメタデータを収集します。
-
-Inkdrop は、プラグイン内のデータを使用して、それらのプラグインをあなたやプラグインを要求する他のユーザーに提供します。Inkdrop プラグイン レジストリにプラグインを公開すると、Inkdrop はそのプラグインとメタデータをオンラインで誰でも利用できるようにします。
-
-プラグイン データを他の人が利用できるようにすると、他の人はあなたの作業をダウンロードし、構築し、依存することができます。ほとんどの場合、Inkdrop は、未公開でない限り、すべてのプラグインのすべてのバージョンのデータとメタデータを無期限に保存します。
-
-ただし、場合によっては、プラグイン発行者がパッケージを非公開にして、プラグイン レジストリから削除することがあります。消去されたプラグインは Inkdrop のストレージから完全に消えます。
-
-Inkdrop は支払いカードのデータを収集します。
-無料トライアルの期限が切れた後も Inkdrop サービスを使い続けるには、Inkdrop で支払いカードのデータが必要です。Inkdrop 自体は、カード自体に請求するのに十分な情報を収集または保存しません。むしろ、Stripe はInkdrop に代わってそのデータを収集し、Inkdrop が料金やサブスクリプションを作成できるようにする Inkdrop セキュリティ トークンを提供します。Stripe は最高レベルの PCI コンプライアンス (レベル 1) を満たしています。詳細については、「セキュリティ」ページをご覧ください。
-
-Inkdrop は、Inkdrop サービスの料金を請求するためにのみ支払いカードのデータを使用します。
-
-Inkdrop は、有料の Inkdrop サービスを使用している限り、支払いカード データを保存するように Stripe に指示します。
-
-Inkdrop は請求先住所を収集します。
-日本ではInkdropサービスには消費税がかかります。ただし、日本国外に居住している人は消費税が免除されます。Inkdrop は、お客様が日本に居住しているかどうかを確認するために、請求先住所を収集します。これは日本の国税庁によって要求されています。
-
-Inkdrop はそれを Stripe に安全に保存します。
-
-Inkdrop は通信に関するデータを収集します。
-Inkdrop は、お客様が Inkdrop サポート リクエスト、法的苦情、プライバシーに関する問い合わせ、およびビジネスに関する問い合わせを送信するときに、お客様に関するデータを収集します。これらのデータには通常、あなたの名前と電子メール アドレスが含まれますが、会社やその他の所属が含まれる場合もあります。
-
-Inkdrop は連絡先データを次の目的で使用します。
-
-あなたに応答します
-対応に関する集計統計を作成する
-サポート スタッフおよびその他の Inkdrop スタッフをトレーニングする
-対応した Inkdrop 担当者のパフォーマンスをレビューする
-Inkdrop を法的請求から守る
-Inkdrop は、これらの目的に役立つ限り通信を保存します。
-
-Inkdrop は私に関するデータをどこに保管しますか?
-Inkdrop は、アカウント データ、メモ データ、Web サイトの使用に関するデータ、プラグインを米国のサーバーに保存します。私はそれらのデータを日本のパソコンに取り込むことがあります。私はサービスの開発、デバッグ、保守にデータを使用します。データは不要になったらコンピューターから消去されます。
-
-Inkdrop は EU 一般データ保護規則に準拠していますか?
-Inkdrop は、欧州連合の一般データ保護規則 (GDPR)である規制 (EU) 2016/679に基づくプライバシー権を尊重します。GDPR により Inkdrop に提供が義務付けられている情報は、プライバシーに関する質問と回答全体に記載されています。アクセス、修正、消去、データのポータビリティ、自動化された意思決定への異議など、特定の権利に関する情報も同様です。
-
-GDPR は世界中のすべての人に適用されるわけではありません。しかし、Inkdrop のポリシーは、GDPR が適用されるかどうかに関係なく、すべてのユーザーに同じプライバシー情報、制御、保護を提供するために最善を尽くすことです。
-
-自分に関するデータにアクセスするにはどうすればよいですか?
-my.inkdrop.appのアカウント ページにアクセスすると、いつでもアカウント データにアクセスできます。
-
-my.inkdrop.appで入手できる、macOS、Windows、Linux、iOS、Android で利用可能なクライアント アプリからメモ データにアクセスできます。
-
-デスクトップ クライアント アプリからすべてのメモ データをJSONまたは Markdown 形式でエクスポートできます。
-
-CouchDBと互換性のあるデータ アクセス APIを介して Inkdrop データベースに直接アクセスすることもできます。
-
-自分に関するデータを変更または消去するにはどうすればよいですか?
-my.inkdrop.appのアカウント設定ページにアクセスすると、いつでもアカウント データと支払いカード データを変更できます。
-
-Inkdrop アカウントは、 my.inkdrop.appでいつでも閉鎖できます。アカウントを閉鎖すると、メモ、共有メモ、ノートブック、タグ、添付ファイルなどのアカウント データの Inkdrop の記録を消去するプロセスが開始されます。アカウントを閉鎖しても、アカウントで公開されているプラ​​グインは自動的に消去されません。コマンドを使用してアカウントを閉じる前にプラグインを非公開にすることができますipm unpublish。iOS アプリまたは Android アプリをアンインストールすると、デバイスに保存されているデータは完全に消去されます。macOS、Windows、または Linux 用のデスクトップ アプリをアンインストールしても、データはデバイスから完全には消去されません。アプリが保存するデータは次のディレクトリにあり、削除することができます。
-
-macOS の場合:~/Library/Application Support/inkdrop/
-Windows の場合:%APPDATA%/inkdrop/
-Linux の場合:~/.config/inkdrop/
-アカウントを閉鎖すると、forum.inkdrop.appに投稿されたトピックやコメントが匿名化されます。フォーラム上のあなたのプロフィールと IP アドレスは消去されますが、投稿は他のユーザーの役に立つため残ります。完全に削除したい場合は、contact@inkdrop.appに電子メールを送信し、どのユーザーを削除する必要があるかをお知らせください。
-
-ipmあなたに関するデータを変更または削除するための Web サイトまたはコマンドの使用に関する質問や問題がある場合は、 contact@inkdrop.appまでメールでお問い合わせください。
-
-Inkdrop は私に関するデータを他の人と共有しますか?
-アカウント データに関するセクションで説明したように、Inkdrop はアカウント データを他のユーザーと共有します。
-
-Inkdrop は、あなたに関する情報を他人に販売しません。ただし、Inkdrop は他社が提供するサービスを利用して Inkdrop サービスを提供しています。これらのサービスの中には、独自の目的でお客様に関するデータを独自に収集する場合があります。すべての企業は米国に拠点を置いています。
-
-これらのサービスの一部は、さまざまな Web サイトにわたるオンライン活動に関する情報を収集するために使用される場合があります。
-
-Inkdrop は Fathom Analytics を使用しています。
-Inkdrop の Web サイトは、Fathom Analytics を使用して、Web サイトへの訪問者に関するデータを収集および分析します。技術的な実装の詳細については、こちらをご覧ください。Fathom におけるデータ保護の詳細については、 usefathom.com/dataをご覧ください。
-
-Inkdrop はクラウド コンピューティング プラットフォームを使用します。
-Inkdrop は、世界中のサービス リージョンでアマゾン ウェブ サービスのサーバーとサービスを使用して、Inkdrop サービスを強化しています。AWS のプライバシー ポリシーはオンラインで読むことができます。
-
-Inkdrop は、アメリカ合衆国のサービス リージョンでHerokuサーバーとサービスを使用して、Inkdrop サービスを強化します。Heroku のプライバシー ポリシーをオンラインで読むことができます。
-
-Inkdrop は、米国のサービス地域でDigitalOcean のサーバーとサービスを使用して、 Inkdrop フォーラムを提供します。DigitalOcean のプライバシー ポリシーはオンラインで読むことができます。
-
-Inkdrop は Papertrail を使用します。
-Inkdrop はPapertrailを使用してサーバーからログを収集します。Papertrail のプライバシー ポリシーはオンラインで読むことができます。
-
-Inkdrop は Stripe を使用します。
-Inkdrop は、 Stripeを使用してカード支払いデータと請求情報を収集および使用します。Stripe のプライバシー ポリシーはオンラインでご覧いただけます。
-
-Inkdrop は Mixpanel を使用します。
-Inkdrop はMixpanelを使用して、Web サイトへの訪問者とアプリの使用方法に関するデータを収集および分析します。Mixpanel のプライバシー ポリシーはオンラインで読むことができます。このページwww.mixpanel.com/optoutおよびmy.inkdrop.app/account/privacyにアクセスして、Mixpanel からオプトアウトできます。これらの追跡データは、Inkdrop アカウントに関連付けられていません。
-
-Inkdrop は Bugsnag を使用します。
-Inkdrop はBugsnagを使用してモバイル アプリからクラッシュ レポートとエラー ログを収集します。これらのクラッシュ レポートには、識別とインシデント管理を容易にするための技術情報が含まれています。これらのデータは、Inkdrop アカウントに関連付けられていません。Bugsnag が収集する情報の種類の詳細については、Bugsnag のプライバシー ポリシー ページをご覧ください。
-
-Inkdrop は私に関するデータに基づいて自動決定を行いますか?
-いいえ、Inkdrop はパーソナライゼーションやリターゲティングの目的でお客様のデータを使用しません。
-
-Inkdrop と私のプライバシーについては誰に問い合わせればよいですか?
-質問や苦情は次の宛先に送信できます。
-
-松山拓也
-contact@inkdrop.app
-1-34-2-1605
-大阪府大阪市西区新町
-550-0013
-日本
-変更を確認するにはどうすればよいですか?
-Inkdrop は、 Inkdrop ブログで次のバージョンを発表します。それまでの間、Inkdrop は、発表なしに、プライバシー ポリシーのページを更新することにより、連絡先情報や軽微な変更を更新する場合があります。Inkdrop は、将来のプライバシー バージョンで変更を発表する方法を変更する可能性があります。
-
-Inkdrop のドキュメントの Git リポジトリの変更履歴を確認できます。
+                    <ol>
+                        <li>Critical Equipment List</li>
+                        <li>Repairing Cost List</li>
+                        <li>NearMiss List</li>
+                        <li>Spear Parts List</li>
+                        <li>Energy form List</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
 
 
-</div>
+
+        <div
+            class="flex md:align-items-center md:justify-content-between flex-column md:flex-row pb-4 border-bottom-1 surface-border">
+            <div class="mb-3 lg:mb-0">
+                <div class="title">How does MECHPHAISTOS collect data about users?</div><br>
+                <div class="text-content">
+                    MECHPHAISTOS collects users' data below.<br><br>
+
+                    <ol>
+                        <li>When USERS visit a Web app MECHPHAISTOS.</li>
+                        <li>When USERS create a user account, and USERS update USERS' account.</li>
+                        <li>When USERS use MECHPHAISTOS in MacOS, Windows, Linux, iOS, Android.</li>
+                        <li>When USERS submit support, privacy, legal, or other requests to us.</li>
+                        <li>When we are working with researching current and potential customers.</li>
+                        <li>When USERS post topics or comments on the form provided by MECHPHAISTOS.</li>
+                        <li>In particular, MECHPHAISTOS collects USERS' equipment maintenance information, processes the
+                            information, and shares it with other USERS.</li>
+                        <li>When we are researching potential customers, we may search the public World Wide Web and
+                            paid business databases.</li>
+                        <li>We do not otherwise purchase or receive data about you from data brokers or other private
+                            services.</li>
+                    </ol>
+
+                </div>
+            </div>
+        </div>
+
+
+        <div
+            class="flex md:align-items-center md:justify-content-between flex-column md:flex-row pb-4 border-bottom-1 surface-border">
+            <div class="mb-3 lg:mb-0">
+                <div class="title">What data does MECHPHAISTOS collect about me and why?
+                </div><br>
+                <div class="text-content">
+                    <p>
+                        MECHPHAISTOS lets you add equipment information, topics, comments, and attachments to various
+                        forms<br>
+                        and saves them on your local device and server.<br>
+                        These data are associated with your MECHPHAISTOS account.<br> The saved data cannot be viewed by
+                        anyone<br>
+                        other than the server administrator.<br>
+                        The saved data cannot be viewed by anyone other than the server administrator.<br>
+                        However, some data can be shared among various users.<br>
+                        below the data<br>
+                    </p>
+                    <ol>
+                        <li>USER's account in the same group.</li>
+                        <li>Equipment information.</li>
+                        <li>Equipment repairing information</li>
+                    </ol>
+
+                    <p>
+                        MECHPHAISTOS stores data in local storage to provide quick offline access to the data.<br>
+                        MECHPHAISTOS does not encrypt locally stored data to provide quick search functionality.<br>
+                    </p>
+
+                </div>
+            </div>
+        </div>
+
+
+
+        <div
+            class="flex md:align-items-center md:justify-content-between flex-column md:flex-row pb-4 border-bottom-1 surface-border">
+            <div class="mb-3 lg:mb-0">
+                <div class="title">MECHPHAISTOS collects data about how you use the
+                    MECHPHAISTOS service.
+                </div><br>
+                <div class="text-content">
+                    <p>
+                        Network request data, such as date and time, IP address, and URL<br>
+                        Number of notes, notebooks, tags, files and their total data size<br>
+                    </p>
+                    <ol>
+                        <li>MECHPHAISTOS uses this data for the following purposes</li>
+                        <li>To keep our services running quickly and reliably</li>
+                        <li>To debug and develop our apps and websites</li>
+                        <li>To protect MECHPHAISTOS from abuse and technical attacks</li>
+                        <li>To create statistics about plugin usage and popularity</li>
+                        <li>To improve search results on our website (for SEO)</li>
+                        <li>To improve the usability of the MECHPHAISTOS</li>
+                    </ol>
+                    <p>
+                        MECHPHAISTOS typically deletes log entries containing identifiable information within a few
+                        weeks,
+                        but may retain logs longer if necessary in specific cases, such as investigating a particular
+                        incident.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div
+            class="flex md:align-items-center md:justify-content-between flex-column md:flex-row pb-4 border-bottom-1 surface-border">
+            <div class="mb-3 lg:mb-0">
+                <div class="title">MECHPHAISTOS collects data about how you use our
+                    website.
+                </div><br>
+                <div class="text-content">
+                    <p>
+                        When USERS visit the MECHPHAISTOS website, MECHPHAISTOS uses cookies, server logs, and other
+                        methods
+                        to collect data about the pages you visit.
+                        MECHPHAISTOS also collects technical information about the software and computers you use,
+                        including:
+                    </p>
+                    <ul>
+                        <li>IP addresses of users and companies</li>
+                        <li>Web browser software you use</li>
+                        <li>Equipment information user input</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+
+        <div
+            class="flex md:align-items-center md:justify-content-between flex-column md:flex-row pb-4 border-bottom-1 surface-border">
+            <div class="mb-3 lg:mb-0">
+                <div class="title">MECHPHAISTOS uses data about how the website is used for
+                    the following purposes.
+                </div><br>
+                <div class="text-content">
+                    <p>How to use MECHPHAISTOS's data.</p>
+                    <ul>
+                        <li>To optimize our website to make it quick and easy to use</li>
+                        <li>For diagnosing and debugging technical errors</li>
+                        <li>To protect our website from abuse and technical attacks</li>
+                        <li>To create statistics on package popularity</li>
+                        <li>To generate statistics about the types of software and computers used by our visitors</li>
+                        <li>To collect statistics about visitor searches and needs to guide the development of new
+                            website pages<br>
+                            and features</li>
+                        <li>To Determine who to contact for product announcements, service changes, and new features
+                        </li>
+                        <li>To disclose equipment demand information and share demand information</li>
+                    </ul>
+
+                    <p>
+                        Please note that MECHPHAISTOS does not disclose personal names of users, company names, or
+                        equipment<br>
+                        names that characterize specific equipment.
+                    </p>
+
+                    <p>
+                        MECHPHAISTOS may retain log entries of all types of visitors for longer periods as necessary
+                        in<br>
+                        specific cases, such as investigating specific incidents.<br>
+                        MECHPHAISTOS stores aggregated statistics indefinitely, but those statistics do not include<br>
+                        personally identifiable data.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+
+        <div
+            class="flex md:align-items-center md:justify-content-between flex-column md:flex-row pb-4 border-bottom-1 surface-border">
+            <div class="mb-3 lg:mb-0">
+                <div class="title">MECHPHAISTOS collects account data.
+                </div><br>
+                <div class="text-content">
+                    <p>
+                        Basically, MECHPHAISTOS services require a MECHPHAISTOS account.<br>
+                        A valid email address is required to create a MECHPHAISTOS account.<br>
+                        MECHPHAISTOS uses this data to provide you with access to functionality and to identify you
+                        publicly<br>
+                        and within MECHPHAISTOS services. You do not need to specify your personal or business name to
+                        create<br>
+                        a MECHPHAISTOS account. You can also use a pseudonym instead. You can also open multiple
+                        accounts.
+                    </p>
+
+                    <ul>
+                        <li>To check whether the email address for registration is correct.</li>
+                        <li>Reminds you that your free trial will expire in 3 days.</li>
+                        <li>Notify me when my free trial has expired.</li>
+                        <li>Notify me of a failed payment.</li>
+                        <li>We will notify you that your account has been disabled due to a failed payment.</li>
+                        <li>If you become a paid user, we will invite you to a lounge that is only accessible to paid
+                            users.</li>
+                        <li>You will receive a 3-day notice for annual subscription renewals.</li>
+                        <li>To contact you about special circumstances related to your account.</li>
+                        <li>Contact us about a support request.</li>
+                        <li>Contact us about legal claims such as DMCA takedown requests and privacy violations.</li>
+                        <li>To contact you regarding support requests.</li>
+                        <li>To contact you regarding legal claims, such as DMCA takedown requests and privacy
+                            violations.</li>
+                        <li>To announce new MECHPHAISTOS products, service changes, and features.</li>
+                    </ul>
+                    <p>
+                        MECHPHAISTOS stores your account data as long as your account is open.<br>
+                        If your account data is also included in your plugin data, MECHPHAISTOS will also save that data
+                        for as long as you save the plugin.
+                    </p>
+
+                </div>
+            </div>
+        </div>
+
+
+
+        <div
+            class="flex md:align-items-center md:justify-content-between flex-column md:flex-row pb-4 border-bottom-1 surface-border">
+            <div class="mb-3 lg:mb-0">
+                <div class="title">MECHPHAISTOS collects payment card data.
+                </div><br>
+                <div class="text-content">
+                    <p>
+                        To continue using the MECHPHAISTOS service after your free trial expires, MECHPHAISTOS
+                        requires<br>
+                        payment card data. MECHPHAISTOS itself does not collect or store sufficient information to
+                        charge<br>
+                        the card itself. Rather, Stripe collects that data on behalf of MECHPHAISTOS and provides<br>
+                        MECHPHAISTOS security tokens that enable MECHPHAISTOS to create fees and subscriptions. Stripe
+                        meets<br>
+                        the highest level of PCI compliance (Level 1). Please see our Security page for more
+                        information.<br>
+                        MECHPHAISTOS uses payment card data only to bill you for MECHPHAISTOS services.<br>
+                        MECHPHAISTOS instructs Stripe to store your payment card data for as long as you use the
+                        paid<br>
+                        MECHPHAISTOS service.<br>
+                        MECHPHAISTOS collects billing addresses.<br>
+                        In Japan, MECHPHAISTOS services are subject to consumption tax. However, those residing outside
+                        Japan<br>
+                        are exempt from consumption tax.<br>
+                        MECHPHAISTOS collects your billing address to confirm whether you reside in Japan. This is
+                        required<br>
+                        by the Japanese National Tax Agency.<br>
+                        MECHPHAISTOS securely stores this information using Stripe.<br>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+
+        <div
+            class="flex md:align-items-center md:justify-content-between flex-column md:flex-row pb-4 border-bottom-1 surface-border">
+            <div class="mb-3 lg:mb-0">
+                <div class="title">MECHPHAISTOS collects data regarding communications.
+                </div><br>
+                <div class="text-content">
+                    <p>
+                        MECHPHAISTOS collects data about you when you submit MECHPHAISTOS support requests, legal<br>
+                        complaints, privacy inquiries, and business inquiries. This data typically includes your name
+                        and<br>
+                        email address, but may also include your company and other affiliations.<br>
+                    </p>
+
+                    <p>
+                        MECHPHAISTOS uses USER's contact data for the following purposes:
+                    </p>
+                    <ul>
+                        <li>To respond to you.</li>
+                        <li>To create aggregate statistics about responses.</li>
+                        <li>To Protect MECHPHAISTOS from legal claims.</li>
+                        <li>MECHPHAISTOS will store communications for as long as they serve these purposes.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+
+        <div
+            class="flex md:align-items-center md:justify-content-between flex-column md:flex-row pb-4 border-bottom-1 surface-border">
+            <div class="mb-3 lg:mb-0">
+                <div class="title">Where does MECHPHAISTOS store data about me?
+                </div><br>
+                <div class="text-content">
+                    <p>
+                        MECHPHAISTOS stores account data, notes data, website usage data, and plug-ins on servers in
+                        the<br>
+                        United States.<br>
+                        I sometimes import those data to my Japanese computer.<br>
+                        I use the data to develop, debug, and maintain my services.<br>
+                        Data is erased from your computer when it is no longer needed.<br>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+
+        <div
+            class="flex md:align-items-center md:justify-content-between flex-column md:flex-row pb-4 border-bottom-1 surface-border">
+            <div class="mb-3 lg:mb-0">
+                <div class="title">Is MECHPHAISTOS compliant with the EU General Data
+                    Protection Regulation?
+                </div><br>
+                <div class="text-content">
+                    <p>
+                        MECHPHAISTOS respects your right to privacy under Regulation (EU) 2016/679, the European
+                        Union's<br>
+                        General Data Protection Regulation (GDPR).<br>
+                        The information that MECHPHAISTOS is required to provide under the GDPR is provided throughout
+                        our privacy questions and answers.<br>
+                        As well as information regarding specific rights, such as access, rectification, erasure, data
+                        portability, and objecting to<br>
+                        automated decision-making.<br>
+                        GDPR does not apply to everyone worldwide.<br>
+                        However, MECHPHAISTOS's policy is to do our best to provide the same privacy information,
+                        controls, and protections to all users,<br>
+                        regardless of whether GDPR applies or not.<br>
+                    </p>
+
+                </div>
+            </div>
+        </div>
+
+
+        <div
+            class="flex md:align-items-center md:justify-content-between flex-column md:flex-row pb-4 border-bottom-1 surface-border">
+            <div class="mb-3 lg:mb-0">
+                <div class="title">How can I access data about me?
+                </div><br>
+                <div class="text-content">
+                    You can access your account data at any time by visiting your MECHPHAISTOS's account page.
+                </div>
+            </div>
+        </div>
+
+
+
+        <div
+            class="flex md:align-items-center md:justify-content-between flex-column md:flex-row pb-4 border-bottom-1 surface-border">
+            <div class="mb-3 lg:mb-0">
+                <div class="title">How can I change or erase data about me?
+                </div>
+                <div class="text-content">
+                    <p>
+                        MECHPHAISTOS shares equipment maintenance information and risk assessment data such as near
+                        misses<br>
+                        with other users.<br>
+                        However, we do not disclose or share any specific information that could identify<br>
+                        your company.<br>
+                        MECHPHAISTOS does not sell information that identifies you to others.<br>
+                        However, information about demand and trends for parts will be provided to external companies
+                        for<br>
+                        commercial purposes while maintaining anonymity.<br>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+
+        <div
+            class="flex md:align-items-center md:justify-content-between flex-column md:flex-row pb-4 border-bottom-1 surface-border">
+            <div class="mb-3 lg:mb-0">
+                <div class="title">Does MECHPHAISTOS share data about me with others?
+                </div><br>
+                <div class="text-content">
+                    <p>
+                        MECHPHAISTOS shares equipment maintenance information and risk assessment data such as near
+                        misses<br>
+                        with other users.<br>
+                        However, we do not disclose or share any specific information that could identify<br>
+                        your company.<br>
+                        MECHPHAISTOS does not sell information that identifies you to others.<br>
+                        However, information about demand and trends for parts will be provided to external companies
+                        for<br>
+                        commercial purposes while maintaining anonymity.<br>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+
+        <div
+            class="flex md:align-items-center md:justify-content-between flex-column md:flex-row pb-4 border-bottom-1 surface-border">
+            <div class="mb-3 lg:mb-0">
+                <div class="title">MECHPHAISTOS uses services provided by other companies
+                    to provide
+                </div><br>
+                <div class="text-content">
+                    <p>
+                        Some of these services may independently collect data about you for their own purposes.<br>
+                        Some of these services may be used to collect information about your online activities
+                        across<br>
+                        various websites, and we provide details about those websites below.<br>
+                    </p>
+
+                    <p>MECHPHAISTOS uses a cloud computing platform:</p>
+                    <ul>
+                        <li>MECHPHAISTOS uses Amazon Web Services servers and services in service regions around the
+                            world to power the MECHPHAISTOS service. You can read the AWS Privacy Policy online.</li>
+                        <li>MECHPHAISTOS uses Heroku servers and services in the United States service region to power
+                            the MECHPHAISTOS service. You can read Heroku's privacy policy online.</li>
+                        <li>MECHPHAISTOS uses Stripe.</li>
+                        <li>MECHPHAISTOS uses Stripe to collect and use card payment data and billing information.
+                            Stripe's privacy policy is available online.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+
+        <div
+            class="flex md:align-items-center md:justify-content-between flex-column md:flex-row pb-4 border-bottom-1 surface-border">
+            <div class="mb-3 lg:mb-0">
+                <div class="title">Who do I contact about MECHPHAISTOS and my privacy?
+                </div>
+                <div class="text-content">
+                    <p>
+                        Questions or complaints can be directed to:<br><br>
+                        Name: Yoshitaka Noto<br>
+                        e-mail: Yoshitaka.noto@rond-tech.com<br>
+                        address: 472-1 La Terre room103<br>
+                        Toyama prefecture, Toyama city, Kurosaki 472-1<br>
+                        zip-code: 939-8214<br>
+                        country: Japan<br>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+
+        <div
+            class="flex md:align-items-center md:justify-content-between flex-column md:flex-row pb-4 border-bottom-1 surface-border">
+            <div class="mb-3 lg:mb-0">
+                <div class="title">How can I see the changes?
+                </div><br>
+                <div class="text-content">
+                    <p>
+                        MECHPHAISTOS announces the next version on the MECHPHAISTOS blog.<br>
+                        In the meantime, MECHPHAISTOS may update contact information or minor changes by updating the
+                        Privacy Policy page without announcement.<br>
+                        MECHPHAISTOS may change the way it announces changes in future privacy versions.<br>
+                        You can check the change history of the MECHPHAISTOS documentation Git repository.<br>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+
+        <div
+            class="flex md:align-items-center md:justify-content-between flex-column md:flex-row pb-4 border-bottom-1 surface-border">
+            <div class="mb-3 lg:mb-0">
+                <div class="title">About advertising
+                </div><br>
+                <div class="text-content">
+                    <p>
+                        This blog uses third-party advertising services (Google AdSense, A8.net) and uses cookies to
+                        display<br>
+                        advertisements for products and services that match the interests of users.<br>
+                        Cookies allow this site to identify your computer, but they do not allow us to identify you
+                        personally.<br>
+                        For more information on how to disable cookies and Google AdSense, please see "Advertising -
+                        Policies and Terms -<br>
+                        Google".<br>
+                        MECHPHAISTOS is also a participant in the Amazon Services LLC Associates Program, an
+                        affiliate<br>
+                        advertising program designed to provide a means for sites to earn advertising fees by
+                        advertising<br>
+                        and linking to Amazon.co.jp.<br>
+                    </p>
+
+                </div>
+            </div>
+        </div>
+
+
+        <div
+            class="flex md:align-items-center md:justify-content-between flex-column md:flex-row pb-4 border-bottom-1 surface-border">
+            <div class="mb-3 lg:mb-0">
+                <div class="title">About access analysis tools</div><br>
+                    <div class="text-content">
+                        This blog uses Google's access analysis tool "Google Analytics."This Google Analytics uses
+                        cookies to collect traffic data. Traffic data is collected anonymously and does not personally
+                        identify you.
+                    </div>
+                </div>
+            </div>
+
+
+
+    </div>
 
 </template>
-
-<style>
-
-</style>

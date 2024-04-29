@@ -7,6 +7,13 @@
 
 
 
+
+
+
+
+
+
+
 <style lang="css">
 .home-contents {
 	display: flex;
