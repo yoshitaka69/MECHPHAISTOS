@@ -8,7 +8,7 @@
 							Critical Equipment List. This data is sample.
 							<br>
 							<br>
-							<Critical_equipment_list />
+							<Input_critical_equipment />
 						</p>
 
 					</TabPanel>
@@ -67,7 +67,7 @@
 <script>
 
 
-import Critical_equipment_list from '@/components/Critical_equipment_list/Critical_equipment_list.vue'
+import Input_critical_equipment from '@/components/Input_form/Input_critical_equipment.vue'
 import Input_repairing_cost from '@/components/Input_form/Input_repairing_cost.vue'
 import Input_task_list from '@/components/Input_form/Input_task_list.vue'
 import Input_spare_parts from '@/components/Input_form/Input_spare_parts.vue'
@@ -77,7 +77,7 @@ import Input_NearMiss from '@/components/Input_form/Input_NearMiss.vue'
 
 export default {
 	components: {
-		Critical_equipment_list,
+		Input_critical_equipment,
 		Input_repairing_cost,
 		Input_task_list,
 		Input_spare_parts,

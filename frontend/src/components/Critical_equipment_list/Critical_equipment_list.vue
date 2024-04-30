@@ -264,7 +264,6 @@ const CriticalEquipmentComponent = defineComponent({
                         type: 'date',
                         dateFormat: 'YYYY-MM-DD',
                         correctFormat: false,
-
                     },
                     {//Impact for production
                         data: "impactForProduction",

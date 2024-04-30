@@ -1,5 +1,5 @@
 <template>
-    <div id="CeList">
+    <div id="Input_CeList">
         <hot-table ref="hotTableComponent" :settings="hotSettings"></hot-table><br />
         <button v-on:click="updateData" class="controls">Update Data</button>
     </div>
@@ -19,16 +19,15 @@ import { useUserStore } from '@/stores/userStore'; // Piniaストアをインポ
 registerAllModules();
 
 
-
 const CriticalEquipmentComponent = defineComponent({
     data() {
         return {
             hotSettings: {
                 data: [
-                    ['', 'PlantA', 'モーターA', 'N401/A plant__', '4', '10', '6', '10', '4', '今年', '2022-10-02', '3', '2019-11-01', '0', '', 'High+', '', '対策済', 'A plant/変換器室 変換器盤1-3パワーサプライ交換', '10000', '3', '2025', '', 'Standard', '', '', '', '', '',],//1
-                    ['', 'PlantA', 'モーターA', 'N401/A plant__/OX2_', '3', '10', '6', '10', '4', '', '', '4', '2018-08-10', '', '', 'High', '対策検討', '', '', '750000', '3', '', '遅延', '', '', '', '', '', '',],//2
-                    ['', 'PlantB', 'Attach系機械設備', 'N401/A plant__/OX2_/A', '3', '10', '6', '10', '今年', '2', '2022-05-20', '0', '', '', '', '', '注意', '', 'A plant/Di槽撹拌機交換（A）', '5000', '', '', '', '', '', '', '', '', '',],//3
-                    ['', 'PlantC', '回収温水熱交', 'N401/A plant__/OX2_/A/5E-09', '3', '10', '60', '10', '4', '', '', '', '', '', '', 'Low', '見直検討', '', '', '', '', '', '', '', '', '', '', '', '',],//4
+                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//1
+                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//2
+                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//3
+                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//4
                     ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//5
                     ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//6
                     ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//7
@@ -44,70 +43,71 @@ const CriticalEquipmentComponent = defineComponent({
                     ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//18
                     ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//19
                     ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//20
+                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//21
+                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//22
+                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//23
+                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//24
+                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//25
+                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//26
+                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//27
+                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//28
+                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//29
+                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//30
+                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//31
+                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//32
+                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//33
+                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//34
+                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//35
+                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//36
+                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//37
+                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//38
+                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//39
+                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//40
                 ],
                 nestedHeaders: [
-                    ["", "", "", "", { label: "Impact", colspan: 5 }, { label: "Probability of failure", colspan: 6 }, { label: "Critical equipment Level", colspan: 3 }, "", "", "", "", "", { label: "Spare parts", colspan: 2 }, { label: "Status of measures", colspan: 4 }, { label: "Order", colspan: 2 },],
-                    ["CeListNo", "Plant", "Equipment", "Machine", "Level set <br>value", "Construction <br>period", "Parts <br>delivery date", "MTTR", "Possibility of <br>production Lv", "Count <br>of PM02", "Latest <br>PM02", "Count <br>of PM03", "Latest <br>PM03", "Count <br>of PM04", "Latest <br>PM04", "Impact for <br>production", "Probability <br>of failure", "Assessment", "Typical Task", "Labor <br>Cost(PM02)", "Period", "Next <br>event year", "situation", "BomCode", "Stock", "RCA or <br>Replace(hard)", "Spear parts or <br>Alternative(soft)", "Covered <br>from task", "Two <br>ways",],
+                    ["", "", "", { label: "Impact", colspan: 3 }, { label: "Probability of failure", colspan: 6 }, { label: "Critical equipment Level", colspan: 3 },{ label: "Status of measures", colspan: 4 }, ],
+                    ["Plant", "Equipment", "Machine", "Level set <br>value", "Construction <br>period", "Parts <br>delivery date", "Count <br>of PM02", "Latest <br>PM02", "Count <br>of PM03", "Latest <br>PM03", "Count <br>of PM04", "Latest <br>PM04", "Impact for <br>production", "Probability <br>of failure", "Assessment",  "RCA or <br>Replace(hard)", "Spear parts or <br>Alternative(soft)", "Covered <br>from task", "Two <br>ways",],
                 ],
 
                 columns: [
-                    {//CeListNo　backend側で連番処理させる。
-                        data: "ceListNo",
-                        type: "text",
-                        readOnly: true,
-
-                    },
-                    {//Plant
+                    {//Plant 1番
                         data: "plant",
                         type: "text",
 
                     },
-                    {//Equipment
+                    {//Equipment　2番
                         data: "equipment",
                         type: "text",
 
                     },
-                    {//Machine
+                    {//Machine　3番
                         data: "machineName",
                         type: "text",
 
                     },
-                    {//Level set value
+                    {//Level set value　4番
                         data: "levelSetValue",
                         type: 'numeric',
 
                     },
-                    {//Construction period
+                    {//Construction period　5番
                         data: "typicalConstPeriod",
                         type: 'numeric',
 
                     },
-                    {//Parts delivery date
+                    {//Parts delivery date　6番
                         data: "maxPartsDeliveryTimeInBom",
                         type: 'numeric',
 
                     },
-                    {//MTTR
-                        data: "mttr",
-                        type: 'numeric',
-                        renderer: customRendererForMttr,
-
-                    },
-                    {//Possibility of production Lv
-                        data: "probabilityOfFailure",
-                        type: 'numeric',
-                        className: 'htRight',
-                        readOnly: true,
-
-                    },
-                    {//Counts of PM02
+                    {//Counts of PM02　7番
                         data: "countOfPM02",
                         width: 100,
                         className: 'htRight',
                         type: 'numeric',
 
                     },
-                    {//Latest PM02
+                    {//Latest PM02　8番
                         data: "latestPM02",
                         width: 100,
                         className: 'htRight',
@@ -116,14 +116,14 @@ const CriticalEquipmentComponent = defineComponent({
                         correctFormat: false,
 
                     },
-                    {//Count of PM03
+                    {//Count of PM03　9番
                         data: "countOfPM03",
                         width: 100,
                         className: 'htRight',
                         type: 'numeric',
 
                     },
-                    {//Latest PM03
+                    {//Latest PM03　10番
                         data: "latestPM03",
                         width: 100,
                         className: 'htRight',
@@ -132,113 +132,65 @@ const CriticalEquipmentComponent = defineComponent({
                         correctFormat: false,
 
                     },
-                    {//Count of PM04
+                    {//Count of PM04　11番
                         data: "countOfPM04",
                         width: 100,
                         className: 'htRight',
                         type: 'numeric',
 
                     },
-                    {//Latest PM04
+                    {//Latest PM04　12番
                         data: "latestPM04",
                         width: 100,
                         className: 'htRight',
                         type: 'date',
                         dateFormat: 'YYYY-MM-DD',
                         correctFormat: false,
-
                     },
-                    {//Impact for production
+                    {//Impact for production　13番
                         data: "impactForProduction",
-                        renderer: customRenderer,
                         width: 100,
                         className: 'htCenter',
                         readOnly: true,
+                       
 
                     },
-                    {//Probability of failure
+                    {//Probability of failure　14番
                         data: "probabilityOfFailure",
-                        renderer: customRendererForProbability,
                         width: 100,
                         className: 'htCenter',
                         readOnly: true,
 
                     },
-                    {//Assessment
+                    {//Assessment　15番
                         data: "assessment",
-                        renderer: customRendererForAssessment,
                         readOnly: true,
                         width: 100,
                         className: 'htCenter',
 
                     },
-                    {//Typical Task
-                        data: "typicalTaskName",
-                        type: "text",
-
-                    },
-                    {//Typical Task Cost
-                        data: "typicalTaskCost",
-                        type: 'numeric',
-
-                    },
-                    {//Period
-                        data: "typicalConstPeriod",
-                        type: 'numeric',
-
-                    },
-                    {//Next event year
-                        data: "typicalNextEventDate",
-                        className: 'htRight',
-                        type: 'date',
-                        dateFormat: 'YYYY-MM-DD',
-                        correctFormat: false,
-                        readOnly: true,
-
-                    },
-                    {//situation
-                        data: "typicalSituation",
-                        className: 'htCenter',
-                        renderer: customRendererForSituation,
-                        readOnly: true,
-
-                    },
-                    {//BomCode
-                        data: "bomCode",
-                        className: 'htRight',
-                        type: 'dropdown',
-                        source: ['Standard', 'Inventory', 'consumables']
-
-                    },
-                    {//Stock
-                        data: "bomStock",
-                        type: 'dropdown',
-                        source: ['有', '無'],
-                        className: 'htCenter',
-
-                    },
-                    {//RCA or Replace(hard)
+                    {//RCA or Replace(hard)　16番
                         data: "rcaOrReplace",
                         width: 100,
                         className: 'htCenter',
                         type: 'checkbox'
 
                     },
-                    {//Spear parts or Alternative(soft)
+                    {//Spear parts or Alternative(soft)　17番
                         data: "sparePartsOrAlternative",
                         width: 100,
                         className: 'htCenter',
                         type: 'checkbox'
 
                     },
-                    {//Covered from task
+                    {//Covered from task　18番
                         data: "coveredFromTask",
                         width: 100,
                         className: 'htCenter',
                         type: 'checkbox'
 
                     },
-                    {//Two ways
+                    {//Two ways　19番
                         data: "twoways",
                         width: 100,
                         className: 'htCenter',
@@ -246,7 +198,7 @@ const CriticalEquipmentComponent = defineComponent({
 
                     },
                 ],
-                
+
                 afterGetColHeader: (col, TH) => {
                     if (col === -1) {  // ヘッダー行の場合
                         return;
@@ -255,6 +207,18 @@ const CriticalEquipmentComponent = defineComponent({
                     TH.style.backgroundColor = '#FFCC99'; // 薄いオレンジ色
                     TH.style.color = 'black';
                     TH.style.fontWeight = 'bold';  // テキストを太字に設定
+                },
+                
+                cells: function(row, col, prop) {
+                    var cellProperties = {};
+                    var myData = this.instance.getDataAtCol(col);
+                    if (this.instance.getSettings().columns[col].readOnly) {
+                        cellProperties.renderer = function(instance, td, row, col, prop, value, cellProperties) {
+                            Handsontable.renderers.TextRenderer.apply(this, arguments);
+                            td.style.background = '#f0f0f0'; // Light gray color
+                        };
+                    }
+                    return cellProperties;
                 },
 
                 width: '100%',
@@ -280,77 +244,24 @@ const CriticalEquipmentComponent = defineComponent({
         };
     },
 
-    created() {
-        this.getDataAxios();
-    },
-
 
     methods: {
 
+        updateData(data) {
+            const userStore = useUserStore();
+            const userCompanyCode = userStore.companyCode;
+            const url = `http://127.0.0.1:8000/api/junctionTable/masterDataTableByCompany/?format=json&companyCode=${userCompanyCode}`;
+            const payload = { companyCode: userCompanyCode, masterDataTable: data };
 
-  initHandsontable() {
-    const container = this.$el;
-    this.hot = new Handsontable(container, {
-      // Handsontableの設定（列定義、データソース等）
-      afterChange: (changes, source) => {
-        if (source !== 'loadData') {
-          const data = this.hot.getData();
-          this.updateData(data);
-        }
-      }
-    }); // このカッコが閉じる位置を修正しました
-  },
-
-                                  
-        
-        getDataAxios() {
-    const userStore = useUserStore();
-    const userCompanyCode = userStore.companyCode;
-
-    if (!userCompanyCode) {
-        console.error("Error: No company code found for the user.");
-        return;
-    }
-
-    const url = `http://127.0.0.1:8000/api/junctionTable/masterDataTableByCompany/?format=json&companyCode=${userCompanyCode}`;
-
-    axios.get(url, {
-        headers: {
-            "Content-Type": "application/json"
+            axios.post(url, payload)
+                .then(response => console.log('Data successfully updated:', response))
+                .catch(error => console.error('Error updating data:', error));
         },
-        withCredentials: true
-    })
-    .then(response => {
-        const masterDataTable = response.data.flatMap(companyData => companyData.MasterDataTable);
-        console.log("Fetched masterDataTable:", masterDataTable);
 
-        // 空行を追加
-        const blankRows = Array.from({ length: 10 }, () => ({}));
-        const newData = masterDataTable.concat(blankRows);
-
-        // Handsontableにデータをロード
-        this.$refs.hotTableComponent.hotInstance.loadData(newData);
-    })
-    .catch(error => {
-        console.error("Error fetching data:", error);
-    });
-},
-
-    updateData(data) {
-      const userStore = useUserStore();
-      const userCompanyCode = userStore.companyCode;
-      const url = `http://127.0.0.1:8000/api/junctionTable/masterDataTableByCompany/?format=json&companyCode=${userCompanyCode}`;
-      const payload = { companyCode: userCompanyCode, masterDataTable: data };
-
-      axios.post(url, payload)
-        .then(response => console.log('Data successfully updated:', response))
-        .catch(error => console.error('Error updating data:', error));
-    },
-
-    sendData() {
-      const data = this.$refs.hotTableComponent.hotInstance.getSourceData();
-      this.updateData(data);
-    }
+        sendData() {
+            const data = this.$refs.hotTableComponent.hotInstance.getSourceData();
+            this.updateData(data);
+        }
 
     },
 
@@ -363,8 +274,3 @@ const CriticalEquipmentComponent = defineComponent({
 
 export default CriticalEquipmentComponent;
 </script>
-
-
-<style scoped>
-</style>
-

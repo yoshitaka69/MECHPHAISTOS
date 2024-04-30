@@ -1,28 +1,6 @@
 <template>
-    <!--AdminLTE copy-->
-
-    <div class="base-content"> <!--AdminLTEのcssがわからなかったから適当に作った-->
-        <section class="content-header">
-            <div class="container-fluid">
-                <div class="row mb-2">
-                    <div class="col-sm-6">
-                        <h1>What's MECHPHAISTOS</h1>
-                    </div>
-                    <div class="col-sm-6">
-                        <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a href="#">Home</a></li>
-                            <li class="breadcrumb-item active">MECHPHAISTOS</li>
-                        </ol>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-
         <section class="content">
             <div class="card card-solid">
-                <!--Tabはsakai-vue-template-->
-
                 <TabView>
                     <TabPanel header="What's MECHPHAISTOS">
                         <p class="line-height-3 m-0">
@@ -55,7 +33,7 @@
                     </TabPanel>
                     <TabPanel header="About us">
                         <p class="line-height-3 m-0">
-                        <h1>Hello,I'm Yoshitaka Noto. <p>I developed MECHPHAISTOS.</p>
+                        <h1>Hello,I'm Yoshitaka Noto.<br> I developed MECHPHAISTOS.
                         </h1>
                         <br>
                         <figure class="self-intro">
@@ -74,13 +52,14 @@
                             maintenance like me.
                             <br>
                             <br>
-                            <br>Thank you, Y.noto
+                            <p class="right-align">Thank you, Y.noto</p>
                         </p>
                         </p>
                     </TabPanel>
                     <TabPanel header="For Who ?">
                         <p class="line-height-3 m-0">
                         <h1>MECHPHAISTOS for all maintenance worker.</h1>
+                        <br>
                         <figure class="for-who-photo">
                             <img src="@/assets/for_who.jpg" class="for-who-photo">
                         </figure>
@@ -120,8 +99,7 @@
                         <p class="line-height-3 m-0">
                         <h1>Risk-Matrix and SNS collaborate</h1>
                         <p class="features-text">
-
-                            <br>MECHPHAISTOS don't need install some inspection censor such as ammeter, pressure
+                            MECHPHAISTOS don't need install some inspection censor such as ammeter, pressure
                             gage, flowmeter, thermocouple...etc.
                             <br>Of course, the digital signals from them are essential for understanding the
                             condition of the equipment.
@@ -166,7 +144,7 @@
                             can more powerfully support everyone.
                             <br>In the near future, many factories will promote digitalization.
                         </p>
-
+                        <br>
                         <figure class="AI_image">
                             <img src="@/assets/AI_image.jpg" class="AI_image">
                         </figure>
@@ -200,5 +178,114 @@
                 </TabView>
             </div>
         </section>
-    </div>
 </template>
+
+
+
+<style>
+
+/* h1 タグをより太字に設定 */
+h1 {
+  font-weight: bold; /* 太字にする場合、'bold' をより高い数値に設定可能 (例: 700, 800, 900) */
+}
+
+/* p タグの全ての行に左側の余白（インデント）を追加 */
+p, .text, .des-text {
+  padding-left: 20px; /* 左側に20ピクセルの余白を追加 */
+  font-size: 16px; /* 文字サイズを16ピクセルに設定 */
+}
+
+/* figure タグを使って画像を中央に配置 */
+figure.desc-ternary {
+  text-align: center; /* コンテンツを中央揃え */
+  margin: 0 auto; /* 上下のマージンを0にし、左右は自動で中央揃え */
+}
+
+
+
+
+
+/* 画像を中央に配置するためのスタイル */
+figure.self-intro {
+  text-align: center; /* 画像を中央に配置 */
+}
+
+/* 画像のサイズを調整可能にするスタイル */
+img.self-photo {
+  width: 50%; /* 画像の幅をコンテナの50%に設定 */
+  height: auto; /* 高さは自動で調整（縦横比を保持） */
+}
+
+/* 右寄せ用のクラスを定義 */
+.right-align {
+  text-align: right; /* テキストを右に寄せる */
+}
+
+
+
+
+/* 画像を中央に配置するためのスタイル */
+figure.for-who-photo {
+  display: block; /* ブロックレベル要素として設定 */
+  margin: 0 auto; /* 上下のマージンを0にし、左右は自動で中央揃え */
+  text-align: center; /* コンテンツを中央に配置 */
+}
+
+/* 画像のサイズを調整可能にするスタイル */
+img.for-who-photo {
+  width: 60%; /* 画像の幅をコンテナの60%に設定 */
+  height: auto; /* 高さは自動で調整（縦横比を保持） */
+}
+
+
+
+
+
+/* 画像を中央に配置するためのスタイル */
+figure.maintenance-worker {
+  display: block; /* ブロックレベル要素として設定 */
+  margin: 0 auto; /* 上下のマージンを0にし、左右は自動で中央揃え */
+  text-align: center; /* コンテンツを中央に配置 */
+}
+
+/* 画像のサイズを調整可能にするスタイル */
+img.maintenance-worker {
+  width: 50%; /* 画像の幅をコンテナの50%に設定 */
+  height: auto; /* 高さは自動で調整（縦横比を保持） */
+}
+
+
+
+
+/* 画像を中央に配置するためのスタイル */
+figure.Risk-matrix {
+  display: block; /* ブロックレベル要素として設定 */
+  margin: 0 auto; /* 上下のマージンを0にし、左右は自動で中央揃え */
+  text-align: center; /* コンテンツを中央に配置 */
+}
+
+/* 画像のサイズを調整可能にするスタイル */
+img.Risk-matrix {
+  width: 30%; /* 画像の幅をコンテナの50%に設定 */
+  height: auto; /* 高さは自動で調整（縦横比を保持） */
+}
+
+
+
+/* 画像を中央に配置するためのスタイル */
+figure.AI_image {
+  display: block; /* ブロックレベル要素として設定 */
+  margin: 0 auto; /* 上下のマージンを0にし、左右は自動で中央揃え */
+  text-align: center; /* コンテンツを中央に配置 */
+}
+
+/* 画像のサイズを調整可能にするスタイル */
+img.AI_image {
+  width: 60%; /* 画像の幅をコンテナの60%に設定 */
+  height: auto; /* 高さは自動で調整（縦横比を保持） */
+}
+
+
+
+
+</style>
