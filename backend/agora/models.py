@@ -4,7 +4,7 @@ from datetime import timedelta
 import decimal
 
 from accounts.models import CompanyCode,CompanyName,Plant,AreaCode
-from spareParts.models import BomList
+from spareParts.models import SpareParts
 
 
 
@@ -13,12 +13,12 @@ class AlertSchedule(models.Model):
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='alertSchedule_companyCode',null=True, blank=True)
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='alertSchedule_companyName', null=True, blank=True)
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='alertSchedule_plant',null=True, blank=True)
-    partsName = models.ForeignKey(BomList, on_delete=models.CASCADE, related_name='alertSchedule_partsName',null=True, blank=True)
+    partsName = models.ForeignKey(SpareParts, on_delete=models.CASCADE, related_name='alertSchedule_partsName',null=True, blank=True)
     eventDate = models.DateField(verbose_name='eventDate', blank=True, null=True, default=timezone.now)
     deliveryTime = models.IntegerField(verbose_name='deliveryTime',null=True,blank=True,default=0)
     orderAlertDate = models.DateField(verbose_name='orderAlertDate',blank=True,null=True)
     safetyRate = models.CharField(verbose_name='safetyRate',blank=True,null=True,max_length=100)
-    location = models.ForeignKey(AreaCode,on_delete=models.CASCADE, related_name='alertSchedule_areaCode',null=True, blank=True)
+    country = models.ForeignKey(AreaCode,on_delete=models.CASCADE, related_name='alertSchedule_areaCode',null=True, blank=True)
 
     class Meta:
         verbose_name = 'AlertSchedule'

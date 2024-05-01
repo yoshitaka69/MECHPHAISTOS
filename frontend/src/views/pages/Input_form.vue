@@ -16,6 +16,7 @@
 						<p class="line-height-3 m-0">
 							Critical Equipment List. This data is sample.
 							<br>
+							<Upload_repairing_cost />
 							<br>
 							<Input_repairing_cost />
 						</p>
@@ -73,12 +74,14 @@ import Input_task_list from '@/components/Input_form/Input_task_list.vue'
 import Input_spare_parts from '@/components/Input_form/Input_spare_parts.vue'
 import Input_Energy from '@/components/Input_form/Input_Energy.vue'
 import Input_NearMiss from '@/components/Input_form/Input_NearMiss.vue'
+import Upload_repairing_cost from '@/components/Input_form/Upload_repairing_cost.vue'
 
 
 export default {
 	components: {
 		Input_critical_equipment,
 		Input_repairing_cost,
+		Upload_repairing_cost,
 		Input_task_list,
 		Input_spare_parts,
 		Input_Energy,

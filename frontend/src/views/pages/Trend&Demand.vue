@@ -28,9 +28,6 @@
 							<div class="flex-child col-12 lg:col-6 xl:col-8">
 								<Trend_map />
 							</div>
-							<div class="flex-child col-12 lg:col-6 xl:col-4">
-								<Order_alert />
-							</div>
 						</div>
 					</TabPanel>
 				</TabView>
@@ -44,12 +41,10 @@
 <script>
 
 import Trend_map from '@/components/Trend_map/Trend_map.vue'
-import Order_alert from '@/components/Trend_map/Order_alert.vue'
 
 export default {
 	components: {
 		Trend_map,
-		Order_alert,
 	},
 }
 
