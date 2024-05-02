@@ -10,7 +10,7 @@
             </v-col>
           </v-row>
           <v-row>
-            <v-col>
+  <v-col>
               <p>Source: Pew Research Center & Storytelling with data</p>
             </v-col>
           </v-row>

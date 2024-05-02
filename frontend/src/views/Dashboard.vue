@@ -8,7 +8,11 @@
         </div>
 
         <div class="col-12 lg:col-6 xl:col-3">
+            <div class="card mb-0">
+      <div class="flex justify-content-between mb-3" style="height: 150px">
             <Cards_Danger_area />
+      </div>
+    </div>
         </div>
 
         <div class="col-12 lg:col-6 xl:col-3">
