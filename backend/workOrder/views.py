@@ -14,8 +14,13 @@ class WorkOrderViewSet(viewsets.ModelViewSet):
 class CompanyCodeWorkOrderViewSet(viewsets.ModelViewSet):
     serializer_class = CompanyCodeWorkOrderSerializer
 
+#クエリパラメータでのフィルターリング
     def get_queryset(self):
-        return CompanyCode.objects.prefetch_related('workOrder_companyCode').all()
+        queryset = CompanyCode.objects.prefetch_related('workOrder_companyCode').all()
+        company_code = self.request.query_params.get('companyCode', None)
+        if company_code:
+            queryset = queryset.filter(companyCode=company_code)
+        return queryset
     
 
 
@@ -27,8 +32,13 @@ class WorkPermissionViewSet(viewsets.ModelViewSet):
 class CompanyCodeWorkPermissionViewSet(viewsets.ModelViewSet):
     serializer_class = CompanyCodeWorkPermissionSerializer
 
+#クエリパラメータでのフィルターリング
     def get_queryset(self):
-        return CompanyCode.objects.prefetch_related('workPermission_companyCode').all()
+        queryset = CompanyCode.objects.prefetch_related('workPermission_companyCode').all()
+        company_code = self.request.query_params.get('companyCode', None)
+        if company_code:
+            queryset = queryset.filter(companyCode=company_code)
+        return queryset
 
 
 
@@ -40,5 +50,10 @@ class WorkOrderManagementViewSet(viewsets.ModelViewSet):
 class CompanyCodeWorkOrderManagementViewSet(viewsets.ModelViewSet):
     serializer_class = CompanyCodeWorkOrderManagementSerializer
 
+#クエリパラメータでのフィルターリング
     def get_queryset(self):
-        return CompanyCode.objects.prefetch_related('workOrderManagement_companyCode').all()
+        queryset = CompanyCode.objects.prefetch_related('workOrderManagement_companyCode').all()
+        company_code = self.request.query_params.get('companyCode', None)
+        if company_code:
+            queryset = queryset.filter(companyCode=company_code)
+        return queryset
