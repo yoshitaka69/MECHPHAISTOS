@@ -76,27 +76,23 @@
                             </div>
                         </div>
 
-                        <div class="col-12 xl:col-12">
-                            <div class="card" style="background-color: #f2f2f2">
-                                <Safety_indicator_trend />
-                                <Message :closable="false"
-                                    >AI recommendation
-                                    <br />
-                                    Now developing
-                                </Message>
+                        <div class="col-12 lg:col-12 xl:col-12">
+                            <div class="card mb-0">
+                                <div class="Safety_indicator_trend">
+                                    <Safety_indicator_trend />
+                                </div>
+                                <div class="Safety_Measure_trend">
+                                    <Safety_Measure_trend />
+                                </div>
                             </div>
+                            <Message :closable="false"
+                                >AI recommendation
+                                <br />
+                                Now developing
+                            </Message>
                         </div>
-                        <div class="col-12 xl:col-12">
-                            <div class="card" style="background-color: #f2f2f2">
-                                <Safety_Measure_trend />
-                                <Message :closable="false"
-                                    >AI recommendation
-                                    <br />
-                                    Now developing
-                                </Message>
-                            </div>
-                        </div>
-                        <div class="card" style="background-color: #f2f2f2">
+
+                        <div class="card mb-0">
                             <Safety_correlation_diagram />
                             <Message :closable="false"
                                 >AI recommendation
@@ -156,4 +152,26 @@ export default {
     display: flex;
     flex-wrap: wrap;
 }
+
+
+.card.mb-0 {
+    display: flex; /* Flexboxを有効化 */
+    justify-content: space-between; /* 要素間に適切な間隔を設定 */
+    align-items: stretch; /* 子要素の高さを揃える */
+    width: 100%; /* 親要素の幅に合わせて100% */
+}
+
+.Safety_indicator_trend, .Safety_Measure_trend {
+    flex: 1; /* 利用可能なスペースを等しく分ける */
+    padding: 10px; /* コンテンツ周りの余白 */
+    min-width: 0; /* 縮小時の挙動を正常にする */
+}
+
+@media (max-width: 768px) {
+    .card.mb-0 {
+        flex-direction: column; /* 小さい画面では縦並びに切り替え */
+    }
+}
+
+
 </style>
