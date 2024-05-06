@@ -18,6 +18,7 @@ class AlertSchedule(models.Model):
     deliveryTime = models.IntegerField(verbose_name='deliveryTime',null=True,blank=True,default=0)
     orderAlertDate = models.DateField(verbose_name='orderAlertDate',blank=True,null=True)
     safetyRate = models.CharField(verbose_name='safetyRate',blank=True,null=True,max_length=100)
+    location = models.ForeignKey(SpareParts,on_delete=models.CASCADE, related_name='alertSchedule_location',null=True, blank=True)
     country = models.ForeignKey(AreaCode,on_delete=models.CASCADE, related_name='alertSchedule_areaCode',null=True, blank=True)
 
     class Meta:

@@ -224,22 +224,18 @@ export default {
                 // 初期化が完了したのでフラグを設定
                 this.plotInitialized = true;
 
-                // サイドバーの開閉状態が変更されたときに、グラフをリサイズする
-                watch(() => useLayout().isSidebarActive, (newVal) => {
-                    if (this.plotInitialized && newVal) {
-                        Plotly.Plots.resize('scd');
-                    }
-                });
-            })
-            .catch((error) => {
-                console.error('データの取得に失敗しました', error);
-            });
-    },
-
-    methods: {
-        drawGraph() {
-            Plotly.newPlot('scd', [this.plotData], this.plotLayout);
-        }
+// サイドバーの開閉状態が変更されたときに、グラフをリサイズする
+watch(() => useLayout().isSidebarActive, (newVal) => {
+  if (this.plotInitialized) {
+    if (newVal) {
+      Plotly.Plots.resize('scd');
     }
+  }
+});
+})
+.catch((error) => {
+console.error('データの取得に失敗しました', error);
+});
+}
 };
 </script>

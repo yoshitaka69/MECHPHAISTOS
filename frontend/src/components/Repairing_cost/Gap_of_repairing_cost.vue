@@ -1,6 +1,7 @@
 <template>
-  <div ref="plotDiv"></div> <!-- ref属性を追加 -->
+  <div style="width: 100%; height: 100%;" ref="plotDiv"></div> <!-- ref属性を使用し、全画面のスタイルを適用 -->
 </template>
+
 
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
@@ -14,6 +15,23 @@ onMounted(async () => {
   const userStore = useUserStore();
   const companyCode = userStore.companyCode;  // Pinia ストアから companyCode を取得
   const currentYear = new Date().getFullYear();  // 現在の西暦年を取得
+  const debounce = (func, delay) => {
+  let timerId;
+  return (...args) => {
+    if (timerId) {
+      clearTimeout(timerId);
+    }
+    timerId = setTimeout(() => {
+      func(...args);
+      timerId = null;
+    }, delay);
+  };
+};
+
+const debouncedDrawChart = debounce(() => {
+  Plotly.Plots.resize(plotDiv.value);
+}, 100); // 100ミリ秒のデバウンス時間
+
 
   // API からデータを取得
   try {
@@ -43,20 +61,25 @@ onMounted(async () => {
         title: 'Cost Gap Analysis',
         xaxis: {
           title: 'Year',
-          range: [2019, 2034],  // X軸の範囲を2019年から2034年に設定
+          range: [2019, 2034],
           tickmode: 'linear',
-          dtick: 1  // 1年ごとに目盛りを設定
+          dtick: 1
         },
         yaxis: {title: 'Cost'}
       };
       Plotly.newPlot(plotDiv.value, traceData, layout);
+      watchResize();
     }
   } catch (error) {
     console.error('API request failed:', error);
   }
 });
-</script>
 
-<style>
-/* スタイルは必要に応じて */
-</style>
+// Resize observer to handle chart resizing
+const watchResize = () => {
+  const resizeObserver = new ResizeObserver(() => {
+    Plotly.Plots.resize(plotDiv.value);
+  });
+  resizeObserver.observe(plotDiv.value);
+};
+</script>

@@ -28,16 +28,14 @@
 }
 
 .large-bold-text {
-  font-size: 2rem;
-  /* 更に大きいフォントサイズに調整 */
-  font-weight: bold;
-  /* 太字 */
+    font-size: 1.5rem; /* 更に大きいフォントサイズに調整 */
+    font-weight: bold; /* 太字 */
 }
 
 .block.text-500.font-medium.mb-3 {
   font-weight: bold;
   /* 太字に設定 */
-  font-size: 1.5em;
+  font-size: 1.3em;
   /* 現在のフォントサイズの2倍 */
   color: black;
   /* 文字色を黒に設定 */
@@ -68,15 +66,35 @@
   </div>
 </template>
 
-
-
-
 <script>
 import axios from 'axios';
 import { ref, onMounted } from 'vue';
 import { useUserStore } from '@/stores/userStore';
 
 export default {
+  mounted() {
+    this.updateFontSize();
+    window.addEventListener('resize', this.updateFontSize);
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.updateFontSize);
+  },
+  methods: {
+  updateFontSize() {
+    const card = this.$el.querySelector('.card');
+    const textElements = this.$el.querySelectorAll('.large-bold-text');
+    const maxFontSize = 18; // 最大のフォントサイズを設定します。
+
+    if (card && textElements.length > 0) {
+      let fontSize = card.offsetHeight * 0.05; // Adjust this value as needed
+      fontSize = fontSize > maxFontSize ? maxFontSize : fontSize; // フォントサイズが最大値を超えていたら、最大値に設定します。
+
+      textElements.forEach(element => {
+        element.style.fontSize = `${fontSize}px`;
+      });
+    }
+  },
+},
   setup() {
     const countOfActionItems = ref(0);
     const countOfSolvedActionItems = ref(0);
@@ -114,4 +132,3 @@ export default {
   },
 };
 </script>
-

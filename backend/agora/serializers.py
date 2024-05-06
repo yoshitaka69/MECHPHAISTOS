@@ -9,7 +9,7 @@ from spareParts.models import SpareParts
 class AlertScheduleSerializer(serializers.ModelSerializer):
     class Meta:
         model = AlertSchedule
-        fields = ['companyCode', 'companyName', 'plant', 'partsName', 'eventDate', 'deliveryTime', 'orderAlertDate', 'safetyRate', 'country']
+        fields = ['companyCode', 'companyName', 'plant', 'partsName', 'eventDate', 'deliveryTime', 'orderAlertDate', 'safetyRate', 'location','country']
 
     companyCode = serializers.SlugRelatedField(
         slug_field='companyCode', 
@@ -21,6 +21,10 @@ class AlertScheduleSerializer(serializers.ModelSerializer):
     )
     partsName = serializers.SlugRelatedField(
         slug_field='partsName', 
+        queryset=SpareParts.objects.all()
+    )
+    location = serializers.SlugRelatedField(
+        slug_field='location', 
         queryset=SpareParts.objects.all()
     )
     country = serializers.SlugRelatedField(
