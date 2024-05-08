@@ -222,7 +222,7 @@
 </template>
 
 <script>
-import { ref, reactive, onMounted, nextTick, computed } from 'vue';
+import { ref, reactive, onMounted, computed } from 'vue';
 import moment from 'moment';
 
 export default {
