@@ -206,6 +206,40 @@ const TaskListComponent = defineComponent({
 
             return ['TaskName', 'Plant', 'Equipment', 'MachineName', 'LatestDate<br>PM', 'Multi<br>Tasking', 'TotalCost', 'Task Of Period', 'Next Even<br>date', 'Situation', ...futureYears];
         },
+                customCheckboxRenderer(instance, td, row, col, prop, value, cellProperties) {
+            Handsontable.renderers.CheckboxRenderer.apply(this, arguments);
+            if (this.isMatchingYear(instance, row, col)) {
+                td.style.background = '#90EE90'; // ライトグリーン
+                td.querySelector('input[type="checkbox"]').checked = true;
+            }
+        },
+
+        isMatchingYear(instance, row, col) {
+            const latestDate = instance.getDataAtRowProp(row, 'typicalLatestDate');
+            const taskOfPeriod = instance.getDataAtRowProp(row, 'taskOfPeriod');
+            if (!latestDate || !taskOfPeriod) return false;
+
+            let checkDate = new Date(latestDate);
+            const currentYear = new Date().getFullYear();
+            const colYear = currentYear + (col - 10); // 'thisYear'列が10番目の列であるため
+
+            checkDate.setDate(checkDate.getDate() + taskOfPeriod);
+            return checkDate.getFullYear() === colYear;
+        },
+
+        checkAndFillYearlyTasks() {
+            const hotInstance = this.$refs.hotTableComponent.hotInstance;
+            const rowCount = hotInstance.countRows();
+
+            for (let row = 0; row < rowCount; row++) {
+                for (let col = 10; col <= 20; col++) { // 'thisYear'から'thisYear10later'まで
+                    if (this.isMatchingYear(hotInstance, row, col)) {
+                        hotInstance.setDataAtCell(row, col, true);
+                    }
+                }
+            }
+        }
+    },
 
         getDataAxios() {
             const userStore = useUserStore();
