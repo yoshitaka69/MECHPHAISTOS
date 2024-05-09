@@ -423,42 +423,140 @@ onMounted(() => {
   window.addEventListener('mouseup', stopDrag);
 });
 
+
+
+
+
+
+
+      
+
+
+      
+
+
+
+
+      
+// カレンダー生成関数
+const getCalendar = () => {
+  calendarData.calendars = [];  // 既存のカレンダーデータをクリア
+  let start = moment(calendarData.start_month);
+  const end = moment(calendarData.end_month);
+
+  while (start.isBefore(end) || start.isSame(end, 'month')) {
+    const daysInMonth = start.daysInMonth();
+    let days = [];
+    for (let day = 1; day <= daysInMonth; day++) {
+      days.push({
+        day: day,
+        dayOfWeek: start.clone().date(day).format('ddd')  // 'Sun', 'Mon', etc.
+      });
+    }
+    calendarData.calendars.push({
+      month: start.format('YYYY-MM'),
+      days: days,
+      start_block_number: start.diff(moment(calendarData.start_month), 'days')
+    });
+    start.add(1, 'month');
+  }
+};
+
+// ウィンドウサイズを取得して適切に処理する関数
 const getWindowSize = () => {
-  // Implement window size adjustment logic here
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+  // ここで width と height を使って何か処理をする
 };
 
+// ウィンドウのサイズ変更を監視し、必要に応じて再計算や再レンダリングをトリガーする
 const windowSizeCheck = () => {
-  // Implement scroll wheel handling logic here
+  window.addEventListener('resize', getWindowSize);
+  onMounted(() => {
+    getWindowSize();  // 初期ロード時にサイズを取得
+  });
 };
 
-const mouseMove = () => {
-  // Handle mouse move events here
-};
+      
+// タスクリストの幅や、余白などの定数を定義
+const TASK_LIST_WIDTH = 200;  // タスクリストの幅
+const MARGIN = 20;            // 余白
 
-const stopDrag = () => {
-  // Handle stopping of dragging operations here
-};
+const calendarViewWidth = computed(() => {
+  // 画面全体の幅からタスクリストの幅と余白を引いたものを計算
+  return window.innerWidth - TASK_LIST_WIDTH - MARGIN;
+});
 
-return {
-  today,
-  show,
-  updateMode,
-  form,
-  categories,
-  tasks: computedTasks,
-  deleteTask,
-  updateTask,
-  addTask,
-  editTask,
-  saveTask,
-  toggleCategory,
-  calendarData,
-  displayTasks,
-  taskBars,
-  calendarViewWidth,
-  calendarViewHeight,
-  scrollDistance,
-  lists,
+const calendarViewHeight = computed(() => {
+  // 画面全体の高さからヘッダー部分などの高さを引いたものを計算
+  const HEADER_HEIGHT = 50;  // ヘッダーの高さ
+  return window.innerHeight - HEADER_HEIGHT - MARGIN;
+});
+
+
+      
+// タスクの表示をフィルタリングする computed property
+const displayTasks = computed(() => {
+  // タスクが多数ある場合、表示範囲やフィルタ条件に応じて絞り込みを行う
+  // ここではシンプルに全タスクを返していますが、実際にはページネーションや条件に基づくフィルタが入るかもしれません
+  return tasks.value.filter(task => {
+    // 特定の条件に基づいてフィルタリングするロジックをここに書く
+    return true;  // すべてのタスクを表示
+  });
+});
+
+// タスクバーを計算する computed property
+const taskBars = computed(() => {
+  // 各タスクに対して表示するバーのスタイルを計算
+  return displayTasks.value.map(task => {
+    const startDate = moment(task.start_date);
+    const endDate = moment(task.end_date);
+    const startOffset = startDate.diff(moment(calendarData.value.start_month), 'days');
+    const duration = endDate.diff(startDate, 'days') + 1;  // 期間を日数で計算
+
+    return {
+      top: '10px',  // 位置調整が必要であれば計算
+      left: `${startOffset * calendarData.value.block_size}px`,
+      width: `${duration * calendarData.value.block_size}px`,
+      height: '20px',  // バーの高さ
+      backgroundColor: 'blue',  // バーの色
+      task
+    };
+  });
+});
+
+// スクロール距離を計算する computed property
+const scrollDistance = computed(() => {
+  // 今日の日付を基準にスクロールする距離を計算
+  const today = moment();
+  const startOfMonth = moment(calendarData.value.start_month);
+  const daysFromStart = today.diff(startOfMonth, 'days');
+  return daysFromStart * calendarData.value.block_size;  // スクロール位置をピクセル単位で計算
+});
+
+
+export default {
+  setup() {
+    // コンポーネントがマウントされたときにカレンダーを初期化
+    onMounted(() => {
+      getCalendar();
+      windowSizeCheck();  // ウィンドウサイズのチェックを開始
+    });
+
+    return {
+      today,
+      show,
+      updateMode,
+      form,
+      categories,
+      tasks,
+      addTask,
+      updateTask,
+      deleteTask,
+      resetForm,
+      editTask,
+      saveTask,
+      toggleCategory,
       dragTaskOver,
       dragTask,
       mouseDownMove,
@@ -466,6 +564,13 @@ return {
       stopDrag,
       mouseDownResize,
       mouseResize,
-      stopResize
+      stopResize,
+      calendarViewWidth,
+      calendarViewHeight,
+      displayTasks,
+      taskBars,
+      scrollDistance
+    };
+  }
 };
 </script>
