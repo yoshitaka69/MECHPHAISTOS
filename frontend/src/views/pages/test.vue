@@ -206,40 +206,62 @@ const TaskListComponent = defineComponent({
 
             return ['TaskName', 'Plant', 'Equipment', 'MachineName', 'LatestDate<br>PM', 'Multi<br>Tasking', 'TotalCost', 'Task Of Period', 'Next Even<br>date', 'Situation', ...futureYears];
         },
-                customCheckboxRenderer(instance, td, row, col, prop, value, cellProperties) {
-            Handsontable.renderers.CheckboxRenderer.apply(this, arguments);
-            if (this.isMatchingYear(instance, row, col)) {
-                td.style.background = '#90EE90'; // ライトグリーン
-                td.querySelector('input[type="checkbox"]').checked = true;
-            }
-        },
 
-        isMatchingYear(instance, row, col) {
-            const latestDate = instance.getDataAtRowProp(row, 'typicalLatestDate');
-            const taskOfPeriod = instance.getDataAtRowProp(row, 'taskOfPeriod');
-            if (!latestDate || !taskOfPeriod) return false;
+    customCheckboxRenderer(instance, td, row, col, prop, value, cellProperties) {
+        // 標準のチェックボックスレンダラーを適用
+        Handsontable.renderers.CheckboxRenderer.apply(this, arguments);
+        // 特定の年に該当するかどうかをチェック
+        if (this.isMatchingYear(instance, row, col)) {
+            // 条件に合致した場合、セルの背景をライトグリーンに設定
+            td.style.background = '#90EE90';
+            // チェックボックスを選択状態にする
+            td.querySelector('input[type="checkbox"]').checked = true;
+        }
+    },
 
-            let checkDate = new Date(latestDate);
-            const currentYear = new Date().getFullYear();
-            const colYear = currentYear + (col - 10); // 'thisYear'列が10番目の列であるため
 
-            checkDate.setDate(checkDate.getDate() + taskOfPeriod);
-            return checkDate.getFullYear() === colYear;
-        },
+    isMatchingYear(instance, row, col) {
+        // 'typicalLatestDate'から日付を取得
+        const latestDate = instance.getDataAtRowProp(row, 'typicalLatestDate');
+        // 'taskOfPeriod'から期間（日数）を取得
+        const taskOfPeriod = instance.getDataAtRowProp(row, 'taskOfPeriod');
+        // 日付または期間が存在しない場合、falseを返す
+        if (!latestDate || !taskOfPeriod) return false;
 
-        checkAndFillYearlyTasks() {
-            const hotInstance = this.$refs.hotTableComponent.hotInstance;
-            const rowCount = hotInstance.countRows();
+        // 日付を加工
+        let checkDate = new Date(latestDate);
+        // 現在の年を取得
+        const currentYear = new Date().getFullYear();
+        // 列に対応する年を計算（'thisYear'列が10番目であるためのオフセット）
+        const colYear = currentYear + (col - 10);
 
-            for (let row = 0; row < rowCount; row++) {
-                for (let col = 10; col <= 20; col++) { // 'thisYear'から'thisYear10later'まで
-                    if (this.isMatchingYear(hotInstance, row, col)) {
-                        hotInstance.setDataAtCell(row, col, true);
-                    }
+        // 日付に期間を加算
+        checkDate.setDate(checkDate.getDate() + taskOfPeriod);
+        // 計算された年が列の年と一致するかを確認
+        return checkDate.getFullYear() === colYear;
+    },
+
+    /**
+     * 各セルの年に基づいてチェックボックスを自動的にチェックする
+     */
+    checkAndFillYearlyTasks() {
+        // Handsontableインスタンスを取得
+        const hotInstance = this.$refs.hotTableComponent.hotInstance;
+        // 行数を取得
+        const rowCount = hotInstance.countRows();
+
+        // 全行と特定の列（年に対応する列）に対してループ
+        for (let row = 0; row < rowCount; row++) {
+            for (let col = 10; col <= 20; col++) { // 'thisYear'から'thisYear10later'まで
+                // 指定した年がマッチするかチェック
+                if (this.isMatchingYear(hotInstance, row, col)) {
+                    // マッチした場合、セルの値をtrue（チェック済み）に設定
+                    hotInstance.setDataAtCell(row, col, true);
                 }
             }
         }
-    },
+    }
+},
 
         getDataAxios() {
             const userStore = useUserStore();
