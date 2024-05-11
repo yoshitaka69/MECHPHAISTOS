@@ -1,308 +1,347 @@
 <template>
-    <div id="TaskList">
-        <hot-table ref="hotTableComponent" :settings="hotSettings"></hot-table><br />
-        <button v-on:click="updateData" class="controls">Update Data</button>
+    <div id="app" v-if="form && calendarData.calendars">
+        <div id="gantt-header" class="h-12 p-2 flex items-center">
+            <h1 class="text-sm font-bold">ガントチャート</h1>
+            <button @click="addTask" class="bg-indigo-700 hover:bg-indigo-900 text-white py-2 px-4 rounded-lg flex items-center">
+                <svg class="w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                <span class="font-bold text-xs">タスクを追加する</span>
+            </button>
+            <TaskForm :show.sync="show" :updateMode="updateMode" :form="form" :categories="categories" />
+        </div>
+        <div id="gantt-content" class="flex">
+            <div id="gantt-task">
+                <div id="gantt-task-title" class="flex items-center bg-green-600 text-white h-20" ref="task">
+                    <div class="border-t border-r border-b flex items-center justify-center font-bold text-xs w-48 h-full">タスク</div>
+                    <div class="border-t border-r border-b flex items-center justify-center font-bold text-xs w-24 h-full">開始日</div>
+                    <div class="border-t border-r border-b flex items-center justify-center font-bold text-xs w-24 h-full">完了期限日</div>
+                    <div class="border-t border-r border-b flex items-center justify-center font-bold text-xs w-16 h-full">担当</div>
+                    <div class="border-t border-r border-b flex items-center justify-center font-bold text-xs w-12 h-full">進捗</div>
+                </div>
+
+                <div id="gantt-task-list" class="overflow-y-hidden" :style="`height:${calendarViewHeight}px`">
+                    <div v-for="(task, index) in displayTasks" :key="index" class="flex h-10 border-b" @dragstart="dragTask(task)" @dragover.prevent="dragTaskOver(task)" draggable="true">
+                        <template v-if="task.cat === 'category'">
+                            <div class="flex items-center font-bold w-full text-sm pl-2 flex justify-between items-center bg-teal-100">
+                                <span>{{ task.name }}</span>
+                                <div class="pr-4" @click="toggleCategory(task.id)">
+                                    <span v-if="task.collapsed">
+                                        <svg class="w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </span>
+                                    <span v-else>
+                                        <svg class="w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </span>
+                                </div>
+                            </div>
+                        </template>
+                        <template v-else>
+                            <div @click="editTask(task)" class="border-r flex items-center font-bold w-48 text-sm pl-4">
+                                {{ task.name }}
+                            </div>
+                            <div class="border-r flex items-center justify-center w-24 text-sm">
+                                {{ task.start_date }}
+                            </div>
+                            <div class="border-r flex items-center justify-center w-24 text-sm">
+                                {{ task.end_date }}
+                            </div>
+                            <div class="border-r flex items-center justify-center w-16 text-sm">
+                                {{ task.incharge_user }}
+                            </div>
+                            <div class="flex items-center justify-center w-12 text-sm">{{ task.percentage }}%</div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+
+            <div id="gantt-calendar" class="overflow-x-scroll overflow-y-hidden border-l" :style="`width:${calendarViewWidth}px`" ref="calendar">
+                <div id="gantt-date" class="h-20">
+                    <div id="gantt-year-month" class="relative h-8">
+                        <div v-for="(calendar, index) in calendarData.calendars" :key="index">
+                            <div
+                                class="bg-indigo-700 text-white border-b border-r border-t h-8 absolute font-bold text-sm flex items-center justify-center"
+                                :style="`width:${calendar.calendar * block_size}px;left:${calendar.start_block_number * block_size}px`"
+                            >
+                                {{ calendar.date }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="gantt-day" class="relative h-12">
+                        <div v-for="(calendar, index) in calendarData.calendars" :key="index">
+                            <div v-for="(day, index) in calendarData.calendars" :key="index">
+                                <div
+                                    class="border-r border-b h-12 absolute flex items-center justify-center flex-col font-bold text-xs"
+                                    :class="{ 'bg-blue-100': day.dayOfWeek === '土', 'bg-red-100': day.dayOfWeek === '日', 'bg-red-600 text-white': calendar.year === today.year() && calendar.month === today.month() && day.day === today.date() }"
+                                    :style="`width:${block_size}px;left:${day.block_number * block_size}px`"
+                                >
+                                    <span>{{ day.day }}</span>
+                                    <span>{{ day.dayOfWeek }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="gantt-height" class="relative">
+                        <div v-for="(calendar, index) in calendarData.calendars" :key="index">
+                            <div v-for="(day, index) in calendarData.calendars" :key="index">
+                                <div
+                                    class="border-r border-b absolute"
+                                    :class="{ 'bg-blue-100': day.dayOfWeek === '土', 'bg-red-100': day.dayOfWeek === '日' }"
+                                    :style="`width:${block_size}px;left:${day.block_number * block_size}px;height:${calendarViewHeight}px`"
+                                ></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="gantt-bar-area" class="relative" :style="`width:100%; height:100%;`">
+                    <div v-for="(bar, index) in taskBars" :key="index">
+                        <div :style="bar.style" class="rounded-lg bg-yellow-100" v-if="bar.task.category === 'task'" @mousedown="mouseDownMove(bar.task)">
+                            <div class="w-full h-full" style="pointer-events: none">
+                                <div class="h-full bg-yellow-500 rounded-l-lg" :style="`width:${bar.task.percentage}%`" :class="{ 'rounded-r-lg': bar.task.percentage === 100 }"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
-import Handsontable from 'handsontable'; //独自のレンダラーを使用するときに使う。
-import { defineComponent } from 'vue';
-import { HotTable } from '@handsontable/vue3';
-import { registerAllModules } from 'handsontable/registry';
-import 'handsontable/dist/handsontable.full.css';
-import axios from 'axios';
-import { useUserStore } from '@/stores/userStore'; // Piniaストアをインポート
+import { ref, reactive, onMounted, computed } from 'vue';
+import moment from 'moment';
+import TaskForm from '@/components/Ganttchart/Ganttchart_form.vue';
 
-// register Handsontable's modules
-registerAllModules();
-
-const TaskListComponent = defineComponent({
+export default {
+    name: 'GanttChart',
+    components: {
+        TaskForm
+    },
     data() {
         return {
-            hotSettings: {
-                data: [
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //1
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //2
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //3
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //4
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //5
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //6
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //7
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //8
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //9
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //10
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //11
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //12
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //13
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //14
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''] //15
-                ],
-                colHeaders: this.generateColHeaders(), // ヘッダーを生成するメソッドを使用 消すな‼
-                columns: [
-                    {
-                        //TaskName
-                        data: 'typicalTaskName',
-                        type: 'text'
-                    },
-                    {
-                        //plant
-                        data: 'plant',
-                        type: 'text'
-                    },
-                    {
-                        //Equipment
-                        data: 'equipment',
-                        type: 'text'
-                    },
-                    {
-                        //MachineName
-                        data: 'machineName',
-                        type: 'text'
-                    },
-                    {
-                        //Latest Date PM
-                        data: 'typicalLatestDate',
-                        type: 'date',
-                        dateFormat: 'YYYY-MM-DD',
-                        correctFormat: false,
-                    },
-
-                    {
-                        //MultiTasking
-                        data: 'multiTasking',
-                        type: 'checkbox',
-                        className: 'htCenter'
-                    },
-                    {
-                        //TotalCost
-                        data: 'totalCost',
-                        type: 'numeric'
-                    },
-                    {
-                        data: 'taskOfPeriod',
-                        type: 'numeric'
-                    },
-                    {
-                        //Next event date
-                        data: 'typicalNextEventDate',
-                        type: 'numeric',
-                        readOnly: true
-                    },
-                    {
-                        //Situation
-                        data: 'typicalSituation',
-                        type: 'text',
-                        readOnly: true
-                    },
-                    {
-                        //現時点からの10年先まで繰り返し（今）
-                        data: 'thisYear',
-                        type: 'checkbox',
-                        className: 'htCenter'
-                    },
-                    {
-                        //現時点からの10年先まで繰り返し（1年後）
-                        data: 'thisYear1later',
-                        type: 'checkbox',
-                        className: 'htCenter'
-                    },
-                    {
-                        //現時点からの10年先まで繰り返し（2年後）
-                        data: 'thisYear2later',
-                        type: 'checkbox',
-                        className: 'htCenter'
-                    },
-                    {
-                        //現時点からの10年先まで繰り返し（3年後）
-                        data: 'thisYear3later',
-                        type: 'checkbox',
-                        className: 'htCenter'
-                    },
-                    {
-                        //現時点からの10年先まで繰り返し（4年後）
-                        data: 'thisYear4later',
-                        type: 'checkbox',
-                        className: 'htCenter'
-                    },
-                    {
-                        //現時点からの10年先まで繰り返し（5年後）
-                        data: 'thisYear5later',
-                        type: 'checkbox',
-                        className: 'htCenter'
-                    },
-                    {
-                        //現時点からの10年先まで繰り返し（6年後）
-                        data: 'thisYear6later',
-                        type: 'checkbox',
-                        className: 'htCenter'
-                    },
-                    {
-                        //現時点からの10年先まで繰り返し（7年後）
-                        data: 'thisYear7later',
-                        type: 'checkbox',
-                        className: 'htCenter'
-                    },
-                    {
-                        //現時点からの10年先まで繰り返し（8年後）
-                        data: 'thisYear8later',
-                        type: 'checkbox',
-                        className: 'htCenter'
-                    },
-                    {
-                        //現時点からの10年先まで繰り返し（9年後）
-                        data: 'thisYear9later',
-                        type: 'checkbox',
-                        className: 'htCenter'
-                    },
-                    {
-                        //現時点からの10年先まで繰り返し（10年後）
-                        data: 'thisYear10later',
-                        type: 'checkbox',
-                        className: 'htCenter'
-                    }
-                ],
-
-                afterGetColHeader: (col, TH) => {
-                    if (col === -1) {
-                        // ヘッダー行の場合
-                        return;
-                    }
-                    // 全ヘッダーセルにスタイルを設定
-                    TH.style.backgroundColor = '#FFFFCC'; // 薄い黄色
-                    TH.style.color = 'black'; // テキスト色を黒に設定
-                    TH.style.fontWeight = 'bold'; // テキストを太字に設定
-                },
-
-                width: '100%',
-                height: 'auto',
-                contextMenu: true, //コンテキストメニュー
-                autoWrapRow: true,
-                autoWrapCol: true,
-                fixedColumnsStart: 2, //カラム固定
-                fixedRowsTop: 2, //列固定
-                manualColumnFreeze: true, //コンテキストメニュー手動でコラム解除
-                manualColumnResize: true, //手動での列幅調整
-                manualRowResize: true, //列の手動高さ調整
-                filters: true,
-                dropdownMenu: true,
-                comments: true, //コメントの有り無し
-                fillHandle: {
-                    autoInsertRow: true
-                },
-                licenseKey: 'non-commercial-and-evaluation'
-            }
+            show: false,
+            updateMode: false,
+            form: false,
+            categories: false,
+            // その他のデータプロパティ
         };
     },
 
-    created() {
-        this.getDataAxios();
-    },
+    setup() {
+        const today = ref(moment());
+        const show = ref(false);
+        const updateMode = ref(false);
+        const dragging = ref(false);
+        const leftResizing = ref(false);
+        const rightResizing = ref(false);
+        const activeTask = ref(null);
+        const pageX = ref(0);
 
-    methods: {
-        generateColHeaders() {
-            const currentYear = new Date().getFullYear();
-            const futureYears = Array.from({ length: 11 }, (_, index) => (currentYear + index).toString());
+        const form = reactive({
+            category_id: '',
+            id: '',
+            name: '',
+            start_date: '',
+            end_date: '',
+            incharge_user: '',
+            percentage: 0
+        });
 
-            return ['TaskName', 'Plant', 'Equipment', 'MachineName', 'LatestDate<br>PM', 'Multi<br>Tasking', 'TotalCost', 'Task Of Period', 'Next Even<br>date', 'Situation', ...futureYears];
-        },
-
-    customCheckboxRenderer(instance, td, row, col, prop, value, cellProperties) {
-        // 標準のチェックボックスレンダラーを適用
-        Handsontable.renderers.CheckboxRenderer.apply(this, arguments);
-        // 特定の年に該当するかどうかをチェック
-        if (this.isMatchingYear(instance, row, col)) {
-            // 条件に合致した場合、セルの背景をライトグリーンに設定
-            td.style.background = '#90EE90';
-            // チェックボックスを選択状態にする
-            td.querySelector('input[type="checkbox"]').checked = true;
+        // form が null または undefined でないことを確認
+        if (form) {
+            console.log('Form ID:', form.id);
+        } else {
+            console.error('Form is not initialized!');
         }
-    },
+        const elementStyle = reactive({
+            left: '',
+            width: ''
+        });
 
+        const resizeInfo = reactive({
+            leftResizing: false,
+            rightResizing: false,
+            startX: 0,
+            startWidth: 0,
+            element: null
+        });
 
-    isMatchingYear(instance, row, col) {
-        // 'typicalLatestDate'から日付を取得
-        const latestDate = instance.getDataAtRowProp(row, 'typicalLatestDate');
-        // 'taskOfPeriod'から期間（日数）を取得
-        const taskOfPeriod = instance.getDataAtRowProp(row, 'taskOfPeriod');
-        // 日付または期間が存在しない場合、falseを返す
-        if (!latestDate || !taskOfPeriod) return false;
+        const categories = ref([
+            { id: 1, name: 'テストA', collapsed: false },
+            { id: 2, name: 'テストB', collapsed: false }
+        ]);
 
-        // 日付を加工
-        let checkDate = new Date(latestDate);
-        // 現在の年を取得
-        const currentYear = new Date().getFullYear();
-        // 列に対応する年を計算（'thisYear'列が10番目であるためのオフセット）
-        const colYear = currentYear + (col - 10);
+        const tasks = ref([
+            { id: 1, category_id: 1, name: 'テスト1', start_date: '2020-11-18', end_date: '2020-11-20', incharge_user: '鈴木', percentage: 100 },
+            { id: 2, category_id: 1, name: 'テスト2', start_date: '2020-11-19', end_date: '2020-11-23', incharge_user: '佐藤', percentage: 90 }
+        ]);
 
-        // 日付に期間を加算
-        checkDate.setDate(checkDate.getDate() + taskOfPeriod);
-        // 計算された年が列の年と一致するかを確認
-        return checkDate.getFullYear() === colYear;
-    },
+        const block_size = 30; // 1日あたりのピクセル数
 
-    /**
-     * 各セルの年に基づいてチェックボックスを自動的にチェックする
-     */
-    checkAndFillYearlyTasks() {
-        // Handsontableインスタンスを取得
-        const hotInstance = this.$refs.hotTableComponent.hotInstance;
-        // 行数を取得
-        const rowCount = hotInstance.countRows();
+        // taskBars の計算されたプロパティを定義
+        const taskBars = computed(() => {
+            return tasks.value.map((task) => {
+                const start = moment(task.start_date);
+                const end = moment(task.end_date);
+                const duration = end.diff(start, 'days') + 1;
+                const left = start.diff(moment(tasks.value[0].start_date), 'days') * block_size;
+                const width = duration * block_size;
 
-        // 全行と特定の列（年に対応する列）に対してループ
-        for (let row = 0; row < rowCount; row++) {
-            for (let col = 10; col <= 20; col++) { // 'thisYear'から'thisYear10later'まで
-                // 指定した年がマッチするかチェック
-                if (this.isMatchingYear(hotInstance, row, col)) {
-                    // マッチした場合、セルの値をtrue（チェック済み）に設定
-                    hotInstance.setDataAtCell(row, col, true);
-                }
-            }
-        }
-    }
-},
+                return {
+                    task,
+                    style: {
+                        position: 'absolute',
+                        left: `${left}px`,
+                        width: `${width}px`,
+                        height: '20px', // 高さは固定
+                        backgroundColor: 'yellow',
+                        borderRadius: '5px'
+                    }
+                };
+            });
+        });
 
-        getDataAxios() {
-            const userStore = useUserStore();
-            const userCompanyCode = userStore.companyCode;
+        // displayTasks computed property
+        const displayTasks = computed(() => {
+            return tasks.value.filter((task) => {
+                return task.percentage < 100; // 例えば、完了していないタスクだけを表示
+            });
+        });
 
-            if (!userCompanyCode) {
-                console.error('Error: No company code found for the user.');
-                return;
-            }
+        // calendarData 内で定義される calendars をテンプレートからアクセス可能にする
+        const calendarData = reactive({
+            start_month: '2020-10',
+            end_month: '2021-02',
+            block_size: 30,
+            calendars: []
+        });
 
-            const url = `http://127.0.0.1:8000/api/task/taskListByCompany/?format=json&companyCode=${userCompanyCode}`;
-
-            axios
-                .get(url, {
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    withCredentials: true
-                })
-                .then((response) => {
-                    const taskListData = response.data.flatMap((companyData) => companyData.taskList);
-                    console.log('Fetched Task List Data:', taskListData);
-
-                    // 空行を追加
-                    const blankRows = Array.from({ length: 20 }, () => ({}));
-                    const newData = taskListData.concat(blankRows);
-
-                    // Handsontable設定の更新
-                    this.$refs.hotTableComponent.hotInstance.updateSettings({
-                        data: newData
-                        // ここで他の必要な設定を更新することも可能
+        const getCalendar = () => {
+            calendarData.calendars = []; // カレンダーデータを初期化
+            let start = moment(calendarData.start_month);
+            let end = moment(calendarData.end_month);
+            while (start <= end) {
+                const daysInMonth = start.daysInMonth();
+                let days = [];
+                for (let day = 1; day <= daysInMonth; day++) {
+                    days.push({
+                        day,
+                        dayOfWeek: start.clone().date(day).format('ddd')
                     });
-                })
-                .catch((error) => {
-                    console.error('Error fetching data:', error);
+                }
+                calendarData.calendars.push({
+                    month: start.format('YYYY-MM'),
+                    days
                 });
-        }
-    },
-    components: {
-        HotTable
+                start.add(1, 'month');
+            }
+        };
+
+        const updateTask = (id) => {
+            const task = tasks.value.find((task) => task.id === id);
+            if (task) {
+                Object.assign(task, form);
+            }
+        };
+
+        const addTask = () => {
+            tasks.value.push({ ...form, id: Math.max(0, ...tasks.value.map((t) => t.id)) + 1 });
+            Object.keys(form).forEach((key) => (form[key] = ''));
+        };
+
+        const deleteTask = (id) => {
+            const index = tasks.value.findIndex((task) => task.id === id);
+            if (index !== -1) {
+                tasks.value.splice(index, 1);
+            }
+        };
+
+        const editTask = (task) => {
+            updateMode.value = true;
+            show.value = true;
+            Object.assign(form, task);
+        };
+
+        const saveTask = () => {
+            if (updateMode.value) {
+                updateTask(form.id);
+            } else {
+                addTask();
+            }
+            show.value = false;
+            updateMode.value = false;
+        };
+
+        const toggleCategory = (id) => {
+            const category = categories.value.find((c) => c.id === id);
+            if (category) {
+                category.collapsed = !category.collapsed;
+            }
+        };
+        // 計算されたプロパティを定義
+        const calendarViewWidth = computed(() => {
+            const TASK_LIST_WIDTH = 200;
+            return window.innerWidth - TASK_LIST_WIDTH;
+        });
+
+        const calendarViewHeight = computed(() => {
+            const HEADER_HEIGHT = 50; // 仮定したヘッダーの高さ
+            return window.innerHeight - HEADER_HEIGHT;
+        });
+
+        const mouseDownMove = (event, task) => {
+            event.preventDefault(); // デフォルトのドラッグ動作を防止
+            dragging.value = true; // ドラッグ状態を有効に
+            activeTask.value = task; // アクティブなタスクを設定
+            pageX.value = event.pageX; // 初期のX座標を記録
+            console.log('Dragging started for task:', task.name);
+        };
+
+        onMounted(() => {
+            console.log('Component mounted');
+            getCalendar();
+            window.addEventListener('resize', () => {});
+            window.addEventListener('wheel', () => {});
+            window.addEventListener('mousemove', () => {});
+            window.addEventListener('mouseup', () => {});
+        });
+
+        return {
+            mouseDownMove, // ここに追加
+            today,
+            show,
+            updateMode,
+            form,
+            dragging,
+            leftResizing,
+            rightResizing,
+            activeTask,
+            pageX,
+            elementStyle,
+            resizeInfo,
+            categories,
+            tasks,
+            taskBars,
+            block_size,
+            calendarViewWidth,
+            calendarViewHeight,
+            mouseDownMove,
+            displayTasks, // ここで displayTasks を返す
+            calendarData,
+            getCalendar,
+            updateTask,
+            addTask,
+            deleteTask,
+            editTask,
+            saveTask,
+            toggleCategory
+        };
     }
-});
-export default TaskListComponent;
+};
 </script>
