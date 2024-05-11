@@ -55,10 +55,7 @@
                     <!--青い帯の月の表示部分カレンダー領域-->
                     <div id="gantt-year-month" class="relative h-8">
                         <div v-for="(calendar, index) in calendarData.calendars" :key="index">
-                            <div
-                                class="bg-indigo-700 text-white border-b border-r border-t h-8 absolute font-bold text-sm flex items-center justify-center"
-                                :style="`width:${calendar.calendar * block_size}px;left:${calendar.start_block_number * block_size}px`"
-                            >
+                            <div class="year-month-block" :style="`width:${calendar.calendar * block_size}px; left:${calendar.start_block_number * block_size}px`">
                                 {{ calendar.date }}
                             </div>
                         </div>
@@ -69,9 +66,9 @@
                         <div v-for="(calendar, index) in calendarData.calendars" :key="index">
                             <div v-for="(day, dayIndex) in calendar.days" :key="dayIndex">
                                 <div
-                                    class="day-block border-r border-b h-12 absolute font-bold text-xs"
-                                    :class="{ 'bg-blue-100': day.dayOfWeek === '土', 'bg-red-100': day.dayOfWeek === '日', 'bg-red-600 text-white': calendar.year === today.year() && calendar.month === today.month() && day.day === today.date() }"
-                                    :style="`width:${block_size}px;left:${day.block_number * block_size}px`"
+                                    class="day-block"
+                                    :class="{ saturday: day.dayOfWeek === '土', sunday: day.dayOfWeek === '日', 'today-highlight': calendar.year === today.year() && calendar.month === today.month() && day.day === today.date() }"
+                                    :style="`width:${block_size}px; left:${day.block_number * block_size}px; background-color: ${getDayBackgroundColor(day, calendar, today)}; color: ${getDayTextColor(day, calendar, today)};`"
                                 >
                                     <span>{{ day.day }}</span>
                                     <span>{{ day.dayOfWeek }}</span>
@@ -80,7 +77,7 @@
                         </div>
                     </div>
 
-                    <!--カレンダーの高さの表示部分カレンダー領域-->
+                    <!--タスクバー領域の表示部分カレンダー領域-->
                     <div id="gantt-height" style="position: relative">
                         <div v-for="(calendar, calendarIndex) in calendarData.calendars" :key="calendarIndex">
                             <div v-for="(day, dayIndex) in calendar.days" :key="dayIndex">
@@ -94,13 +91,13 @@
                     </div>
                 </div>
 
+                <!--ガントバー領域-->
                 <div id="gantt-bar-area" style="position: relative; width: var(--calendarViewWidth); height: var(--calendarViewHeight)">
                     <div v-for="(bar, index) in taskBars" :key="index">
-                        <div v-if="bar.task.cat === 'task'" :style="bar.style" class="gantt-bar" @mousedown="mouseDownMove(bar.task)">
+                        <div v-if="bar.task.cat === 'task'" :style="{ ...bar.style, backgroundColor: getBarBackgroundColor(bar.task.start_date, bar.task.end_date) }" class="gantt-bar" @mousedown="mouseDownMove(bar.task)">
                             <div class="progress-bar-container">
-                                <div class="progress-bar" :style="`width:${bar.task.percentage}%`" :class="{ 'rounded-complete': bar.task.percentage === 100 }"></div>
+                                <div class="progress-bar" :style="{ width: bar.task.percentage + '%', backgroundColor: getProgressBarColor(bar.task.start_date, bar.task.end_date) }" :class="{ 'rounded-complete': bar.task.percentage === 100 }"></div>
                             </div>
-
                             <div class="resize-handle-left"></div>
                             <div class="resize-handle-right"></div>
                         </div>
@@ -277,6 +274,54 @@ export default {
             });
         });
 
+        const getDayBackgroundColor = (day, calendar) => {
+            // `today.value` を使用して、moment オブジェクトの現在の値にアクセス
+            if (calendar.year === today.value.year() && calendar.month === today.value.month() + 1 && day.day === today.value.date()) {
+                return '#ffd700'; // 今日の日付の背景色を黄色に
+            } else if (day.dayOfWeek === '土') {
+                return '#ebf8ff'; // 土曜日は薄い青
+            } else if (day.dayOfWeek === '日') {
+                return '#fee2e2'; // 日曜日は薄い赤
+            } else {
+                return 'white'; // その他の日は白色
+            }
+        };
+
+        const getDayTextColor = (day, calendar) => {
+            if (calendar.year === today.value.year() && calendar.month === today.value.month() + 1 && day.day === today.value.date()) {
+                return 'black'; // 今日のテキスト色を黒に
+            } else {
+                return 'black'; // その他の日も黒
+            }
+        };
+
+        // 土日に色をつけ、それ以外は白色にする関数
+        const getBarBackgroundColor = (startDate, endDate) => {
+            let startMoment = moment(startDate);
+            let endMoment = moment(endDate);
+            let isWeekend = false; // 土日かどうかのフラグ
+
+            while (startMoment <= endMoment) {
+                if (startMoment.day() === 0 || startMoment.day() === 6) {
+                    isWeekend = true;
+                    break;
+                }
+                startMoment.add(1, 'days');
+            }
+
+            if (isWeekend) {
+                return startMoment.day() === 6 ? '#ebf8ff' : '#fee2e2'; // 土曜日は青、日曜日は赤
+            }
+            return 'white'; // 土日以外は白色
+        };
+
+        // プログレスバーの色を取得する関数
+        const getProgressBarColor = (startDate, endDate) => {
+            let startMoment = moment(startDate);
+            let endMoment = moment(endDate);
+            return startMoment.isBefore(today.value, 'day') && endMoment.isAfter(today.value, 'day') ? '#fcd34d' : '#cccccc'; // 今日を含む場合は黄色、それ以外はグレー
+        };
+
         const getDays = (year, month, block_number) => {
             const dayOfWeek = ['日', '月', '火', '水', '木', '金', '土'];
             let days = [];
@@ -401,6 +446,10 @@ export default {
             categories,
             tasks,
             lists,
+            getDayBackgroundColor,
+            getDayTextColor,
+            getBarBackgroundColor,
+            getProgressBarColor,
 
             show,
             updateMode,
@@ -432,108 +481,58 @@ export default {
 </script>
 
 <style scoped>
-
-
-#gantt-calendar #gantt-date {
-    height: 80px; /* Adjust height as needed */
-}
-
-#gantt-calendar #gantt-year-month {
-    position: relative;
-    height: 32px;
-}
-
-#gantt-calendar #gantt-year-month > div {
-    background-color: #4f46e5;
-    color: white;
-    border-top: 1px solid black;
-    border-right: 1px solid black;
-    border-bottom: 1px solid black;
-    height: 100%;
-    position: absolute;
-    font-weight: bold;
-    font-size: 0.875rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
+/* カレンダー全体のスタイル設定 */
 #gantt-calendar {
-    overflow-x: scroll;
+    overflow-x: scroll; /* 横スクロールを有効に */
 }
 
+/* 日付表示エリアの高さ設定 */
 #gantt-date {
-    height: 80px; /* Adjust height as needed */
+    height: 80px; /* 必要に応じて調整 */
 }
 
+/* 年月表示エリアのスタイル */
 #gantt-year-month {
     position: absolute;
-    top: -0.5rem; /* gantt-task-title の高さに一致する値（マイナス）を設定 */
+    top: -0.5rem; /* gantt-task-title の高さに一致するマイナス値を設定 */
     left: 0;
     width: 100%; /* 必要に応じて調整 */
     z-index: 10; /* 必要に応じて他の要素の上に表示 */
+    height: 32px;
+    color: white; /* テキスト色 */
 }
 
-#gantt-day .day-block {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column; /* 縦方向にスタック */
-    height: 100%; /* コンテナの高さに合わせる */
+/* 年月表示エリアの内部divスタイル */
+.year-month-block {
+    background-color: #4f46e5; /* 濃い青色 */
+    color: white; /* テキスト色を白に */
+    border: 0.5px solid black; /* 境界線を黒で統一 */
+    height: 2.8rem; /* 高さを3remに設定 */
+    position: absolute; /* 絶対位置指定 */
+    font-weight: bold; /* フォントの太さ */
+    font-size: 0.875rem; /* フォントサイズ */
+    display: flex; /* Flexboxを使用 */
+    align-items: center; /* 中央揃え（垂直） */
+    justify-content: center; /* 中央揃え（水平） */
+    width: 100%; /* 幅を親要素に合わせて調整（必要に応じて） */
 }
 
-#gantt-day span {
-    margin: 0; /* 余白を削除 */
-    text-align: center; /* テキストを中央に */
-}
-
-#gantt-height {
-    position: relative;
-}
-
-#gantt-year-month > div,
-#gantt-day > div > div,
-#gantt-height > div > div {
-    border-top: 1px solid black;
+/* 基本的な日のブロックのスタイル */
+.day-block {
     border-right: 1px solid black;
     border-bottom: 1px solid black;
-    height: 100%;
     position: absolute;
-    font-weight: bold;
-    font-size: 0.875rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-#gantt-year-month > div {
-    background-color: #4f46e5;
-    color: white;
-}
-
-#gantt-day > div > div,
-#gantt-height > div > div {
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
+    font-weight: bold;
+    font-size: 0.875rem;
+    background-color: white; /* デフォルトの背景色 */
+    color: black; /* デフォルトのテキスト色 */
 }
 
-#gantt-height {
-    position: relative;
-}
-
-.gantt-day-cell {
-    border-right: 1px solid black;
-    border-bottom: 1px solid black;
-    position: absolute;
-}
-
-
-.saturday, .sunday {
-    color: #000000; /* テキスト色を黒に設定 */
-}
-
+/* 土曜日と日曜日のスタイル */
 .saturday {
     background-color: #ebf8ff; /* 土曜日は薄い青 */
 }
@@ -542,17 +541,17 @@ export default {
     background-color: #fee2e2; /* 日曜日は薄い赤 */
 }
 
-
-
-#gantt-bar-area {
-    position: relative;
+/* 特定の日（今日など）をハイライトするスタイル */
+.today-highlight {
+    background-color: #ffd700; /* 今日の日付を黄色でハイライト */
 }
 
+/* バーエリアの位置設定 */
 .gantt-bar {
     position: absolute;
-    height: 20px; /* Adjust height as needed */
-    background-color: #fefcbf; /* Light yellow */
-    border-radius: 10px; /* Rounded corners */
+    height: 20px;
+    background-color: white; /* デフォルトは白色 */
+    border-radius: 10px;
 }
 
 .progress-bar-container {
@@ -563,19 +562,15 @@ export default {
 
 .progress-bar {
     height: 100%;
-    background-color: #fcd34d; /* Darker yellow */
-    border-radius: 10px 0 0 10px; /* Rounded left side */
-}
-
-.rounded-complete {
-    border-radius: 10px; /* Fully rounded when complete */
+    background-color: #fcd34d; /* デフォルトはダークイエロー */
+    border-radius: 10px 0 0 10px;
 }
 
 .resize-handle-left,
 .resize-handle-right {
     width: 4px;
     height: 4px;
-    background-color: #e5e7eb; /* Light gray */
+    background-color: #e5e7eb;
     border: 1px solid black;
     position: absolute;
     top: 6px;
