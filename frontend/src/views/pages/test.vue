@@ -62,13 +62,28 @@
                     </div>
 
                     <!--日付の表示部分カレンダー領域-->
-                    <div id="gantt-day" class="relative h-12">
-                        <div v-for="(calendar, index) in calendarData.calendars" :key="index">
+                    <div v-if="calendarData.calendars && calendarViewHeight" :style="{ position: 'relative', height: calendarViewHeight + 'px' }">
+                        <div v-for="(calendar, calendarIndex) in calendarData.calendars" :key="calendarIndex">
                             <div v-for="(day, dayIndex) in calendar.days" :key="dayIndex">
                                 <div
                                     class="day-block"
-                                    :class="{ saturday: day.dayOfWeek === '土', sunday: day.dayOfWeek === '日', 'today-highlight': calendar.year === today.year() && calendar.month === today.month() && day.day === today.date() }"
-                                    :style="`width:${block_size}px; left:${day.block_number * block_size}px; background-color: ${getDayBackgroundColor(day, calendar, today)}; color: ${getDayTextColor(day, calendar, today)};`"
+                                    :class="{
+                                        saturday: day.dayOfWeek === '土',
+                                        sunday: day.dayOfWeek === '日',
+                                        'today-highlight': calendar.year === today.year() && calendar.month === today.month() && day.day === today.date()
+                                    }"
+                                    :style="{
+                                        width: `${block_size}px`,
+                                        left: `${day.block_number * block_size}px`,
+                                        minHeight: '20px',
+                                        height: `${calendarViewHeight}px`,
+                                        backgroundColor: getBackgroundColor(day, calendar),
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        justifyContent: 'flex-start',
+                                        alignItems: 'center',
+                                        borderBottom: '1px solid #ccc'
+                                    }"
                                 >
                                     <span>{{ day.day }}</span>
                                     <span>{{ day.dayOfWeek }}</span>
@@ -78,13 +93,22 @@
                     </div>
 
                     <!--タスクバー領域の表示部分カレンダー領域-->
-                    <div id="gantt-height" style="position: relative">
+                    <div v-if="calendarData.calendars && calendarViewHeight" :style="{ position: 'relative', height: calendarViewHeight + 'px' }">
                         <div v-for="(calendar, calendarIndex) in calendarData.calendars" :key="calendarIndex">
                             <div v-for="(day, dayIndex) in calendar.days" :key="dayIndex">
                                 <div
-                                    class="gantt-day-cell"
-                                    :class="{ saturday: day.dayOfWeek === '土', sunday: day.dayOfWeek === '日' }"
-                                    :style="`width: ${block_size}px; left: ${day.block_number * block_size}px; height: ${calendarViewHeight}px;`"
+                                    class="day-block"
+                                    :class="{
+                                        saturday: day.dayOfWeek === '土',
+                                        sunday: day.dayOfWeek === '日',
+                                        'today-highlight': calendar.year === today.year() && calendar.month === today.month() && day.day === today.date()
+                                    }"
+                                    :style="{
+                                        width: `${block_size}px`,
+                                        left: `${day.block_number * block_size}px`,
+                                        height: `${calendarViewHeight}px`,
+                                        backgroundColor: getBackgroundColor(day, calendar)
+                                    }"
                                 ></div>
                             </div>
                         </div>
@@ -167,10 +191,7 @@ export default {
             element: null
         });
 
-        const categories = ref([
-            { id: 1, name: 'テストA', collapsed: false },
-            { id: 2, name: 'テストB', collapsed: false }
-        ]);
+        const categories = ref([{ id: 1, name: 'テストA', collapsed: false }]);
 
         const tasks = ref([
             {
@@ -201,31 +222,40 @@ export default {
                 percentage: 40
             },
             {
-                id: 4,
+                id: 3,
                 category_id: 1,
-                name: 'テスト4',
-                start_date: '2020-11-21',
-                end_date: '2020-11-30',
-                incharge_user: '山下',
-                percentage: 60
-            },
-            {
-                id: 5,
-                category_id: 1,
-                name: 'テスト5',
-                start_date: '2020-11-25',
+                name: 'テスト3',
+                start_date: '2020-11-19',
                 end_date: '2020-12-04',
-                incharge_user: '佐藤',
-                percentage: 5
+                incharge_user: '鈴木',
+                percentage: 40
             },
             {
-                id: 6,
-                category_id: 2,
-                name: 'テスト6',
-                start_date: '2020-11-28',
-                end_date: '2020-12-08',
-                incharge_user: '佐藤',
-                percentage: 0
+                id: 3,
+                category_id: 1,
+                name: 'テスト3',
+                start_date: '2020-11-19',
+                end_date: '2020-12-04',
+                incharge_user: '鈴木',
+                percentage: 40
+            },
+            {
+                id: 3,
+                category_id: 1,
+                name: 'テスト3',
+                start_date: '2020-11-19',
+                end_date: '2020-12-04',
+                incharge_user: '鈴木',
+                percentage: 40
+            },
+            {
+                id: 3,
+                category_id: 1,
+                name: 'テスト3',
+                start_date: '2020-11-19',
+                end_date: '2020-12-04',
+                incharge_user: '鈴木',
+                percentage: 40
             }
         ]);
 
@@ -368,39 +398,9 @@ export default {
             calendars: []
         });
 
-        const updateTask = (id) => {
-            const task = tasks.value.find((task) => task.id === id);
-            if (task) {
-                Object.assign(task, form);
-            }
-        };
-
         const addTask = () => {
             tasks.value.push({ ...form, id: Math.max(0, ...tasks.value.map((t) => t.id)) + 1 });
             Object.keys(form).forEach((key) => (form[key] = ''));
-        };
-
-        const deleteTask = (id) => {
-            const index = tasks.value.findIndex((task) => task.id === id);
-            if (index !== -1) {
-                tasks.value.splice(index, 1);
-            }
-        };
-
-        const editTask = (task) => {
-            updateMode.value = true;
-            show.value = true;
-            Object.assign(form, task);
-        };
-
-        const saveTask = () => {
-            if (updateMode.value) {
-                updateTask(form.id);
-            } else {
-                addTask();
-            }
-            show.value = false;
-            updateMode.value = false;
         };
 
         const toggleCategory = (id) => {
@@ -409,16 +409,10 @@ export default {
                 category.collapsed = !category.collapsed;
             }
         };
-        // 計算されたプロパティを定義
-        const calendarViewWidth = computed(() => {
-            const TASK_LIST_WIDTH = 200;
-            return window.innerWidth - TASK_LIST_WIDTH;
-        });
 
-        const calendarViewHeight = computed(() => {
-            const HEADER_HEIGHT = 50; // 仮定したヘッダーの高さ
-            return window.innerHeight - HEADER_HEIGHT;
-        });
+        // 計算されたプロパティを定義
+        const calendarViewWidth = computed(() => window.innerWidth - 200);
+        const calendarViewHeight = computed(() => window.innerHeight - 50);
 
         const mouseDownMove = (event, task) => {
             event.preventDefault(); // デフォルトのドラッグ動作を防止
@@ -427,6 +421,8 @@ export default {
             pageX.value = event.pageX; // 初期のX座標を記録
             console.log('Dragging started for task:', task.name);
         };
+
+        console.log('Calendar View Height:', calendarViewHeight.value); // Vue 3 の Refs は .value でアクセス
 
         onMounted(() => {
             console.log('Calendar Data:', calendarData.calendars);
@@ -437,8 +433,19 @@ export default {
             window.addEventListener('mouseup', () => {});
         });
 
+        // スタイル取得関数
+        const getBackgroundColor = (day, calendar) => {
+            if (day.dayOfWeek === '土') {
+                return '#ebf8ff'; // 土曜日は薄い青
+            } else if (day.dayOfWeek === '日') {
+                return '#fee2e2'; // 日曜日は薄い赤
+            } else if (calendar.year === moment().year() && calendar.month === moment().month() && day.day === moment().date()) {
+                return '#ff6347'; // 今日の日付
+            }
+            return 'white'; // それ以外の日
+        };
+
         return {
-            mouseDownMove, // ここに追加
             today,
             getDays,
             getCalendar,
@@ -450,6 +457,7 @@ export default {
             getDayTextColor,
             getBarBackgroundColor,
             getProgressBarColor,
+            getBackgroundColor,
 
             show,
             updateMode,
@@ -464,16 +472,17 @@ export default {
 
             taskBars,
             block_size,
+
+
             calendarViewWidth,
             calendarViewHeight,
             mouseDownMove,
-            displayTasks, // ここで displayTasks を返す
 
-            updateTask,
+
+            
+            displayTasks,
+
             addTask,
-            deleteTask,
-            editTask,
-            saveTask,
             toggleCategory
         };
     }
@@ -520,16 +529,15 @@ export default {
 /* 基本的な日のブロックのスタイル */
 .day-block {
     border-right: 1px solid black;
-    border-bottom: 1px solid black;
+    border-bottom: 1px solid #ccc; /* 薄い灰色の下線 */
     position: absolute;
     display: flex;
-    align-items: center;
-    justify-content: center;
     flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
     font-weight: bold;
     font-size: 0.875rem;
-    background-color: white; /* デフォルトの背景色 */
-    color: black; /* デフォルトのテキスト色 */
+    min-height: 20px; /* 最小高さを保証 */
 }
 
 /* 土曜日と日曜日のスタイル */
