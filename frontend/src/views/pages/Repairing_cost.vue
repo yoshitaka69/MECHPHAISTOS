@@ -1,23 +1,6 @@
 <template>
     <!--AdminLTE copy-->
     <div class="base-content">
-        <!--AdminLTEのcssがわからなかったから適当に作った-->
-        <section class="content-header">
-            <div class="container-fluid">
-                <div class="row mb-2">
-                    <div class="col-sm-6">
-                        <h1>Repairing Cost</h1>
-                    </div>
-                    <div class="col-sm-6">
-                        <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a href="#">How to use detail</a></li>
-                            <li class="breadcrumb-item"><a href="#">Task of maintenance</a></li>
-                            <li class="breadcrumb-item active">MECHPHAISTOS</li>
-                        </ol>
-                    </div>
-                </div>
-            </div>
-        </section>
         <section class="content">
             <div class="card card-solid">
                 <!--Tabはsakai-vue-template-->
@@ -31,7 +14,8 @@
                                 <Total_cost_table />
                                 <p>actual summary cost (readOnly)</p>
                                 <Actual_summary_table />
-                                <Message :closable="false">AI recommendation
+                                <Message :closable="false"
+                                    >AI recommendation
                                     <br />
                                     Now developing
                                 </Message>
@@ -44,7 +28,8 @@
                                     <div>
                                         <PM02_actual_table />
                                     </div>
-                                    <Message :closable="false">AI recommendation
+                                    <Message :closable="false"
+                                        >AI recommendation
                                         <br />
                                         Now developing
                                     </Message>
@@ -54,7 +39,8 @@
                                 <div class="card" style="background-color: #f2f2f2">
                                     <PM03_actual_graph />
                                     <PM03_actual_table />
-                                    <Message :closable="false">AI recommendation
+                                    <Message :closable="false"
+                                        >AI recommendation
                                         <br />
                                         Now developing
                                     </Message>
@@ -64,7 +50,8 @@
                                 <div class="card" style="background-color: #f2f2f2">
                                     <PM04_actual_graph />
                                     <PM04_actual_table />
-                                    <Message :closable="false">AI recommendation
+                                    <Message :closable="false"
+                                        >AI recommendation
                                         <br />
                                         Now developing
                                     </Message>
@@ -74,7 +61,8 @@
                                 <div class="card" style="background-color: #f2f2f2">
                                     <PM05_actual_graph />
                                     <PM05_actual_table />
-                                    <Message :closable="false">AI recommendation
+                                    <Message :closable="false"
+                                        >AI recommendation
                                         <br />
                                         Now developing
                                     </Message>
@@ -95,8 +83,7 @@
                                             <span class="block text-500 font-medium mb-3">Next month task event</span>
                                             <div class="text-900 font-medium text-xl">28441</div>
                                         </div>
-                                        <div class="flex align-items-center justify-content-center bg-cyan-100 border-round"
-                                            style="width: 2.5rem; height: 2.5rem">
+                                        <div class="flex align-items-center justify-content-center bg-cyan-100 border-round" style="width: 2.5rem; height: 2.5rem">
                                             <i class="pi pi-inbox text-cyan-500 text-xl"></i>
                                         </div>
                                     </div>
@@ -105,7 +92,7 @@
                         </div>
                         <div class="col-12 xl:col-12">
                             <div class="card" style="background-color: #f2f2f2">
-                                <div class=row>
+                                <div class="row">
                                     <div class="col-12 lg:col-6 xl:col-6">
                                         <Planned_vs_actual_year_graph />
                                     </div>
@@ -118,7 +105,6 @@
                         <div>
                             <Task_list />
                         </div>
-
                     </TabPanel>
                     <TabPanel header="Simulations">
                         <div class="row">
@@ -128,6 +114,9 @@
                             <div>
                                 <Simulation_after />
                             </div>
+                        </div>
+                        <div>
+                            <Simulation_table />
                         </div>
                     </TabPanel>
                 </TabView>
@@ -159,6 +148,7 @@ import Display_repairing_cost from '@/components/Repairing_cost/Cards/Display_re
 
 import Simulation_before from '@/components/Repairing_cost/Simulations/Simulation_before.vue';
 import Simulation_after from '@/components/Repairing_cost/Simulations/Simulation_after.vue';
+import Simulation_table from '@/components/Repairing_cost/Simulations/Simulation_table.vue';
 
 import Card_predict_cost from '@/components/Task_of_maintenance/Cards/Card_predict_cost.vue';
 
@@ -185,9 +175,9 @@ export default {
 
         Display_repairing_cost,
 
-
         Simulation_before,
         Simulation_after,
+        Simulation_table,
 
         Card_predict_cost
     }
