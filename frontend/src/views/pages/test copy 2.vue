@@ -11,6 +11,8 @@
       </div>
   </div>
 </template>
+
+
 <script>
 import Handsontable from 'handsontable'; //独自のレンダラーを使用するときに使う。
 import { defineComponent, watch } from 'vue';
