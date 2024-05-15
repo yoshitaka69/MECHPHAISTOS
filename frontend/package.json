@@ -34,8 +34,9 @@
     "vue": "^3.4.21",
     "vue-axios": "^3.5.2",
     "vue-router": "^4.3.0",
+    "vue-svg-draw": "^1.0.7",
     "vue3-easy-data-table": "^1.5.47",
-    "vuedraggable": "^2.24.3"
+    "vuedraggable": "^4.1.0"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.8.0",
