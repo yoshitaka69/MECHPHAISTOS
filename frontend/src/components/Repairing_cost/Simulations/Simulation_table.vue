@@ -232,87 +232,46 @@ const TaskListComponent = defineComponent({
             //上部の別のtotalCostTabel
             totalCostSettings: {
                 data: [
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //1
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''] //2
+                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''] //1
                 ],
-                columns: [
-                    {
-                        //現時点からの10年先まで繰り返し（今）
-                        data: 'thisYear',
-                        type: 'numeric',
-                        className: 'htCenter'
-                    },
-                    {
-                        //現時点からの10年先まで繰り返し（1年後）
-                        data: 'thisYear1later',
-                        type: 'numeric',
-                        className: 'htCenter'
-                    },
-                    {
-                        //現時点からの10年先まで繰り返し（2年後）
-                        data: 'thisYear2later',
-                        type: 'numeric',
-                        className: 'htCenter'
-                    },
-                    {
-                        //現時点からの10年先まで繰り返し（3年後）
-                        data: 'thisYear3later',
-                        type: 'numeric',
-                        className: 'htCenter'
-                    },
-                    {
-                        //現時点からの10年先まで繰り返し（4年後）
-                        data: 'thisYear4later',
-                        type: 'numeric',
-                        className: 'htCenter'
-                    },
-                    {
-                        //現時点からの10年先まで繰り返し（5年後）
-                        data: 'thisYear5later',
-                        type: 'numeric',
-                        className: 'htCenter'
-                    },
-                    {
-                        //現時点からの10年先まで繰り返し（6年後）
-                        data: 'thisYear6later',
-                        type: 'numeric',
-                        className: 'htCenter'
-                    },
-                    {
-                        //現時点からの10年先まで繰り返し（7年後）
-                        data: 'thisYear7later',
-                        type: 'numeric',
-                        className: 'htCenter'
-                    },
-                    {
-                        //現時点からの10年先まで繰り返し（8年後）
-                        data: 'thisYear8later',
-                        type: 'numeric',
-                        className: 'htCenter'
-                    },
-                    {
-                        //現時点からの10年先まで繰り返し（9年後）
-                        data: 'thisYear9later',
-                        type: 'numeric',
-                        className: 'htCenter'
-                    },
-                    {
-                        //現時点からの10年先まで繰り返し（10年後）
-                        data: 'thisYear10later',
-                        type: 'numeric',
-                        className: 'htCenter'
-                    }
-                ],
-
-                colHeaders: this.generateColTotalCostHeaders(), // ヘッダーを生成するメソッドを使用 消すな‼
+                columns: Array.from({ length: 11 }, (_, i) => ({
+                    data: i,
+                    type: 'numeric',
+                    className: 'htCenter'
+                })),
+                colHeaders: this.generateColTotalCostHeaders(),
                 rowHeaders: true,
                 width: '100%',
                 height: 150,
                 readOnly: true,
+                rowHeaders: ['Total'], // ここで各行の名前を設定
                 contextMenu: true,
                 autoWrapRow: true,
                 autoWrapCol: true,
-                licenseKey: 'non-commercial-and-evaluation'
+                autoColumnSize: true, // 列幅を自動調整
+                autoRowSize: true, // 行の高さを自動調整
+                licenseKey: 'non-commercial-and-evaluation',
+                columnSummary: [
+                    ...Array.from({ length: 11 }, (_, i) => ({
+                        destinationRow: 0,
+                        destinationColumn: i,
+                        type: 'custom',
+                        reversedRowCoords: true,
+                        customFunction: function (endpoint) {
+                            let sum = 0;
+                            endpoint.ranges.forEach((range) => {
+                                for (let row = range[0]; row <= range[1]; row++) {
+                                    const isChecked = this.hot.getDataAtCell(row, 10 + i); // チェックボックス列
+                                    const totalCost = this.hot.getDataAtCell(row, 6); // TotalCost 列
+                                    if (isChecked && !isNaN(totalCost)) {
+                                        sum += parseFloat(totalCost);
+                                    }
+                                }
+                            });
+                            return sum;
+                        }
+                    }))
+                ]
             }
         };
     },
@@ -436,37 +395,37 @@ const TaskListComponent = defineComponent({
 
         // 他のメソッドと...
         calculateTotalCostSums() {
-    const hotInstance = this.$refs.hotTableComponent.hotInstance;
-    const currentYear = new Date().getFullYear();
+            const hotInstance = this.$refs.hotTableComponent.hotInstance;
+            const currentYear = new Date().getFullYear();
 
-    // 各年の合計値を格納する配列を初期化
-    let sums = new Array(11).fill(0);
+            // 各年の合計値を格納する配列を初期化
+            let sums = new Array(11).fill(0);
 
-    console.log('Starting total cost calculation for each year.');
+            console.log('Starting total cost calculation for each year.');
 
-    // 全データ行をループして処理
-    hotInstance.getData().forEach((row, rowIndex) => {
-        for (let i = 0; i < 11; i++) {  // この年から10年後までの各年について
-            const checkboxColumnIndex = 10 + i;  // チェックボックスの列インデックス
-            const isChecked = row[checkboxColumnIndex];  // チェックボックスがtrueかどうか
-            const totalCost = parseFloat(row[6]);  // TotalCostは6番目の列
-            console.log(`Year index ${i}: Checkbox is ${isChecked ? 'checked' : 'not checked'}, TotalCost: ${totalCost}`);
+            // 全データ行をループして処理
+            hotInstance.getData().forEach((row, rowIndex) => {
+                for (let i = 0; i < 11; i++) {
+                    // この年から10年後までの各年について
+                    const checkboxColumnIndex = 10 + i; // チェックボックスの列インデックス
+                    const isChecked = row[checkboxColumnIndex]; // チェックボックスがtrueかどうか
+                    const totalCost = parseFloat(row[6]); // TotalCostは6番目の列
+                    console.log(`Year index ${i}: Checkbox is ${isChecked ? 'checked' : 'not checked'}, TotalCost: ${totalCost}`);
 
-            if (!isChecked && !isNaN(totalCost)) {  // チェックボックスが未チェックの場合に加算
-                sums[i] += totalCost;  // 対応する年の合計に加算
-                console.log(`Added ${totalCost} to year ${currentYear + i} sum, new total: ${sums[i]}`);
-            }
-        }
-    });
+                    if (!isChecked && !isNaN(totalCost)) {
+                        // チェックボックスが未チェックの場合に加算
+                        sums[i] += totalCost; // 対応する年の合計に加算
+                        console.log(`Added ${totalCost} to year ${currentYear + i} sum, new total: ${sums[i]}`);
+                    }
+                }
+            });
 
-    console.log('All rows processed, final sums for each year:', sums);
+            console.log('All rows processed, final sums for each year:', sums);
 
-    // totalCostTableのデータを更新
-    this.$refs.totalCostTableComponent.hotInstance.loadData([sums]);  // 2D配列としてデータを渡す
-    console.log('Total Costs Sums Updated:', sums);
-},
-
-
+            // totalCostTableのデータを更新
+            this.$refs.totalCostTableComponent.hotInstance.loadData([sums]); // 2D配列としてデータを渡す
+            console.log('Total Costs Sums Updated:', sums);
+        },
 
         mounted() {
             this.getDataAxios().then(() => {
