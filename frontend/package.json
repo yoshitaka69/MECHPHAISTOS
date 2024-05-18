@@ -10,18 +10,19 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
   },
   "dependencies": {
-    "@fullcalendar/core": "^6.1.10",
+    "@fullcalendar/core": "^6.1.11",
     "@fullcalendar/daygrid": "^6.1.10",
     "@fullcalendar/google-calendar": "^6.1.10",
-    "@fullcalendar/interaction": "^6.1.10",
-    "@fullcalendar/timegrid": "^6.1.10",
-    "@fullcalendar/vue3": "^6.1.10",
+    "@fullcalendar/interaction": "^6.1.11",
+    "@fullcalendar/timegrid": "^6.1.11",
+    "@fullcalendar/vue3": "^6.1.11",
     "@handsontable/vue3": "^14.2.0",
     "@mdi/font": "^7.4.47",
     "axios": "^1.6.8",
     "core-js": "^3.36.1",
     "d3": "^7.9.0",
     "handsontable": "^14.2.0",
+    "interactjs": "^1.10.27",
     "moment": "^2.30.1",
     "moment-timezone": "^0.5.45",
     "pinia": "^2.1.7",
@@ -33,10 +34,10 @@
     "vis-timeline": "^7.7.3",
     "vue": "^3.4.21",
     "vue-axios": "^3.5.2",
+    "vue-draggable-resizable": "^3.0.0",
     "vue-router": "^4.3.0",
     "vue-svg-draw": "^1.0.7",
-    "vue3-easy-data-table": "^1.5.47",
-    "vuedraggable": "^4.1.0"
+    "vue3-easy-data-table": "^1.5.47"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.8.0",
