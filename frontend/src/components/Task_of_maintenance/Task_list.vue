@@ -166,6 +166,16 @@ const TaskListComponent = defineComponent({
                         className: 'htCenter'
                     },
                 ],
+                
+                afterGetColHeader: (col, TH) => {
+                    if (col === -1) {  // ヘッダー行の場合
+                        return;
+                    }
+                    // 全ヘッダーセルにスタイルを設定
+                    TH.style.backgroundColor = '#FFFFCC'; // 薄い黄色
+                    TH.style.color = 'black';  // テキスト色を黒に設定
+                    TH.style.fontWeight = 'bold';  // テキストを太字に設定
+                },
 
                 width: '100%',
                 height: 'auto',

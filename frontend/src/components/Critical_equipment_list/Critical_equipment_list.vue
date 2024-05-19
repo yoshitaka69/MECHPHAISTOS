@@ -264,7 +264,6 @@ const CriticalEquipmentComponent = defineComponent({
                         type: 'date',
                         dateFormat: 'YYYY-MM-DD',
                         correctFormat: false,
-
                     },
                     {//Impact for production
                         data: "impactForProduction",
@@ -364,6 +363,16 @@ const CriticalEquipmentComponent = defineComponent({
 
                     },
                 ],
+                
+                afterGetColHeader: (col, TH) => {
+                    if (col === -1) {  // ヘッダー行の場合
+                        return;
+                    }
+                    // 特定の列インデックスまたはすべてのヘッダーに適用したい場合
+                    TH.style.backgroundColor = '#FFCC99'; // 薄いオレンジ色
+                    TH.style.color = 'black';
+                    TH.style.fontWeight = 'bold';  // テキストを太字に設定
+                },
 
                 width: '100%',
                 height: 'auto',
@@ -394,6 +403,8 @@ const CriticalEquipmentComponent = defineComponent({
 
 
     methods: {
+
+
   initHandsontable() {
     const container = this.$el;
     this.hot = new Handsontable(container, {
@@ -469,3 +480,8 @@ const CriticalEquipmentComponent = defineComponent({
 
 export default CriticalEquipmentComponent;
 </script>
+
+
+<style scoped>
+</style>
+

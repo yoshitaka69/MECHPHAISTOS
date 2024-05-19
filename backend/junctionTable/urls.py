@@ -4,7 +4,8 @@ from .views import (MasterDataTableViewSet,CompanyCodeMDTViewSet,
                     BomAndTaskViewSet,CompanyCodeBomAndTaskViewSet,
                     CeListAndTaskViewSet,CompanyCodeCeListAndTaskViewSet,
                     BadActorManagementViewSet,CompanyCodeBadActorViewSet,
-                    EventYearPPMViewSet,CompanyCodeEventYearPPMViewSet)
+                    EventYearPPMViewSet,CompanyCodeEventYearPPMViewSet,
+                    GapOfRepairingCostViewSet,CompanyCodeGapOfRepairingCostViewSet)
 
 
 router = DefaultRouter()
@@ -22,6 +23,9 @@ router.register(r'badActorByCompany', CompanyCodeBadActorViewSet, basename='comp
 
 router.register(r'eventYearPPM', EventYearPPMViewSet, basename='eventYearPPM')
 router.register(r'eventYearPPMByCompany', CompanyCodeEventYearPPMViewSet, basename='companyCode-eventYearPPM')
+
+router.register(r'gapOfRepairingCost', GapOfRepairingCostViewSet, basename='gapOfRepairingCost')
+router.register(r'gapOfRepairingCostByCompany', CompanyCodeGapOfRepairingCostViewSet, basename='companyCode-gapOfRepairingCost')
 
 
 urlpatterns = [

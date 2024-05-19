@@ -1,24 +1,45 @@
 <template>
     <div class="grid">
         <div class="col-12 lg:col-6 xl:col-3">
-            <Cards_Priority_tasks />
+            <div class="card mb-0">
+                <div class="flex justify-content-between mb-3" style="height: 150px">
+                    <Cards_Priority_tasks />
+                </div>
+            </div>
         </div>
         <div class="col-12 lg:col-6 xl:col-3">
-            <Cards_Bad_actor />
+            <div class="card mb-0">
+                <div class="flex justify-content-between mb-3" style="height: 150px">
+                    <Cards_Bad_actor />
+                </div>
+            </div>
         </div>
 
         <div class="col-12 lg:col-6 xl:col-3">
-            <Cards_Danger_area />
+            <div class="card mb-0">
+                <div class="flex justify-content-between mb-3" style="height: 150px">
+                    <Cards_Danger_area />
+                </div>
+            </div>
         </div>
 
         <div class="col-12 lg:col-6 xl:col-3">
-            <Cards_Repairing_cost_per_year />
+            <div class="card mb-0">
+                <div class="flex justify-content-between mb-3" style="height: 150px">
+                    <Cards_Repairing_cost_per_year />
+                </div>
+            </div>
         </div>
 
-        <div class="col-12 xl:col-12">
-            <div class="card">
-                <h5>Repairing Cost</h5>
-                <Total_graph />
+        <div class="col-12 lg:col-12 xl:col-12">
+            <div class="card mb-0">
+                <div class="total-graph">
+                    <h5>Repairing Cost</h5>
+                    <Total_graph />
+                </div>
+                <div class="repairing-cost">
+                    <Display_repairing_cost />
+                </div>
             </div>
         </div>
 
@@ -33,8 +54,7 @@
             <div class="flex justify-content-between align-items-center mb-5">
                 <h5>Priority Tasks</h5>
                 <div>
-                    <Button icon="pi pi-ellipsis-v" class="p-button-text p-button-plain p-button-rounded"
-                        @click="$refs.menu2.toggle($event)"></Button>
+                    <Button icon="pi pi-ellipsis-v" class="p-button-text p-button-plain p-button-rounded" @click="$refs.menu2.toggle($event)"></Button>
                     <Menu ref="menu2" :popup="true" :model="items"></Menu>
                 </div>
             </div>
@@ -139,8 +159,7 @@
                 <div class="flex align-items-center justify-content-between mb-4">
                     <h5>Work Order</h5>
                     <div>
-                        <Button icon="pi pi-ellipsis-v" class="p-button-text p-button-plain p-button-rounded"
-                            @click="$refs.menu1.toggle($event)"></Button>
+                        <Button icon="pi pi-ellipsis-v" class="p-button-text p-button-plain p-button-rounded" @click="$refs.menu1.toggle($event)"></Button>
                         <Menu ref="menu1" :popup="true" :model="items"></Menu>
                     </div>
                 </div>
@@ -148,65 +167,59 @@
                 <span class="block text-600 font-medium mb-3">TODAY</span>
                 <ul class="p-0 mx-0 mt-0 mb-4 list-none">
                     <li class="flex align-items-center py-2 border-bottom-1 surface-border">
-                        <div
-                            class="w-3rem h-3rem flex align-items-center justify-content-center bg-blue-100 border-circle mr-3 flex-shrink-0">
+                        <div class="w-3rem h-3rem flex align-items-center justify-content-center bg-blue-100 border-circle mr-3 flex-shrink-0">
                             <i class="pi pi-dollar text-xl text-blue-500"></i>
                         </div>
-                        <span class="text-900 line-height-3">Richard Jones
-                            <span class="text-700">has purchased a blue t-shirt for <span
-                                    class="text-blue-500">79$</span></span>
+                        <span class="text-900 line-height-3"
+                            >Richard Jones
+                            <span class="text-700">has purchased a blue t-shirt for <span class="text-blue-500">79$</span></span>
                         </span>
                     </li>
                     <li class="flex align-items-center py-2">
-                        <div
-                            class="w-3rem h-3rem flex align-items-center justify-content-center bg-orange-100 border-circle mr-3 flex-shrink-0">
+                        <div class="w-3rem h-3rem flex align-items-center justify-content-center bg-orange-100 border-circle mr-3 flex-shrink-0">
                             <i class="pi pi-download text-xl text-orange-500"></i>
                         </div>
-                        <span class="text-700 line-height-3">Your request for withdrawal of <span
-                                class="text-blue-500 font-medium">2500$</span> has been initiated.</span>
+                        <span class="text-700 line-height-3">Your request for withdrawal of <span class="text-blue-500 font-medium">2500$</span> has been initiated.</span>
                     </li>
                 </ul>
 
                 <span class="block text-600 font-medium mb-3">YESTERDAY</span>
                 <ul class="p-0 m-0 list-none">
                     <li class="flex align-items-center py-2 border-bottom-1 surface-border">
-                        <div
-                            class="w-3rem h-3rem flex align-items-center justify-content-center bg-blue-100 border-circle mr-3 flex-shrink-0">
+                        <div class="w-3rem h-3rem flex align-items-center justify-content-center bg-blue-100 border-circle mr-3 flex-shrink-0">
                             <i class="pi pi-dollar text-xl text-blue-500"></i>
                         </div>
-                        <span class="text-900 line-height-3">Keyser Wick
-                            <span class="text-700">has purchased a black jacket for <span
-                                    class="text-blue-500">59$</span></span>
+                        <span class="text-900 line-height-3"
+                            >Keyser Wick
+                            <span class="text-700">has purchased a black jacket for <span class="text-blue-500">59$</span></span>
                         </span>
                     </li>
                     <li class="flex align-items-center py-2 border-bottom-1 surface-border">
-                        <div
-                            class="w-3rem h-3rem flex align-items-center justify-content-center bg-pink-100 border-circle mr-3 flex-shrink-0">
+                        <div class="w-3rem h-3rem flex align-items-center justify-content-center bg-pink-100 border-circle mr-3 flex-shrink-0">
                             <i class="pi pi-question text-xl text-pink-500"></i>
                         </div>
-                        <span class="text-900 line-height-3">Jane Davis
+                        <span class="text-900 line-height-3"
+                            >Jane Davis
                             <span class="text-700">has posted a new questions about your product.</span>
                         </span>
                     </li>
                 </ul>
             </div>
-            <div class="px-4 py-5 shadow-2 flex flex-column md:flex-row md:align-items-center justify-content-between mb-3"
-                style="border-radius: 1rem; background: linear-gradient(0deg, rgba(0, 123, 255, 0.5), rgba(0, 123, 255, 0.5)), linear-gradient(92.54deg, #1c80cf 47.88%, #ffffff 100.01%)">
+            <div
+                class="px-4 py-5 shadow-2 flex flex-column md:flex-row md:align-items-center justify-content-between mb-3"
+                style="border-radius: 1rem; background: linear-gradient(0deg, rgba(0, 123, 255, 0.5), rgba(0, 123, 255, 0.5)), linear-gradient(92.54deg, #1c80cf 47.88%, #ffffff 100.01%)"
+            >
                 <div>
                     <div class="text-blue-100 font-medium text-xl mt-2 mb-3">TAKE THE NEXT STEP</div>
                     <div class="text-white font-medium text-5xl">Try PrimeBlocks</div>
                 </div>
                 <div class="mt-4 mr-auto md:mt-0 md:mr-0">
-                    <a href="https://www.primefaces.org/primeblocks-vue"
-                        class="p-button font-bold px-5 py-3 p-button-warning p-button-rounded p-button-raised"> Get
-                        Started </a>
+                    <a href="https://www.primefaces.org/primeblocks-vue" class="p-button font-bold px-5 py-3 p-button-warning p-button-rounded p-button-raised"> Get Started </a>
                 </div>
             </div>
         </div>
     </div>
 </template>
-
-
 
 <script>
 import Trend_map from '@/components/Trend_map/Trend_map.vue';
@@ -215,6 +228,7 @@ import Safety_rate from '@/components/Safety/Safety_factor_rate.vue';
 import Safety_correlation_diagram from '@/components/Safety/Safety_correlation_diagram.vue';
 
 import Total_graph from '@/components/Repairing_cost/Total_graph.vue';
+import Display_repairing_cost from '@/components/Repairing_cost/Cards/Display_repairing_cost.vue';
 
 import Cards_Priority_tasks from '@/components/Critical_equipment_list/Cards/Priority_tasks.vue';
 import Cards_Repairing_cost_per_year from '@/components/Repairing_cost/Cards/Repairing_cost_per_year';
@@ -229,6 +243,7 @@ export default {
         Safety_correlation_diagram,
 
         Total_graph,
+        Display_repairing_cost,
 
         Cards_Bad_actor,
         Cards_Priority_tasks,
@@ -239,8 +254,25 @@ export default {
 </script>
 
 <style>
-.row {
-    display: flex;
-    flex-wrap: wrap;
+
+.card.mb-0 {
+    display: flex; /* Flexboxを有効化 */
+    justify-content: space-between; /* 要素間に適切な間隔を設定 */
+    align-items: stretch; /* 子要素の高さを揃える */
+    width: 100%; /* 親要素の幅に合わせて100% */
 }
+
+.total-graph, .repairing-cost {
+    flex: 1; /* 利用可能なスペースを等しく分ける */
+    padding: 10px; /* コンテンツ周りの余白 */
+    min-width: 0; /* 縮小時の挙動を正常にする */
+}
+
+@media (max-width: 768px) {
+    .card.mb-0 {
+        flex-direction: column; /* 小さい画面では縦並びに切り替え */
+    }
+}
+
+
 </style>

@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'module',
     'calculation.apps.CalculationConfig',
     'agora',
+    'workOrder',
 ]
 
 

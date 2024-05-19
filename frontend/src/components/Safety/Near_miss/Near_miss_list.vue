@@ -1,55 +1,51 @@
 <template>
-  <button id="show-modal" @click="showModal = true">Show Modal</button>
-  <Teleport to="body">
-    <!-- use the modal component, pass in the prop -->
-    <modal :show="showModal" @close="showModal = false">
-    </modal>
-  </Teleport>
-  <div>
-    <span>search field:</span>
-    <select v-model="searchField">
-      <option value="name">Name</option>
-      <option value="department">Department</option>
-      <option value="Date">Date</option>
-      <option value="Where">where</option>
-      <option value="typeOfAccident">Factor</option>
-      <option value="description">Date</option>
-      <option value="factor">Factor</option>
-    </select>
-    <span>&nbsp;&nbsp;</span> <!-- ここに空白を挿入 -->
-    <span>search value:</span>
-    <input type="text" v-model="searchValue">
-
-    <br><br>
-    <EasyDataTable buttons-pagination :headers="headers" :items="items" alternating :search-field="searchField"
-      :search-value="searchValue" :sort-by="sortBy" :sort-type="sortType" multi-sort>
-      <template #item-description="item">
-        <span>
-          {{ item.description }}
-        </span>
-      </template>
-
-      <template #item-user.name="item">
-        <span>
-          {{ item.user.name }}
-        </span>
-      </template>
-    </EasyDataTable>
-  </div>
+  <EasyDataTable
+    v-model:server-options="serverOptions"
+    :headers="headers"
+    :items="items"
+    :server-items-length="serverItemsLength"
+    :loading="loading"
+    buttons-pagination
+    table-class-name="customize-table"
+  />
 </template>
 
-<script lang="ts" setup>
-import type { Header, Item, SortType } from "vue3-easy-data-table";
-import { onMounted, ref } from "vue";
-import axios from "axios";
-import Modal from '@/components/Safety/Near_miss/Near_miss_form.vue'
-import { useUserStore } from '@/stores/userStore'; // Pinia ストアをインポート
+<script lang="ts">
+import { defineComponent, ref, watch } from "vue";
+import axios from 'axios';
+import { useUserStore } from '@/stores/userStore'; // Pinia storeのインポート
+import { Header, ServerOptions, Item } from "vue3-easy-data-table";
 
-const showModal = ref(false)
+export default defineComponent({
+  setup() {
+    const userStore = useUserStore(); // Pinia storeの使用
+    const companyCode = userStore.companyCode; // companyCodeの取得
 
-const searchField = ref('');
-const searchValue = ref('');
+    const headers = ref<Header[]>([
+      { text: "NearMiss No.", value: "nearMissNo"},
+      { text: "Name", value: "userName.userName" },
+      { text: "Department", value: "department" },
+      { text: "Date", value: "dateOfOccurrence" },
+      { text: "Where?", value: "placeOfOccurrence" },
+      { text: "Type of Accident", value: "typeOfAccident" },
+      { text: "Description", value: "description" },
+      { text: "Factor", value: "factor" },
+      { text: "Injured Lv.", value: "injuredLv" },
+      { text: "Equipment Damage Lv.", value: "equipmentDamageLv" },
+      { text: "Effect on Environment", value: "affectOfEnviroment" },
+      { text: "News Coverage", value: "newsCoverage" },
+      { text: "Measures", value: "measures" },
+      { text: "Update Day", value: "updateDay" }
+    ]);
+    const items = ref<Item[]>([]);
+    const serverItemsLength = ref(0);
+    const serverOptions = ref<ServerOptions>({
+      page: 1,
+      rowsPerPage: 5,
+    });
+    const loading = ref(false);
 
+<<<<<<< HEAD
 const sortBy: string[] = ["NearMiss No.", "Name", "Department", "Date", "where?", "Type of accident", "Description/Learning", "Factor", "Injured lv", "Equipment damage lv", "Affect of enviroment", "News coverage", "Affect of quality", "Measures", "Need Action?", "Solved Items?",];
 const sortType: SortType[] = ["desc", "asc"];
 
@@ -119,21 +115,50 @@ onMounted(async () => {
           item.nearMissList.forEach(nearMiss => {
             NearMiss.value.push(nearMiss);
           });
+=======
+    const loadFromServer = async () => {
+      loading.value = true;
+      try {
+        const response = await axios.get(`http://127.0.0.1:8000/api/nearMiss/nearMissByCompany/?format=json&companyCode=${companyCode}&page=${serverOptions.value.page}&limit=${serverOptions.value.rowsPerPage}`);
+        console.log("API response:", response.data);
+        if (response.data && Array.isArray(response.data) && response.data.length > 0) {
+          const allNearMissLists = response.data.flatMap(data => data.nearMissList);
+          items.value = allNearMissLists;
+          serverItemsLength.value = allNearMissLists.length;
+          console.log("Loaded items:", items.value);
+        } else {
+          items.value = [];
+          serverItemsLength.value = 0;
+          console.log("No data found or empty nearMissList");
+>>>>>>> yoshitaka69-20240509
         }
-      });
+      } catch (error) {
+        console.error("Failed to load data from server:", error);
+        items.value = [];
+        serverItemsLength.value = 0;
+      } finally {
+        loading.value = false;
+      }
+    };
 
-      console.log("Consolidated Near Miss Data:", NearMiss.value);
-    } else {
-      console.log("No data received or data structure is incorrect");
-    }
-  } catch (error) {
-    console.error("Axios Error:", error); // エラー内容をログ出力
-    if (error.response) {
-      // サーバーからの応答が存在する場合、その詳細をログ出力
-      console.log("Error Response:", error.response);
-    }
-  }
+    // first load when created
+    loadFromServer();
+
+    watch(serverOptions, (value) => {
+      console.log("Server options changed, reloading data:", value);
+      loadFromServer();
+    }, { deep: true });
+
+    return {
+      headers,
+      items,
+      serverOptions,
+      serverItemsLength,
+      loading,
+    };
+  },
 });
+<<<<<<< HEAD
 <<<<<<< HEAD
 
 
@@ -142,3 +167,21 @@ onMounted(async () => {
 =======
 </script>
 >>>>>>> 3c1fa7114a4f2ba2fa60465adf06054576761a2c
+=======
+</script>
+
+<style>
+.customize-table {
+
+  --easy-table-border: 1px solid #445269;
+  --easy-table-row-border: 1px solid #445269;
+
+  --easy-table-header-font-size: 14px;
+  --easy-table-header-height: 50px;
+  --easy-table-header-font-color: #c1cad4;
+  --easy-table-header-background-color: #2d3a4f;
+
+
+}
+</style>
+>>>>>>> yoshitaka69-20240509

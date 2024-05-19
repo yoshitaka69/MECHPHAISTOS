@@ -112,6 +112,16 @@ const TableComponent = defineComponent({
 					},
 
 				],
+				
+				afterGetColHeader: (col, TH) => {
+                    if (col === -1) {  // ヘッダー行の場合
+                        return;
+                    }
+                    // 特定の列インデックスまたはすべてのヘッダーに適用したい場合
+                    TH.style.backgroundColor = '#FFCC99'; // 薄いオレンジ色
+                    TH.style.color = 'black';
+					TH.style.fontWeight = 'bold';  // テキストを太字に設定
+                },
 
 				width: '100%',
 				height: 'auto',

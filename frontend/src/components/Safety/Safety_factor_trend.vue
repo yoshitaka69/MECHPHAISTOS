@@ -10,19 +10,19 @@
 </template>
 
 <script>
-import Plotly from "plotly.js-dist-min";
-import axios from "axios";
+import Plotly from 'plotly.js-dist-min';
+import axios from 'axios';
 
 export default {
   data() {
     return {
       x: [],
-      y: [],
+      y: []
     };
   },
 
   mounted() {
-    axios.get("http://127.0.0.1:8000/api/nearMiss/?format=json").then((response) => {
+    axios.get('http://127.0.0.1:8000/api/nearMiss/?format=json').then((response) => {
       // データから年ごとの factors のカウントを抽出
       const dataByYear = response.data.reduce((acc, item) => {
         const year = new Date(item.date).getFullYear();
@@ -35,18 +35,18 @@ export default {
       }, {});
 
       // データをPlotlyのtraceに変換
-      const factors = ["Rule", "Methods", "Person", "Equipment"];
+      const factors = ['Rule', 'Methods', 'Person', 'Equipment'];
       const traces = factors.map((factor) => ({
         x: Object.keys(dataByYear),
         y: Object.values(dataByYear).map((count) => count[factor]),
-        type: "bar",
-        name: factor,
+        type: 'bar',
+        name: factor
       }));
 
-      const layout = { barmode: "stack" };
+      const layout = { barmode: 'stack' };
 
-      Plotly.newPlot("sft", traces, layout);
+      Plotly.newPlot('sft', traces, layout);
     });
-  },
+  }
 };
 </script>

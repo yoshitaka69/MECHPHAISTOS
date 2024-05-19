@@ -1,9 +1,7 @@
 <template>
-  <div>
-    <v-card>
-      <v-card-title>PM04 Actual cost</v-card-title>
-      <div id="rpcPM04"></div>
-    </v-card>
+  <div style="width: 100%; height: 100%;">
+    PM04 Actual cost
+    <div id="rpcPM04A" style="width: 100%; height: 100%;"></div>
   </div>
 </template>
 
@@ -88,7 +86,7 @@ export default {
           title: 'Repairing Cost',
         };
 
-        Plotly.newPlot('rpcPM04', plotData, layout);
+        Plotly.newPlot('rpcPM04A', plotData, layout);
       })
       .catch(error => {
         console.error('Error plotting Repairing Cost graph:', error);

@@ -1,92 +1,99 @@
 <template>
-    <div class="container">
-        <div class="clock_hou">
-            <div class="date">
-                <p>{{ year }}/{{ month }}/{{ day }}</p>
-            </div>
-            <div class="time">
-                <p>
-                    {{ hours }}:{{ minutes }}<span class="second">:{{ seconds }}</span>
-                </p>
-            </div>
-        </div>
+    <div class="clock">
+      <div class="digital">
+        <span>{{ time.format('HH:mm') }}</span>
+      </div>
+      <div class="date">{{ time.format('YYYY-MM-DD') }}</div>
+      <div class="greeting">{{ greeting }}</div>
+      <div class="offset">{{ offset }}</div>
     </div>
-</template>
-
-<script>
-export default{
-    name : "Clock",
-    data(){
-        return{
-            date:new Date(),
-        };
+  </template>
+  
+  <script>
+  import moment from 'moment-timezone';
+  
+  export default {
+    props: ['timezone'],
+    data() {
+      return {
+        time: moment().tz(this.timezone),
+        localTime: moment()
+      };
     },
-    computed:{
-        year(){
-            return this.date.getFullYear();
-        },
-
-        month(){
-            return this.date.getMonth() +1;
-        },
-
-        day(){
-            return this.dateTimePadding(this.date.getDate());
-        },
-        hours(){
-            return this.dateTimePadding(this.date.getHours());
-        },
-        minutes(){
-            return this.dateTimePadding(this.date.getMinutes())
-        },
-        seconds(){
-            return this.dateTimePadding(this.date.getSeconds())
-        },
-        },
-        mounted(){
-            this.setDate();
-            setInterval(() => this.setDate(),1000);
-        },
-
-    methods:{
-        dateTimePadding(num){
-            return("0"+num).slice(-2);
-        },
-        setDate(){
-            this.date = new Date();
-        },
+    computed: {
+      greeting() {
+        const hours = this.time.hours();
+        if (hours >= 5 && hours < 12) {
+          return 'Morning';
+        } else if (hours >= 12 && hours < 17) {
+          return 'Afternoon';
+        } else if (hours >= 17 && hours < 21) {
+          return 'Evening';
+        } else {
+          return 'Night';
+        }
+      },
+      offset() {
+        const offsetMinutes = this.time.utcOffset() - this.localTime.utcOffset();
+        const offsetHours = offsetMinutes / 60;
+        const sign = offsetHours >= 0 ? '+' : '-';
+        return `UTC ${sign}${Math.abs(offsetHours)}`;
+      }
+    },
+    methods: {
+      updateTime() {
+        this.time = moment().tz(this.timezone);
+        this.localTime = moment();
+      }
+    },
+    mounted() {
+      this.updateTime();
+      setInterval(this.updateTime, 1000);
     }
-}
-</script>
-
-<style scoped>
-.container{
-    height:100%;
-    display:flex;
-    flex-flow:column;
+  };
+  </script>
+  
+  <style scoped>
+  .clock {
+    width: 200px;
+    height: 100px;
+    position: relative;
+    margin: 20px;
+    display: flex;
     justify-content: center;
-    align-items:center;
-    background-color: #262626;
-}
-
-p{
-    margin:0px;
-}
-
-.date,
-.time{
-    font-weight: 700;
-    color:#00ff01;
-}
-.date{
-    font-size:16px;
-    text-align: right;
-}
-.time{
-    font-size: 70px;
-}
-.seconds{
-    font-size: 30px;
-}
-
-</style>
+    align-items: center;
+    border: 2px solid #333;
+    border-radius: 10px;
+    background-color: #1a1a1a;
+    color: #f0f0f0;
+    padding: 10px;
+  }
+  
+  .digital {
+    font-size: 2em;
+    font-family: 'Roboto', sans-serif;
+    font-weight: bold;
+  }
+  
+  .date {
+    position: absolute;
+    top: 5px;
+    left: 10px;
+    font-size: 0.8em;
+  }
+  
+  .greeting {
+    position: absolute;
+    bottom: 5px;
+    right: 10px;
+    font-size: 0.8em;
+  }
+  
+  .offset {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    font-size: 0.8em;
+  }
+  </style>
+  

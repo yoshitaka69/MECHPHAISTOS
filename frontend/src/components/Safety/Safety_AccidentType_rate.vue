@@ -1,96 +1,97 @@
 <template>
-  <div>
-    <!--<v-flex>-->
-    <v-card>
-      <v-card-title>Safety Accident type (world)</v-card-title>
-      <div id="SafeAccidentRate"></div>
-    </v-card>
-    <!--<v-flex>-->
+  <div ref="plotArea" style="width: 100%; height: 100%;">
+    <div id="SafeAccidentRate" style="width: 100%; height: 100%;"></div>
   </div>
 </template>
 
 <script>
 import Plotly from "plotly.js-dist-min";
 import axios from "axios";
-import { useUserStore } from '@/stores/userStore'; // Pinia ストアをインポート
+import { useUserStore } from '@/stores/userStore';
 
 export default {
   data() {
     return {
       values: {},
       error: null,
+      resizeObserver: null,
     };
   },
 
   mounted() {
-    const userStore = useUserStore();
-    const userCompanyCode = userStore.companyCode;
+    this.initialize();
+  },
 
-    if (!userCompanyCode) {
-      console.error("Error: No company code found for the user.");
-      return; // companyCodeがない場合、処理を中断
+  beforeDestroy() {
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect();
     }
+  },
 
-    const url = `http://127.0.0.1:8000/api/nearMiss/nearMissByCompany/?companyCode=${userCompanyCode}`;
-
-    axios.get(url, {
-      headers: {
-        "Content-Type": "application/json"
-      },
-      withCredentials: true
-    })
-      .then(response => {
+  methods: {
+    async initialize() {
+      const userStore = useUserStore();
+      const userCompanyCode = userStore.companyCode;
+      if (!userCompanyCode) {
+        console.error("Error: No company code found for the user.");
+        return;
+      }
+      try {
+        const url = `http://127.0.0.1:8000/api/nearMiss/nearMissByCompany/?companyCode=${userCompanyCode}`;
+        const response = await axios.get(url, {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true
+        });
         const nearMissData = response.data;
-        console.log("nearMissData", nearMissData);
-
-        // 全ての nearMissList をフラットなリストに変換
         const allNearMisses = nearMissData.flatMap(companyData => companyData.nearMissList);
-
-        console.log("allNearMisses", allNearMisses);
-
-        // typeOfAccident を抽出して配列を作成
         const typeArray = allNearMisses.map(item => item['typeOfAccident']);
-
-        console.log("typeArray:", typeArray);
-
-        // typeOfAccident の出現回数を集計
         this.values = typeArray.reduce((accumulator, typeOfAccident) => {
           accumulator[typeOfAccident] = (accumulator[typeOfAccident] || 0) + 1;
           return accumulator;
         }, {});
-
-
-
-        // グラフのデータ
-        let data = {
-          type: "pie",
-          values: Object.values(this.values),
-          labels: Object.keys(this.values),
-          textinfo: "label+percent",
-          insidetextorientation: "radial",
-        };
-
-        const layout = {
-          height: 550,
-          width: 550,
-          automargin: true,
-        };
-
-        const config = { responsive: true }
-
-        // SafeRate 要素が存在することを確認してからグラフを描画
-        if (document.getElementById('SafeAccidentRate')) {
-          console.log("Before plotting");  // 追加
-          Plotly.newPlot('SafeAccidentRate', [data], layout, config);
-
-          console.log("After plotting"); // 追加
-        } else {
-          console.error("Element with id 'SafeAccidentRate' not found.");
-        }
-      })
-      .catch(error => {
+        this.plotGraph();
+      } catch (error) {
         console.error("Error fetching data:", error);
+      }
+      this.setupResizeObserver();
+    },
+
+    setupResizeObserver() {
+      this.resizeObserver = new ResizeObserver(entries => {
+        for (let entry of entries) {
+          if (entry.target === this.$refs.plotArea.parentNode) {
+            this.resizePlot();
+          }
+        }
       });
+      this.resizeObserver.observe(this.$refs.plotArea.parentNode); // 監視対象を設定
+    },
+
+    resizePlot() {
+      const width = this.$refs.plotArea.clientWidth;
+      const height = this.$refs.plotArea.clientHeight;
+      this.plotGraph(width, height);
+    },
+
+    plotGraph(width, height) {
+      const data = [{
+        type: "pie",
+        values: Object.values(this.values),
+        labels: Object.keys(this.values),
+        textinfo: "label+percent",
+        insidetextorientation: "radial"
+      }];
+
+      const layout = {
+        width: width,
+        height: height,
+        margin: { l: 5, r: 5, t: 5, b: 5 },
+        showlegend: false
+      };
+
+      const config = { responsive: true };
+      Plotly.newPlot('SafeAccidentRate', data, layout, { displayModeBar: false }, config);
+    }
   },
 };
 </script>

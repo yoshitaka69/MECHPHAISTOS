@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import MasterDataTable,BomAndTask,CeListAndTask,BadActorManagement,EventYearPPM
+from .models import MasterDataTable,BomAndTask,CeListAndTask,BadActorManagement,EventYearPPM,GapOfRepairingCost
 
 class MasterDataTableAdmin(admin.ModelAdmin):
 
@@ -58,9 +58,9 @@ class BadActorManagementAdmin(admin.ModelAdmin):
 
 class EventYearPPMAdmin(admin.ModelAdmin):
 
-    list_display = ('companyCode', 'companyName', 'plant', 'equipment', 'machine','PPM0YearCost', 'PPM1YearCost', 'PPM2YearCost' ,'PPM3YearCost' , 'PPM4YearCost' ,'PPM5YearCost', 'PPM6YearCost', 'PPM7YearCost', 'PPM8YearCost', 'PPM9YearCost', 'PPM10YearCost')
-    search_fields = ('companyCode', 'companyName', 'plant', 'equipment', 'machine','PPM0YearCost', 'PPM1YearCost', 'PPM2YearCost' ,'PPM3YearCost' , 'PPM4YearCost' ,'PPM5YearCost', 'PPM6YearCost', 'PPM7YearCost', 'PPM8YearCost', 'PPM9YearCost', 'PPM10YearCost')
-    list_filter = ('companyCode', 'companyName', 'plant', 'equipment', 'machine','PPM0YearCost', 'PPM1YearCost', 'PPM2YearCost' ,'PPM3YearCost' , 'PPM4YearCost' ,'PPM5YearCost', 'PPM6YearCost', 'PPM7YearCost', 'PPM8YearCost', 'PPM9YearCost', 'PPM10YearCost') # adminで右側にあるフィルターBOXのこと
+    list_display = ('companyCode', 'companyName', 'plant', 'equipment', 'machine','PPM10YearCostAgo', 'PPM9YearCostAgo', 'PPM8YearCostAgo' ,'PPM7YearCostAgo' , 'PPM6YearCostAgo' ,'PPM5YearCostAgo', 'PPM4YearCostAgo', 'PPM3YearCostAgo', 'PPM2YearCostAgo', 'PPM1YearCostAgo', 'PPM10YearCost','PPM0YearCost', 'PPM1YearCost', 'PPM2YearCost' ,'PPM3YearCost' , 'PPM4YearCost' ,'PPM5YearCost', 'PPM6YearCost', 'PPM7YearCost', 'PPM8YearCost', 'PPM9YearCost', 'PPM10YearCost')
+    search_fields = ('companyCode', 'companyName', 'plant', 'equipment', 'machine','PPM10YearCostAgo', 'PPM9YearCostAgo', 'PPM8YearCostAgo' ,'PPM7YearCostAgo' , 'PPM6YearCostAgo' ,'PPM5YearCostAgo', 'PPM4YearCostAgo', 'PPM3YearCostAgo', 'PPM2YearCostAgo', 'PPM1YearCostAgo', 'PPM10YearCost','PPM0YearCost', 'PPM1YearCost', 'PPM2YearCost' ,'PPM3YearCost' , 'PPM4YearCost' ,'PPM5YearCost', 'PPM6YearCost', 'PPM7YearCost', 'PPM8YearCost', 'PPM9YearCost', 'PPM10YearCost')
+    list_filter = ('companyCode', 'companyName', 'plant', 'equipment', 'machine','PPM10YearCostAgo', 'PPM9YearCostAgo', 'PPM8YearCostAgo' ,'PPM7YearCostAgo' , 'PPM6YearCostAgo' ,'PPM5YearCostAgo', 'PPM4YearCostAgo', 'PPM3YearCostAgo', 'PPM2YearCostAgo', 'PPM1YearCostAgo', 'PPM10YearCost','PPM0YearCost', 'PPM1YearCost', 'PPM2YearCost' ,'PPM3YearCost' , 'PPM4YearCost' ,'PPM5YearCost', 'PPM6YearCost', 'PPM7YearCost', 'PPM8YearCost', 'PPM9YearCost', 'PPM10YearCost') # adminで右側にあるフィルターBOXのこと
     ordering = ('companyCode',) # 表示する順番
     save_on_top = True #上部にもsaveボタンを配置
 
@@ -69,6 +69,17 @@ class EventYearPPMAdmin(admin.ModelAdmin):
 
 
 
+
+class GapOfRepairingCostAdmin(admin.ModelAdmin):
+
+    list_display = ('companyCode', 'companyName', 'plant', 'equipment', 'machine','GapCostPPM10Ago','GapCostPPM9Ago','GapCostPPM8Ago','GapCostPPM7Ago','GapCostPPM6Ago','GapCostPPM5Ago','GapCostPPM4Ago','GapCostPPM3Ago','GapCostPPM2Ago','GapCostPPM1Ago', 'GapCostPPM0', 'GapCostPPM1','GapCostPPM2','GapCostPPM3','GapCostPPM4','GapCostPPM5','GapCostPPM6','GapCostPPM7','GapCostPPM8','GapCostPPM9','GapCostPPM10')
+    search_fields = ('companyCode', 'companyName', 'plant', 'equipment', 'machine','GapCostPPM10Ago','GapCostPPM9Ago','GapCostPPM8Ago','GapCostPPM7Ago','GapCostPPM6Ago','GapCostPPM5Ago','GapCostPPM4Ago','GapCostPPM3Ago','GapCostPPM2Ago','GapCostPPM1Ago', 'GapCostPPM0', 'GapCostPPM1','GapCostPPM2','GapCostPPM3','GapCostPPM4','GapCostPPM5','GapCostPPM6','GapCostPPM7','GapCostPPM8','GapCostPPM9','GapCostPPM10')
+    list_filter = ('companyCode', 'companyName', 'plant', 'equipment', 'machine','GapCostPPM10Ago','GapCostPPM9Ago','GapCostPPM8Ago','GapCostPPM7Ago','GapCostPPM6Ago','GapCostPPM5Ago','GapCostPPM4Ago','GapCostPPM3Ago','GapCostPPM2Ago','GapCostPPM1Ago', 'GapCostPPM0', 'GapCostPPM1','GapCostPPM2','GapCostPPM3','GapCostPPM4','GapCostPPM5','GapCostPPM6','GapCostPPM7','GapCostPPM8','GapCostPPM9','GapCostPPM10') # adminで右側にあるフィルターBOXのこと
+    ordering = ('companyCode',) # 表示する順番
+    save_on_top = True #上部にもsaveボタンを配置
+
+
+    list_per_page = 50 # １ページあたりに表示するオブジェクト数を指定
 
 
 
@@ -80,4 +91,5 @@ admin.site.register(BomAndTask,BomAndTaskAdmin)
 admin.site.register(CeListAndTask,CeListAndTaskAdmin)
 admin.site.register(BadActorManagement,BadActorManagementAdmin)
 admin.site.register(EventYearPPM,EventYearPPMAdmin)
+admin.site.register(GapOfRepairingCost,GapOfRepairingCostAdmin)
 

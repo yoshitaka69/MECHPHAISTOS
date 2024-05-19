@@ -1,11 +1,7 @@
 <template>
-  <div>
-    <v-flex>
-      <v-card>
-        <v-card-title>PM03 Actual cost</v-card-title>
-        <div id="rpcPM03"></div>
-      </v-card>
-    </v-flex>
+  <div style="width: 100%; height: 100%;">
+    PM03 Actual cost
+    <div id="rpcPM03A" style="width: 100%; height: 100%;"></div>
   </div>
 </template>
 
@@ -22,79 +18,71 @@ export default {
   },
 
   mounted() {
-  const getRepairingCostData = async () => {
-    try {
+    this.getRepairingCostData().then(data => {
+      this.RepairingCostData = data;
+      this.plotGraph(); // データ取得後にグラフを描画
+    }).catch(error => {
+      console.error('Error during data fetching or plotting:', error);
+    });
+
+    const graphContainer = document.getElementById('rpcPM03A');
+    const resizeObserver = new ResizeObserver(() => {
+      this.plotGraph(); // サイズ変更時にグラフを再描画
+    });
+    resizeObserver.observe(graphContainer);
+  },
+
+  methods: {
+    async getRepairingCostData() {
       const userStore = useUserStore();
       const userCompanyCode = userStore.companyCode;
 
       if (!userCompanyCode) {
-        console.error("Error: No company code found for the user.");
-        return; // 処理を中断
+        throw new Error("Error: No company code found for the user.");
       }
 
       const url = `http://127.0.0.1:8000/api/repairingCost/APM03ByCompany/?format=json&companyCode=${userCompanyCode}`;
       const response = await axios.get(url);
-      console.log("Fetched RepairingCost Data:", response.data); // データ取得ログ
 
-      let repairingCostData = response.data;
-      for (const companyData of repairingCostData) {
-        for (const plantData of companyData.actualPM03List) {
-          const actualPM03Data = plantData.actualPM03;
+      return response.data.flatMap(companyData =>
+        companyData.actualPM03List.flatMap(plantData =>
+          plantData.actualPM03.map(yearData => {
+            const months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec", "commitment", "totalCost"];
+            return {
+              plant: plantData.plant,
+              data: months.map(month => ({
+                month: month,
+                cost: parseFloat(yearData[month]) || 0
+              })).filter(monthData => monthData.cost !== 0)
+            };
+          })
+        )
+      );
+    },
 
-            // 各月ごとのデータを新しい形式に変換
-            actualPM03Data.forEach(yearData => {
-              const months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec", "commitment", "totalCost"];
-              let monthCosts = [];
-              months.forEach(month => {
-                if (yearData[month]) {
-                  monthCosts.push({
-                    month: month,
-                    cost: parseFloat(yearData[month])
-                  });
-                }
-              });
+    plotGraph() {
+      const plotData = this.RepairingCostData.map(plantData => ({
+        x: plantData.data.map(entry => entry.month),
+        y: plantData.data.map(entry => entry.cost),
+        name: plantData.plant,
+        type: 'scatter'
+      }));
 
-              this.RepairingCostData.push({
-                plant: plantData.plant,
-                data: monthCosts
-              });
-            });
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching RepairingCost data:', error);
-      }
-    };
+      const graphContainer = document.getElementById('rpcPM03A');
+      const layout = {
+        height: graphContainer.clientHeight,
+        width: graphContainer.clientWidth,
+        title: 'Repairing Cost PM03 Actual'
+      };
 
-    // 上記関数の実行
-    getRepairingCostData()
-      .then(() => {
-        // 取得したデータを使ってグラフを描画
-        const plotData = this.RepairingCostData.map(plantData => {
-          const xValues = plantData.data.map(entry => entry.month);
-          const yValues = plantData.data.map(entry => entry.cost);
-
-          let trace = {
-            x: xValues,
-            y: yValues,
-            name: plantData.plant,
-          };
-
-          return trace;
-        });
-
-        const layout = {
-          height: 500,
-          width: 600,
-          title: 'Repairing Cost',
-        };
-
-        Plotly.newPlot('rpcPM03', plotData, layout);
-      })
-      .catch(error => {
-        console.error('Error plotting Repairing Cost graph:', error);
-        throw error;
-      });
+      Plotly.newPlot('rpcPM03A', plotData, layout);
+    }
   },
+
+  beforeDestroy() {
+    if (resizeObserver) {
+      resizeObserver.disconnect();
+    }
+  }
 };
 </script>

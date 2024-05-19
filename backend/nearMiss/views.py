@@ -17,10 +17,9 @@ class CompanyNearMissViewSet(viewsets.ModelViewSet):
     queryset = CompanyCode.objects.all()
     serializer_class = CompanyNearMissSerializer
 
-  
     #クエリパラメータでのフィルターリング
     def get_queryset(self):
-        queryset = CompanyCode.objects.prefetch_related('safetyIndicators_companyCode').all()
+        queryset = CompanyCode.objects.prefetch_related('nearMiss_companyCode').all()
         company_code = self.request.query_params.get('companyCode', None)
         if company_code:
             queryset = queryset.filter(companyCode=company_code)

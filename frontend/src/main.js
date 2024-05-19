@@ -1,18 +1,24 @@
-import { createApp } from 'vue';
-import App from './App.vue';
-import router from './router';
+import './assets/styles.scss'
+
+import { createApp } from 'vue'
+import { createPinia } from 'pinia'
+
+import App from './App.vue'
+import router from './router'
+
+
+
+
 
 //axios
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 
-//pinia
-import { createPinia } from 'pinia';
-
 //vue3-easy-data-table
 import Vue3EasyDataTable from 'vue3-easy-data-table';
 import 'vue3-easy-data-table/dist/style.css';
 
+<<<<<<< HEAD
 /*handsontable
 the base module
 import Handsontable from 'handsontable/base';
@@ -96,19 +102,22 @@ import {
   UndoRedo,
 } from 'handsontable/plugins';
 */
+=======
+>>>>>>> yoshitaka69-20240509
 
 // registering functions that let you quickly register all modules at once
 import {
-  registerAllCellTypes,
-  registerAllRenderers,
-  registerAllEditors,
-  registerAllValidators,
-  registerAllPlugins,
-  registerAllModules,
-} from 'handsontable/registry'
+    registerAllCellTypes,
+    registerAllRenderers,
+    registerAllEditors,
+    registerAllValidators,
+    registerAllPlugins,
+    registerAllModules,
+  } from 'handsontable/registry'
 
 //primeVue
 import PrimeVue from 'primevue/config';
+import 'primevue/resources/themes/aura-light-green/theme.css'
 import AutoComplete from 'primevue/autocomplete';
 import Accordion from 'primevue/accordion';
 import AccordionTab from 'primevue/accordiontab';
@@ -211,10 +220,9 @@ import TreeSelect from 'primevue/treeselect';
 import TreeTable from 'primevue/treetable';
 import TriStateCheckbox from 'primevue/tristatecheckbox';
 import VirtualScroller from 'primevue/virtualscroller';
-import '@/assets/styles.scss';
-import '@/assets/flags.css';
-import "primeflex/primeflex.css";
+import 'primeicons/primeicons.css'
 
+<<<<<<< HEAD
 // PrimeVue のコアスタイル
 import 'primevue/resources/primevue.min.css';
 // テーマのスタイル
@@ -225,20 +233,28 @@ import 'primeicons/primeicons.css';
 
 
 const app = createApp(App);
+=======
+const app = createApp(App)
+
+// Pinia ストアを作成して登録
+>>>>>>> yoshitaka69-20240509
 const pinia = createPinia();
+app.use(pinia);
 
 app.use(router);
+app.use(VueAxios, axios);
+
+
 app.use(PrimeVue, { ripple: true });
 app.use(ToastService);
 app.use(DialogService);
 app.use(ConfirmationService);
 
+
 app.directive('tooltip', Tooltip);
 app.directive('badge', BadgeDirective);
 app.directive('ripple', Ripple);
 app.directive('styleclass', StyleClass);
-
-
 
 app.component('Accordion', Accordion);
 app.component('AccordionTab', AccordionTab);
@@ -336,7 +352,6 @@ app.component('TreeTable', TreeTable);
 app.component('TriStateCheckbox', TriStateCheckbox);
 app.component('VirtualScroller', VirtualScroller);
 
-
 //vue3-easy-data-table
 app.component('EasyDataTable', Vue3EasyDataTable);
 
@@ -355,6 +370,4 @@ registerAllPlugins();
 registerAllModules();
 
 
-app.use(pinia);
-app.use(VueAxios, axios);
-app.mount('#app');
+app.mount('#app')

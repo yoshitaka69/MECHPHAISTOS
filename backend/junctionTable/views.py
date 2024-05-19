@@ -1,13 +1,14 @@
 from django.shortcuts import render
 from rest_framework import viewsets
 
-from .models import MasterDataTable,BomAndTask,CeListAndTask,BadActorManagement,EventYearPPM
+from .models import MasterDataTable,BomAndTask,CeListAndTask,BadActorManagement,EventYearPPM,GapOfRepairingCost
 from accounts.models import CompanyCode
 from .serializers import  (MasterDataTableSerializer, CompanyCodeMDTSerializer,
                            BomAndTaskSerializer,CompanyCodeBomAndTaskSerializer,
                            CeListAndTaskSerializer,CompanyCodeCeListAndTaskSerializer,
                            BadActorManagementSerializer,CompanyCodeBadActorSerializer,
-                           EventYearPPMSerializer,CompanyCodeEventYearPPMSerializer,)
+                           EventYearPPMSerializer,CompanyCodeEventYearPPMSerializer,
+                           GapOfRepairingCostSerializer,CompanyCodeGapOfRepairingCostSerializer,)
 
 
 #MasterDataTable
@@ -106,3 +107,21 @@ class CompanyCodeEventYearPPMViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(companyCode=company_code)
         return queryset
     
+
+
+
+
+class GapOfRepairingCostViewSet(viewsets.ModelViewSet):
+    queryset = GapOfRepairingCost.objects.all()
+    serializer_class = GapOfRepairingCostSerializer
+
+class CompanyCodeGapOfRepairingCostViewSet(viewsets.ModelViewSet):
+    serializer_class = CompanyCodeGapOfRepairingCostSerializer
+
+#クエリパラメータでのフィルターリング
+    def get_queryset(self):
+        queryset = CompanyCode.objects.prefetch_related('gapOfRepairingCost_companyCode').all()
+        company_code = self.request.query_params.get('companyCode', None)
+        if company_code:
+            queryset = queryset.filter(companyCode=company_code)
+        return queryset

@@ -1,33 +1,31 @@
 <template>
     <div>
-        <v-card>
-            <v-card-title>Total Graph (Planned vs Actual)</v-card-title>
-            <div id="Totalrpc" style="width: 100%; height: 100%"></div>
-        </v-card>
+        Total Graph (Planned vs Actual)
+        <div id="Totalrpc" style="width: 100%; height: 100%"></div>
     </div>
-</template>
-
-<script>
-import Plotly from 'plotly.js-dist-min';
-import axios from 'axios';
-import { useUserStore } from '@/stores/userStore';
-import { onMounted, ref } from 'vue';
-
-export default {
+  </template>
+  
+  <script>
+  import Plotly from 'plotly.js-dist-min';
+  import axios from 'axios';
+  import { useUserStore } from '@/stores/userStore';
+  import { onMounted, onUnmounted, ref } from 'vue';
+  
+  export default {
     setup() {
         const userStore = useUserStore();
         const repairingCostData = ref([]);
         const actualCostData = ref([]);
         const plannedCostDataStack = ref([]);
         const actualCostDataStack = ref([]);
-
+  
         const getRepairingCostData = async () => {
             const companyCode = userStore.companyCode;
             if (!companyCode) {
                 console.error('No company code found.');
                 return;
             }
-
+  
             const url = `http://127.0.0.1:8000/api/repairingCost/PPM02ByCompany/?format=json&companyCode=${companyCode}`;
             try {
                 const response = await axios.get(url);
@@ -38,14 +36,15 @@ export default {
                 console.error('Error fetching Repairing Cost data:', error);
             }
         };
-
+        
+  
         const getActualCostData = async () => {
             const companyCode = userStore.companyCode;
             if (!companyCode) {
                 console.error('No company code found.');
                 return;
             }
-
+  
             const url = `http://127.0.0.1:8000/api/calculation/summedActualCostByCompany/?format=json&companyCode=${companyCode}`;
             try {
                 const response = await axios.get(url);
@@ -57,34 +56,34 @@ export default {
                 console.error('Error fetching actual cost data:', error);
             }
         };
-
+  
         const fetchData = async () => {
             const companyCode = userStore.companyCode;
             if (!companyCode) {
                 console.error('No company code found.');
                 return;
             }
-
+  
             const currentYear = new Date().getFullYear().toString();
             const plannedURL = `http://127.0.0.1:8000/api/calculation/summedPlannedCostByCompany/?format=json&companyCode=${companyCode}`;
             const actualURL = `http://127.0.0.1:8000/api/calculation/summedActualCostByCompany/?format=json&companyCode=${companyCode}`;
-
+  
             try {
                 const [plannedResponse, actualResponse] = await Promise.all([axios.get(plannedURL), axios.get(actualURL)]);
-
+  
                 plannedCostDataStack.value = plannedResponse.data.flatMap((company) => company.summedPlannedCostList.filter((item) => item.year.toString() === currentYear));
-
+  
                 actualCostDataStack.value = actualResponse.data.flatMap((company) => company.summedActualCostList.filter((item) => item.year.toString() === currentYear));
             } catch (error) {
                 console.error('Error fetching cost data:', error);
             }
         };
-
+  
         onMounted(async () => {
             await getRepairingCostData();
             await getActualCostData();
             await fetchData();
-
+  
             const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Commitment', 'TotalCost'];
             const lineTraces = repairingCostData.value.map((plant) => {
                 const pmData = plant.plannedPM02[0];
@@ -97,12 +96,12 @@ export default {
                     name: plant.plant
                 };
             });
-
+  
             const barTraces = actualCostData.value.map((costData) => {
                 const xValues = Object.keys(costData).filter((key) => key.startsWith('sum') || key === 'totalActualCost');
                 const formattedXValues = xValues.map((key) => key.replace('sum', '').replace('totalActualCost', 'TotalCost'));
                 const yValues = xValues.map((key) => parseFloat(costData[key] || 0));
-
+  
                 return {
                     x: formattedXValues,
                     y: yValues,
@@ -110,9 +109,9 @@ export default {
                     name: costData.plant || 'Total Cost'
                 };
             });
-
+  
             const barTracesStack = [];
-
+  
             plannedCostDataStack.value.forEach((data) => {
                 barTracesStack.push({
                     x: ['Planned'],
@@ -133,7 +132,7 @@ export default {
                     type: 'bar'
                 });
             });
-
+  
             actualCostDataStack.value.forEach((data) => {
                 barTracesStack.push({
                     x: ['Actual'],
@@ -160,25 +159,42 @@ export default {
                     type: 'bar'
                 });
             });
-
+  
             console.log([...lineTraces, ...barTraces, ...barTracesStack]); // トレース内容の確認
-
-            const layout = {
-                title: 'Total Graph (Planned vs Actual)',
-                barmode: 'stack',
-                height: 400,
-                width: 900
-            };
-
-            Plotly.newPlot('Totalrpc', [...lineTraces, ...barTraces, ...barTracesStack], layout);
-        });
-
+  
+            const updateGraphSize = () => {
+      const graphContainer = document.getElementById('Totalrpc').parentElement;
+      graphContainer.style.height = window.innerHeight + 'px';
+      const layout = {
+          title: 'Total Graph (Planned vs Actual)',
+          barmode: 'stack',
+          height: graphContainer.offsetHeight,
+          width: graphContainer.offsetWidth
+      };
+  
+      Plotly.newPlot('Totalrpc', [...lineTraces, ...barTraces, ...barTracesStack], layout);
+  };
+  
+  window.addEventListener('resize', updateGraphSize);
+  
+  // Call once to set initial size
+  updateGraphSize();
+  });
+  
+  onUnmounted(() => {
+      window.removeEventListener('resize', updateGraphSize);
+  });
         return {
             repairingCostData,
             actualCostData,
             plannedCostDataStack,
             actualCostDataStack
         };
-    }
-};
-</script>
+    },
+  
+    beforeDestroy() {
+      window.removeEventListener('resize', this.updateGraphSize);
+  },
+  };
+  </script>
+  
