@@ -1,245 +1,293 @@
 <template>
-    <div class="gantt-chart">
-        <!-- sub gantt-chart領域 -->
-        <div class="new-task-bars-column">
-            <div class="new-task-bar-container">
-                <div class="sub-custom-grid-lines">
-                    <div v-for="date in dates" :key="date" class="sub-task-bar-grid-line"></div>
-                </div>
-            </div>
+  <div class="gantt-chart">
+    <!-- sub gantt-chart領域 -->
+    <div class="new-task-bars-column">
+      <div class="new-task-bar-container">
+        <div class="sub-custom-grid-lines">
+          <div v-for="date in dates" :key="date" class="sub-task-bar-grid-line"></div>
         </div>
-
-        <!-- スペースを追加 -->
-        <div class="spacer"></div>
-
-        <!-- main gantt-chart領域 -->
-        <div class="header">
-            <div class="task-header-column" ref="taskHeaderColumn">
-                <div class="task-header">タスク名</div>
-                <div class="task-header">内容</div>
-                <div class="task-header">担当</div>
-                <div class="task-header">進捗</div>
-            </div>
-            <div class="date-header-column" ref="dateHeader">
-                <div class="year-month-row">
-                    <div class="year-month-item" v-for="(month, index) in groupedDates" :key="index" :style="{ gridColumnEnd: `span ${month.days.length}` }">{{ month.year }}年 {{ month.month }}月</div>
-                </div>
-                <div class="day-row">
-                    <div class="header-item" v-for="date in dates" :key="date" :class="{ saturday: isSaturday(date), sunday: isSunday(date) }">
-                        <span>{{ formatDay(date) }}<br />{{ formatWeekday(date) }}</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="rows">
-            <div class="task-names-column" ref="taskNamesColumn">
-                <div class="task-name" v-for="task in tasks" :key="task.id">
-                    <div class="task-field">
-                        <input v-model="task.name" class="task-input" />
-                    </div>
-                    <div class="task-field">
-                        <input v-model="task.content" class="task-input" />
-                    </div>
-                    <div class="task-field">
-                        <input v-model="task.assignee" class="task-input" />
-                    </div>
-                    <div class="task-field">
-                        <input v-model="task.progress" class="task-input" />
-                    </div>
-                </div>
-            </div>
-            <div class="task-bars-column" ref="taskBars" @scroll="syncScroll">
-                <div class="custom-grid-lines" ref="customGridLines">
-                    <div v-for="date in dates" :key="date" class="task-bar-grid-line">
-                        <div :class="{ 'saturday-bg': isSaturday(date), 'sunday-bg': isSunday(date) }"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
+
+    <!-- スペースを追加 -->
+    <div class="spacer"></div>
+
+    <!-- main gantt-chart領域 -->
+    <div class="header">
+      <div class="task-header-column" ref="taskHeaderColumn">
+        <div class="task-header">タスク名</div>
+        <div class="task-header">内容</div>
+        <div class="task-header">担当</div>
+        <div class="task-header">進捗</div>
+      </div>
+      <div class="date-header-column" ref="dateHeader">
+        <div class="year-month-row">
+          <div
+            class="year-month-item"
+            v-for="(month, index) in groupedDates"
+            :key="index"
+            :style="{ gridColumnEnd: `span ${month.days.length}` }"
+          >
+            {{ month.year }}年 {{ month.month }}月
+          </div>
+        </div>
+        <div class="day-row">
+          <div
+            class="header-item"
+            v-for="date in dates"
+            :key="date"
+            :class="{ saturday: isSaturday(date), sunday: isSunday(date) }"
+          >
+            <span>{{ formatDay(date) }}<br />{{ formatWeekday(date) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="rows">
+      <div class="task-names-column" ref="taskNamesColumn">
+        <div class="task-name" v-for="task in tasks" :key="task.id">
+          <div class="task-field">
+            <input v-model="task.name" class="task-input" />
+          </div>
+          <div class="task-field">
+            <input v-model="task.content" class="task-input" />
+          </div>
+          <div class="task-field">
+            <input v-model="task.assignee" class="task-input" />
+          </div>
+          <div class="task-field">
+            <input v-model="task.progress" class="task-input" />
+          </div>
+        </div>
+      </div>
+      <div class="task-bars-column" ref="taskBars" @scroll="syncScroll">
+        <div class="custom-grid-lines" ref="customGridLines">
+          <div
+            v-for="task in tasks"
+            :key="task.id"
+            class="task-bar"
+            :style="getTaskBarStyle(task)"
+            @mousedown="selectTask(task)"
+          >
+            {{ task.name }}
+          </div>
+          <div v-for="date in dates" :key="date" class="task-bar-grid-line">
+            <div :class="{ 'saturday-bg': isSaturday(date), 'sunday-bg': isSunday(date) }"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
+
+
 
 <script>
 export default {
-    data() {
-        return {
-            dates: this.generateDates(new Date(2024, 3, 1), 90), // Start from April 1, 2024 for 3 months
-            tasks: [
-                { id: 1, name: 'Task 1', content: 'Content 1', assignee: 'User 1', progress: '0%', start: new Date(2024, 3, 1), end: new Date(2024, 3, 10) },
-                { id: 2, name: 'Task 2', content: 'Content 2', assignee: 'User 2', progress: '50%', start: new Date(2024, 3, 5), end: new Date(2024, 3, 15) },
-                { id: 3, name: 'Task 3', content: 'Content 3', assignee: 'User 3', progress: '100%', start: new Date(2024, 3, 12), end: new Date(2024, 3, 20) }
-            ],
-            gridItemWidth: 30, // グリッド項目の幅を設定
-            taskHeaderWidth: 0 // タスクヘッダーの横幅を保持
-        };
-    },
-    computed: {
-        groupedDates() {
-            const grouped = [];
-            let currentMonth = null;
+  data() {
+    return {
+      dates: this.generateDates(new Date(2024, 3, 1), 90), // Start from April 1, 2024 for 3 months
+      tasks: [
+        { id: 1, name: 'Task 1', content: 'Content 1', assignee: 'User 1', progress: '0%', start: new Date(2024, 3, 1), end: new Date(2024, 3, 10) },
+        { id: 2, name: 'Task 2', content: 'Content 2', assignee: 'User 2', progress: '50%', start: new Date(2024, 3, 5), end: new Date(2024, 3, 15) },
+        { id: 3, name: 'Task 3', content: 'Content 3', assignee: 'User 3', progress: '100%', start: new Date(2024, 3, 12), end: new Date(2024, 3, 20) }
+      ],
+      gridItemWidth: 30, // グリッド項目の幅を設定
+      taskHeaderWidth: 0 // タスクヘッダーの横幅を保持
+    };
+  },
+  computed: {
+    groupedDates() {
+      const grouped = [];
+      let currentMonth = null;
 
-            this.dates.forEach((date) => {
-                const [year, month] = date.split('-').slice(0, 2);
-                if (!currentMonth || currentMonth.year !== year || currentMonth.month !== month) {
-                    currentMonth = { year, month, days: [] };
-                    grouped.push(currentMonth);
-                }
-                currentMonth.days.push(date);
-            });
-
-            return grouped;
+      this.dates.forEach((date) => {
+        const [year, month] = date.split('-').slice(0, 2);
+        if (!currentMonth || currentMonth.year !== year || currentMonth.month !== month) {
+          currentMonth = { year, month, days: [] };
+          grouped.push(currentMonth);
         }
-    },
-    mounted() {
-        this.$nextTick(() => {
-            this.updateGridLines();
-            this.updateTaskFieldWidth();
-            window.addEventListener('resize', this.updateGridLines);
-            window.addEventListener('resize', this.updateTaskFieldWidth);
-        });
-    },
-    beforeDestroy() {
-        window.removeEventListener('resize', this.updateGridLines);
-        window.removeEventListener('resize', this.updateTaskFieldWidth);
-    },
-    methods: {
-        /**
-         * 指定された日付から指定された日数分の配列を生成します。
-         * @param {Date} startDate - 開始日付
-         * @param {number} days - 日数
-         * @returns {string[]} 日付の配列
-         */
-        generateDates(startDate, days) {
-            let dates = [];
-            for (let i = 0; i < days; i++) {
-                let date = new Date(startDate);
-                date.setDate(startDate.getDate() + i);
-                dates.push(date);
-            }
-            return dates.map((date) => this.formatDate(date));
-        },
+        currentMonth.days.push(date);
+      });
 
-        /**
-         * 日付から日をフォーマットします。
-         * @param {string} date - フォーマットする日付
-         * @returns {number} 日
-         */
-        formatDay(date) {
-            const day = new Date(date).getDate();
-            return day;
-        },
-
-        /**
-         * 日付から曜日をフォーマットします。
-         * @param {string} date - フォーマットする日付
-         * @returns {string} 曜日
-         */
-        formatWeekday(date) {
-            const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
-            const day = new Date(date).getDay();
-            return weekdays[day];
-        },
-
-        /**
-         * 日付が土曜日かどうかをチェックします。
-         * @param {string} date - チェックする日付
-         * @returns {boolean} 土曜日の場合は true、そうでない場合は false
-         */
-        isSaturday(date) {
-            return new Date(date).getDay() === 6;
-        },
-
-        /**
-         * 日付が日曜日かどうかをチェックします。
-         * @param {string} date - チェックする日付
-         * @returns {boolean} 日曜日の場合は true、そうでない場合は false
-         */
-        isSunday(date) {
-            return new Date(date).getDay() === 0;
-        },
-
-        /**
-         * 日付をフォーマットします。
-         * @param {Date} date - フォーマットする日付
-         * @returns {string} フォーマットされた日付
-         */
-        formatDate(date) {
-            return date.toISOString().split('T')[0];
-        },
-
-        /**
-         * タスクバーとヘッダーのスクロールを同期します。
-         */
-        syncScroll() {
-            const dateHeader = this.$refs.dateHeader;
-            const taskBars = this.$refs.taskBars;
-            const newTaskBars = this.$refs.newTaskBars;
-            dateHeader.scrollLeft = taskBars.scrollLeft;
-            newTaskBars.scrollLeft = taskBars.scrollLeft;
-        },
-
-        /**
-         * グリッドテンプレートのカラム数を取得します。
-         * @returns {string} グリッドテンプレートのカラム数
-         */
-        getGridTemplateColumns() {
-            const columnsCount = this.dates.length;
-            return `repeat(${columnsCount}, ${this.gridItemWidth}px)`;
-        },
-
-        /**
-         * グリッドラインを更新します。
-         */
-        updateGridLines() {
-            const taskBarsElement = this.$refs.taskBars;
-            const taskBarsHeight = taskBarsElement.clientHeight;
-            const gridLines = taskBarsElement.querySelectorAll('.task-bar-grid-line');
-            const customGridLines = this.$refs.customGridLines;
-            const numberOfDays = this.dates.length;
-            const gridWidth = numberOfDays * this.gridItemWidth;
-
-            gridLines.forEach((line, index) => {
-                line.style.height = `${taskBarsHeight}px`;
-                line.style.width = `${this.gridItemWidth}px`;
-                const date = this.dates[index];
-                line.classList.remove('saturday', 'sunday', 'weekday'); // 以前のクラスを削除
-                if (this.isSaturday(date)) {
-                    line.classList.add('saturday');
-                } else if (this.isSunday(date)) {
-                    line.classList.add('sunday');
-                } else {
-                    line.classList.add('weekday');
-                }
-            });
-
-            customGridLines.style.width = `${gridWidth}px`;
-            customGridLines.style.gridTemplateColumns = this.getGridTemplateColumns();
-        },
-
-        /**
-         * タスクフィールドの横幅をタスクヘッダーの横幅に合わせて更新します。
-         */
-        updateTaskFieldWidth() {
-            const taskHeaders = this.$refs.taskHeaderColumn.querySelectorAll('.task-header');
-            const taskFields = this.$refs.taskNamesColumn.querySelectorAll('.task-field');
-
-            taskHeaders.forEach((header, index) => {
-                const headerWidth = header.clientWidth;
-                taskFields.forEach((field) => {
-                    field.style.width = `${headerWidth}px`;
-                });
-            });
-        }
+      return grouped;
     }
+  },
+  mounted() {
+    this.$nextTick(() => {
+      this.updateGridLines();
+      this.updateTaskFieldWidth();
+      window.addEventListener('resize', this.updateGridLines);
+      window.addEventListener('resize', this.updateTaskFieldWidth);
+    });
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.updateGridLines);
+    window.removeEventListener('resize', this.updateTaskFieldWidth);
+  },
+  methods: {
+    /**
+     * 指定された日付から指定された日数分の配列を生成します。
+     * @param {Date} startDate - 開始日付
+     * @param {number} days - 日数
+     * @returns {string[]} 日付の配列
+     */
+    generateDates(startDate, days) {
+      let dates = [];
+      for (let i = 0; i < days; i++) {
+        let date = new Date(startDate);
+        date.setDate(startDate.getDate() + i);
+        dates.push(date);
+      }
+      return dates.map((date) => this.formatDate(date));
+    },
+
+    /**
+     * 日付から日をフォーマットします。
+     * @param {string} date - フォーマットする日付
+     * @returns {number} 日
+     */
+    formatDay(date) {
+      const day = new Date(date).getDate();
+      return day;
+    },
+
+    /**
+     * 日付から曜日をフォーマットします。
+     * @param {string} date - フォーマットする日付
+     * @returns {string} 曜日
+     */
+    formatWeekday(date) {
+      const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
+      const day = new Date(date).getDay();
+      return weekdays[day];
+    },
+
+    /**
+     * 日付が土曜日かどうかをチェックします。
+     * @param {string} date - チェックする日付
+     * @returns {boolean} 土曜日の場合は true、そうでない場合は false
+     */
+    isSaturday(date) {
+      return new Date(date).getDay() === 6;
+    },
+
+    /**
+     * 日付が日曜日かどうかをチェックします。
+     * @param {string} date - チェックする日付
+     * @returns {boolean} 日曜日の場合は true、そうでない場合は false
+     */
+    isSunday(date) {
+      return new Date(date).getDay() === 0;
+    },
+
+    /**
+     * 日付をフォーマットします。
+     * @param {Date} date - フォーマットする日付
+     * @returns {string} フォーマットされた日付
+     */
+    formatDate(date) {
+      return date.toISOString().split('T')[0];
+    },
+
+    /**
+     * タスクバーとヘッダーのスクロールを同期します。
+     */
+    syncScroll() {
+      const dateHeader = this.$refs.dateHeader;
+      const taskBars = this.$refs.taskBars;
+      const newTaskBars = this.$refs.newTaskBars;
+      dateHeader.scrollLeft = taskBars.scrollLeft;
+      newTaskBars.scrollLeft = taskBars.scrollLeft;
+    },
+
+    /**
+     * グリッドテンプレートのカラム数を取得します。
+     * @returns {string} グリッドテンプレートのカラム数
+     */
+    getGridTemplateColumns() {
+      const columnsCount = this.dates.length;
+      return `repeat(${columnsCount}, ${this.gridItemWidth}px)`;
+    },
+
+    /**
+     * グリッドラインを更新します。
+     */
+    updateGridLines() {
+      const taskBarsElement = this.$refs.taskBars;
+      const taskBarsHeight = taskBarsElement.clientHeight;
+      const gridLines = taskBarsElement.querySelectorAll('.task-bar-grid-line');
+      const customGridLines = this.$refs.customGridLines;
+      const numberOfDays = this.dates.length;
+      const gridWidth = numberOfDays * this.gridItemWidth;
+
+      gridLines.forEach((line, index) => {
+        line.style.height = `${taskBarsHeight}px`;
+        line.style.width = `${this.gridItemWidth}px`;
+        const date = this.dates[index];
+        line.classList.remove('saturday', 'sunday', 'weekday'); // 以前のクラスを削除
+        if (this.isSaturday(date)) {
+          line.classList.add('saturday');
+        } else if (this.isSunday(date)) {
+          line.classList.add('sunday');
+        } else {
+          line.classList.add('weekday');
+        }
+      });
+
+      customGridLines.style.width = `${gridWidth}px`;
+      customGridLines.style.gridTemplateColumns = this.getGridTemplateColumns();
+    },
+
+    /**
+     * タスクフィールドの横幅をタスクヘッダーの横幅に合わせて更新します。
+     */
+    updateTaskFieldWidth() {
+      const taskHeaders = this.$refs.taskHeaderColumn.querySelectorAll('.task-header');
+      const taskFields = this.$refs.taskNamesColumn.querySelectorAll('.task-field');
+
+      taskHeaders.forEach((header, index) => {
+        const headerWidth = header.clientWidth;
+        taskFields.forEach((field) => {
+          field.style.width = `${headerWidth}px`;
+        });
+      });
+    },
+
+    /**
+     * タスクバーのスタイルを取得します。
+     * @param {Object} task - タスクオブジェクト
+     * @returns {Object} タスクバーのスタイル
+     */
+    getTaskBarStyle(task) {
+      const start = new Date(task.start);
+      const end = new Date(task.end);
+      const startDate = new Date(this.dates[0]);
+      const endDate = new Date(this.dates[this.dates.length - 1]);
+
+      if (start < startDate) start = startDate;
+      if (end > endDate) end = endDate;
+
+      const startIndex = (start - startDate) / (1000 * 60 * 60 * 24);
+      const endIndex = (end - startDate) / (1000 * 60 * 60 * 24);
+
+      return {
+        gridColumnStart: startIndex + 1,
+        gridColumnEnd: endIndex + 2
+      };
+    }
+  }
 };
 </script>
+
 
 <style scoped>
 /* ガントチャートの全体レイアウト */
 .gantt-chart {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  margin: 20px; /* 上下左右に余白を設定 */
 }
 
 /* 新しいタスクバー領域のスタイル */
@@ -459,5 +507,15 @@ export default {
 .grid-line {
     border-left: 1px solid lightgray;
     border-bottom: 1px solid black; /* 横線のグリッド線を黒に設定 */
+}
+
+/* ドラッグ可能なタスクバーのスタイル */
+.task-bar {
+  background-color: #28a745;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: move; /* カーソルを移動モードに設定 */
 }
 </style>
