@@ -1,7 +1,6 @@
 <template>
-	<div>
-		<div id="LvDescriptionFailure" style="width: 800px;"></div>
-	</div>
+
+		<div id="LvDescriptionFailure" style="width: 750px;"></div>
 </template>
 
 <script>
@@ -47,8 +46,8 @@ export default {
 
 		const layout = {
 			title: "Definition of probability of failure",
-			height: 500,
-			width: 780,
+			height: 900,
+			width: 600,
 			margin: { t: 40, r: 10, b: 0, l: 10 },
 			displayModeBar: false,
 			displaylogo: false

@@ -1,12 +1,8 @@
 <template>
-    <!--AdminLTE copy-->
     <div class="base-content">
-        <!--AdminLTEのcssがわからなかったから適当に作った-->
         <section class="content">
             <div class="card card-solid">
-                <!--Tabはsakai-vue-template-->
-                <TabView>
-                    <!--Tabの表示-->
+                <TabView v-model:activeIndex="activeIndex" @tab-change="onTabChange">
                     <TabPanel header="NearMiss List">
                         <div class="row">
                             <div class="col-12 lg:col-6 xl:col-6">
@@ -25,7 +21,6 @@
 
                     <TabPanel header="Analyze">
                         <div class="row">
-                            <!--このrow classでカードを横並びにしている-->
                             <div class="col-12 lg:col-6 xl:col-3">
                                 <div class="card mb-0">
                                     <div class="flex justify-content-between mb-3" style="height: 150px">
@@ -69,8 +64,8 @@
                                     <Safety_Measure_trend />
                                 </div>
                             </div>
-                            <Message :closable="false"
-                                >AI recommendation
+                            <Message :closable="false">
+                                AI recommendation
                                 <br />
                                 Now developing
                             </Message>
@@ -78,8 +73,8 @@
 
                         <div class="card mb-0">
                             <Safety_correlation_diagram />
-                            <Message :closable="false"
-                                >AI recommendation
+                            <Message :closable="false">
+                                AI recommendation
                                 <br />
                                 Now developing
                             </Message>
@@ -107,7 +102,6 @@ import Safety_correlation_diagram from '@/components/Safety/Safety_correlation_d
 import Safety_Measure_trend from '@/components/Safety/Safety_Measure_trend.vue';
 import NearMiss_form from '@/components/Safety/Near_miss/Near_miss_form.vue';
 import Safety_indicator_trend from '@/components/Safety/Safety_indicator.vue';
-
 import Safety_indicators_alert from '@/components/Safety/Cards/Safety_indicators';
 import Count_of_nearMiss from '@/components/Safety/Cards/Count_of_nearMiss';
 import Danger_area from '@/components/Safety/Cards/Danger_area';
@@ -122,40 +116,21 @@ export default {
         Safety_Measure_trend,
         NearMiss_form,
         Safety_indicator_trend,
-
         Safety_indicators_alert,
         Count_of_nearMiss,
         Danger_area,
         Action_items
+    },
+    data() {
+        return {
+            activeIndex: parseInt(localStorage.getItem('activeTabIndex')) || 0
+        };
+    },
+    methods: {
+        onTabChange(event) {
+            this.activeIndex = event.index;
+            localStorage.setItem('activeTabIndex', this.activeIndex);
+        }
     }
 };
 </script>
-
-<style>
-.row {
-    display: flex;
-    flex-wrap: wrap;
-}
-
-
-.card.mb-0 {
-    display: flex; /* Flexboxを有効化 */
-    justify-content: space-between; /* 要素間に適切な間隔を設定 */
-    align-items: stretch; /* 子要素の高さを揃える */
-    width: 100%; /* 親要素の幅に合わせて100% */
-}
-
-.Safety_indicator_trend, .Safety_Measure_trend {
-    flex: 1; /* 利用可能なスペースを等しく分ける */
-    padding: 10px; /* コンテンツ周りの余白 */
-    min-width: 0; /* 縮小時の挙動を正常にする */
-}
-
-@media (max-width: 768px) {
-    .card.mb-0 {
-        flex-direction: column; /* 小さい画面では縦並びに切り替え */
-    }
-}
-
-
-</style>

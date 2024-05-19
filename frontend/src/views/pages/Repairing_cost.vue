@@ -1,10 +1,8 @@
 <template>
-    <!--AdminLTE copy-->
     <div class="base-content">
         <section class="content">
             <div class="card card-solid">
-                <!--Tabはsakai-vue-template-->
-                <TabView>
+                <TabView v-model:activeIndex="activeIndex" @tab-change="onTabChange">
                     <TabPanel header="Repairing cost">
                         <div class="col-12 xl:col-12">
                             <div class="card" style="background-color: #f2f2f2">
@@ -14,8 +12,8 @@
                                 <Total_cost_table />
                                 <p>actual summary cost (readOnly)</p>
                                 <Actual_summary_table />
-                                <Message :closable="false"
-                                    >AI recommendation
+                                <Message :closable="false">
+                                    AI recommendation
                                     <br />
                                     Now developing
                                 </Message>
@@ -28,8 +26,8 @@
                                     <div>
                                         <PM02_actual_table />
                                     </div>
-                                    <Message :closable="false"
-                                        >AI recommendation
+                                    <Message :closable="false">
+                                        AI recommendation
                                         <br />
                                         Now developing
                                     </Message>
@@ -39,8 +37,8 @@
                                 <div class="card" style="background-color: #f2f2f2">
                                     <PM03_actual_graph />
                                     <PM03_actual_table />
-                                    <Message :closable="false"
-                                        >AI recommendation
+                                    <Message :closable="false">
+                                        AI recommendation
                                         <br />
                                         Now developing
                                     </Message>
@@ -50,8 +48,8 @@
                                 <div class="card" style="background-color: #f2f2f2">
                                     <PM04_actual_graph />
                                     <PM04_actual_table />
-                                    <Message :closable="false"
-                                        >AI recommendation
+                                    <Message :closable="false">
+                                        AI recommendation
                                         <br />
                                         Now developing
                                     </Message>
@@ -61,15 +59,14 @@
                                 <div class="card" style="background-color: #f2f2f2">
                                     <PM05_actual_graph />
                                     <PM05_actual_table />
-                                    <Message :closable="false"
-                                        >AI recommendation
+                                    <Message :closable="false">
+                                        AI recommendation
                                         <br />
                                         Now developing
                                     </Message>
                                 </div>
                             </div>
                         </div>
-                        <!-- </p>-->
                     </TabPanel>
                     <TabPanel header="Task list">
                         <div class="row">
@@ -130,10 +127,6 @@ import Total_graph from '@/components/Repairing_cost/Total_graph.vue';
 import Total_cost_table from '@/components/Repairing_cost/Total_cost_table.vue';
 import Planned_vs_actual_year_graph from '@/components/Repairing_cost/Planned_vs_actual_year_graph.vue';
 import Actual_summary_table from '@/components/Repairing_cost/Actual_summary_table.vue';
-import Actual_summary_table_year from '@/components/Repairing_cost/Actual_summary_table_year.vue';
-import PM02_forecast_table from '@/components/Repairing_cost/PM02_forecast_table.vue';
-import PM02_planned_graph from '@/components/Repairing_cost/PM02_planned_graph.vue';
-import PM02_planned_table from '@/components/Repairing_cost/PM02_planned_table.vue';
 import PM02_actual_graph from '@/components/Repairing_cost/PM02_actual_graph.vue';
 import PM02_actual_table from '@/components/Repairing_cost/PM02_actual_table.vue';
 import PM03_actual_graph from '@/components/Repairing_cost/PM03_actual_graph.vue';
@@ -145,11 +138,9 @@ import PM05_actual_table from '@/components/Repairing_cost/PM05_actual_table.vue
 import Task_list from '@/components/Task_of_maintenance/Task_list.vue';
 import Gap_of_repairing_cost from '@/components/Repairing_cost/Gap_of_repairing_cost.vue';
 import Display_repairing_cost from '@/components/Repairing_cost/Cards/Display_repairing_cost.vue';
-
 import Simulation_before from '@/components/Repairing_cost/Simulations/Simulation_before.vue';
 import Simulation_after from '@/components/Repairing_cost/Simulations/Simulation_after.vue';
 import Simulation_table from '@/components/Repairing_cost/Simulations/Simulation_table.vue';
-
 import Card_predict_cost from '@/components/Task_of_maintenance/Cards/Card_predict_cost.vue';
 
 export default {
@@ -157,11 +148,7 @@ export default {
         Total_graph,
         Total_cost_table,
         Planned_vs_actual_year_graph,
-        Actual_summary_table_year,
         Actual_summary_table,
-        PM02_forecast_table,
-        PM02_planned_graph,
-        PM02_planned_table,
         PM02_actual_graph,
         PM02_actual_table,
         PM03_actual_graph,
@@ -172,14 +159,22 @@ export default {
         PM05_actual_table,
         Task_list,
         Gap_of_repairing_cost,
-
         Display_repairing_cost,
-
         Simulation_before,
         Simulation_after,
         Simulation_table,
-
         Card_predict_cost
+    },
+    data() {
+        return {
+            activeIndex: parseInt(localStorage.getItem('activeTabIndex')) || 0
+        };
+    },
+    methods: {
+        onTabChange(event) {
+            this.activeIndex = event.index;
+            localStorage.setItem('activeTabIndex', this.activeIndex);
+        }
     }
 };
 </script>
