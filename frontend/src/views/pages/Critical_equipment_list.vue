@@ -29,19 +29,7 @@
                     <TabPanel header="Risk-Matrix">
                         <p class="line-height-3 m-0"></p>
                         <div>
-                            <Risk_matrix />
-                        </div>
-                        <div class="row">
-                            <div class="col-12 xl:col-6">
-                                <div>
-                                    <Impact_for_production :isActive="activeTab === 'Risk-Matrix'" />
-                                </div>
-                            </div>
-                            <div class="col-12 xl:col-6">
-                                <div class="card" style="background-color: #f2f2f2">
-                                    <Probability_of_failure />
-                                </div>
-                            </div>
+                            <Set_risk_matrix />
                         </div>
                     </TabPanel>
                 </TabView>
@@ -57,6 +45,7 @@ import Risk_matrix from '@/components/Risk_Matrix/Risk_matrix.vue';
 import Impact_for_production from '@/components/Risk_Matrix/Impact_for_production.vue';
 import Probability_of_failure from '@/components/Risk_Matrix/Probability_of_failure.vue';
 import Top20_priority_task from '@/components/Critical_equipment_list/Top20_priority_task.vue';
+import Set_risk_matrix from '@/components/Risk_Matrix/Set_Risk_Matrix.vue';
 
 export default {
     components: {
@@ -65,7 +54,8 @@ export default {
         Risk_matrix,
         Impact_for_production,
         Probability_of_failure,
-        Top20_priority_task
+        Top20_priority_task,
+        Set_risk_matrix
     },
     data() {
         return {
