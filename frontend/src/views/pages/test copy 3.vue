@@ -7,8 +7,8 @@
 
 <script>
 import { ref } from 'vue';
-import Simulation_table from '@/components/Repairing_cost/Simulations/Simulation_table.vue';
-import SimulationGraph from '@/components/Repairing_cost/Simulations/Simulation_graph.vue';
+import Simulation_table from '../../components/Repairing_cost/Simulations/Simulation_table.vue';
+import SimulationGraph from '../../components/Repairing_cost/Simulations/Simulation_graph.vue';
 
 export default {
   name: 'App',
