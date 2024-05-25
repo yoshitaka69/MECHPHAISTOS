@@ -1,18 +1,22 @@
 <template>
     <div id="app">
-        <div id="totalCostTable">
-            <hot-table ref="totalCostTableComponent" :settings="totalCostSettings"></hot-table>
-        </div>
+      <div class="tables-container">
         <div id="monthlyCostTable">
-            <hot-table ref="monthlyCostTableComponent" :settings="monthlyCostSettings"></hot-table>
+          <hot-table ref="monthlyCostTableComponent" :settings="monthlyCostSettings"></hot-table>
         </div>
-        <div id="TaskList">
-            <hot-table ref="hotTableComponent" :settings="hotSettings"></hot-table><br />
-            <button v-on:click="updateData" class="controls">Update Data</button>
-            <button v-on:click="calculateTotalCostSums" class="controls">Calculate Total Costs</button>
+        <div id="totalCostTable">
+          <hot-table ref="totalCostTableComponent" :settings="totalCostSettings"></hot-table>
         </div>
+      </div>
+      <div id="TaskList">
+        <hot-table ref="hotTableComponent" :settings="hotSettings"></hot-table>
+        <br />
+        <button @click="updateData" class="controls">Update Data</button>
+        <button @click="calculateTotalCostSums" class="controls">Calculate Total Costs</button>
+      </div>
     </div>
   </template>
+  
   
   <script>
   import Handsontable from 'handsontable';
@@ -369,8 +373,12 @@
   </script>
   
   <style>
-  #totalCostTable, #monthlyCostTable {
-    margin-bottom: 20px;
-  }
+ .tables-container {
+  display: flex;
+  justify-content: space-between;
+}
+#totalCostTable, #monthlyCostTable {
+  width: 48%;
+}
   </style>
   
