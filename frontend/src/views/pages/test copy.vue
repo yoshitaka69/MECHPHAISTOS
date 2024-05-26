@@ -19,6 +19,8 @@
         <div class="task-header">内容</div>
         <div class="task-header">担当</div>
         <div class="task-header">進捗</div>
+        <div class="task-header">開始日</div>
+        <div class="task-header">完了日</div>
       </div>
       <div class="date-header-column" ref="dateHeader">
         <div class="year-month-row">
@@ -36,7 +38,7 @@
             class="header-item"
             v-for="date in dates"
             :key="date"
-            :class="{ saturday: isSaturday(date), sunday: isSunday(date) }"
+            :class="{ saturday: isSaturday(date), sunday: isSunday(date), weekday: !isSaturday(date) && !isSunday(date) }"
           >
             <span>{{ formatDay(date) }}<br />{{ formatWeekday(date) }}</span>
           </div>
@@ -58,6 +60,12 @@
           <div class="task-field">
             <input v-model="task.progress" class="task-input" />
           </div>
+          <div class="task-field date-field">
+            <input type="date" v-model="task.start" class="task-input" @change="updateTaskBar(task)" />
+          </div>
+          <div class="task-field date-field">
+            <input type="date" v-model="task.end" class="task-input" @change="updateTaskBar(task)" />
+          </div>
         </div>
       </div>
       <div class="task-bars-column" ref="taskBars" @scroll="syncScroll">
@@ -67,12 +75,11 @@
             :key="task.id"
             class="task-bar"
             :style="getTaskBarStyle(task)"
-            @mousedown="selectTask(task)"
+            @mousedown="startDrag(task, $event)"
           >
+            <div class="resize-handle left" @mousedown.stop="startResize(task, $event, 'start')"></div>
             {{ task.name }}
-          </div>
-          <div v-for="date in dates" :key="date" class="task-bar-grid-line">
-            <div :class="{ 'saturday-bg': isSaturday(date), 'sunday-bg': isSunday(date) }"></div>
+            <div class="resize-handle right" @mousedown.stop="startResize(task, $event, 'end')"></div>
           </div>
         </div>
       </div>
@@ -80,20 +87,23 @@
   </div>
 </template>
 
-
-
 <script>
 export default {
   data() {
     return {
       dates: this.generateDates(new Date(2024, 3, 1), 90), // Start from April 1, 2024 for 3 months
       tasks: [
-        { id: 1, name: 'Task 1', content: 'Content 1', assignee: 'User 1', progress: '0%', start: new Date(2024, 3, 1), end: new Date(2024, 3, 10) },
-        { id: 2, name: 'Task 2', content: 'Content 2', assignee: 'User 2', progress: '50%', start: new Date(2024, 3, 5), end: new Date(2024, 3, 15) },
-        { id: 3, name: 'Task 3', content: 'Content 3', assignee: 'User 3', progress: '100%', start: new Date(2024, 3, 12), end: new Date(2024, 3, 20) }
+        { id: 1, name: 'Task 1', content: 'Content 1', assignee: 'User 1', progress: '0%', start: '2024-04-01', end: '2024-04-10' },
+        { id: 2, name: 'Task 2', content: 'Content 2', assignee: 'User 2', progress: '50%', start: '2024-04-05', end: '2024-04-15' },
+        { id: 3, name: 'Task 3', content: 'Content 3', assignee: 'User 3', progress: '100%', start: '2024-04-12', end: '2024-04-20' }
       ],
       gridItemWidth: 30, // グリッド項目の幅を設定
-      taskHeaderWidth: 0 // タスクヘッダーの横幅を保持
+      draggingTask: null, // ドラッグ中のタスクを保持
+      initialMouseX: 0, // マウスの初期X座標
+      initialTaskStart: null, // タスクの初期開始日
+      resizingTask: null, // リサイズ中のタスクを保持
+      resizeSide: null, // リサイズ側 (startまたはend)
+      initialTaskEnd: null // タスクの初期終了日
     };
   },
   computed: {
@@ -119,19 +129,18 @@ export default {
       this.updateTaskFieldWidth();
       window.addEventListener('resize', this.updateGridLines);
       window.addEventListener('resize', this.updateTaskFieldWidth);
+      window.addEventListener('mousemove', this.onMouseMove);
+      window.addEventListener('mouseup', this.onMouseUp);
+      this.updateLayout();
     });
   },
   beforeDestroy() {
     window.removeEventListener('resize', this.updateGridLines);
     window.removeEventListener('resize', this.updateTaskFieldWidth);
+    window.removeEventListener('mousemove', this.onMouseMove);
+    window.removeEventListener('mouseup', this.onMouseUp);
   },
   methods: {
-    /**
-     * 指定された日付から指定された日数分の配列を生成します。
-     * @param {Date} startDate - 開始日付
-     * @param {number} days - 日数
-     * @returns {string[]} 日付の配列
-     */
     generateDates(startDate, days) {
       let dates = [];
       for (let i = 0; i < days; i++) {
@@ -141,107 +150,43 @@ export default {
       }
       return dates.map((date) => this.formatDate(date));
     },
-
-    /**
-     * 日付から日をフォーマットします。
-     * @param {string} date - フォーマットする日付
-     * @returns {number} 日
-     */
     formatDay(date) {
       const day = new Date(date).getDate();
       return day;
     },
-
-    /**
-     * 日付から曜日をフォーマットします。
-     * @param {string} date - フォーマットする日付
-     * @returns {string} 曜日
-     */
     formatWeekday(date) {
       const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
       const day = new Date(date).getDay();
       return weekdays[day];
     },
-
-    /**
-     * 日付が土曜日かどうかをチェックします。
-     * @param {string} date - チェックする日付
-     * @returns {boolean} 土曜日の場合は true、そうでない場合は false
-     */
     isSaturday(date) {
       return new Date(date).getDay() === 6;
     },
-
-    /**
-     * 日付が日曜日かどうかをチェックします。
-     * @param {string} date - チェックする日付
-     * @returns {boolean} 日曜日の場合は true、そうでない場合は false
-     */
     isSunday(date) {
       return new Date(date).getDay() === 0;
     },
-
-    /**
-     * 日付をフォーマットします。
-     * @param {Date} date - フォーマットする日付
-     * @returns {string} フォーマットされた日付
-     */
     formatDate(date) {
       return date.toISOString().split('T')[0];
     },
-
-    /**
-     * タスクバーとヘッダーのスクロールを同期します。
-     */
     syncScroll() {
       const dateHeader = this.$refs.dateHeader;
       const taskBars = this.$refs.taskBars;
-      const newTaskBars = this.$refs.newTaskBars;
       dateHeader.scrollLeft = taskBars.scrollLeft;
-      newTaskBars.scrollLeft = taskBars.scrollLeft;
     },
-
-    /**
-     * グリッドテンプレートのカラム数を取得します。
-     * @returns {string} グリッドテンプレートのカラム数
-     */
     getGridTemplateColumns() {
       const columnsCount = this.dates.length;
       return `repeat(${columnsCount}, ${this.gridItemWidth}px)`;
     },
-
-    /**
-     * グリッドラインを更新します。
-     */
     updateGridLines() {
       const taskBarsElement = this.$refs.taskBars;
-      const taskBarsHeight = taskBarsElement.clientHeight;
-      const gridLines = taskBarsElement.querySelectorAll('.task-bar-grid-line');
       const customGridLines = this.$refs.customGridLines;
       const numberOfDays = this.dates.length;
       const gridWidth = numberOfDays * this.gridItemWidth;
 
-      gridLines.forEach((line, index) => {
-        line.style.height = `${taskBarsHeight}px`;
-        line.style.width = `${this.gridItemWidth}px`;
-        const date = this.dates[index];
-        line.classList.remove('saturday', 'sunday', 'weekday'); // 以前のクラスを削除
-        if (this.isSaturday(date)) {
-          line.classList.add('saturday');
-        } else if (this.isSunday(date)) {
-          line.classList.add('sunday');
-        } else {
-          line.classList.add('weekday');
-        }
-      });
-
       customGridLines.style.width = `${gridWidth}px`;
       customGridLines.style.gridTemplateColumns = this.getGridTemplateColumns();
+      customGridLines.style.gridTemplateRows = `repeat(${this.tasks.length}, 40px)`;
     },
-
-    /**
-     * タスクフィールドの横幅をタスクヘッダーの横幅に合わせて更新します。
-     */
     updateTaskFieldWidth() {
       const taskHeaders = this.$refs.taskHeaderColumn.querySelectorAll('.task-header');
       const taskFields = this.$refs.taskNamesColumn.querySelectorAll('.task-field');
@@ -253,12 +198,21 @@ export default {
         });
       });
     },
+    updateLayout() {
+      const taskHeaderColumn = this.$refs.taskHeaderColumn;
+      const taskNamesColumn = this.$refs.taskNamesColumn;
+      const dateHeader = this.$refs.dateHeader;
+      const taskBars = this.$refs.taskBars;
 
-    /**
-     * タスクバーのスタイルを取得します。
-     * @param {Object} task - タスクオブジェクト
-     * @returns {Object} タスクバーのスタイル
-     */
+      const taskHeaderColumnWidth = taskHeaderColumn.offsetWidth;
+      const taskHeaderColumnHeight = taskHeaderColumn.offsetHeight;
+
+      taskNamesColumn.style.width = `${taskHeaderColumnWidth}px`;
+      dateHeader.style.marginLeft = `${taskHeaderColumnWidth}px`;
+      taskBars.style.marginLeft = `${taskHeaderColumnWidth}px`;
+
+      dateHeader.style.height = `${taskHeaderColumnHeight}px`;
+    },
     getTaskBarStyle(task) {
       const start = new Date(task.start);
       const end = new Date(task.end);
@@ -271,251 +225,286 @@ export default {
       const startIndex = (start - startDate) / (1000 * 60 * 60 * 24);
       const endIndex = (end - startDate) / (1000 * 60 * 60 * 24);
 
+      const taskIndex = this.tasks.findIndex(t => t.id === task.id) + 1;
+
       return {
         gridColumnStart: startIndex + 1,
-        gridColumnEnd: endIndex + 2
+        gridColumnEnd: endIndex + 2,
+        gridRowStart: taskIndex,
+        gridRowEnd: taskIndex + 1
       };
+    },
+    startDrag(task, event) {
+      this.draggingTask = task;
+      this.initialMouseX = event.clientX;
+      this.initialTaskStart = new Date(task.start);
+    },
+    startResize(task, event, side) {
+      this.resizingTask = task;
+      this.resizeSide = side;
+      this.initialMouseX = event.clientX;
+      this.initialTaskStart = new Date(task.start);
+      this.initialTaskEnd = new Date(task.end);
+    },
+    onMouseMove(event) {
+      if (this.draggingTask) {
+        const dx = event.clientX - this.initialMouseX;
+        const daysMoved = Math.round(dx / this.gridItemWidth);
+        const newStart = new Date(this.initialTaskStart);
+        newStart.setDate(newStart.getDate() + daysMoved);
+
+        const newEnd = new Date(newStart);
+        const taskDuration = (new Date(this.draggingTask.end) - new Date(this.draggingTask.start)) / (1000 * 60 * 60 * 24);
+        newEnd.setDate(newEnd.getDate() + taskDuration);
+
+        this.draggingTask.start = this.formatDate(newStart);
+        this.draggingTask.end = this.formatDate(newEnd);
+      } else if (this.resizingTask) {
+        const dx = event.clientX - this.initialMouseX;
+        const daysMoved = Math.round(dx / this.gridItemWidth);
+
+        if (this.resizeSide === 'start') {
+          const newStart = new Date(this.initialTaskStart);
+          newStart.setDate(newStart.getDate() + daysMoved);
+
+          if (newStart < new Date(this.resizingTask.end)) {
+            this.resizingTask.start = this.formatDate(newStart);
+          }
+        } else if (this.resizeSide === 'end') {
+          const newEnd = new Date(this.initialTaskEnd);
+          newEnd.setDate(newEnd.getDate() + daysMoved);
+
+          if (newEnd > new Date(this.resizingTask.start)) {
+            this.resizingTask.end = this.formatDate(newEnd);
+          }
+        }
+      }
+    },
+    onMouseUp() {
+      this.draggingTask = null;
+      this.resizingTask = null;
+      this.resizeSide = null;
+    },
+    updateTaskBar(task) {
+      this.$nextTick(() => {
+        this.updateGridLines();
+      });
     }
   }
 };
 </script>
 
-
 <style scoped>
-/* ガントチャートの全体レイアウト */
 .gantt-chart {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  margin: 20px; /* 上下左右に余白を設定 */
+  margin: 20px;
 }
 
-/* 新しいタスクバー領域のスタイル */
 .new-task-bars-column {
-    width: 100%; /* 横幅を親要素に合わせて一杯にする */
-    overflow-x: auto;
-    overflow-y: hidden;
-    position: relative;
-    background-color: #ffffff; /* 背景を白色に変更 */
-    left: 540px; /* date-header-columnの幅に合わせて調整 */
-    height: 75px !important; /* 高さを75pxに設定 */
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  position: relative;
+  background-color: #ffffff;
+  height: 75px !important;
 }
 
-/* 新しいタスクバーコンテナのスタイル */
 .new-task-bar-container {
-    position: relative;
-    display: grid;
-    grid-template-columns: repeat(90, 30px); /* 90日分を30pxで表示 */
-    height: 100%; /* 親要素の高さに合わせる */
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(90, 30px);
+  height: 100%;
 }
 
-/* カスタムグリッドラインのスタイル */
 .custom-grid-lines,
 .sub-custom-grid-lines {
-    position: relative;
-    display: grid;
-    grid-template-columns: repeat(90, 30px); /* 90日分を30pxで表示 */
-    height: 100%; /* 親要素の高さに合わせる */
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(90, 30px);
+  grid-template-rows: repeat(auto-fill, 40px);
+  height: 100%;
 }
 
-/* タスクバーのグリッドラインのスタイル */
-.task-bar-grid-line {
-    border-left: 1px solid lightgray; /* 縦線のグリッド線を薄い灰色に設定 */
-    border-bottom: 1px solid lightgray; /* 横線のグリッド線を薄い灰色に設定 */
-    width: 30px; /* グリッド項目の幅を設定 */
-}
-
-/* サブタスクバーのグリッドラインのスタイル */
 .sub-task-bar-grid-line {
-    border-left: 1px solid #ddd; /* 縦線のグリッド線を追加 */
-    border-bottom: 1px solid #ddd; /* 横線のグリッド線を追加 */
-    height: 40px; /* グリッドラインの高さを40pxに設定 */
+  border-left: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  height: 40px;
 }
 
-/* スペーサーのスタイル */
 .spacer {
-    height: 20px; /* 新しいガントバー領域と既存のガントチャートの間にスペースを追加 */
+  height: 20px;
 }
 
-/* ヘッダーのスタイル */
 .header {
-    display: flex;
-    flex-shrink: 0;
+  display: flex;
+  flex-shrink: 0;
 }
 
-/* タスクヘッダーのカラムスタイル */
 .task-header-column {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr); /* 4つのタスクヘッダー */
-    width: 600px; /* 横幅を固定 */
-    border-right: 1px solid #ddd;
-    background-color: #28a745; /* 背景を緑色に変更 */
+  display: grid;
+  grid-template-columns: 100px 100px 100px 100px 150px 150px; /* 各カラムの幅を指定 */
+  border-right: 1px solid #ddd;
+  background-color: #28a745;
 }
 
-/* タスクヘッダーのスタイル */
 .task-header {
-    text-align: center;
-    padding: 10px;
-    font-weight: bold;
-    background-color: #28a745; /* 背景を緑色に変更 */
-    color: white;
-    border-right: 1px solid #ddd;
+  text-align: center;
+  padding: 10px;
+  font-weight: bold;
+  background-color: #28a745;
+  color: white;
+  border-right: 1px solid #ddd;
 }
 
-/* 日付ヘッダーのカラムスタイル */
 .date-header-column {
-    display: grid;
-    grid-template-rows: auto auto; /* 自動の高さ */
-    width: 100%; /* 横幅を親要素に合わせて一杯にする */
-    overflow-x: hidden; /* スクロールバーを非表示にする */
+  display: grid;
+  grid-template-rows: auto auto;
+  overflow-x: hidden;
 }
 
-/* 年月行、日付行のスタイル */
 .year-month-row,
 .day-row {
-    display: grid;
-    grid-template-columns: repeat(90, 30px); /* 90日分を30pxで表示 */
-    background-color: #ffffff; /* 背景を白色に変更 */
-    text-align: center;
+  display: grid;
+  grid-template-columns: repeat(90, 30px);
+  background-color: #ffffff;
+  text-align: center;
 }
 
-/* 年月行のスタイル */
 .year-month-row {
-    border-bottom: 1px solid #ddd;
-    background-color: #007bff; /* 背景を青色に変更 */
-    color: black; /* 文字を黒色に変更 */
+  border-bottom: 1px solid #ddd;
+  background-color: #007bff;
+  color: black;
 }
 
-/* 年月項目、ヘッダー項目のスタイル */
 .year-month-item,
 .header-item {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-right: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 1px solid #ddd;
 }
 
-/* ヘッダー項目のスタイル */
 .header-item {
-    text-align: center;
-    padding: 5px;
-    color: black; /* 日付の文字を黒字に変更 */
+  text-align: center;
+  padding: 5px;
+  color: black;
 }
 
-/* 平日のスタイル */
-.weekday {
-    background-color: #ffffff; /* 平日の背景色を白に設定 */
+.weekday-bg {
+  background-color: #ffffff;
 }
 
-/* 土曜日のスタイル */
-.saturday {
-    background-color: #e0f7fa; /* 土曜日の背景色を薄い青に設定 */
+.saturday-bg {
+  background-color: #e0f7fa;
 }
 
-/* 日曜日のスタイル */
-.sunday {
-    background-color: #ffebee; /* 日曜日の背景色を薄い赤に設定 */
+.sunday-bg {
+  background-color: #ffebee;
 }
 
-/* タスク名のカラムスタイル */
 .rows {
-    display: flex;
-    flex-grow: 1;
-    overflow-x: hidden;
+  display: flex;
+  flex-grow: 1;
+  overflow-x: hidden;
+  position: relative;
 }
 
-/* タスク名の列スタイル */
 .task-names-column {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr); /* 4つのタスク名カラム */
-    grid-auto-rows: 40px; /* 各タスクの高さを一致させる */
-    width: 600px; /* 横幅を固定 */
-    border-right: 1px solid #ddd;
-    overflow-y: auto; /* タスク領域の縦スクロールを有効にする */
-    background-color: #ffffff; /* 背景を白色に変更 */
-    border-bottom: 1px solid #ddd; /* 横のグリッド線を追加 */
-    height: 100%; /* コンテナ全体の高さを設定 */
-    position: relative;
+  display: grid;
+  grid-template-columns: 100px 100px 100px 100px 150px 150px; /* 各カラムの幅を指定 */
+  grid-auto-rows: 40px;
+  border-right: 1px solid #ddd;
+  overflow-y: auto;
+  background-color: #ffffff;
+  border-bottom: 1px solid #ddd;
+  height: 100%;
 }
 
-/* タスク名のグリッドラインを追加 */
 .task-names-column::after {
-    content: '';
-    display: block;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 100%;
-    background: repeating-linear-gradient(to bottom, transparent, transparent 39px, black 40px);
-    pointer-events: none; /* クリックイベントを無視する */
+  content: '';
+  display: block;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  background: repeating-linear-gradient(to bottom, transparent, transparent 39px, black 40px);
+  pointer-events: none;
 }
 
-/* タスク名のスタイル */
 .task-name {
-    display: contents; /* 各タスクを同じ高さにするために使用 */
+  display: contents;
 }
 
-/* タスクフィールドのスタイル */
 .task-field {
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    background: #ffffff; /* 背景を白色に変更 */
-    border-bottom: 1px solid lightgray; /* 下線を薄い灰色に設定 */
-    border-left: 1px solid lightgray; /* 縦線（左）を薄い灰色に設定 */
-    width: 100%;
-    outline: none;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background: #ffffff;
+  border-bottom: 1px solid lightgray;
+  border-left: 1px solid lightgray;
+  width: 100%;
+  outline: none;
 }
 
-/* タスク入力フィールドのスタイル */
 .task-input {
-    width: 100%;
-    border: 1px solid white; /* 外枠を白に設定 */
-    outline: none;
-    background: transparent;
-    box-sizing: border-box; /* パディングを含むように設定 */
+  width: 100%;
+  border: 1px solid white;
+  outline: none;
+  background: transparent;
+  box-sizing: border-box;
 }
 
-/* タスクバーのカラムスタイル */
+.date-field .task-input {
+  width: calc(100% - 20px); /* 日付フィールドの幅を広げる */
+}
+
 .task-bars-column {
-    display: grid;
-    grid-template-rows: repeat(auto-fill, 40px); /* 自動でフィル */
-    width: 100%; /* 横幅を親要素に合わせて一杯にする */
-    overflow-x: auto;
-    overflow-y: hidden;
-    position: relative;
-    flex-grow: 1;
-    background-color: #ffffff; /* 背景を白色に変更 */
-    height: 100%; /* コンテナ全体の高さを設定 */
-    border-top: 1px solid black; /* 外枠の上部分を黒に設定 */
+  display: grid;
+  grid-template-rows: repeat(auto-fill, 40px);
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  position: absolute;
+  top: 0;
+  left: 0; /* 左端に配置 */
+  margin-left: 0;
+  flex-grow: 1;
+  background-color: #ffffff;
+  height: 100%;
+  border-top: 1px solid black;
 }
 
-/* 繰り返しグリッドラインを追加 */
-.task-bars-column::before {
-    content: '';
-    display: block;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: repeating-linear-gradient(to bottom, transparent, transparent 39px, black 40px);
-    pointer-events: none; /* クリックイベントを無視する */
-}
-
-/* 縦線のグリッド線を薄い灰色に設定 */
 .grid-line {
-    border-left: 1px solid lightgray;
-    border-bottom: 1px solid black; /* 横線のグリッド線を黒に設定 */
+  border-left: 1px solid lightgray;
+  border-bottom: 1px solid lightgray;
 }
 
-/* ドラッグ可能なタスクバーのスタイル */
 .task-bar {
   background-color: #28a745;
   color: white;
   display: flex;
   align-items: center;
-  justify-content: center;
-  cursor: move; /* カーソルを移動モードに設定 */
+  justify-content: space-between;
+  cursor: move;
+  position: relative;
+}
+
+.resize-handle {
+  width: 10px;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.1);
+  position: absolute;
+  top: 0;
+  cursor: ew-resize;
+}
+
+.resize-handle.left {
+  left: 0;
+}
+
+.resize-handle.right {
+  right: 0;
 }
 </style>

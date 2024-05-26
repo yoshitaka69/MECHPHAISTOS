@@ -6,18 +6,16 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
 
+// vue-draggable-resizableのCSSをインポート
+import DraggableResizableVue from 'draggable-resizable-vue3'
 
-
-
-
-//axios
+// axios
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 
-//vue3-easy-data-table
+// vue3-easy-data-table
 import Vue3EasyDataTable from 'vue3-easy-data-table';
 import 'vue3-easy-data-table/dist/style.css';
-
 
 // registering functions that let you quickly register all modules at once
 import {
@@ -27,9 +25,9 @@ import {
     registerAllValidators,
     registerAllPlugins,
     registerAllModules,
-  } from 'handsontable/registry'
+} from 'handsontable/registry'
 
-//primeVue
+// primeVue
 import PrimeVue from 'primevue/config';
 import 'primevue/resources/themes/aura-light-green/theme.css'
 import AutoComplete from 'primevue/autocomplete';
@@ -145,12 +143,10 @@ app.use(pinia);
 app.use(router);
 app.use(VueAxios, axios);
 
-
 app.use(PrimeVue, { ripple: true });
 app.use(ToastService);
 app.use(DialogService);
 app.use(ConfirmationService);
-
 
 app.directive('tooltip', Tooltip);
 app.directive('badge', BadgeDirective);
@@ -253,22 +249,21 @@ app.component('TreeTable', TreeTable);
 app.component('TriStateCheckbox', TriStateCheckbox);
 app.component('VirtualScroller', VirtualScroller);
 
-//vue3-easy-data-table
+// vue3-easy-data-table
 app.component('EasyDataTable', Vue3EasyDataTable);
 
-//Handsontable
+//vue-draggable-resizable
+app.use(DraggableResizableVue)
+
+// Handsontable
 // register all cell types at once
 registerAllCellTypes();
 // register all renderers at once
 registerAllRenderers();
 // register all editors at once
-registerAllEditors();
-// register all validators at once
 registerAllValidators();
 // register all plugins at once
-registerAllPlugins();
 // or, register all of Handsontable's modules at once
 registerAllModules();
-
 
 app.mount('#app')

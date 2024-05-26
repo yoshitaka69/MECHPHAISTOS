@@ -21,6 +21,7 @@
     "axios": "^1.6.8",
     "core-js": "^3.36.1",
     "d3": "^7.9.0",
+    "draggable-resizable-vue3": "^1.0.94-beta",
     "handsontable": "^14.2.0",
     "interactjs": "^1.10.27",
     "moment": "^2.30.1",
@@ -34,7 +35,6 @@
     "vis-timeline": "^7.7.3",
     "vue": "^3.4.21",
     "vue-axios": "^3.5.2",
-    "vue-draggable-resizable": "^3.0.0",
     "vue-router": "^4.3.0",
     "vue-svg-draw": "^1.0.7",
     "vue3-easy-data-table": "^1.5.47"
