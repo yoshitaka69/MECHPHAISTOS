@@ -1,17 +1,5 @@
 <template>
   <div class="gantt-chart">
-    <!-- sub gantt-chart領域 -->
-    <div class="new-task-bars-column">
-      <div class="new-task-bar-container">
-        <div class="sub-custom-grid-lines">
-          <div v-for="date in dates" :key="date" class="sub-task-bar-grid-line"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- スペースを追加 -->
-    <div class="spacer"></div>
-
     <!-- main gantt-chart領域 -->
     <div class="header">
       <div class="task-header-column" ref="taskHeaderColumn">
@@ -23,7 +11,7 @@
         <div class="task-header">完了日</div>
       </div>
       <div class="date-header-column" ref="dateHeader">
-        <div class="year-month-row">
+        <div class="year-month-row" ref="yearMonthRow">
           <div
             class="year-month-item"
             v-for="(month, index) in groupedDates"
@@ -33,12 +21,12 @@
             {{ month.year }}年 {{ month.month }}月
           </div>
         </div>
-        <div class="day-row">
+        <div class="day-row" ref="dayRow">
           <div
             class="header-item"
             v-for="date in dates"
             :key="date"
-            :class="{ saturday: isSaturday(date), sunday: isSunday(date), weekday: !isSaturday(date) && !isSunday(date) }"
+            :class="{ 'saturday-bg': isSaturday(date), 'sunday-bg': isSunday(date), 'weekday-bg': !isSaturday(date) && !isSunday(date) }"
           >
             <span>{{ formatDay(date) }}<br />{{ formatWeekday(date) }}</span>
           </div>
@@ -68,18 +56,19 @@
           </div>
         </div>
       </div>
-      <div class="task-bars-column" ref="taskBars" @scroll="syncScroll">
-        <div class="custom-grid-lines" ref="customGridLines">
+      <div class="task-bars-column" ref="taskBarsColumn" @scroll="syncScroll">
+        <div class="task-bar-grid">
           <div
+            class="task-bar-item"
             v-for="task in tasks"
             :key="task.id"
-            class="task-bar"
-            :style="getTaskBarStyle(task)"
-            @mousedown="startDrag(task, $event)"
           >
-            <div class="resize-handle left" @mousedown.stop="startResize(task, $event, 'start')"></div>
-            {{ task.name }}
-            <div class="resize-handle right" @mousedown.stop="startResize(task, $event, 'end')"></div>
+            <div
+              v-for="date in dates"
+              :key="date"
+              :class="{ 'saturday-bg': isSaturday(date), 'sunday-bg': isSunday(date), 'weekday-bg': !isSaturday(date) && !isSunday(date) }"
+              class="task-bar-date"
+            ></div>
           </div>
         </div>
       </div>
@@ -97,13 +86,7 @@ export default {
         { id: 2, name: 'Task 2', content: 'Content 2', assignee: 'User 2', progress: '50%', start: '2024-04-05', end: '2024-04-15' },
         { id: 3, name: 'Task 3', content: 'Content 3', assignee: 'User 3', progress: '100%', start: '2024-04-12', end: '2024-04-20' }
       ],
-      gridItemWidth: 30, // グリッド項目の幅を設定
-      draggingTask: null, // ドラッグ中のタスクを保持
-      initialMouseX: 0, // マウスの初期X座標
-      initialTaskStart: null, // タスクの初期開始日
-      resizingTask: null, // リサイズ中のタスクを保持
-      resizeSide: null, // リサイズ側 (startまたはend)
-      initialTaskEnd: null // タスクの初期終了日
+      gridItemWidth: 30 // グリッド項目の幅を設定
     };
   },
   computed: {
@@ -125,20 +108,19 @@ export default {
   },
   mounted() {
     this.$nextTick(() => {
-      this.updateGridLines();
       this.updateTaskFieldWidth();
-      window.addEventListener('resize', this.updateGridLines);
+      this.updateHeaderHeight();
+      this.updateGridHeight();
       window.addEventListener('resize', this.updateTaskFieldWidth);
-      window.addEventListener('mousemove', this.onMouseMove);
-      window.addEventListener('mouseup', this.onMouseUp);
+      window.addEventListener('resize', this.updateHeaderHeight);
+      window.addEventListener('resize', this.updateGridHeight);
       this.updateLayout();
     });
   },
   beforeDestroy() {
-    window.removeEventListener('resize', this.updateGridLines);
     window.removeEventListener('resize', this.updateTaskFieldWidth);
-    window.removeEventListener('mousemove', this.onMouseMove);
-    window.removeEventListener('mouseup', this.onMouseUp);
+    window.removeEventListener('resize', this.updateHeaderHeight);
+    window.removeEventListener('resize', this.updateGridHeight);
   },
   methods: {
     generateDates(startDate, days) {
@@ -146,9 +128,9 @@ export default {
       for (let i = 0; i < days; i++) {
         let date = new Date(startDate);
         date.setDate(startDate.getDate() + i);
-        dates.push(date);
+        dates.push(this.formatDate(date));
       }
-      return dates.map((date) => this.formatDate(date));
+      return dates;
     },
     formatDay(date) {
       const day = new Date(date).getDate();
@@ -168,25 +150,6 @@ export default {
     formatDate(date) {
       return date.toISOString().split('T')[0];
     },
-    syncScroll() {
-      const dateHeader = this.$refs.dateHeader;
-      const taskBars = this.$refs.taskBars;
-      dateHeader.scrollLeft = taskBars.scrollLeft;
-    },
-    getGridTemplateColumns() {
-      const columnsCount = this.dates.length;
-      return `repeat(${columnsCount}, ${this.gridItemWidth}px)`;
-    },
-    updateGridLines() {
-      const taskBarsElement = this.$refs.taskBars;
-      const customGridLines = this.$refs.customGridLines;
-      const numberOfDays = this.dates.length;
-      const gridWidth = numberOfDays * this.gridItemWidth;
-
-      customGridLines.style.width = `${gridWidth}px`;
-      customGridLines.style.gridTemplateColumns = this.getGridTemplateColumns();
-      customGridLines.style.gridTemplateRows = `repeat(${this.tasks.length}, 40px)`;
-    },
     updateTaskFieldWidth() {
       const taskHeaders = this.$refs.taskHeaderColumn.querySelectorAll('.task-header');
       const taskFields = this.$refs.taskNamesColumn.querySelectorAll('.task-field');
@@ -198,98 +161,47 @@ export default {
         });
       });
     },
+    updateHeaderHeight() {
+      const yearMonthRowHeight = this.$refs.yearMonthRow.clientHeight;
+      const dayRowHeight = this.$refs.dayRow.clientHeight;
+      const totalHeight = yearMonthRowHeight + dayRowHeight;
+
+      this.$refs.taskHeaderColumn.style.height = `${totalHeight}px`;
+      this.$refs.dateHeader.style.height = `${totalHeight}px`;
+    },
+    updateGridHeight() {
+      const taskFields = this.$refs.taskNamesColumn.querySelectorAll('.task-field');
+      const taskFieldHeight = taskFields[0].clientHeight;
+      const gridHeight = taskFieldHeight * this.tasks.length;
+
+      this.$refs.taskBarsColumn.querySelector('.task-bar-grid').style.gridTemplateRows = `repeat(${this.tasks.length}, ${taskFieldHeight}px)`;
+    },
     updateLayout() {
       const taskHeaderColumn = this.$refs.taskHeaderColumn;
       const taskNamesColumn = this.$refs.taskNamesColumn;
       const dateHeader = this.$refs.dateHeader;
-      const taskBars = this.$refs.taskBars;
 
       const taskHeaderColumnWidth = taskHeaderColumn.offsetWidth;
-      const taskHeaderColumnHeight = taskHeaderColumn.offsetHeight;
 
       taskNamesColumn.style.width = `${taskHeaderColumnWidth}px`;
       dateHeader.style.marginLeft = `${taskHeaderColumnWidth}px`;
-      taskBars.style.marginLeft = `${taskHeaderColumnWidth}px`;
+      this.$refs.taskBarsColumn.style.marginLeft = `${taskHeaderColumnWidth}px`; // 左端を合わせる
 
-      dateHeader.style.height = `${taskHeaderColumnHeight}px`;
+      // task-header-columnを最前面に
+      taskHeaderColumn.style.zIndex = 2;
+      dateHeader.style.zIndex = 1;
+      taskNamesColumn.style.zIndex = 1;
+
+      // task-names-columnとtask-bars-columnを<div class="rows">の上部に揃える
+      const rowsTop = this.$refs.rows.getBoundingClientRect().top;
+      taskNamesColumn.style.top = `${rowsTop}px`;
+      this.$refs.taskBarsColumn.style.top = `${rowsTop}px`;
     },
-    getTaskBarStyle(task) {
-      const start = new Date(task.start);
-      const end = new Date(task.end);
-      const startDate = new Date(this.dates[0]);
-      const endDate = new Date(this.dates[this.dates.length - 1]);
-
-      if (start < startDate) start = startDate;
-      if (end > endDate) end = endDate;
-
-      const startIndex = (start - startDate) / (1000 * 60 * 60 * 24);
-      const endIndex = (end - startDate) / (1000 * 60 * 60 * 24);
-
-      const taskIndex = this.tasks.findIndex(t => t.id === task.id) + 1;
-
-      return {
-        gridColumnStart: startIndex + 1,
-        gridColumnEnd: endIndex + 2,
-        gridRowStart: taskIndex,
-        gridRowEnd: taskIndex + 1
-      };
+    syncScroll() {
+      const dateHeader = this.$refs.dateHeader;
+      const taskBarsColumn = this.$refs.taskBarsColumn;
+      dateHeader.scrollLeft = taskBarsColumn.scrollLeft;
     },
-    startDrag(task, event) {
-      this.draggingTask = task;
-      this.initialMouseX = event.clientX;
-      this.initialTaskStart = new Date(task.start);
-    },
-    startResize(task, event, side) {
-      this.resizingTask = task;
-      this.resizeSide = side;
-      this.initialMouseX = event.clientX;
-      this.initialTaskStart = new Date(task.start);
-      this.initialTaskEnd = new Date(task.end);
-    },
-    onMouseMove(event) {
-      if (this.draggingTask) {
-        const dx = event.clientX - this.initialMouseX;
-        const daysMoved = Math.round(dx / this.gridItemWidth);
-        const newStart = new Date(this.initialTaskStart);
-        newStart.setDate(newStart.getDate() + daysMoved);
-
-        const newEnd = new Date(newStart);
-        const taskDuration = (new Date(this.draggingTask.end) - new Date(this.draggingTask.start)) / (1000 * 60 * 60 * 24);
-        newEnd.setDate(newEnd.getDate() + taskDuration);
-
-        this.draggingTask.start = this.formatDate(newStart);
-        this.draggingTask.end = this.formatDate(newEnd);
-      } else if (this.resizingTask) {
-        const dx = event.clientX - this.initialMouseX;
-        const daysMoved = Math.round(dx / this.gridItemWidth);
-
-        if (this.resizeSide === 'start') {
-          const newStart = new Date(this.initialTaskStart);
-          newStart.setDate(newStart.getDate() + daysMoved);
-
-          if (newStart < new Date(this.resizingTask.end)) {
-            this.resizingTask.start = this.formatDate(newStart);
-          }
-        } else if (this.resizeSide === 'end') {
-          const newEnd = new Date(this.initialTaskEnd);
-          newEnd.setDate(newEnd.getDate() + daysMoved);
-
-          if (newEnd > new Date(this.resizingTask.start)) {
-            this.resizingTask.end = this.formatDate(newEnd);
-          }
-        }
-      }
-    },
-    onMouseUp() {
-      this.draggingTask = null;
-      this.resizingTask = null;
-      this.resizeSide = null;
-    },
-    updateTaskBar(task) {
-      this.$nextTick(() => {
-        this.updateGridLines();
-      });
-    }
   }
 };
 </script>
@@ -302,44 +214,9 @@ export default {
   margin: 20px;
 }
 
-.new-task-bars-column {
-  width: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
-  position: relative;
-  background-color: #ffffff;
-  height: 75px !important;
-}
-
-.new-task-bar-container {
-  position: relative;
-  display: grid;
-  grid-template-columns: repeat(90, 30px);
-  height: 100%;
-}
-
-.custom-grid-lines,
-.sub-custom-grid-lines {
-  position: relative;
-  display: grid;
-  grid-template-columns: repeat(90, 30px);
-  grid-template-rows: repeat(auto-fill, 40px);
-  height: 100%;
-}
-
-.sub-task-bar-grid-line {
-  border-left: 1px solid #ddd;
-  border-bottom: 1px solid #ddd;
-  height: 40px;
-}
-
-.spacer {
-  height: 20px;
-}
-
 .header {
   display: flex;
-  flex-shrink: 0;
+  position: relative;
 }
 
 .task-header-column {
@@ -347,6 +224,8 @@ export default {
   grid-template-columns: 100px 100px 100px 100px 150px 150px; /* 各カラムの幅を指定 */
   border-right: 1px solid #ddd;
   background-color: #28a745;
+  position: absolute; /* 他の要素と重ねる */
+  z-index: 2; /* 最前面に配置 */
 }
 
 .task-header {
@@ -362,6 +241,8 @@ export default {
   display: grid;
   grid-template-rows: auto auto;
   overflow-x: hidden;
+  margin-left: 0; /* 左端に合わせる */
+  z-index: 1; /* 後ろに配置 */
 }
 
 .year-month-row,
@@ -408,7 +289,6 @@ export default {
   display: flex;
   flex-grow: 1;
   overflow-x: hidden;
-  position: relative;
 }
 
 .task-names-column {
@@ -420,6 +300,9 @@ export default {
   background-color: #ffffff;
   border-bottom: 1px solid #ddd;
   height: 100%;
+  position: absolute; /* 他の要素と重ねる */
+  z-index: 1; /* 後ろに配置 */
+  width: 100%;
 }
 
 .task-names-column::after {
@@ -462,49 +345,22 @@ export default {
 
 .task-bars-column {
   display: grid;
-  grid-template-rows: repeat(auto-fill, 40px);
-  width: 100%;
+  width: calc(100% - (100px * 4 + 150px * 2 + 2px)); /* 残りの幅を使用 */
   overflow-x: auto;
   overflow-y: hidden;
-  position: absolute;
-  top: 0;
-  left: 0; /* 左端に配置 */
-  margin-left: 0;
-  flex-grow: 1;
+  top: 0; /* rowsの上部に合わせる */
   background-color: #ffffff;
   height: 100%;
-  border-top: 1px solid black;
+  left: 0; /* task-header-columnと合わせる */
 }
 
-.grid-line {
+.task-bar-grid {
+  display: grid;
+  grid-template-columns: repeat(90, 30px); /* datesの幅に合わせる */
+}
+
+.task-bar-item {
   border-left: 1px solid lightgray;
   border-bottom: 1px solid lightgray;
-}
-
-.task-bar {
-  background-color: #28a745;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  cursor: move;
-  position: relative;
-}
-
-.resize-handle {
-  width: 10px;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.1);
-  position: absolute;
-  top: 0;
-  cursor: ew-resize;
-}
-
-.resize-handle.left {
-  left: 0;
-}
-
-.resize-handle.right {
-  right: 0;
 }
 </style>

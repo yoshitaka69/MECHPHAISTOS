@@ -6,8 +6,6 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
 
-// vue-draggable-resizableのCSSをインポート
-import DraggableResizableVue from 'draggable-resizable-vue3'
 
 // axios
 import axios from 'axios'
@@ -252,8 +250,6 @@ app.component('VirtualScroller', VirtualScroller);
 // vue3-easy-data-table
 app.component('EasyDataTable', Vue3EasyDataTable);
 
-//vue-draggable-resizable
-app.use(DraggableResizableVue)
 
 // Handsontable
 // register all cell types at once

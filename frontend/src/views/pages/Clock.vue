@@ -55,8 +55,8 @@
   
   <style scoped>
   .clock {
-    width: 150px; /* ここを修正 */
-    height: 75px; /* ここを修正 */
+    width: 200px;
+    height: 100px;
     position: relative;
     margin: 20px;
     display: flex;
@@ -96,3 +96,4 @@
     font-size: 0.8em;
   }
   </style>
+  
