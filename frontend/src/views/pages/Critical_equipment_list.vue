@@ -28,8 +28,13 @@
                     </TabPanel>
                     <TabPanel header="Risk-Matrix">
                         <p class="line-height-3 m-0"></p>
-                        <div>
-                            <Set_risk_matrix />
+                        <div class="risk-matrix-container">
+                            <div class="risk-matrix-item">
+                                <Risk_Matrix_impact_for_production />
+                            </div>
+                            <div class="risk-matrix-item">
+                                <Risk_matrix_possibility_Of_Failure />
+                            </div>
                         </div>
                     </TabPanel>
                 </TabView>
@@ -41,21 +46,20 @@
 <script>
 import Critical_equipment_list from '@/components/Critical_equipment_list/Critical_equipment_list.vue';
 import Assessment_rate from '@/components/Critical_equipment_list/Assessment_rate.vue';
-import Risk_matrix from '@/components/Risk_Matrix/Risk_matrix.vue';
-import Impact_for_production from '@/components/Risk_Matrix/Impact_for_production.vue';
-import Probability_of_failure from '@/components/Risk_Matrix/Probability_of_failure.vue';
+
 import Top20_priority_task from '@/components/Critical_equipment_list/Top20_priority_task.vue';
-import Set_risk_matrix from '@/components/Risk_Matrix/Set_Risk_Matrix.vue';
+
+import Risk_Matrix_impact_for_production from '@/components/Risk_Matrix/Risk_Matrix_impact_for_production.vue';
+import Risk_matrix_possibility_Of_Failure from '@/components/Risk_Matrix/Risk_matrix_possibility_Of_Failure.vue';
 
 export default {
     components: {
         Critical_equipment_list,
         Assessment_rate,
-        Risk_matrix,
-        Impact_for_production,
-        Probability_of_failure,
+
         Top20_priority_task,
-        Set_risk_matrix
+        Risk_Matrix_impact_for_production,
+        Risk_matrix_possibility_Of_Failure
     },
     data() {
         return {
@@ -75,5 +79,17 @@ export default {
 .row {
     display: flex;
     flex-wrap: wrap;
+}
+
+.risk-matrix-container {
+    display: flex;
+    flex-direction: column;
+    gap: 40px; /* コンポーネント間の隙間 */
+}
+
+.risk-matrix-item {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
 }
 </style>

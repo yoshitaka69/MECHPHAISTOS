@@ -5,12 +5,12 @@
             <img :src="`http://openweathermap.org/img/w/${weatherData.weather[0].icon}.png`" alt="Weather Icon">
         </div>
         <div class="weather-details">
-            <h2>現在の天気: {{ weatherData.weather[0].main }}</h2>
-            <p>温度: {{ weatherData.main.temp }}°C</p>
-            <p>湿度: {{ weatherData.main.humidity }}%</p>
-            <p>風速: {{ weatherData.wind.speed }} m/s</p>
+            <h3 class="current-weather-label">現在の天気: <span class="current-weather">{{ weatherData.weather[0].main }}</span></h3>
+            <h2 class="weather-info">温度: {{ weatherData.main.temp }}°C</h2>
+            <h2 class="weather-info">湿度: {{ weatherData.main.humidity }}%</h2>
+            <h2 class="weather-info">風速: {{ weatherData.wind.speed }} m/s</h2>
             <div v-if="wbgtAlert" :class="['heat-alert', wbgtAlertClass]">
-                <p>熱中症アラート: {{ wbgtAlertMessage }}</p>
+                <h2>熱中症アラート: <span :class="wbgtAlertClass">{{ wbgtAlertMessage }}</span></h2>
             </div>
         </div>
     </div>
@@ -88,38 +88,60 @@ export default {
 
 <style>
 .weather-container {
-    width: 100%;
-    max-width: 500px;
+    width: 80%; /* 全体のコンテナサイズを小さく */
+    max-width: 400px; /* 最大幅を小さく */
     height: auto;
     border: 1px solid #ccc;
-    padding: 1rem;
+    padding: 0.5rem; /* パディングを小さく */
     box-shadow: 2px 2px 12px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
-    margin: 20px auto; /* 中央寄せ */
+    margin: 10px auto; /* マージンを小さくして中央寄せ */
     display: flex;
     align-items: center;
     text-align: left; /* テキスト左寄せ */
     background: linear-gradient(to top, #e0f7fa, #0277bd); /* 青色のグラデーション */
-    font-size: 1rem; /* 基本のフォントサイズ */
+    font-size: 0.8rem; /* 基本のフォントサイズを小さく */
 }
 .location {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-right: 1rem;
+    margin-right: 0.5rem; /* マージンを小さく */
 }
 .weather-details {
     display: flex;
     flex-direction: column;
-    font-size: 0.8rem; /* フォントサイズをもう一回り小さく */
+    font-size: 0.7rem; /* フォントサイズを小さく */
+}
+.current-weather-label {
+    font-size: 1.5rem; /* 現在の天気ラベルのフォントサイズを小さく */
+    line-height: 1.2; /* 行間を狭く */
+}
+.current-weather {
+    font-size: 2rem; /* 現在の天気のフォントサイズを大きく */
+    line-height: 1.2; /* 行間を狭く */
 }
 img {
-    width: 3rem; /* アイコンのサイズを調整 */
+    width: 6rem; /* アイコンのサイズを大きく */
     height: auto;
+}
+h1 {
+    font-size: 1.2rem; /* 場所のフォントサイズを小さく */
+    line-height: 0.5; /* 行間を狭く */
+}
+h2 {
+    font-size: 2rem; /* 温度、湿度、風速のフォントサイズを大きく */
+    font-weight: bold; /* 温度、湿度、風速のフォントを太字に */
+    line-height: 0.5; /* 行間を狭く */
+}
+h3 {
+    font-size: 0.7rem; /* 現在の天気ラベルのフォントサイズを小さく */
+    line-height: 0.5; /* 行間を狭く */
 }
 .heat-alert {
     font-weight: bold;
     margin-top: 0.5rem;
+    line-height: 0.5; /* 行間を狭く */
 }
 .alert-caution {
     color: blue;

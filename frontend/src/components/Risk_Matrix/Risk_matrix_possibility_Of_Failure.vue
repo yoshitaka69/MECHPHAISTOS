@@ -1,12 +1,7 @@
 <template>
   <div>
+    <ProbabilityOfFailure />
     <div class="controls">
-      <label for="settings">設定:</label>
-      <select id="settings" v-model="selectedSetting" @change="loadControlPoint">
-        <option v-for="option in settingsOptions" :key="option.value" :value="option.value">
-          {{ option.text }}
-        </option>
-      </select>
       <button @click="saveControlPoint">保存</button>
       <button @click="resetToDefault">初期値</button>
     </div>
@@ -17,46 +12,45 @@
   </div>
 </template>
 
+
 <script>
+import ProbabilityOfFailure from './Probability_of_failure.vue';
 import * as d3 from 'd3';
 
 export default {
   name: 'ToneCurve',
+  components: {
+    ProbabilityOfFailure
+  },
   data() {
     return {
       data: [
-        { x: 1, y: 0 },
-        { x: 3, y: 2 },
+        { x: 0, y: 0 },
+        { x: 3, y: 2.5 },
         { x: 6, y: 6 }
       ],
-      controlPoint: { x: 3, y: 2 },
+      controlPoint: { x: 3, y: 4 },
       riskMatrix: [
-        { likelihood: 6, description: 'Almost certain', risk: ['H', 'VH', 'VH', 'VH', 'VH', 'VH'] },
-        { likelihood: 5, description: 'Likely', risk: ['M', 'H', 'VH', 'VH', 'VH', 'VH'] },
-        { likelihood: 4, description: 'Possible', risk: ['L', 'M', 'H', 'VH', 'VH', 'VH'] },
-        { likelihood: 3, description: 'Unlikely', risk: ['L', 'L', 'M', 'H', 'VH', 'VH'] },
-        { likelihood: 2, description: 'Rare', risk: ['L', 'L', 'L', 'M', 'H', 'VH'] },
-        { likelihood: 1, description: 'Very rare', risk: ['L', 'L', 'L', 'L', 'M', 'H'] }
+        { likelihood: 7, description: 'Almost certain', risk: ['H', 'VH', 'VH', 'VH', 'VH', 'VH'] },
+        { likelihood: 6, description: 'Likely', risk: ['M', 'H', 'VH', 'VH', 'VH', 'VH'] },
+        { likelihood: 5, description: 'Possible', risk: ['L', 'M', 'H', 'VH', 'VH', 'VH'] },
+        { likelihood: 4, description: 'Unlikely', risk: ['L', 'L', 'M', 'H', 'VH', 'VH'] },
+        { likelihood: 3, description: 'Rare', risk: ['L', 'L', 'L', 'M', 'H', 'VH'] },
+        { likelihood: 2, description: 'Very rare', risk: ['L', 'L', 'L', 'L', 'M', 'H'] }
       ],
       riskMatrixInitial: [
-        { likelihood: 6, description: 'Almost certain', risk: ['H', 'VH', 'VH', 'VH', 'VH', 'VH'] },
-        { likelihood: 5, description: 'Likely', risk: ['M', 'H', 'VH', 'VH', 'VH', 'VH'] },
-        { likelihood: 4, description: 'Possible', risk: ['L', 'M', 'H', 'VH', 'VH', 'VH'] },
-        { likelihood: 3, description: 'Unlikely', risk: ['L', 'L', 'M', 'H', 'VH', 'VH'] },
-        { likelihood: 2, description: 'Rare', risk: ['L', 'L', 'L', 'M', 'H', 'VH'] },
-        { likelihood: 1, description: 'Very rare', risk: ['L', 'L', 'L', 'L', 'M', 'H'] }
+        { likelihood: 7, description: 'Almost certain', risk: ['H', 'VH', 'VH', 'VH', 'VH', 'VH'] },
+        { likelihood: 6, description: 'Likely', risk: ['M', 'H', 'VH', 'VH', 'VH', 'VH'] },
+        { likelihood: 5, description: 'Possible', risk: ['L', 'M', 'H', 'VH', 'VH', 'VH'] },
+        { likelihood: 4, description: 'Unlikely', risk: ['L', 'L', 'M', 'H', 'VH', 'VH'] },
+        { likelihood: 3, description: 'Rare', risk: ['L', 'L', 'L', 'M', 'H', 'VH'] },
+        { likelihood: 2, description: 'Very rare', risk: ['L', 'L', 'L', 'L', 'M', 'H'] }
       ],
       riskClasses: ['Near Miss', 'Minor Inquiry', 'Lost Time Accident', 'Major Inquiry', 'Fatality'],
-      selectedSetting: 1,
-      settingsOptions: [
-        { value: 1, text: '設定 1' },
-        { value: 2, text: '設定 2' },
-        { value: 3, text: '設定 3' }
-      ],
       savedControlPoints: {
-        1: { x: 3, y: 2 },
-        2: { x: 3, y: 2 },
-        3: { x: 3, y: 2 }
+        1: { x: 3, y: 4 },
+        2: { x: 3, y: 4 },
+        3: { x: 3, y: 4 }
       }
     };
   },
@@ -65,7 +59,7 @@ export default {
   },
   methods: {
     drawChart() {
-      const margin = { top: 20, right: 20, bottom: 30, left: 40 };
+      const margin = { top: 20, right: 20, bottom: 50, left: 120 };
       const width = 500 - margin.left - margin.right;
       const height = 400 - margin.top - margin.bottom;
 
@@ -78,14 +72,16 @@ export default {
         .append('g')
         .attr('transform', `translate(${margin.left},${margin.top})`);
 
-      const xDomain = [1, 2, 3, 4, 5, 6, '6+'];
       const xScale = d3.scalePoint()
-        .domain(xDomain)
+        .domain([0, 1, 2, 3, 4, 5, 6])
         .range([0, width]);
 
-      const yDomain = [0, 0.2, 2, 4, 5, 6, '6+'];
       const yScale = d3.scalePoint()
-        .domain(yDomain)
+        .domain([0, 2, 3, 4, 5, 6, 7])
+        .range([height, 0]);
+
+      const yScaleLeft = d3.scalePoint()
+        .domain([0, 0, 0, 0.5, 1, 1.5, 2, 2.5, 3])
         .range([height, 0]);
 
       const colorMap = {
@@ -105,13 +101,13 @@ export default {
       };
 
       const updateRiskMatrixColors = () => {
-        const xRatio = (this.controlPoint.x - 1) / 5;
-        const yRatio = (yScale(this.controlPoint.y) - yScale(0)) / (yScale(6) - yScale(0));
+        const xRatio = (this.controlPoint.x - 1) / 29;
+        const yRatio = (this.controlPoint.y - 2) / 5;
 
         this.riskMatrix = this.riskMatrixInitial.map(row => ({
           ...row,
           risk: row.risk.map((risk, j) => {
-            const adjustedX = j + xRatio * 5 - 2.5;
+            const adjustedX = j + xRatio * 6 - 3;
             const adjustedY = row.likelihood - yRatio * 6 + 3;
             const average = (adjustedX + adjustedY) / 2;
             if (average < 1) return 'L';
@@ -134,7 +130,7 @@ export default {
           row.risk.forEach((risk, j) => {
             svg.append('rect')
               .attr('x', j * cellWidth)
-              .attr('y', (6 - row.likelihood) * cellHeight)
+              .attr('y', (7 - row.likelihood) * cellHeight)
               .attr('width', cellWidth)
               .attr('height', cellHeight)
               .attr('fill', colorMap[risk])
@@ -144,7 +140,7 @@ export default {
 
             svg.append('text')
               .attr('x', j * cellWidth + cellWidth / 2)
-              .attr('y', (6 - row.likelihood) * cellHeight + cellHeight / 2)
+              .attr('y', (7 - row.likelihood) * cellHeight + cellHeight / 2)
               .attr('dy', '.35em')
               .attr('text-anchor', 'middle')
               .attr('class', 'risk-text')
@@ -170,7 +166,7 @@ export default {
         const dataWithControl = [
           this.data[0],
           this.controlPoint,
-          { x: 6, y: '6+' }
+          this.data[2]
         ];
 
         svg.append('path')
@@ -184,26 +180,39 @@ export default {
         svg.append('g')
           .attr('class', 'axis')
           .attr('transform', `translate(0,${height})`)
-          .call(d3.axisBottom(xScale).tickFormat((d, i) => i === 6 ? '6+' : d));
+          .call(d3.axisBottom(xScale).tickPadding(15).tickFormat(d => d.toString()));
 
         svg.append('g')
           .attr('class', 'axis')
-          .call(d3.axisLeft(yScale).tickFormat((d, i) => i === 6 ? '6+' : d));
+          .call(d3.axisLeft(yScale).tickPadding(15).tickFormat(d => d.toString()));
+
+        svg.append('g')
+          .attr('class', 'axis')
+          .attr('transform', `translate(${-60},0)`)
+          .call(d3.axisLeft(yScaleLeft).tickPadding(15).tickFormat((d, i) => ['0', '0', '0', '0.5', '1', '1.5', '2', '2.5', '3'][i]));
 
         svg.append('text')
           .attr('transform', 'rotate(-90)')
-          .attr('y', 0 - margin.left)
+          .attr('y', 0 - margin.left + 60)
           .attr('x', 0 - (height / 2))
           .attr('dy', '1em')
           .style('text-anchor', 'middle')
-          .text('過去5年のPM03,04の発生回数');
+          .text('Number of PM04 occurrences in the past 5 years');
+
+        svg.append('text')
+          .attr('transform', 'rotate(-90)')
+          .attr('y', 0 - margin.left + 100)
+          .attr('x', 0 - (height / 2))
+          .attr('dy', '1em')
+          .style('text-anchor', 'middle')
+          .text('Number of PM03 occurrences in the past 5 years');
 
         svg.append('text')
           .attr('x', width / 2)
           .attr('y', height + margin.bottom)
           .attr('dy', '-0.5em')
           .style('text-anchor', 'middle')
-          .text('PM02発生時期');
+          .text('Time of occurrence on PM02');
 
         svg.selectAll('circle')
           .data([this.controlPoint])
@@ -220,11 +229,11 @@ export default {
             })
             .on('drag', (event, d) => {
               const invertX = Math.max(0, Math.min(width, event.x));
-              const closestX = xDomain.reduce((prev, curr) => Math.abs(xScale(curr) - invertX) < Math.abs(xScale(prev) - invertX) ? curr : prev);
+              const closestX = [0, 1, 2, 3, 4, 5, 6].reduce((prev, curr) => Math.abs(xScale(curr) - invertX) < Math.abs(xScale(prev) - invertX) ? curr : prev);
               const invertY = Math.max(0, Math.min(height, event.y));
-              const closestY = yDomain.reduce((prev, curr) => Math.abs(yScale(curr) - invertY) < Math.abs(yScale(prev) - invertY) ? curr : prev);
-              d.x = closestX === '6+' ? 6 : closestX;
-              d.y = closestY === '6+' ? 6 : closestY;
+              const closestY = [0, 2, 3, 4, 5, 6, 7].reduce((prev, curr) => Math.abs(yScale(curr) - invertY) < Math.abs(yScale(prev) - invertY) ? curr : prev);
+              d.x = closestX;
+              d.y = closestY;
               this.controlPoint = { x: d.x, y: d.y };
               updateChart();
             })
@@ -236,21 +245,16 @@ export default {
       updateChart();
     },
     saveControlPoint() {
-      this.savedControlPoints[this.selectedSetting] = { ...this.controlPoint };
+      this.savedControlPoints[1] = { ...this.controlPoint };
     },
     loadControlPoint() {
-      this.controlPoint = { ...this.savedControlPoints[this.selectedSetting] };
+      this.controlPoint = { ...this.savedControlPoints[1] };
       this.drawChart();
     },
     resetToDefault() {
-      this.controlPoint = { x: 3, y: 2 };
+      this.controlPoint = { x: 3, y: 4 };
       this.saveControlPoint();
       this.drawChart();
-    }
-  },
-  watch: {
-    selectedSetting() {
-      this.loadControlPoint();
     }
   }
 };
@@ -264,9 +268,72 @@ export default {
   margin-top: 60px;
 }
 
-.chart-container {
-  display: inline-block;
+.impact-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+}
+
+.impact-table th, .impact-table td {
+  border: 1px solid black;
+  padding: 10px;
+  text-align: center;
+  font-family: Arial, sans-serif;
+}
+
+.impact-table th {
+  background-color: grey;
+  color: white;
+}
+
+.impact-table tr:nth-child(even) {
+  background-color: lightgrey;
+}
+
+.impact-table tr:nth-child(odd) {
+  background-color: white;
+}
+
+.impact-table td {
   vertical-align: top;
+}
+
+.failure-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+}
+
+.failure-table th, .failure-table td {
+  border: 1px solid black;
+  padding: 10px;
+  text-align: center;
+  font-family: Arial, sans-serif;
+}
+
+.failure-table th {
+  color: black;
+}
+
+.failure-table tr:nth-child(even) {
+  background-color: lightgrey;
+}
+
+.failure-table tr:nth-child(odd) {
+  background-color: white;
+}
+
+.failure-table td {
+  vertical-align: top;
+}
+
+.chart-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 400px;
+  margin-top: 40px; /* テーブルとチャート間のマージン */
 }
 
 .controls {
@@ -292,6 +359,7 @@ export default {
 
 .M {
   background-color: #f9d909;
+  height: 60px;
   font-weight: 550 !important;
 }
 
