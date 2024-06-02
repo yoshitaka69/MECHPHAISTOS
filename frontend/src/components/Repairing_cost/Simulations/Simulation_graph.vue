@@ -6,7 +6,7 @@
     </div>
     <div class="benefits-container">
       <div class="benefit" v-if="monthlyBenefit.length > 0">
-        <h3>月別の利益</h3>
+        <h3>Monthly Profit</h3>
         <ul>
           <li v-for="(value, index) in monthlyBenefit" :key="index" :class="{ negative: value < 0 }">
             {{ months[index] }}: {{ formatBenefit(value) }}
@@ -14,7 +14,7 @@
         </ul>
       </div>
       <div class="benefit" v-if="yearlyBenefit.length > 0">
-        <h3>年間の利益</h3>
+        <h3>Annual Profit</h3>
         <ul>
           <li v-for="(value, index) in yearlyBenefit" :key="index" :class="{ negative: value < 0 }">
             {{ years[index] }}: {{ formatBenefit(value) }}
@@ -43,13 +43,13 @@ const years = Array.from({ length: 10 }, (_, i) => thisYear + i);
 const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 const monthlyLayout = { 
-  title: '月別コストグラフ',
-  xaxis: { title: '月', tickvals: Array.from({ length: 12 }, (_, i) => i), ticktext: months },
+  title: 'Monthly Cost Graph',
+  xaxis: { title: 'Month', tickvals: Array.from({ length: 12 }, (_, i) => i), ticktext: months },
   yaxis: { rangemode: 'tozero' }
 };
 const totalCostLayout = { 
-  title: '総コストグラフ',
-  xaxis: { title: '年', tickvals: Array.from({ length: 10 }, (_, i) => thisYear + i), ticktext: years },
+  title: 'Total Cost Graph',
+  xaxis: { title: 'Year', tickvals: Array.from({ length: 10 }, (_, i) => thisYear + i), ticktext: years },
   yaxis: { rangemode: 'tozero' }
 };
 const config = { responsive: true };
@@ -72,7 +72,7 @@ const fetchPPMData = async () => {
     const response = await axios.get(url);
     processPPMData(response.data);
   } catch (error) {
-    console.error("APIエラー: ", error);
+    console.error("API Error: ", error);
   }
 };
 
@@ -83,7 +83,7 @@ const fetchMonthlyData = async () => {
     const response = await axios.get(url);
     processMonthlyData(response.data);
   } catch (error) {
-    console.error("APIエラー: ", error);
+    console.error("API Error: ", error);
   }
 };
 
