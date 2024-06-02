@@ -31,6 +31,7 @@ const model = ref([
                 {label:'Ganttchart',icon:'pi pi-fw pi-bookmark', to: '/schedule/ganttchart'},
               ]
             },
+            { label: 'SCADA', icon: 'pi pi-fw pi-list', to: '/scada' },
             { label: 'Trend & Demand', icon: 'pi pi-fw pi-list', to: '/trend&demand' },
             { label: 'Work order', icon: 'pi pi-fw pi-share-alt', to: '/work_order' },
             { label: 'AI', icon: 'pi pi-fw pi-tablet', to: '/ai' },
