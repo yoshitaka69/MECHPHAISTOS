@@ -1,11 +1,7 @@
 <template>
   <div id="CeList">
-    <div class="matrices-container">
-      <RiskMatrixImpactForProductionOnlyMatrix />
-      <RiskMatrixPossibilityOfFailureOnlyMatrix />
-    </div>
     <hot-table ref="hotTableComponent" :settings="hotSettings"></hot-table><br />
-    <button v-on:click="sendData" class="controls">Update Data</button>
+    <button v-on:click="emitData" class="controls">Emit Data</button>
   </div>
 </template>
 
@@ -17,161 +13,138 @@ import { HotTable } from '@handsontable/vue3';
 import { registerAllModules } from 'handsontable/registry';
 import 'handsontable/dist/handsontable.full.css';
 import { useUserStore } from '@/stores/userStore'; // Piniaストアをインポート
-import RiskMatrixImpactForProductionOnlyMatrix from './Risk_Matrix_impact_for_production_onlyMatrix.vue';
-import RiskMatrixPossibilityOfFailureOnlyMatrix from './Risk_matrix_possibility_Of_Failure onlyMatrix.vue';
 
 // register Handsontable's modules
 registerAllModules();
 
+function applyBaseStyle(td) {
+  if (td) {
+    td.style.backgroundColor = '#F0F0F0'; // さらに薄い灰色
+    td.style.color = 'black';
+  }
+}
+
 function customRenderer(instance, td, row, col, prop, value, cellProperties) {
   Handsontable.renderers.TextRenderer.apply(this, arguments);
-  td.style.backgroundColor = '#F5F5F5'; // 薄い灰色
-  // 'Impact for production' 列のインデックス（0から始まる）
+  applyBaseStyle(td);
   const impactColIndex = 15;
-  // インデックスが 'Impact for production' の列であり、値が 'High+' などの場合にスタイルを設定
   if (col === impactColIndex) {
     if (value === 'High+') {
-      td.style.backgroundColor = '#FF0000'; // 赤
-      td.style.color = 'black';
+      td.style.backgroundColor = '#FF0000';
     } else if (value === 'High') {
-      td.style.backgroundColor = '#FFC000'; // オレンジ
-      td.style.color = 'black';
+      td.style.backgroundColor = '#FFC000';
     } else if (value === 'Low') {
-      td.style.backgroundColor = '#00B050'; // 緑
-      td.style.color = 'black';
+      td.style.backgroundColor = '#00B050';
     }
-    // 他の条件があれば、if ステートメントを拡張してください
   }
 }
 
 function customRendererForProbability(instance, td, row, col, prop, value, cellProperties) {
   Handsontable.renderers.TextRenderer.apply(this, arguments);
-  td.style.backgroundColor = '#F5F5F5'; // 薄い灰色
-
-  // 'Probability of failure' 列のインデックス
+  applyBaseStyle(td);
   const probabilityColIndex = 16;
-
-  // インデックスが 'Probability of failure' の列であり、値に基づいてスタイルを設定
   if (col === probabilityColIndex) {
-    // セル内の文字に基づいてスタイルを変更
     switch (value) {
       case '要対策':
         td.style.backgroundColor = '#FF0000';
-        td.style.color = 'black';
         break;
       case '対策検討':
         td.style.backgroundColor = '#FFC000';
-        td.style.color = 'black';
         break;
       case '適切':
         td.style.backgroundColor = '#92D050';
-        td.style.color = 'black';
         break;
       case '見直検討':
         td.style.backgroundColor = '#00B050';
-        td.style.color = 'black';
         break;
-      // 他の条件があればここに追加
     }
   }
 }
 
 function customRendererForAssessment(instance, td, row, col, prop, value, cellProperties) {
   Handsontable.renderers.TextRenderer.apply(this, arguments);
-  td.style.backgroundColor = '#F5F5F5'; // 薄い灰色
-
-  // セル内の文字に基づいてスタイルを変更
+  applyBaseStyle(td);
   switch (value) {
     case '対策済':
-      td.style.backgroundColor = '#92D050'; // 条件1
-      td.style.color = 'black';
+      td.style.backgroundColor = '#92D050';
       break;
     case '見直検討':
-      td.style.backgroundColor = '#00B050'; // 条件2
-      td.style.color = 'black';
+      td.style.backgroundColor = '#00B050';
       break;
     case '保全タスク':
-      td.style.backgroundColor = '#FFFF00'; // 条件3
-      td.style.color = 'black';
+      td.style.backgroundColor = '#FFFF00';
       break;
-    // 他の条件があればここに追加
   }
-
-  // 'Probability of failure' 列の値に基づいてスタイルを変更
-  const probabilityOfFailureColIndex = 16; // 'Probability of failure' 列のインデックス
+  const probabilityOfFailureColIndex = 16;
   const probabilityOfFailureValue = instance.getDataAtCell(row, probabilityOfFailureColIndex);
-
-  // 'Impact for production' 列の値に基づいてスタイルを変更
-  const impactForProductionColIndex = 15; // 'Impact for production' 列のインデックス
+  const impactForProductionColIndex = 15;
   const impactForProductionValue = instance.getDataAtCell(row, impactForProductionColIndex);
 
-  // 条件の優先順位を考慮してスタイルを適用
   if (value === '対策済' || value === '見直検討' || value === '保全タスク') {
-    // 条件1, 2, 3 の場合
-    // 何もしない（条件1, 2, 3が優先される）
   } else if (impactForProductionValue === 'High+' || probabilityOfFailureValue === '要対策') {
-    // 条件4, 5 の場合
-    td.style.backgroundColor = '#FF0000'; // 条件4, 5 が優先される
-    td.style.color = 'black';
+    td.style.backgroundColor = '#FF0000';
   } else if (impactForProductionValue === 'High' || probabilityOfFailureValue === '対策検討') {
-    // 条件6, 7 の場合
-    td.style.backgroundColor = '#FFC000'; // 条件6, 7 が優先される
-    td.style.color = 'black';
+    td.style.backgroundColor = '#FFC000';
   }
 }
 
 function customRendererForSituation(instance, td, row, col, prop, value, cellProperties) {
   Handsontable.renderers.TextRenderer.apply(this, arguments);
-  td.style.backgroundColor = '#F5F5F5'; // 薄い灰色
+  applyBaseStyle(td);
   if (value === '遅延') {
-    td.style.backgroundColor = '#FFFF00'; // 黄色
-    td.style.color = 'black';
+    td.style.backgroundColor = '#FFFF00';
   }
 }
 
 function customRendererForMttr(instance, td, row, col, prop, value, cellProperties) {
   Handsontable.renderers.TextRenderer.apply(this, arguments);
-  td.style.backgroundColor = '#F5F5F5'; // 薄い灰色
-
-  const constructionPeriodColIndex = 5;  // Construction period の列のインデックス
-  const partsDeliveryDateColIndex = 6;  // Parts delivery date の列のインデックス
-
+  applyBaseStyle(td);
+  const constructionPeriodColIndex = 5;
+  const partsDeliveryDateColIndex = 6;
   const constructionPeriod = instance.getDataAtCell(row, constructionPeriodColIndex);
   const partsDeliveryDate = instance.getDataAtCell(row, partsDeliveryDateColIndex);
-
-  // Construction period と Parts delivery date の比較
   const mttrValue = Math.max(constructionPeriod, partsDeliveryDate);
-
-  // MTTR セルに表示
-  td.innerHTML = mttrValue === 0 ? '' : mttrValue;
+  if (td) {
+    td.innerHTML = mttrValue === 0 ? '' : mttrValue;
+  }
+  return mttrValue; // ここでMTTR値を返す
 }
 
-const CriticalEquipmentComponent = defineComponent({
-  components: {
-    HotTable,
-    RiskMatrixImpactForProductionOnlyMatrix,
-    RiskMatrixPossibilityOfFailureOnlyMatrix
-  },
+const CriticalEquipmentList = defineComponent({
   data() {
     return {
       hotSettings: {
         data: [
-          // データをここに追加
+          ['', 'PlantA', 'モーターA', 'N401/A plant__', '4', '10', '6', '10', '4', '今年', '2022-10-02', '3', '2019-11-01', '0', '', 'High+', '', '対策済', 'A plant/変換器室 変換器盤1-3パワーサプライ交換', '10000', '3', '2025', '', 'Standard', '', '', '', '', '',], //1
+          ['', 'PlantA', 'モーターA', 'N401/A plant__/OX2_', '3', '10', '6', '10', '4', '', '', '4', '2018-08-10', '', '', 'High', '対策検討', '', '', '750000', '3', '', '遅延', '', '', '', '', '', '',], //2
+          ['', 'PlantB', 'Attach系機械設備', 'N401/A plant__/OX2_/A', '3', '10', '6', '10', '今年', '2', '2022-05-20', '0', '', '', '', '', '注意', '', 'A plant/Di槽撹拌機交換（A）', '5000', '', '', '', '', '', '', '', '', '',], //3
+          ['', 'PlantC', '回収温水熱交', 'N401/A plant__/OX2_/A/5E-09', '3', '10', '60', '10', '4', '', '', '', '', '', '', 'Low', '見直検討', '', '', '', '', '', '', '', '', '', '', '', '',], //4
         ],
         nestedHeaders: [
-          ["", "", "", "", { label: "Impact", colspan: 5 }, { label: "Probability of failure", colspan: 6 }, { label: "Critical equipment Level", colspan: 3 }, "", "", "", "", "", { label: "Spare parts", colspan: 2 }, { label: "Status of measures", colspan: 4 }, { label: "Order", colspan: 2 },],
-          ["CeListNo", "Plant", "Equipment", "Machine", "Level set <br>value", "Construction <br>period", "Parts <br>delivery date", "MTTR", "Possibility of <br>production Lv", "Count <br>of PM02", "Latest <br>PM02", "Count <br>of PM03", "Latest <br>PM03", "Count <br>of PM04", "Latest <br>PM04", "Impact for <br>production", "Probability <br>of failure", "Assessment", "Typical Task", "Labor <br>Cost(PM02)", "Period", "Next <br>event year", "situation", "BomCode", "Stock", "RCA or <br>Replace(hard)", "Spear parts or <br>Alternative(soft)", "Covered <br>from task", "Two <br>ways",],
+          ["", "", "", "", { label: "Impact", colspan: 5 }, { label: "Probability of failure", colspan: 6 }, { label: "Critical equipment Level", colspan: 3 }, "", "", "", "", "", { label: "Spare parts", colspan: 2 }, { label: "Status of measures", colspan: 4 }, { label: "Order", colspan: 2 }],
+          ["CeListNo", "Plant", "Equipment", "Machine", "Level set <br>value", "Construction <br>period", "Parts <br>delivery date", "MTTR", "PossibilityOf<br>ContinuousProduction", "Count <br>of PM02", "Latest <br>PM02", "Count <br>of PM03", "Latest <br>PM03", "Count <br>of PM04", "Latest <br>PM04", "Impact for <br>production", "Probability <br>of failure", "Assessment", "Typical Task", "Labor <br>Cost(PM02)", "Period", "Next <br>event year", "situation", "BomCode", "Stock", "RCA or <br>Replace(hard)", "Spear parts or <br>Alternative(soft)", "Covered <br>from task", "Two <br>ways"],
         ],
+
         columns: [
           { data: "ceListNo", type: "text", readOnly: true },
           { data: "plant", type: "text" },
           { data: "equipment", type: "text" },
           { data: "machineName", type: "text" },
-          { data: "levelSetValue", type: 'numeric' },
+          { 
+            data: "levelSetValue", 
+            type: 'dropdown', 
+            source: ['Low', 'Middle', 'High'] 
+          },
           { data: "typicalConstPeriod", type: 'numeric' },
           { data: "maxPartsDeliveryTimeInBom", type: 'numeric' },
           { data: "mttr", type: 'numeric', renderer: customRendererForMttr },
-          { data: "probabilityOfFailure", type: 'numeric', className: 'htRight', readOnly: true },
+          { 
+            data: "possibilityOfContinuousProduction", 
+            type: 'dropdown', 
+            source: [1, 2, 3, 4, 5], 
+            className: 'htRight',
+            readOnly: false 
+          },
           { data: "countOfPM02", width: 100, className: 'htRight', type: 'numeric' },
           { data: "latestPM02", width: 100, className: 'htRight', type: 'date', dateFormat: 'YYYY-MM-DD', correctFormat: false },
           { data: "countOfPM03", width: 100, className: 'htRight', type: 'numeric' },
@@ -193,6 +166,7 @@ const CriticalEquipmentComponent = defineComponent({
           { data: "coveredFromTask", width: 100, className: 'htCenter', type: 'checkbox' },
           { data: "twoways", width: 100, className: 'htCenter', type: 'checkbox' },
         ],
+        
         afterGetColHeader: (col, TH) => {
           if (col === -1) {
             return;
@@ -201,6 +175,7 @@ const CriticalEquipmentComponent = defineComponent({
           TH.style.color = 'black';
           TH.style.fontWeight = 'bold';
         },
+
         width: '100%',
         height: 'auto',
         stretchH: 'all',
@@ -222,9 +197,11 @@ const CriticalEquipmentComponent = defineComponent({
       }
     };
   },
+
   created() {
     this.getDataAxios();
   },
+
   methods: {
     initHandsontable() {
       const container = this.$el;
@@ -237,54 +214,90 @@ const CriticalEquipmentComponent = defineComponent({
         }
       });
     },
+
     getDataAxios() {
       const userStore = useUserStore();
       const userCompanyCode = userStore.companyCode;
+
       if (!userCompanyCode) {
         console.error("Error: No company code found for the user.");
         return;
       }
+
       const url = `http://127.0.0.1:8000/api/junctionTable/masterDataTableByCompany/?format=json&companyCode=${userCompanyCode}`;
+
       axios.get(url, {
         headers: {
           "Content-Type": "application/json"
         },
         withCredentials: true
       })
-        .then(response => {
-          const masterDataTable = response.data.flatMap(companyData => companyData.MasterDataTable);
-          console.log("Fetched masterDataTable:", masterDataTable);
-          const blankRows = Array.from({ length: 10 }, () => ({}));
-          const newData = masterDataTable.concat(blankRows);
-          this.$refs.hotTableComponent.hotInstance.loadData(newData);
-        })
-        .catch(error => {
-          console.error("Error fetching data:", error);
-        });
+      .then(response => {
+        const masterDataTable = response.data.flatMap(companyData => companyData.MasterDataTable);
+        console.log("Fetched masterDataTable:", masterDataTable);
+
+        const blankRows = Array.from({ length: 10 }, () => ({}));
+        const newData = masterDataTable.concat(blankRows);
+
+        this.$refs.hotTableComponent.hotInstance.loadData(newData);
+      })
+      .catch(error => {
+        console.error("Error fetching data:", error);
+      });
     },
+
     updateData(data) {
       const userStore = useUserStore();
       const userCompanyCode = userStore.companyCode;
       const url = `http://127.0.0.1:8000/api/junctionTable/masterDataTableByCompany/?format=json&companyCode=${userCompanyCode}`;
       const payload = { companyCode: userCompanyCode, masterDataTable: data };
+
       axios.post(url, payload)
         .then(response => console.log('Data successfully updated:', response))
         .catch(error => console.error('Error updating data:', error));
     },
+
     sendData() {
       const data = this.$refs.hotTableComponent.hotInstance.getSourceData();
       this.updateData(data);
+    },
+
+    emitData() {
+      const hotInstance = this.$refs.hotTableComponent.hotInstance;
+      const rows = hotInstance.countRows();
+      const emittedData = [];
+
+      for (let row = 0; row < rows; row++) {
+        const levelSetValue = hotInstance.getDataAtCell(row, 4); // levelSetValueの値を取得
+        const mttr = customRendererForMttr(hotInstance, null, row, 7); // MTTRの値を取得するためにcustomRendererForMttrを呼び出す
+        const possibilityOfContinuousProduction = hotInstance.getDataAtCell(row, 8); // possibilityOfContinuousProductionの値を取得
+
+        emittedData.push({ levelSetValue, mttr, possibilityOfContinuousProduction });
+      }
+
+      console.log('Emitting Data:', emittedData);
+      this.$emit('data-emitted', emittedData);
+    },
+
+    updateImpactForProduction({ index, impactForProduction }) {
+      console.log(`Updating impactForProduction at row ${index} with value ${impactForProduction}`);
+      this.$refs.hotTableComponent.hotInstance.setDataAtCell(index, 15, impactForProduction);
     }
-  }
+  },
+
+  components: {
+    HotTable,
+  },
 });
 
-export default CriticalEquipmentComponent;
+export default CriticalEquipmentList;
 </script>
 
 <style scoped>
-.matrices-container {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 10px;
+#app {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  color: #2c3e50;
+  margin-top: 60px;
 }
 </style>
