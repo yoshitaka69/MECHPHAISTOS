@@ -75,7 +75,7 @@ const router = createRouter({
 				{
 					path: '/scada',
 					name:'SCADA',
-					component: () => import('../views/pages/Scada.vue')
+					component: () => import('../views/pages/SCADA/Scada.vue')
 				},
 				{
 					path: '/trend&demand',

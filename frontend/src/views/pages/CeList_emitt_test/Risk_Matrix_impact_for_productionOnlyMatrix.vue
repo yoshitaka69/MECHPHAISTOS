@@ -1,32 +1,28 @@
 <template>
   <div>
+
     <div class="controls">
       <div class="settings" v-for="(setting, index) in settingsOptions" :key="setting.value">
         <h3>{{ setting.text }}</h3>
         <button @click="saveControlPoint(setting.value)">保存</button>
         <button @click="resetToDefault(setting.value)">初期値</button>
-        <div class="input-container">
-          <label>MTTR[days]:</label>
-          <input type="number" v-model.number="controlPoints[setting.value].x" />
-          <label>Possibility of continuous production:</label>
-          <input type="number" v-model.number="controlPoints[setting.value].y" />
-        </div>
         <div class="chart-container" :ref="'chartContainer-' + setting.value">
           <div :ref="'chart-' + setting.value"></div>
         </div>
-        <div class="pointer-position">
-          ポインターの位置: x={{ controlPoints[setting.value].x.toFixed(2) }}, y={{ controlPoints[setting.value].y.toFixed(2) }}
-        </div>
+        <div class="pointer-position">ポインターの位置: x={{ controlPoints[setting.value].x.toFixed(2) }}, y={{ controlPoints[setting.value].y.toFixed(2) }}</div>
       </div>
     </div>
   </div>
 </template>
 
+
 <script>
+
 import * as d3 from 'd3';
 
 export default {
   name: 'ToneCurve',
+
   data() {
     return {
       data: [
@@ -61,16 +57,6 @@ export default {
       ],
       resizeObservers: {}
     };
-  },
-  watch: {
-    controlPoints: {
-      handler(newVal) {
-        this.settingsOptions.forEach(setting => {
-          this.drawChart(setting.value);
-        });
-      },
-      deep: true
-    }
   },
   mounted() {
     this.settingsOptions.forEach(setting => {
@@ -371,19 +357,5 @@ export default {
   vertical-align: middle;
   text-align: center;
   font-weight: 550;
-}
-
-.input-container {
-  margin: 10px 0;
-}
-
-.input-container label {
-  display: inline-block;
-  width: 200px;
-}
-
-.input-container input {
-  width: 100px;
-  margin-left: 10px;
 }
 </style>
