@@ -21,4 +21,11 @@ class AnotherSupplierBenefit(model.Model):
 
 
 
-class 
+class PreventedBenefit(models.Model):
+     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='calTablePlannedPM02_companyCode', null=True, blank=True)
+    
+
+class ImprovementBenefit(models.Model):
+     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='calTablePlannedPM02_companyCode', null=True, blank=True)
+
+    
