@@ -14,3 +14,11 @@ class SimulationBenefit(models.Model):
         
     def __str__(self):
         return str('CalTablePlannedPM02')
+
+
+class AnotherSupplierBenefit(model.Model):
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='calTablePlannedPM02_companyCode', null=True, blank=True)
+
+
+
+class 
