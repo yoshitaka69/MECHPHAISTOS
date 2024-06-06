@@ -1,348 +1,198 @@
 <template>
   <div>
-    <div class="controls">
-      <div class="settings" v-for="setting in settingsOptions" :key="setting.value">
-        <h3>{{ setting.text }}</h3>
-        <button @click="saveControlPoint(setting.value)">保存</button>
-        <button @click="resetToDefault(setting.value)">初期値</button>
-        <div class="chart-container" :ref="'chartContainer-' + setting.value">
-          <div :ref="'chart-' + setting.value"></div>
-        </div>
-        <div class="pointer-position">
-          ポインターの位置: x={{ controlPoints[setting.value].x.toFixed(2) }}, y={{ controlPoints[setting.value].y.toFixed(2) }}
-        </div>
-      </div>
-    </div>
+    Total Graph (Planned vs Actual)
+    <div id="Totalrpc" style="width: 100%; height: 100%"></div>
   </div>
 </template>
 
-<script lang="ts" setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue';
-import * as d3 from 'd3';
+<script>
+import Plotly from 'plotly.js-dist-min';
+import axios from 'axios';
+import { useUserStore } from '@/stores/userStore';
+import { onMounted, onUnmounted, ref } from 'vue';
 
-const data = [
-  { x: 1, y: 0 },
-  { x: 7, y: 2.5 },
-  { x: 30, y: 5 }
-];
+export default {
+  setup() {
+    const userStore = useUserStore();
+    const repairingCostData = ref([]);
+    const actualCostData = ref([]);
+    const plannedCostDataStack = ref([]);
+    const actualCostDataStack = ref([]);
 
-const controlPoints = ref({
-  1: { x: 7, y: 2.5 },
-  2: { x: 7, y: 2.5 },
-  3: { x: 7, y: 2.5 }
-});
+    const getRepairingCostData = async () => {
+      const companyCode = userStore.companyCode;
+      if (!companyCode) {
+        console.error('No company code found.');
+        return;
+      }
 
-const riskMatrixInitial = [
-  { likelihood: 5, description: 'It is or has already happened', risk: ['M', 'H', 'VH', 'VH', 'VH'] },
-  { likelihood: 4, description: 'It will probably happen', risk: ['L', 'M', 'H', 'VH', 'VH'] },
-  { likelihood: 3, description: 'It could possibly happen', risk: ['L', 'L', 'M', 'H', 'H'] },
-  { likelihood: 2, description: 'It is to happen', risk: ['L', 'L', 'L', 'M', 'H'] },
-  { likelihood: 1, description: 'It is unlikely to happen', risk: ['L', 'L', 'L', 'L', 'M'] }
-];
+      const url = `http://127.0.0.1:8000/api/repairingCost/PPM02ByCompany/?format=json&companyCode=${companyCode}`;
+      try {
+        const response = await axios.get(url);
+        if (response.data[0]?.plannedPM02List) {
+          repairingCostData.value = response.data[0].plannedPM02List.filter((plant) => plant.plannedPM02 && plant.plannedPM02.length > 0);
+        }
+      } catch (error) {
+        console.error('Error fetching Repairing Cost data:', error);
+      }
+    };
 
-const riskMatrix = ref([...riskMatrixInitial]);
+    const getActualCostData = async () => {
+      const companyCode = userStore.companyCode;
+      if (!companyCode) {
+        console.error('No company code found.');
+        return;
+      }
 
-const settingsOptions = [
-  { value: 1, text: 'Low 設定' },
-  { value: 2, text: 'Middle 設定' },
-  { value: 3, text: 'High 設定' }
-];
+      const url = `http://127.0.0.1:8000/api/calculation/summedActualCostByCompany/?format=json&companyCode=${companyCode}`;
+      try {
+        const response = await axios.get(url);
+        const currentYear = new Date().getFullYear().toString();
+        if (response.data.length > 0 && response.data[0].summedActualCostList) {
+          actualCostData.value = response.data[0].summedActualCostList.filter((item) => item.year.toString() === currentYear);
+        }
+      } catch (error) {
+        console.error('Error fetching actual cost data:', error);
+      }
+    };
 
-const resizeObservers = ref({});
+    const fetchData = async () => {
+      const companyCode = userStore.companyCode;
+      if (!companyCode) {
+        console.error('No company code found.');
+        return;
+      }
 
-const setupResizeObserver = (setting) => {
-  const container = document.querySelector(`[ref=chartContainer-${setting}]`);
-  resizeObservers.value[setting] = new ResizeObserver(() => {
-    drawChart(setting);
-  });
-  resizeObservers.value[setting].observe(container);
-};
+      const currentYear = new Date().getFullYear().toString();
+      const plannedURL = `http://127.0.0.1:8000/api/calculation/summedPlannedCostByCompany/?format=json&companyCode=${companyCode}`;
+      const actualURL = `http://127.0.0.1:8000/api/calculation/summedActualCostByCompany/?format=json&companyCode=${companyCode}`;
 
-const saveControlPoint = (setting) => {
-  controlPoints.value[setting] = { ...controlPoints.value[setting] };
-};
+      try {
+        const [plannedResponse, actualResponse] = await Promise.all([axios.get(plannedURL), axios.get(actualURL)]);
 
-const resetToDefault = (setting) => {
-  controlPoints.value[setting] = { x: 7, y: 2.5 };
-  drawChart(setting);
-};
+        plannedCostDataStack.value = plannedResponse.data.flatMap((company) => company.summedPlannedCostList.filter((item) => item.year.toString() === currentYear));
 
-const calculateRatios = (x, y) => {
-  return {
-    xRatio: (x - 1) / 29,
-    yRatio: y / 5
-  };
-};
+        actualCostDataStack.value = actualResponse.data.flatMap((company) => company.summedActualCostList.filter((item) => item.year.toString() === currentYear));
+      } catch (error) {
+        console.error('Error fetching cost data:', error);
+      }
+    };
 
-const updateRiskMatrixColors = (setting) => {
-  const { xRatio, yRatio } = calculateRatios(controlPoints.value[setting].x, controlPoints.value[setting].y);
+    const updateGraphSize = () => {
+      const graphContainer = document.getElementById('Totalrpc').parentElement;
+      graphContainer.style.height = window.innerHeight + 'px';
+      const layout = {
+        title: 'Total Graph (Planned vs Actual)',
+        barmode: 'stack',
+        height: graphContainer.offsetHeight,
+        width: graphContainer.offsetWidth
+      };
 
-  riskMatrix.value = riskMatrixInitial.map(row => ({
-    ...row,
-    risk: row.risk.map((risk, j) => {
-      const adjustedX = j + xRatio * 6 - 3;
-      const adjustedY = row.likelihood - yRatio * 6 + 3;
-      const average = (adjustedX + adjustedY) / 2;
-      if (average < 1) return 'L';
-      if (average < 2) return 'M';
-      if (average < 3) return 'H';
-      return 'VH';
-    })
-  }));
-};
+      Plotly.newPlot('Totalrpc', [...lineTraces, ...barTraces, ...barTracesStack], layout);
+    };
 
-const drawRiskMatrix = (svg, width, height, margin, xScale, yScale, colorMap, riskTextMap) => {
-  const cellWidth = width / 5;
-  const cellHeight = height / 5;
+    let lineTraces = [];
+    let barTraces = [];
+    let barTracesStack = [];
 
-  svg.selectAll('.risk-cell').remove();
-  svg.selectAll('.risk-text').remove();
+    onMounted(async () => {
+      await getRepairingCostData();
+      await getActualCostData();
+      await fetchData();
 
-  riskMatrix.value.forEach((row) => {
-    row.risk.forEach((risk, j) => {
-      svg.append('rect')
-        .attr('x', j * cellWidth)
-        .attr('y', (5 - row.likelihood) * cellHeight)
-        .attr('width', cellWidth)
-        .attr('height', cellHeight)
-        .attr('fill', colorMap[risk])
-        .attr('stroke', '#000')
-        .attr('stroke-width', 1)
-        .attr('class', 'risk-cell');
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Commitment', 'TotalCost'];
+      lineTraces = repairingCostData.value.map((plant) => {
+        const pmData = plant.plannedPM02[0];
+        const yValues = months.map((month) => (pmData[`sum${month}`] ? parseFloat(pmData[`sum${month}`]) : 0));
+        return {
+          x: months,
+          y: yValues,
+          type: 'scatter',
+          mode: 'lines+markers',
+          name: plant.plant
+        };
+      });
 
-      svg.append('text')
-        .attr('x', j * cellWidth + cellWidth / 2)
-        .attr('y', (5 - row.likelihood) * cellHeight + cellHeight / 2)
-        .attr('dy', '.35em')
-        .attr('text-anchor', 'middle')
-        .attr('class', 'risk-text')
-        .text(riskTextMap[risk])
-        .attr('fill', '#000');
+      barTraces = actualCostData.value.map((costData) => {
+        const xValues = Object.keys(costData).filter((key) => key.startsWith('sum') || key === 'totalActualCost');
+        const formattedXValues = xValues.map((key) => key.replace('sum', '').replace('totalActualCost', 'TotalCost'));
+        const yValues = xValues.map((key) => parseFloat(costData[key] || 0));
+
+        return {
+          x: formattedXValues,
+          y: yValues,
+          type: 'bar',
+          name: costData.plant || 'Total Cost'
+        };
+      });
+
+      barTracesStack = [];
+
+      plannedCostDataStack.value.forEach((data) => {
+        barTracesStack.push({
+          x: ['Planned'],
+          y: [parseFloat(data.totalPlannedPM02)],
+          name: 'Planned PM02',
+          type: 'bar'
+        });
+        barTracesStack.push({
+          x: ['Planned'],
+          y: [parseFloat(data.totalPlannedPM03)],
+          name: 'Planned PM03',
+          type: 'bar'
+        });
+        barTracesStack.push({
+          x: ['Planned'],
+          y: [parseFloat(data.totalPlannedPM05)],
+          name: 'Planned PM05',
+          type: 'bar'
+        });
+      });
+
+      actualCostDataStack.value.forEach((data) => {
+        barTracesStack.push({
+          x: ['Actual'],
+          y: [parseFloat(data.totalActualPM02)],
+          name: 'Actual PM02',
+          type: 'bar'
+        });
+        barTracesStack.push({
+          x: ['Actual'],
+          y: [parseFloat(data.totalActualPM03)],
+          name: 'Actual PM03',
+          type: 'bar'
+        });
+        barTracesStack.push({
+          x: ['Actual'],
+          y: [parseFloat(data.totalActualPM04)],
+          name: 'Actual PM04',
+          type: 'bar'
+        });
+        barTracesStack.push({
+          x: ['Actual'],
+          y: [parseFloat(data.totalActualPM05)],
+          name: 'Actual PM05',
+          type: 'bar'
+        });
+      });
+
+      console.log([...lineTraces, ...barTraces, ...barTracesStack]);
+
+      // Call once to set initial size
+      updateGraphSize();
+      window.addEventListener('resize', updateGraphSize);
     });
-  });
+
+    onUnmounted(() => {
+      window.removeEventListener('resize', updateGraphSize);
+    });
+
+    return {
+      repairingCostData,
+      actualCostData,
+      plannedCostDataStack,
+      actualCostDataStack
+    };
+  }
 };
-
-const drawChart = (setting) => {
-  const container = document.querySelector(`[ref=chartContainer-${setting}]`);
-  const containerWidth = container.offsetWidth;
-  const containerHeight = container.offsetHeight;
-  const margin = { top: 20, right: 20, bottom: 30, left: 40 };
-  const width = containerWidth - margin.left - margin.right;
-  const height = containerHeight - margin.top - margin.bottom;
-
-  const svg = d3.select(document.querySelector(`[ref=chart-${setting}]`))
-    .append('svg')
-    .attr('width', width + margin.left + margin.right)
-    .attr('height', height + margin.top + margin.bottom)
-    .append('g')
-    .attr('transform', `translate(${margin.left},${margin.top})`);
-
-  const xScale = d3.scalePoint()
-    .domain([1, 3, 7, 10, 30, '30+'])
-    .range([0, width]);
-
-  const yScale = d3.scaleLinear().domain([0, 5]).range([height, 0]);
-
-  const colorMap = {
-    'L': '#4c7c04',
-    'M': '#f9d909',
-    'H': '#f99d09',
-    'VH': '#f90909'
-  };
-
-  const riskTextMap = {
-    'L': 'Low',
-    'M': 'Middle',
-    'H': 'High',
-    'VH': 'High+'
-  };
-
-  updateRiskMatrixColors(setting);
-  drawRiskMatrix(svg, width, height, margin, xScale, yScale, colorMap, riskTextMap);
-
-  const line = d3.line()
-    .x(d => xScale(d.x))
-    .y(d => yScale(d.y))
-    .curve(d3.curveBasis);
-
-  const dataWithControl = [
-    data[0],
-    controlPoints.value[setting],
-    data[2]
-  ];
-
-  svg.append('path')
-    .datum(dataWithControl)
-    .attr('class', 'line-path')
-    .attr('fill', 'none')
-    .attr('stroke', 'steelblue')
-    .attr('stroke-width', 1.5)
-    .attr('d', line);
-
-  svg.append('g')
-    .attr('class', 'axis')
-    .attr('transform', `translate(0,${height})`)
-    .call(d3.axisBottom(xScale).tickFormat((d, i) => i === 5 ? '30+' : d));
-
-  svg.append('g')
-    .attr('class', 'axis')
-    .call(d3.axisLeft(yScale).ticks(5));
-
-  svg.append('text')
-    .attr('transform', 'rotate(-90)')
-    .attr('y', 0 - margin.left)
-    .attr('x', 0 - (height / 2))
-    .attr('dy', '1em')
-    .style('text-anchor', 'middle')
-    .text('Possibility of continuous production');
-
-  svg.append('text')
-    .attr('x', width / 2)
-    .attr('y', height + margin.bottom)
-    .attr('dy', '-0.5em')
-    .style('text-anchor', 'middle')
-    .text('MTTR[days]');
-
-  svg.selectAll('circle')
-    .data([controlPoints.value[setting]])
-    .enter()
-    .append('circle')
-    .attr('class', 'control-point')
-    .attr('cx', d => xScale(d.x))
-    .attr('cy', d => yScale(d.y))
-    .attr('r', 5)
-    .attr('fill', 'red')
-    .call(d3.drag()
-      .on('start', function () {
-        d3.select(this).raise().attr('stroke', 'black');
-      })
-      .on('drag', function (event, d) {
-        const invertX = Math.max(1, Math.min(width, event.x));
-        const closestX = [1, 3, 7, 10, 30].reduce((prev, curr) => Math.abs(xScale(curr) - invertX) < Math.abs(xScale(prev) - invertX) ? curr : prev);
-        const invertY = Math.max(0, Math.min(5, yScale.invert(event.y)));
-        d.x = closestX;
-        d.y = invertY;
-        controlPoints.value[setting] = { x: d.x, y: d.y };
-        drawChart(setting);
-      })
-      .on('end', function () {
-        d3.select(this).attr('stroke', null);
-      }));
-};
-
-onMounted(() => {
-  settingsOptions.forEach(setting => {
-    drawChart(setting.value);
-    setupResizeObserver(setting.value);
-  });
-});
-
-onBeforeUnmount(() => {
-  settingsOptions.forEach(setting => {
-    if (resizeObservers.value[setting.value]) {
-      resizeObservers.value[setting.value].disconnect();
-    }
-  });
-});
 </script>
-
-<style scoped>
-#app {
-  font-family: Arial, sans-serif;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-
-.impact-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 20px 0;
-}
-
-.impact-table th, .impact-table td {
-  border: 1px solid black;
-  padding: 10px;
-  text-align: center;
-  font-family: Arial, sans-serif;
-}
-
-.impact-table th {
-  background-color: grey;
-  color: white;
-}
-
-.impact-table tr:nth-child(even) {
-  background-color: lightgrey;
-}
-
-.impact-table tr:nth-child(odd) {
-  background-color: white;
-}
-
-.impact-table td {
-  vertical-align: top;
-}
-
-.chart-container {
-  display: inline-block;
-  vertical-align: top;
-  width: 100%;
-  height: 400px;
-  margin-top: 40px;
-}
-
-.controls {
-  display: flex;
-  justify-content: space-around;
-}
-
-.settings {
-  display: inline-block;
-  vertical-align: top;
-  margin-right: 20px;
-  width: 30%;
-}
-
-.pointer-position {
-  margin-top: 10px;
-  font-size: 14px;
-}
-
-.VH {
-  background-color: #f90909;
-  font-weight: 550 !important;
-}
-
-.H {
-  background-color: #f99d09;
-  font-weight: 550 !important;
-}
-
-.M {
-  background-color: #f9d909;
-  height: 60px;
-  font-weight: 550 !important;
-}
-
-.L {
-  background-color: #4c7c04;
-  font-weight: 550 !important;
-}
-
-.risk-text {
-  font-size: 12px;
-  font-weight: bold;
-}
-
-#rMatrix > tbody > tr > td,
-#rMatrix > tbody > tr > th,
-#rMatrix > tfoot > tr > td,
-#rMatrix > tfoot > tr > th,
-#rMatrix > thead > tr > td,
-#rMatrix > thead > tr > th {
-  vertical-align: middle;
-  text-align: center;
-  font-weight: 550;
-}
-</style>

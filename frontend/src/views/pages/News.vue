@@ -4,15 +4,21 @@
       <img src="@/assets/MECHPHAISTOS cover.jpg" />
       <h1 class="title">Welcome to MECHPHASTOS</h1>
     </div>
-    <div class="section world-clock-section">
-      <WorldClock />
-    </div>
-    <div class="section weather-info-container">
-      <Weather />
-      <InformationBox message="これは管理人からのお知らせです。" />
-    </div>
-    <div class="section">
-      <News_content />
+    <div class="content-container">
+      <div class="side-container left-side"></div>
+      <div class="main-content">
+        <div class="section world-clock-section">
+          <WorldClock />
+        </div>
+        <div class="section weather-info-container">
+          <Weather />
+          <InformationBox message="これは管理人からのお知らせです。" />
+        </div>
+        <div class="section">
+          <News_content />
+        </div>
+      </div>
+      <div class="side-container right-side"></div>
     </div>
   </div>
 </template>
@@ -76,10 +82,30 @@ export default {
   color: #fff;
 }
 
+.content-container {
+  display: flex;
+  width: 100%;
+}
+
+.side-container {
+  width: 240px; /* サイドコンテナの幅を狭める */
+  background-color: #f0f0f0; /* サイドコンテナの背景色 */
+  height: 500vh; /* 縦に伸ばす */
+}
+
+.main-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 20px; /* セクション間のデフォルトスペース */
+  flex: 1; /* メインコンテンツが余ったスペースを取る */
+  margin: 0 5px; /* 両側のマージンを狭める */
+}
+
 .section {
   width: 100%;
   max-width: 1000px; /* 各セクションの最大幅を広げる */
-  margin: 0 10px; /* 両サイドのスペースを調整 */
 }
 
 .weather-info-container {
