@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'calculation.apps.CalculationConfig',
     'agora',
     'workOrder',
+    'benefit',
 ]
 
 
