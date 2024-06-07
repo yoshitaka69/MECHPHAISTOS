@@ -4,16 +4,54 @@ from .models import SimulationBenefit,ImprovementBenefti,RiskAvoidBenefit,PartsM
 
 
 
-class CalTablePlannedPM02Admin(admin.ModelAdmin):
-    list_display = ('companyCode','companyName','plant','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',)
-    readonly_fields = ('no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',) 
-    search_fields = ('companyCode','companyName','plant','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',)
-    list_filter = ('companyCode','companyName','plant','no1HighCost','no2HighCost','no3HighCost','no4HighCost','no5HighCost','no1LowCost','averageCost',)
-    ordering = ('plant',)
+class SimulationBenefitAdmin(admin.ModelAdmin):
+    list_display = ('companyCode',)
+    readonly_fields = ('companyCode',) 
+    search_fields = ('companyCode',)
+    list_filter = ('companyCode',)
+    ordering = ('companyCode',)
     save_on_top = True
 
     list_per_page = 50 
 
 
-admin.site.register(SummedPlannedCost,SummedPlannedCostAdmin)
+class SimulationBenefitAdmin(admin.ModelAdmin):
+    list_display = ('companyCode',)
+    readonly_fields = ('companyCode',) 
+    search_fields = ('companyCode',)
+    list_filter = ('companyCode',)
+    ordering = ('companyCode',)
+    save_on_top = True
+
+    list_per_page = 50 
+
+
+
+class SimulationBenefitAdmin(admin.ModelAdmin):
+    list_display = ('companyCode',)
+    readonly_fields = ('companyCode',) 
+    search_fields = ('companyCode',)
+    list_filter = ('companyCode',)
+    ordering = ('companyCode',)
+    save_on_top = True
+
+    list_per_page = 50 
+
+
+
+class SimulationBenefitAdmin(admin.ModelAdmin):
+    list_display = ('companyCode',)
+    readonly_fields = ('companyCode',) 
+    search_fields = ('companyCode',)
+    list_filter = ('companyCode',)
+    ordering = ('companyCode',)
+    save_on_top = True
+
+    list_per_page = 50 
+
+
+
+
+
+admin.site.register(SimulationBenefit,SimulationBenefitAdmin)
 admin.site.register(SummedActualCost,SummedActualCostAdmin)
