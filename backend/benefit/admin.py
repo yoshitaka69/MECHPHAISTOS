@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import CalTablePlannedPM02,CalTableActualPM02,
+from .models import SimulationBenefit,ImprovementBenefti,RiskAvoidBenefit,PartsManagementBenefit
 
 
 
