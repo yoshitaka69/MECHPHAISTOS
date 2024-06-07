@@ -4,7 +4,11 @@ from django.db import models
 
 class SimulationBenefit(models.Model):
   
-  companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='equipment_companyCode',null=True, blank=True)
+  companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='simulationBenefit_companyCode',null=True, blank=True)
+  janSB
+  febSB
+  
+
   
   class Meta:
     verbose_name = 'Equipment'
