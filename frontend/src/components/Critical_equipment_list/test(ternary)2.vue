@@ -1,6 +1,12 @@
-// src/components/TernaryPlot.vue
 <template>
-  <div ref="ternaryPlot" class="plot-container"></div>
+  <div class="container">
+    <div ref="ternaryPlot" class="plot-container"></div>
+    <div class="coordinates">
+      <p>test1: <span id="coordTest1">0</span>%</p>
+      <p>test2: <span id="coordTest2">0</span>%</p>
+      <p>test3: <span id="coordTest3">0</span>%</p>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -55,14 +61,16 @@ export default {
         .attr('text-anchor', 'middle')
         .text((d, i) => labels[i]);
 
-      const nTicks = 10;
+      const nTicks = 5; // 20% 単位にするために5分割
+      const tickLabels = ["20%", "40%", "60%", "80%"];
       const lineFunction = d3.line()
         .x(d => d.x)
         .y(d => d.y);
 
       for (let i = 1; i < nTicks; i++) {
         const ratio = i / nTicks;
-        
+
+        // 左側の目盛り
         const leftTick = [
           {x: vertices[1].x * (1 - ratio) + vertices[0].x * ratio, y: vertices[1].y * (1 - ratio) + vertices[0].y * ratio},
           {x: vertices[1].x * (1 - ratio) + vertices[2].x * ratio, y: vertices[1].y * (1 - ratio) + vertices[2].y * ratio}
@@ -73,6 +81,14 @@ export default {
           .attr('stroke-width', 0.5)
           .attr('fill', 'none');
 
+        svg.append('text')
+          .attr('x', leftTick[0].x - 10)
+          .attr('y', leftTick[0].y)
+          .attr('text-anchor', 'end')
+          .attr('font-size', '10px')
+          .text(tickLabels[i - 1]);
+
+        // 右側の目盛り
         const rightTick = [
           {x: vertices[2].x * (1 - ratio) + vertices[0].x * ratio, y: vertices[2].y * (1 - ratio) + vertices[0].y * ratio},
           {x: vertices[2].x * (1 - ratio) + vertices[1].x * ratio, y: vertices[2].y * (1 - ratio) + vertices[1].y * ratio}
@@ -83,6 +99,14 @@ export default {
           .attr('stroke-width', 0.5)
           .attr('fill', 'none');
 
+        svg.append('text')
+          .attr('x', rightTick[0].x + 10)
+          .attr('y', rightTick[0].y)
+          .attr('text-anchor', 'start')
+          .attr('font-size', '10px')
+          .text(tickLabels[i - 1]);
+
+        // 上側の目盛りを底辺に移動
         const topTick = [
           {x: vertices[0].x * (1 - ratio) + vertices[1].x * ratio, y: vertices[0].y * (1 - ratio) + vertices[1].y * ratio},
           {x: vertices[0].x * (1 - ratio) + vertices[2].x * ratio, y: vertices[0].y * (1 - ratio) + vertices[2].y * ratio}
@@ -92,32 +116,31 @@ export default {
           .attr('stroke', 'black')
           .attr('stroke-width', 0.5)
           .attr('fill', 'none');
+
+        // 底辺に目盛りラベルを配置
+        svg.append('text')
+          .attr('x', vertices[1].x + (vertices[2].x - vertices[1].x) * ratio)
+          .attr('y', plotHeight + 20)
+          .attr('text-anchor', 'middle')
+          .attr('font-size', '10px')
+          .text(tickLabels[i - 1]);
       }
 
-      // Example points
-      const points = [
-        {a: 0.2, b: 0.5, c: 0.3},
-        {a: 0.3, b: 0.3, c: 0.4},
-        {a: 0.1, b: 0.8, c: 0.1}
-      ];
+      // Single Example Point
+      const point = {a: 0.3, b: 0.3, c: 0.4};
 
-      const cartesianPoints = points.map(p => {
-        const x = p.b * plotWidth + (p.a * plotWidth / 2);
-        const y = p.c * plotHeight;
-        return {x, y};
-      });
+      const x = point.b * plotWidth + (point.a * plotWidth / 2);
+      const y = point.c * plotHeight;
+      const cartesianPoint = {x, y};
 
       const drag = d3.drag()
         .on('start', dragstarted)
         .on('drag', dragged)
         .on('end', dragended);
 
-      const circles = svg.selectAll('circle')
-        .data(cartesianPoints)
-        .enter()
-        .append('circle')
-        .attr('cx', d => d.x)
-        .attr('cy', d => d.y)
+      svg.append('circle')
+        .attr('cx', cartesianPoint.x)
+        .attr('cy', cartesianPoint.y)
         .attr('r', 5)
         .attr('fill', 'red')
         .call(drag);
@@ -128,17 +151,24 @@ export default {
 
       function dragged(event, d) {
         d3.select(this)
-          .attr('cx', d.x = event.x)
-          .attr('cy', d.y = event.y);
-        console.log(`Position: x=${event.x}, y=${event.y}`);
+          .attr('cx', event.x)
+          .attr('cy', event.y);
+        updateCoordinates(event.x, event.y);
       }
 
       function dragended(event, d) {
         d3.select(this).attr('stroke', null);
-        const a = (2 * (plotHeight - d.y)) / (2 * plotHeight);
-        const b = (2 * d.x - plotWidth) / plotWidth;
+        updateCoordinates(event.x, event.y);
+      }
+
+      function updateCoordinates(x, y) {
+        const a = (plotHeight - y) / plotHeight;
+        const b = (x / plotWidth) * 2 / 2;
         const c = 1 - a - b;
-        console.log(`Ternary Coordinates: a=${a.toFixed(2)}, b=${b.toFixed(2)}, c=${c.toFixed(2)}`);
+
+        document.getElementById('coordTest1').textContent = (a * 100).toFixed(2);
+        document.getElementById('coordTest2').textContent = (b * 100).toFixed(2);
+        document.getElementById('coordTest3').textContent = (c * 100).toFixed(2);
       }
     }
   }
@@ -146,7 +176,21 @@ export default {
 </script>
 
 <style scoped>
+.container {
+  display: flex;
+  align-items: flex-start;
+}
+
 .plot-container {
   background: white;
+}
+
+.coordinates {
+  margin-left: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.coordinates p {
+  margin: 0;
 }
 </style>
