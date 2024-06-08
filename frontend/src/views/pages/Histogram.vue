@@ -26,7 +26,7 @@ export default {
         (x >= -1 && x <= 1) // White
       );
 
-      const data = [
+      const histogramData = [
         {
           x: this.sampleDataX,
           type: 'histogram',
@@ -35,6 +35,7 @@ export default {
             color: 'rgba(31, 119, 180, 0.7)',
           },
           name: 'Sample Data',
+          nbinsx: 40, // ビンの数を増やしてバーを細くする
         },
         {
           x: trueValues,
@@ -44,8 +45,32 @@ export default {
             color: 'rgba(255, 99, 71, 0.6)',
           },
           name: 'True Values',
+          nbinsx: 40, // ビンの数を増やしてバーを細くする
         },
       ];
+
+      // カーブ用のデータを計算
+      const histogramX = [];
+      const histogramY = [];
+      const binSize = (3) / 40; // -1.5から1.5までを40ビンに分割
+
+      for (let i = -1.5; i <= 1.5; i += binSize) {
+        histogramX.push(i);
+        const count = this.sampleDataX.filter(x => x >= i && x < i + binSize).length;
+        histogramY.push(count);
+      }
+
+      const lineData = [
+        {
+          x: histogramX,
+          y: histogramY,
+          mode: 'lines',
+          name: 'Line',
+          line: { shape: 'spline', color: 'rgba(31, 119, 180, 1)' }
+        }
+      ];
+
+      const data = histogramData.concat(lineData);
 
       const layout = {
         title: 'Precision and Accuracy Histogram',
