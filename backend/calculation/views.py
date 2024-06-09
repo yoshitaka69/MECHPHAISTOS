@@ -1,10 +1,14 @@
 from django.shortcuts import render
-from rest_framework import viewsets
+from rest_framework import viewsets,status
 from accounts.models import CompanyCode
 from rest_framework.decorators import api_view
 import numpy as np
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
+from skopt import gp_minimize
+from rest_framework.views import APIView
+
+
 
 
 from .models import (CalTablePlannedPM02,CalTableActualPM02,
@@ -209,6 +213,7 @@ class CompanyCodeSummedActualCostViewSet(viewsets.ModelViewSet):
         return queryset
 
 
+#Continuous Error Bars誤差指標計算
 @api_view(['GET'])
 def calculate_errors(request):
     company_code = request.query_params.get('companyCode', None)
@@ -315,3 +320,64 @@ def calculate_errors(request):
     except Exception as e:
         print(f"Error during calculation: {e}")
         return Response({'error': 'An error occurred during calculation.'}, status=500)
+    
+
+
+
+
+class OptimizeRepairCostView(APIView):
+    def post(self, request, *args, **kwargs):
+        try:
+            company_code = request.data.get('companyCode')
+            year = request.data.get('year')
+
+            print(f'Received companyCode: {company_code}, year: {year}')
+
+            if not company_code or not year:
+                print('Error: companyCode and year are required')
+                return Response({'error': 'companyCode and year are required'}, status=status.HTTP_400_BAD_REQUEST)
+
+            # 会社コードオブジェクトを取得
+            company_code_obj = CompanyCode.objects.filter(companyCode=company_code).first()
+            if not company_code_obj:
+                print(f'Error: No company found with code {company_code}')
+                return Response({'error': f'No company found with code {company_code}'}, status=status.HTTP_404_NOT_FOUND)
+
+            # 目的関数の定義
+            def repair_cost(params):
+                failure_prob, impact, cost = params
+                try:
+                    # 年間の計画コストを取得
+                    summed_planned_cost = SummedPlannedCost.objects.filter(companyCode=company_code_obj, year=year).first()
+                    if not summed_planned_cost:
+                        print(f'Error: No data found for companyCode {company_code} and year {year}')
+                        return float('inf')  # データがない場合は無限大を返して最適化から除外
+
+                    # Decimalからfloatに変換
+                    total_planned_cost = float(summed_planned_cost.totalPlannedCost)
+                    
+                    # 目的関数の計算（仮の計算式）
+                    annual_cost = failure_prob * impact * cost * total_planned_cost
+                    print(f'Calculated annual cost: {annual_cost}')
+                    return annual_cost
+                except Exception as e:
+                    print(f'Error in repair_cost function: {e}')
+                    return float('inf')  # エラーが発生した場合も無限大を返して最適化から除外
+
+            # ベイズ最適化の実行
+            res = gp_minimize(repair_cost,
+                              [(0.0, 1.0),  # 故障の可能性 (0.0 - 1.0)
+                               (0.0, 100.0),  # 故障のインパクト (0 - 100)
+                               (0.0, 10000.0)],  # 修繕費用 (0 - 10000)
+                              acq_func="EI",
+                              n_calls=50,
+                              random_state=0)
+
+            print(f'Optimization successful with params {res.x} and value {res.fun}')
+            return Response({
+                "best_params": res.x,
+                "best_value": res.fun
+            }, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(f'Error during optimization: {e}')
+            return Response({'error': 'An error occurred during optimization.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

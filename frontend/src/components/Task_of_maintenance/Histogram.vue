@@ -18,13 +18,11 @@ export default {
   },
   methods: {
     renderPlot() {
-      const trueValues = this.sampleDataX.filter(x =>
-        (x >= -0.1 && x <= 0.1) || // Yellow
-        (x >= -0.25 && x <= 0.25) || // Red
-        (x >= -0.5 && x <= 0.5) || // Blue
-        (x >= -0.75 && x <= 0.75) || // Black
-        (x >= -1 && x <= 1) // White
-      );
+      // サンプルデータの総数を取得
+      const sampleDataCount = this.sampleDataX.length;
+
+      // 理想的な指標データ（正規分布に基づくデータ）を生成
+      const trueValues = this.generateTrueValues(sampleDataCount);
 
       const histogramData = [
         {
@@ -81,6 +79,30 @@ export default {
 
       Plotly.react(this.$refs.histogram, data, layout);
     },
+    generateTrueValues(count) {
+      // 理想的な正規分布データを生成
+      const mean = 0; // 平均
+      const stdDev = 0.3; // 標準偏差
+      const trueValues = [];
+
+      for (let i = 0; i < count; i++) {
+        let value;
+        do {
+          value = this.randomNormal(mean, stdDev);
+        } while (value < -1.5 || value > 1.5); // -1.5から1.5の範囲内に収める
+        trueValues.push(value);
+      }
+
+      return trueValues;
+    },
+    randomNormal(mean, stdDev) {
+      let u = 0, v = 0;
+      while (u === 0) u = Math.random(); // Converting [0,1) to (0,1)
+      while (v === 0) v = Math.random();
+      let num = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+      num = num * stdDev + mean; // Transform to the desired mean and standard deviation
+      return num;
+    }
   },
 };
 </script>

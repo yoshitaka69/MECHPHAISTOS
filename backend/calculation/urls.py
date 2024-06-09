@@ -10,7 +10,8 @@ from .views import (
     CalTableAPM05ViewSet, CompanyCodeCalTableAPM05ViewSet,
     SummedPlannedCostViewSet, CompanyCodeSummedPlannedCostViewSet,
     SummedActualCostViewSet, CompanyCodeSummedActualCostViewSet,
-    calculate_errors
+    calculate_errors,
+    OptimizeRepairCostView
 )
 
 router = DefaultRouter()
@@ -31,7 +32,7 @@ router.register(r'CalTableAPM04ByCompany', CompanyCodeCalTableAPM04ViewSet, base
 router.register(r'CalTablePPM05', CalTablePPM05ViewSet, basename='CalTablePPM05')
 router.register(r'CalTablePPM05ByCompany', CompanyCodeCalTablePPM05ViewSet, basename='companyCode-CalTablePPM05')
 router.register(r'CalTableAPM05', CalTableAPM05ViewSet, basename='CalTableAPM05')
-router.register(r'CalTableAPM05dByCompany', CompanyCodeCalTableAPM05ViewSet, basename='companyCode-CalTableAPM05')
+router.register(r'CalTableAPM05ByCompany', CompanyCodeCalTableAPM05ViewSet, basename='companyCode-CalTableAPM05')
 
 router.register(r'summedPlannedCost', SummedPlannedCostViewSet, basename='summedPlannedCost')
 router.register(r'summedPlannedCostByCompany', CompanyCodeSummedPlannedCostViewSet, basename='companyCode-summedPlannedCost')
@@ -42,4 +43,5 @@ router.register(r'summedActualCostByCompany', CompanyCodeSummedActualCostViewSet
 urlpatterns = [
     path('calculation/', include(router.urls)),
     path('calculation/calculate-errors/', calculate_errors, name='calculate_errors'),
+    path('calculation/optimize-repair-cost/', OptimizeRepairCostView.as_view(), name='optimize_repair_cost')
 ]

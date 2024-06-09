@@ -1,34 +1,50 @@
 <template>
     <div>
-      <TargetPlot :sampleDataX="sampleDataX" :sampleDataY="sampleDataY" />
-      <Histogram :sampleDataX="sampleDataX" />
+      <h1>Repair Cost Optimization</h1>
+      <button @click="optimize">Optimize</button>
+      <div v-if="result">
+        <h2>Optimal Parameters</h2>
+        <p>Failure Probability: {{ result.best_params[0] }}</p>
+        <p>Impact of Failure: {{ result.best_params[1] }}</p>
+        <p>Repair Cost: {{ result.best_params[2] }}</p>
+        <p>Annual Repair Cost: {{ result.best_value }}</p>
+      </div>
     </div>
   </template>
   
   <script>
-  import Histogram from './Histogram.vue';
-  import TargetPlot from './TargetPlot.vue';
+  import axios from 'axios';
+  import { useUserStore } from '@/stores/userStore'; // ストアのパスに応じて適宜変更してください
+  import { computed, ref } from 'vue';
   
   export default {
-    components: {
-      Histogram,
-      TargetPlot,
-    },
-    data() {
-      return {
-        sampleDataX: [],
-        sampleDataY: [],
+    setup() {
+      const userStore = useUserStore();
+      const companyCode = computed(() => userStore.companyCode);
+      const year = new Date().getFullYear();
+      const result = ref(null);
+  
+      const optimize = async () => {
+        try {
+          console.log('Optimization started');
+          const response = await axios.post('http://localhost:8000/api/calculation/optimize-repair-cost/', {
+            companyCode: companyCode.value,
+            year: year
+          });
+          console.log('Optimization successful:', response.data);
+          result.value = response.data;
+        } catch (error) {
+          console.error('Optimization failed:', error);
+        }
       };
-    },
-    mounted() {
-      this.generateSampleData();
-    },
-    methods: {
-      generateSampleData() {
-        this.sampleDataX = Array.from({ length: 100 }, () => Math.random() * 2 - 1);
-        this.sampleDataY = Array.from({ length: 100 }, () => Math.random() * 2 - 1);
-      },
-    },
+  
+      return {
+        companyCode,
+        year,
+        result,
+        optimize
+      };
+    }
   };
   </script>
   
