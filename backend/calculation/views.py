@@ -330,8 +330,12 @@ class OptimizeRepairCostView(APIView):
         try:
             company_code = request.data.get('companyCode')
             year = request.data.get('year')
+            failure_prob = float(request.data.get('failureProb', 0.1))
+            repair_cost_value = float(request.data.get('repairCost', 1000))
+            impact = float(request.data.get('impact', 10))
 
             print(f'Received companyCode: {company_code}, year: {year}')
+            print(f'Using parameters - Failure Probability: {failure_prob}, Repair Cost: {repair_cost_value}, Impact: {impact}')
 
             if not company_code or not year:
                 print('Error: companyCode and year are required')
@@ -343,40 +347,42 @@ class OptimizeRepairCostView(APIView):
                 print(f'Error: No company found with code {company_code}')
                 return Response({'error': f'No company found with code {company_code}'}, status=status.HTTP_404_NOT_FOUND)
 
-            # 目的関数の定義
-            def repair_cost(params):
-                failure_prob, impact, cost = params
-                try:
-                    # 年間の計画コストを取得
-                    summed_planned_cost = SummedPlannedCost.objects.filter(companyCode=company_code_obj, year=year).first()
-                    if not summed_planned_cost:
-                        print(f'Error: No data found for companyCode {company_code} and year {year}')
-                        return float('inf')  # データがない場合は無限大を返して最適化から除外
+            # 年間の計画コストを取得
+            summed_planned_cost = SummedPlannedCost.objects.filter(companyCode=company_code_obj, year=year).first()
+            if not summed_planned_cost:
+                print(f'Error: No data found for companyCode {company_code} and year {year}')
+                return Response({'error': 'No data found for companyCode and year'}, status=status.HTTP_404_NOT_FOUND)
 
-                    # Decimalからfloatに変換
-                    total_planned_cost = float(summed_planned_cost.totalPlannedCost)
-                    
-                    # 目的関数の計算（仮の計算式）
-                    annual_cost = failure_prob * impact * cost * total_planned_cost
-                    print(f'Calculated annual cost: {annual_cost}')
-                    return annual_cost
-                except Exception as e:
-                    print(f'Error in repair_cost function: {e}')
-                    return float('inf')  # エラーが発生した場合も無限大を返して最適化から除外
+            # 各月のコストを最適化
+            months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+            optimized_costs = {}
 
-            # ベイズ最適化の実行
-            res = gp_minimize(repair_cost,
-                              [(0.0, 1.0),  # 故障の可能性 (0.0 - 1.0)
-                               (0.0, 100.0),  # 故障のインパクト (0 - 100)
-                               (0.0, 10000.0)],  # 修繕費用 (0 - 10000)
-                              acq_func="EI",
-                              n_calls=50,
-                              random_state=0)
+            for month in months:
+                # 目的関数の定義
+                def calculate_repair_cost(params):
+                    try:
+                        month_cost = float(getattr(summed_planned_cost, f'sum{month}'))
+                        annual_cost = failure_prob * impact * repair_cost_value * month_cost
+                        print(f'Calculated {month} cost: {annual_cost} using Failure Probability: {failure_prob}, Impact: {impact}, Repair Cost: {repair_cost_value}')
+                        return annual_cost
+                    except Exception as e:
+                        print(f'Error in calculate_repair_cost function for {month}: {e}')
+                        return float('inf')
 
-            print(f'Optimization successful with params {res.x} and value {res.fun}')
+                # ベイズ最適化の実行
+                res = gp_minimize(calculate_repair_cost,
+                                  [(0.0, 1.0),  # 故障の可能性 (0.0 - 1.0)
+                                   (0.0, 100.0),  # 故障のインパクト (0 - 100)
+                                   (0.0, 10000.0)],  # 修繕費用 (0 - 10000)
+                                  acq_func="EI",
+                                  n_calls=10,  # 最適化の回数を10回に設定
+                                  random_state=0)
+
+                optimized_costs[month] = res.fun
+
+            print(f'Optimization successful: {optimized_costs}')
             return Response({
-                "best_params": res.x,
-                "best_value": res.fun
+                "optimized_costs": optimized_costs
             }, status=status.HTTP_200_OK)
         except Exception as e:
             print(f'Error during optimization: {e}')
