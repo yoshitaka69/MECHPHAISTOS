@@ -1,6 +1,21 @@
 <template>
   <div>
-
+    <div>
+      <label>MTTR[days]:
+        <input type="number" v-model.number="mttr" />
+      </label>
+      <label>Possibility of Continuous Production:
+        <input type="number" v-model.number="possibility" />
+      </label>
+      <label>Setting:
+        <select v-model="selectedSetting">
+          <option v-for="option in settingsOptions" :key="option.value" :value="option.value">
+            {{ option.text }}
+          </option>
+        </select>
+      </label>
+      <p>Risk Text: {{ riskText }}</p>
+    </div>
     <div class="controls">
       <div class="settings" v-for="(setting, index) in settingsOptions" :key="setting.value">
         <h3>{{ setting.text }}</h3>
@@ -15,47 +30,50 @@
   </div>
 </template>
 
-
 <script>
-
 import * as d3 from 'd3';
 
 export default {
   name: 'ToneCurve',
-
   data() {
     return {
-      data: [
-        { x: 1, y: 0 },
-        { x: 7, y: 2.5 },
-        { x: 30, y: 5 }
-      ],
       controlPoints: {
         1: { x: 7, y: 2.5 },
         2: { x: 7, y: 2.5 },
         3: { x: 7, y: 2.5 }
       },
-      riskMatrix: [
+      riskMatrixLow: [
         { likelihood: 5, description: 'It is or has already happened', risk: ['M', 'H', 'VH', 'VH', 'VH'] },
         { likelihood: 4, description: 'It will probably happen', risk: ['L', 'M', 'H', 'VH', 'VH'] },
         { likelihood: 3, description: 'It could possibly happen', risk: ['L', 'L', 'M', 'H', 'H'] },
         { likelihood: 2, description: 'It is to happen', risk: ['L', 'L', 'L', 'M', 'H'] },
         { likelihood: 1, description: 'It is unlikely to happen', risk: ['L', 'L', 'L', 'L', 'M'] }
       ],
-      riskMatrixInitial: [
+      riskMatrixMiddle: [
         { likelihood: 5, description: 'It is or has already happened', risk: ['M', 'H', 'VH', 'VH', 'VH'] },
         { likelihood: 4, description: 'It will probably happen', risk: ['L', 'M', 'H', 'VH', 'VH'] },
         { likelihood: 3, description: 'It could possibly happen', risk: ['L', 'L', 'M', 'H', 'H'] },
         { likelihood: 2, description: 'It is to happen', risk: ['L', 'L', 'L', 'M', 'H'] },
         { likelihood: 1, description: 'It is unlikely to happen', risk: ['L', 'L', 'L', 'L', 'M'] }
       ],
-      riskClasses: ['Near Miss', 'Minor Inquiry', 'Lost Time Accident', 'Major Inquiry', 'Fatality'],
+      riskMatrixHigh: [
+        { likelihood: 5, description: 'It is or has already happened', risk: ['M', 'H', 'VH', 'VH', 'VH'] },
+        { likelihood: 4, description: 'It will probably happen', risk: ['L', 'M', 'H', 'VH', 'VH'] },
+        { likelihood: 3, description: 'It could possibly happen', risk: ['L', 'L', 'M', 'H', 'H'] },
+        { likelihood: 2, description: 'It is to happen', risk: ['L', 'L', 'L', 'M', 'H'] },
+        { likelihood: 1, description: 'It is unlikely to happen', risk: ['L', 'L', 'L', 'L', 'M'] }
+      ],
       settingsOptions: [
         { value: 1, text: 'Low 設定' },
         { value: 2, text: 'Middle 設定' },
         { value: 3, text: 'High 設定' }
       ],
-      resizeObservers: {}
+      resizeObservers: {},
+      mttr: null,
+      possibility: null,
+      riskText: '',
+      selectedSetting: 1,
+      riskMatrix: []
     };
   },
   mounted() {
@@ -63,13 +81,21 @@ export default {
       this.drawChart(setting.value);
       this.setupResizeObserver(setting.value);
     });
+    this.updateRiskMatrix(); // 初期設定
+    this.updateRiskText(); // 初期設定でリスクテキストを更新
   },
-  beforeDestroy() {
-    this.settingsOptions.forEach(setting => {
-      if (this.resizeObservers[setting.value]) {
-        this.resizeObservers[setting.value].disconnect();
-      }
-    });
+  watch: {
+    mttr() {
+      this.updateRiskText();
+    },
+    possibility() {
+      this.updateRiskText();
+    },
+    selectedSetting() {
+      this.updateRiskMatrix(); // 設定が変更された時にリスクマトリックスを更新
+      this.updateRiskText();
+      this.drawChart(this.selectedSetting); // 設定が変更された時にチャートを再描画する
+    }
   },
   methods: {
     setupResizeObserver(setting) {
@@ -119,14 +145,14 @@ export default {
       };
 
       const updateRiskMatrixColors = () => {
-        const xRatio = (this.controlPoints[setting].x - 1) / 29; // 修正
-        const yRatio = this.controlPoints[setting].y / 5; // 縦軸の最大値に合わせる
+        const xRatio = (this.controlPoints[setting].x - 1) / 29;
+        const yRatio = this.controlPoints[setting].y / 5;
 
-        this.riskMatrix = this.riskMatrixInitial.map(row => ({
+        this.riskMatrix = this.getSelectedRiskMatrix().map(row => ({
           ...row,
           risk: row.risk.map((risk, j) => {
-            const adjustedX = j + xRatio * 6 - 3; // 変化率を強調
-            const adjustedY = row.likelihood - yRatio * 6 + 3; // 変化率を強調
+            const adjustedX = j + xRatio * 6 - 3;
+            const adjustedY = row.likelihood - yRatio * 6 + 3;
             const average = (adjustedX + adjustedY) / 2;
             if (average < 1) return 'L';
             if (average < 2) return 'M';
@@ -134,6 +160,7 @@ export default {
             return 'VH';
           })
         }));
+        this.updateRiskText(); // リスクマトリックスが更新された後にリスクテキストを更新
       };
 
       const drawRiskMatrix = () => {
@@ -147,7 +174,7 @@ export default {
           row.risk.forEach((risk, j) => {
             svg.append('rect')
               .attr('x', j * cellWidth)
-              .attr('y', (5 - row.likelihood) * cellHeight) // 縦軸の目盛りに合わせる
+              .attr('y', (5 - row.likelihood) * cellHeight)
               .attr('width', cellWidth)
               .attr('height', cellHeight)
               .attr('fill', colorMap[risk])
@@ -155,7 +182,6 @@ export default {
               .attr('stroke-width', 1)
               .attr('class', 'risk-cell');
 
-            // リスクレベルのテキストを追加
             svg.append('text')
               .attr('x', j * cellWidth + cellWidth / 2)
               .attr('y', (5 - row.likelihood) * cellHeight + cellHeight / 2)
@@ -182,9 +208,7 @@ export default {
         drawRiskMatrix();
 
         const dataWithControl = [
-          this.data[0],
-          this.controlPoints[setting],
-          this.data[2]
+          this.controlPoints[setting]
         ];
 
         svg.append('path')
@@ -240,6 +264,9 @@ export default {
               d.y = invertY;
               this.controlPoints[setting] = { x: d.x, y: d.y };
               updateChart();
+              if (setting === this.selectedSetting) {
+                this.updateRiskText(); // 現在の設定の場合のみリスクテキストを更新
+              }
             })
             .on('end', function (event) {
               d3.select(this).attr('stroke', null);
@@ -254,55 +281,84 @@ export default {
     resetToDefault(setting) {
       this.controlPoints[setting] = { x: 7, y: 2.5 };
       this.drawChart(setting);
+    },
+    getMttrIndex(mttr) {
+      if (mttr < 1 || mttr >= 30) return 4;
+      if (mttr < 3) return 0;
+      if (mttr < 7) return 1;
+      if (mttr < 10) return 2;
+      return 3;
+    },
+    getPossibilityIndex(possibility) {
+      if (possibility < 1) return 4;
+      if (possibility < 2) return 3;
+      if (possibility < 3) return 2;
+      if (possibility < 4) return 1;
+      return 0;
+    },
+    mapRiskText(riskText) {
+      const textMap = {
+        'L': 'Low',
+        'M': 'Middle',
+        'H': 'High',
+        'VH': 'High+'
+      };
+      return textMap[riskText] || riskText;
+    },
+    updateRiskMatrix() {
+      switch (this.selectedSetting) {
+        case 1:
+          this.riskMatrix = this.riskMatrixLow;
+          break;
+        case 2:
+          this.riskMatrix = this.riskMatrixMiddle;
+          break;
+        case 3:
+          this.riskMatrix = this.riskMatrixHigh;
+          break;
+        default:
+          this.riskMatrix = this.riskMatrixLow;
+      }
+    },
+    updateRiskText() {
+      if (this.mttr !== null && this.possibility !== null && this.selectedSetting !== null) {
+        const mttrIndex = this.getMttrIndex(this.mttr);
+        const possibilityIndex = this.getPossibilityIndex(this.possibility);
+
+        if (this.riskMatrix[possibilityIndex] && this.riskMatrix[possibilityIndex].risk[mttrIndex]) {
+          const riskText = this.riskMatrix[possibilityIndex].risk[mttrIndex];
+          console.log(`Setting: ${this.selectedSetting}, MTTR: ${this.mttr}, Possibility: ${this.possibility}, MTTR Index: ${mttrIndex}, Possibility Index: ${possibilityIndex}, RiskText: ${riskText}`);
+          console.log('RiskMatrix at this position:', this.riskMatrix[possibilityIndex].risk);
+          this.riskText = this.mapRiskText(riskText);
+        } else {
+          console.error('Invalid risk matrix index:', { mttrIndex, possibilityIndex });
+          this.riskText = '';
+        }
+      }
+    },
+    getSelectedRiskMatrix() {
+      switch (this.selectedSetting) {
+        case 1:
+          return this.riskMatrixLow;
+        case 2:
+          return this.riskMatrixMiddle;
+        case 3:
+          return this.riskMatrixHigh;
+        default:
+          return this.riskMatrixLow;
+      }
     }
   }
 };
 </script>
 
 <style scoped>
-#app {
-  font-family: Arial, sans-serif;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-
-.impact-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 20px 0;
-}
-
-.impact-table th, .impact-table td {
-  border: 1px solid black;
-  padding: 10px;
-  text-align: center;
-  font-family: Arial, sans-serif;
-}
-
-.impact-table th {
-  background-color: grey;
-  color: white;
-}
-
-.impact-table tr:nth-child(even) {
-  background-color: lightgrey;
-}
-
-.impact-table tr:nth-child(odd) {
-  background-color: white;
-}
-
-.impact-table td {
-  vertical-align: top;
-}
-
 .chart-container {
   display: inline-block;
   vertical-align: top;
   width: 100%;
   height: 400px;
-  margin-top: 40px; /* テーブルとチャート間のマージン */
+  margin-top: 40px;
 }
 
 .controls {
@@ -346,16 +402,5 @@ export default {
 .risk-text {
   font-size: 12px;
   font-weight: bold;
-}
-
-#rMatrix > tbody > tr > td,
-#rMatrix > tbody > tr > th,
-#rMatrix > tfoot > tr > td,
-#rMatrix > tfoot > tr > th,
-#rMatrix > thead > tr > td,
-#rMatrix > thead > tr > th {
-  vertical-align: middle;
-  text-align: center;
-  font-weight: 550;
 }
 </style>

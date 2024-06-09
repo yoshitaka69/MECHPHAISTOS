@@ -1,27 +1,30 @@
 <template>
   <div class="sidebar">
     <p>Sidebar Content</p>
-    <div class="icon" v-for="icon in icons" :key="icon.name" draggable="true" @dragstart="dragStart(icon)">
+    <div class="icon" v-for="icon in icons" :key="icon.name" @click="selectIcon(icon)">
       <img :src="icon.src" :alt="icon.name" />
     </div>
   </div>
 </template>
 
 <script>
+import pumpIcon from '@/assets/icons/pump.png';
+import valveIcon from '@/assets/icons/valve.png';
+
 export default {
   name: 'Sidebar',
   data() {
     return {
       icons: [
-        { name: 'Pump', src: '/frontend/public/icons/pump.png' },
-        { name: 'Valve', src: '/frontend/public/icons/valve.png' },
+        { name: 'Pump', src: pumpIcon },
+        { name: 'Valve', src: valveIcon },
         // 他のアイコンを追加
       ],
     };
   },
   methods: {
-    dragStart(icon, event) {
-      event.dataTransfer.setData('icon', JSON.stringify(icon));
+    selectIcon(icon) {
+      this.$emit('icon-selected', icon);
     },
   },
 };
@@ -36,12 +39,13 @@ export default {
 }
 
 .icon {
-  margin-bottom: 10px;
+  margin-bottom: 20px; /* マージンを調整してアイコン間のスペースを広げる */
   cursor: pointer;
 }
 
 .icon img {
-  width: 100%;
-  height: auto;
+  width: 100px; /* アイコンの幅を大きく設定 */
+  height: 100px; /* アイコンの高さを大きく設定 */
+  object-fit: contain; /* 画像のアスペクト比を保持 */
 }
 </style>

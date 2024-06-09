@@ -1,7 +1,7 @@
 <template>
-  <div class="canvas-wrapper" @dragover.prevent @drop="dropIcon">
-    <canvas ref="canvas" :width="width" :height="height"></canvas>
-    <div v-for="icon in placedIcons" :key="icon.id" class="placed-icon" :style="{ top: icon.y + 'px', left: icon.x + 'px' }">
+  <div class="canvas-wrapper" @dragover.prevent>
+    <canvas ref="canvas" :width="width" :height="height" @click="placeIcon"></canvas>
+    <div v-for="icon in placedIcons" :key="icon.id" class="placed-icon" :style="{ top: icon.y + 'px', left: icon.x + 'px' }" @mousedown="startDrag($event, icon)">
       <img :src="icon.src" :alt="icon.name" />
     </div>
   </div>
@@ -23,10 +23,17 @@ export default {
       type: Boolean,
       default: true,
     },
+    selectedIcon: {
+      type: Object,
+      default: null,
+    },
   },
   data() {
     return {
       placedIcons: [],
+      draggingIcon: null,
+      dragOffsetX: 0,
+      dragOffsetY: 0,
     };
   },
   methods: {
@@ -51,7 +58,7 @@ export default {
           ctx.stroke();
         }
 
-        for (let y = 0; y <= this.height; y += step) {
+        for (let y = 0; <= this.height; y += step) {
           ctx.beginPath();
           ctx.moveTo(0, y);
           ctx.lineTo(this.width, y);
@@ -59,18 +66,40 @@ export default {
         }
       }
     },
-    dropIcon(event) {
-      const rect = this.$refs.canvas.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
-      const icon = JSON.parse(event.dataTransfer.getData('icon'));
-      this.placedIcons.push({
-        id: Date.now(),
-        src: icon.src,
-        name: icon.name,
-        x: x,
-        y: y,
-      });
+    placeIcon(event) {
+      if (this.selectedIcon) {
+        const rect = this.$refs.canvas.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        this.placedIcons.push({
+          id: Date.now(),
+          src: this.selectedIcon.src,
+          name: this.selectedIcon.name,
+          x: x,
+          y: y,
+        });
+        this.selectedIcon = null;
+      }
+    },
+    startDrag(event, icon) {
+      this.draggingIcon = icon;
+      const rect = event.target.getBoundingClientRect();
+      this.dragOffsetX = event.clientX - rect.left;
+      this.dragOffsetY = event.clientY - rect.top;
+      document.addEventListener('mousemove', this.drag);
+      document.addEventListener('mouseup', this.stopDrag);
+    },
+    drag(event) {
+      if (this.draggingIcon) {
+        const rect = this.$refs.canvas.getBoundingClientRect();
+        this.draggingIcon.x = event.clientX - rect.left - this.dragOffsetX;
+        this.draggingIcon.y = event.clientY - rect.top - this.dragOffsetY;
+      }
+    },
+    stopDrag() {
+      this.draggingIcon = null;
+      document.removeEventListener('mousemove', this.drag);
+      document.removeEventListener('mouseup', this.stopDrag);
     },
   },
   mounted() {
@@ -107,5 +136,12 @@ canvas {
 .placed-icon {
   position: absolute;
   transform: translate(-50%, -50%);
+}
+
+.placed-icon img {
+  width: 100px; /* アイコンの幅を大きく設定 */
+  height: 100px; /* アイコンの高さを大きく設定 */
+  object-fit: contain; /* 画像のアスペクト比を保持 */
+  cursor: move; /* ドラッグできることを示すカーソル */
 }
 </style>

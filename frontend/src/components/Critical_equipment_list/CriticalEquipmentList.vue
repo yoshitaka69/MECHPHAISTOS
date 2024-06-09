@@ -96,18 +96,24 @@ function customRendererForSituation(instance, td, row, col, prop, value, cellPro
   }
 }
 
+
 function customRendererForMttr(instance, td, row, col, prop, value, cellProperties) {
-  Handsontable.renderers.TextRenderer.apply(this, arguments);
-  applyBaseStyle(td);
+  if (td) {
+    Handsontable.renderers.TextRenderer.apply(this, arguments);
+    applyBaseStyle(td);
+  }
+
   const constructionPeriodColIndex = 5;
   const partsDeliveryDateColIndex = 6;
   const constructionPeriod = instance.getDataAtCell(row, constructionPeriodColIndex);
   const partsDeliveryDate = instance.getDataAtCell(row, partsDeliveryDateColIndex);
   const mttrValue = Math.max(constructionPeriod, partsDeliveryDate);
-  if (td) {
+
+  if (td) { // nullチェックを追加
     td.innerHTML = mttrValue === 0 ? '' : mttrValue;
   }
-  return mttrValue; // ここでMTTR値を返す
+
+  return mttrValue; // MTTR値を返す
 }
 
 const CriticalEquipmentList = defineComponent({
@@ -130,20 +136,20 @@ const CriticalEquipmentList = defineComponent({
           { data: "plant", type: "text" },
           { data: "equipment", type: "text" },
           { data: "machineName", type: "text" },
-          { 
-            data: "levelSetValue", 
-            type: 'dropdown', 
-            source: ['Low', 'Middle', 'High'] 
+          {
+            data: "levelSetValue",
+            type: 'dropdown',
+            source: ['Low', 'Middle', 'High']
           },
           { data: "typicalConstPeriod", type: 'numeric' },
           { data: "maxPartsDeliveryTimeInBom", type: 'numeric' },
           { data: "mttr", type: 'numeric', renderer: customRendererForMttr },
-          { 
-            data: "possibilityOfContinuousProduction", 
-            type: 'dropdown', 
-            source: [1, 2, 3, 4, 5], 
+          {
+            data: "possibilityOfContinuousProduction",
+            type: 'dropdown',
+            source: [1, 2, 3, 4, 5],
             className: 'htRight',
-            readOnly: false 
+            readOnly: false
           },
           { data: "countOfPM02", width: 100, className: 'htRight', type: 'numeric' },
           { data: "latestPM02", width: 100, className: 'htRight', type: 'date', dateFormat: 'YYYY-MM-DD', correctFormat: false },
@@ -166,7 +172,7 @@ const CriticalEquipmentList = defineComponent({
           { data: "coveredFromTask", width: 100, className: 'htCenter', type: 'checkbox' },
           { data: "twoways", width: 100, className: 'htCenter', type: 'checkbox' },
         ],
-        
+
         afterGetColHeader: (col, TH) => {
           if (col === -1) {
             return;
@@ -232,18 +238,18 @@ const CriticalEquipmentList = defineComponent({
         },
         withCredentials: true
       })
-      .then(response => {
-        const masterDataTable = response.data.flatMap(companyData => companyData.MasterDataTable);
-        console.log("Fetched masterDataTable:", masterDataTable);
+        .then(response => {
+          const masterDataTable = response.data.flatMap(companyData => companyData.MasterDataTable);
+          console.log("Fetched masterDataTable:", masterDataTable);
 
-        const blankRows = Array.from({ length: 10 }, () => ({}));
-        const newData = masterDataTable.concat(blankRows);
+          const blankRows = Array.from({ length: 10 }, () => ({}));
+          const newData = masterDataTable.concat(blankRows);
 
-        this.$refs.hotTableComponent.hotInstance.loadData(newData);
-      })
-      .catch(error => {
-        console.error("Error fetching data:", error);
-      });
+          this.$refs.hotTableComponent.hotInstance.loadData(newData);
+        })
+        .catch(error => {
+          console.error("Error fetching data:", error);
+        });
     },
 
     updateData(data) {
@@ -263,21 +269,22 @@ const CriticalEquipmentList = defineComponent({
     },
 
     emitData() {
-      const hotInstance = this.$refs.hotTableComponent.hotInstance;
-      const rows = hotInstance.countRows();
-      const emittedData = [];
+  const hotInstance = this.$refs.hotTableComponent.hotInstance;
+  const rows = hotInstance.countRows();
+  const emittedData = [];
 
-      for (let row = 0; row < rows; row++) {
-        const levelSetValue = hotInstance.getDataAtCell(row, 4); // levelSetValueの値を取得
-        const mttr = customRendererForMttr(hotInstance, null, row, 7); // MTTRの値を取得するためにcustomRendererForMttrを呼び出す
-        const possibilityOfContinuousProduction = hotInstance.getDataAtCell(row, 8); // possibilityOfContinuousProductionの値を取得
+  for (let row = 0; row < rows; row++) {
+    const levelSetValue = hotInstance.getDataAtCell(row, 4); // levelSetValueの値を取得
+    const mttr = customRendererForMttr(hotInstance, null, row, 7); // MTTRの値を取得するためにcustomRendererForMttrを呼び出す
+    const possibilityOfContinuousProduction = hotInstance.getDataAtCell(row, 8); // possibilityOfContinuousProductionの値を取得
 
-        emittedData.push({ levelSetValue, mttr, possibilityOfContinuousProduction });
-      }
+    emittedData.push({ levelSetValue, mttr, possibilityOfContinuousProduction });
+  }
 
-      console.log('Emitting Data:', emittedData);
-      this.$emit('data-emitted', emittedData);
-    },
+  console.log('Emitting Data:', emittedData);
+  this.$emit('data-emitted', emittedData);
+},
+
 
     updateImpactForProduction({ index, impactForProduction }) {
       console.log(`Updating impactForProduction at row ${index} with value ${impactForProduction}`);
