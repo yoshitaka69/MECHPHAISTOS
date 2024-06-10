@@ -1,24 +1,5 @@
 <template>
   <div>
-    <div>
-      <label>設定:
-        <select v-model="selectedSetting">
-          <option v-for="option in settingsOptions" :key="option.value" :value="option.value">
-            {{ option.text }}
-          </option>
-        </select>
-      </label>
-    </div>
-    <div v-for="(data, index) in inputData" :key="index">
-      <label>MTTR[days] (Index {{ index }}):
-        <input type="number" v-model.number="data.mttr" />
-      </label>
-      <label>Possibility of Continuous Production (Index {{ index }}):
-        <input type="number" v-model.number="data.possibilityOfContinuousProduction" />
-      </label>
-      <p>Risk Text (Index {{ index }}): {{ riskTexts[index] }}</p>
-    </div>
-    <button @click="calculateRiskTexts">Calculate Risk Texts</button>
     <div class="controls">
       <div class="settings" v-for="(setting, index) in settingsOptions" :key="setting.value">
         <h3>{{ setting.text }}</h3>
@@ -89,7 +70,6 @@ export default {
       this.drawChart(setting.value);
       this.setupResizeObserver(setting.value);
     });
-    this.updateRiskMatrix(); // 初期設定
     this.calculateRiskTexts(); // 初期設定でリスクテキストを計算
   },
   watch: {
@@ -98,11 +78,6 @@ export default {
         this.calculateRiskTexts();
       },
       deep: true
-    },
-    selectedSetting() {
-      this.updateRiskMatrix(); // 設定が変更された時にリスクマトリックスを更新
-      this.drawChart(this.selectedSetting); // 設定が変更された時にチャートを再描画する
-      this.calculateRiskTexts();
     }
   },
   methods: {
@@ -152,11 +127,14 @@ export default {
         'VH': 'High+'
       };
 
-      const updateRiskMatrixColors = () => {
+      const updateRiskMatrixColors = (setting) => {
+        const riskMatrix = this.getSelectedRiskMatrix(setting);
+        if (!riskMatrix) return;
+
         const xRatio = (this.controlPoints[setting].x - 1) / 29;
         const yRatio = this.controlPoints[setting].y / 5;
 
-        this.riskMatrix = this.getSelectedRiskMatrix().map(row => ({
+        this[`riskMatrix${this.getSettingName(setting)}`] = riskMatrix.map(row => ({
           ...row,
           risk: row.risk.map((risk, j) => {
             const adjustedX = j + xRatio * 6 - 3;
@@ -177,7 +155,10 @@ export default {
         const cellWidth = width / 5;
         const cellHeight = height / 5;
 
-        this.riskMatrix.forEach((row, i) => {
+        const riskMatrix = this.getSelectedRiskMatrix(setting);
+        if (!riskMatrix) return;
+
+        riskMatrix.forEach((row, i) => {
           row.risk.forEach((risk, j) => {
             svg.append('rect')
               .attr('x', j * cellWidth)
@@ -211,7 +192,7 @@ export default {
         svg.selectAll('.axis').remove();
         svg.selectAll('.control-point').remove();
 
-        updateRiskMatrixColors();
+        updateRiskMatrixColors(setting);
         drawRiskMatrix();
 
         const dataWithControl = [
@@ -312,21 +293,6 @@ export default {
       };
       return textMap[riskText] || riskText;
     },
-    updateRiskMatrix() {
-      switch (this.selectedSetting) {
-        case 1:
-          this.riskMatrix = this.riskMatrixLow;
-          break;
-        case 2:
-          this.riskMatrix = this.riskMatrixMiddle;
-          break;
-        case 3:
-          this.riskMatrix = this.riskMatrixHigh;
-          break;
-        default:
-          this.riskMatrix = this.riskMatrixLow;
-      }
-    },
     calculateRiskTexts() {
       if (!this.inputData) return; // inputDataが存在しない場合は終了
 
@@ -335,9 +301,9 @@ export default {
           const setting = this.getSettingFromLevelSetValue(data.levelSetValue);
           const mttrIndex = this.getMttrIndex(data.mttr);
           const possibilityIndex = this.getPossibilityIndex(data.possibilityOfContinuousProduction);
-          const riskMatrix = this.getRiskMatrixBySetting(setting);
+          const riskMatrix = this.getSelectedRiskMatrix(setting);
 
-          if (riskMatrix[possibilityIndex] && riskMatrix[possibilityIndex].risk[mttrIndex]) {
+          if (riskMatrix && riskMatrix[possibilityIndex] && riskMatrix[possibilityIndex].risk[mttrIndex]) {
             const riskText = riskMatrix[possibilityIndex].risk[mttrIndex];
             console.log(`Setting: ${setting}, MTTR: ${data.mttr}, Possibility: ${data.possibilityOfContinuousProduction}, MTTR Index: ${mttrIndex}, Possibility Index: ${possibilityIndex}, RiskText: ${riskText}`);
             console.log('RiskMatrix at this position:', riskMatrix[possibilityIndex].risk);
@@ -367,29 +333,21 @@ export default {
           return 1;
       }
     },
-    getRiskMatrixBySetting(setting) {
+    getSettingName(setting) {
       switch (setting) {
         case 1:
-          return this.riskMatrixLow;
+          return 'Low';
         case 2:
-          return this.riskMatrixMiddle;
+          return 'Middle';
         case 3:
-          return this.riskMatrixHigh;
+          return 'High';
         default:
-          return this.riskMatrixLow;
+          return 'Low';
       }
     },
-    getSelectedRiskMatrix() {
-      switch (this.selectedSetting) {
-        case 1:
-          return this.riskMatrixLow;
-        case 2:
-          return this.riskMatrixMiddle;
-        case 3:
-          return this.riskMatrixHigh;
-        default:
-          return this.riskMatrixLow;
-      }
+    getSelectedRiskMatrix(setting) {
+      const riskMatrix = this[`riskMatrix${this.getSettingName(setting)}`];
+      return riskMatrix || [];
     }
   }
 };
