@@ -1,406 +1,405 @@
 <template>
-  <div>
     <div>
-      <label>MTTR[days]:
-        <input type="number" v-model.number="mttr" />
-      </label>
-      <label>Possibility of Continuous Production:
-        <input type="number" v-model.number="possibility" />
-      </label>
-      <label>Setting:
-        <select v-model="selectedSetting">
-          <option v-for="option in settingsOptions" :key="option.value" :value="option.value">
-            {{ option.text }}
-          </option>
-        </select>
-      </label>
-      <p>Risk Text: {{ riskText }}</p>
-    </div>
-    <div class="controls">
-      <div class="settings" v-for="(setting, index) in settingsOptions" :key="setting.value">
-        <h3>{{ setting.text }}</h3>
-        <button @click="saveControlPoint(setting.value)">保存</button>
-        <button @click="resetToDefault(setting.value)">初期値</button>
-        <div class="chart-container" :ref="'chartContainer-' + setting.value">
-          <div :ref="'chart-' + setting.value"></div>
-        </div>
-        <div class="pointer-position">ポインターの位置: x={{ controlPoints[setting.value].x.toFixed(2) }}, y={{ controlPoints[setting.value].y.toFixed(2) }}</div>
+      <div>
+        <label>Time of occurrence on PM02:
+          <input type="number" v-model.number="timeOfOccurrence" />
+        </label>
+      </div>
+      <div>
+        <label>Number of PM03 occurrences in the past 5 years:
+          <input type="number" v-model.number="numPm03Occurrences" />
+        </label>
+      </div>
+      <div>
+        <label>Number of PM04 occurrences in the past 5 years:
+          <input type="number" v-model.number="numPm04Occurrences" />
+        </label>
+      </div>
+      <p>リスクテキスト: {{ riskText }}</p>
+      <div class="controls">
+        <button @click="saveControlPoint">保存</button>
+        <button @click="resetToDefault">初期値</button>
+      </div>
+      <div class="chart-container">
+        <div ref="chart"></div>
+        <div class="pointer-position">ポインターの位置: x={{ controlPoint.x.toFixed(2) }}, y={{ controlPoint.y.toFixed(2) }}</div>
       </div>
     </div>
-  </div>
-</template>
-
-<script>
-import * as d3 from 'd3';
-
-export default {
-  name: 'ToneCurve',
-  data() {
-    return {
-      controlPoints: {
-        1: { x: 7, y: 2.5 },
-        2: { x: 7, y: 2.5 },
-        3: { x: 7, y: 2.5 }
+  </template>
+  
+  <script>
+  import * as d3 from 'd3';
+  
+  export default {
+    name: 'RiskMatrixPossibilityOfFailureOnlyMatrix',
+    data() {
+      return {
+        data: [
+          { x: 0, y: 0 },
+          { x: 3, y: 2.5 },
+          { x: 6, y: 6 }
+        ],
+        controlPoint: { x: 3, y: 4 },
+        riskMatrix: [
+          { likelihood: 7, description: 'Almost certain', risk: ['H', 'VH', 'VH', 'VH', 'VH', 'VH'] },
+          { likelihood: 6, description: 'Likely', risk: ['M', 'H', 'VH', 'VH', 'VH', 'VH'] },
+          { likelihood: 5, description: 'Possible', risk: ['L', 'M', 'H', 'VH', 'VH', 'VH'] },
+          { likelihood: 4, description: 'Unlikely', risk: ['L', 'L', 'M', 'H', 'VH', 'VH'] },
+          { likelihood: 3, description: 'Rare', risk: ['L', 'L', 'L', 'M', 'H', 'VH'] },
+          { likelihood: 2, description: 'Very rare', risk: ['L', 'L', 'L', 'L', 'M', 'H'] }
+        ],
+        riskMatrixInitial: [
+          { likelihood: 7, description: 'Almost certain', risk: ['H', 'VH', 'VH', 'VH', 'VH', 'VH'] },
+          { likelihood: 6, description: 'Likely', risk: ['M', 'H', 'VH', 'VH', 'VH', 'VH'] },
+          { likelihood: 5, description: 'Possible', risk: ['L', 'M', 'H', 'VH', 'VH', 'VH'] },
+          { likelihood: 4, description: 'Unlikely', risk: ['L', 'L', 'M', 'H', 'VH', 'VH'] },
+          { likelihood: 3, description: 'Rare', risk: ['L', 'L', 'L', 'M', 'H', 'VH'] },
+          { likelihood: 2, description: 'Very rare', risk: ['L', 'L', 'L', 'L', 'M', 'H'] }
+        ],
+        riskClasses: ['Review Required', 'Appropriate', 'Caution', 'Consider Measures', 'Measures Required'],
+        savedControlPoints: {
+          1: { x: 3, y: 4 },
+          2: { x: 3, y: 4 },
+          3: { x: 3, y: 4 }
+        },
+        timeOfOccurrence: null,
+        numPm03Occurrences: null,
+        numPm04Occurrences: null,
+        riskText: '',
+      };
+    },
+    watch: {
+      timeOfOccurrence() {
+        this.updateRiskText();
       },
-      riskMatrixLow: [
-        { likelihood: 5, description: 'It is or has already happened', risk: ['M', 'H', 'VH', 'VH', 'VH'] },
-        { likelihood: 4, description: 'It will probably happen', risk: ['L', 'M', 'H', 'VH', 'VH'] },
-        { likelihood: 3, description: 'It could possibly happen', risk: ['L', 'L', 'M', 'H', 'H'] },
-        { likelihood: 2, description: 'It is to happen', risk: ['L', 'L', 'L', 'M', 'H'] },
-        { likelihood: 1, description: 'It is unlikely to happen', risk: ['L', 'L', 'L', 'L', 'M'] }
-      ],
-      riskMatrixMiddle: [
-        { likelihood: 5, description: 'It is or has already happened', risk: ['M', 'H', 'VH', 'VH', 'VH'] },
-        { likelihood: 4, description: 'It will probably happen', risk: ['L', 'M', 'H', 'VH', 'VH'] },
-        { likelihood: 3, description: 'It could possibly happen', risk: ['L', 'L', 'M', 'H', 'H'] },
-        { likelihood: 2, description: 'It is to happen', risk: ['L', 'L', 'L', 'M', 'H'] },
-        { likelihood: 1, description: 'It is unlikely to happen', risk: ['L', 'L', 'L', 'L', 'M'] }
-      ],
-      riskMatrixHigh: [
-        { likelihood: 5, description: 'It is or has already happened', risk: ['M', 'H', 'VH', 'VH', 'VH'] },
-        { likelihood: 4, description: 'It will probably happen', risk: ['L', 'M', 'H', 'VH', 'VH'] },
-        { likelihood: 3, description: 'It could possibly happen', risk: ['L', 'L', 'M', 'H', 'H'] },
-        { likelihood: 2, description: 'It is to happen', risk: ['L', 'L', 'L', 'M', 'H'] },
-        { likelihood: 1, description: 'It is unlikely to happen', risk: ['L', 'L', 'L', 'L', 'M'] }
-      ],
-      settingsOptions: [
-        { value: 1, text: 'Low 設定' },
-        { value: 2, text: 'Middle 設定' },
-        { value: 3, text: 'High 設定' }
-      ],
-      resizeObservers: {},
-      mttr: null,
-      possibility: null,
-      riskText: '',
-      selectedSetting: 1,
-      riskMatrix: []
-    };
-  },
-  mounted() {
-    this.settingsOptions.forEach(setting => {
-      this.drawChart(setting.value);
-      this.setupResizeObserver(setting.value);
-    });
-    this.updateRiskMatrix(); // 初期設定
-    this.updateRiskText(); // 初期設定でリスクテキストを更新
-  },
-  watch: {
-    mttr() {
-      this.updateRiskText();
+      numPm03Occurrences() {
+        this.updateRiskText();
+      },
+      numPm04Occurrences() {
+        this.updateRiskText();
+      }
     },
-    possibility() {
-      this.updateRiskText();
+    mounted() {
+      this.drawChart();
     },
-    selectedSetting() {
-      this.updateRiskMatrix(); // 設定が変更された時にリスクマトリックスを更新
-      this.updateRiskText();
-      this.drawChart(this.selectedSetting); // 設定が変更された時にチャートを再描画する
-    }
-  },
-  methods: {
-    setupResizeObserver(setting) {
-      const container = this.$refs[`chartContainer-${setting}`][0];
-      this.resizeObservers[setting] = new ResizeObserver(() => {
-        this.drawChart(setting);
-      });
-      this.resizeObservers[setting].observe(container);
-    },
-    drawChart(setting) {
-      const container = this.$refs[`chartContainer-${setting}`][0];
-      const containerWidth = container.offsetWidth;
-      const containerHeight = container.offsetHeight;
-      const margin = { top: 20, right: 20, bottom: 30, left: 40 };
-      const width = containerWidth - margin.left - margin.right;
-      const height = containerHeight - margin.top - margin.bottom;
-
-      d3.select(this.$refs[`chart-${setting}`][0]).selectAll('*').remove(); // 既存の内容をクリア
-
-      const svg = d3.select(this.$refs[`chart-${setting}`][0])
-        .append('svg')
-        .attr('width', width + margin.left + margin.right)
-        .attr('height', height + margin.top + margin.bottom)
-        .append('g')
-        .attr('transform', `translate(${margin.left},${margin.top})`);
-
-      const xScale = d3.scalePoint()
-        .domain([1, 3, 7, 10, 30, '30+'])
-        .range([0, width]);
-
-      const yScale = d3.scaleLinear().domain([0, 5]).range([height, 0]);
-
-      // 色の定義
-      const colorMap = {
-        'L': '#4c7c04',
-        'M': '#f9d909',
-        'H': '#f99d09',
-        'VH': '#f90909'
-      };
-
-      // テキストの定義
-      const riskTextMap = {
-        'L': 'Low',
-        'M': 'Middle',
-        'H': 'High',
-        'VH': 'High+'
-      };
-
-      const updateRiskMatrixColors = () => {
-        const xRatio = (this.controlPoints[setting].x - 1) / 29;
-        const yRatio = this.controlPoints[setting].y / 5;
-
-        this.riskMatrix = this.getSelectedRiskMatrix().map(row => ({
-          ...row,
-          risk: row.risk.map((risk, j) => {
-            const adjustedX = j + xRatio * 6 - 3;
-            const adjustedY = row.likelihood - yRatio * 6 + 3;
-            const average = (adjustedX + adjustedY) / 2;
-            if (average < 1) return 'L';
-            if (average < 2) return 'M';
-            if (average < 3) return 'H';
-            return 'VH';
-          })
-        }));
-        this.updateRiskText(); // リスクマトリックスが更新された後にリスクテキストを更新
-      };
-
-      const drawRiskMatrix = () => {
-        svg.selectAll('.risk-cell').remove();
-        svg.selectAll('.risk-text').remove();
-
-        const cellWidth = width / 5;
-        const cellHeight = height / 5;
-
-        this.riskMatrix.forEach((row, i) => {
-          row.risk.forEach((risk, j) => {
-            svg.append('rect')
-              .attr('x', j * cellWidth)
-              .attr('y', (5 - row.likelihood) * cellHeight)
-              .attr('width', cellWidth)
-              .attr('height', cellHeight)
-              .attr('fill', colorMap[risk])
-              .attr('stroke', '#000')
-              .attr('stroke-width', 1)
-              .attr('class', 'risk-cell');
-
-            svg.append('text')
-              .attr('x', j * cellWidth + cellWidth / 2)
-              .attr('y', (5 - row.likelihood) * cellHeight + cellHeight / 2)
-              .attr('dy', '.35em')
-              .attr('text-anchor', 'middle')
-              .attr('class', 'risk-text')
-              .text(riskTextMap[risk])
-              .attr('fill', '#000');
+    methods: {
+      // グラフを描画するメソッド
+      drawChart() {
+        const margin = { top: 20, right: 20, bottom: 50, left: 120 };
+        const width = 500 - margin.left - margin.right;
+        const height = 400 - margin.top - margin.bottom;
+  
+        d3.select(this.$refs.chart).selectAll('*').remove();
+  
+        const svg = d3
+          .select(this.$refs.chart)
+          .append('svg')
+          .attr('width', width + margin.left + margin.right)
+          .attr('height', height + margin.top + margin.bottom)
+          .append('g')
+          .attr('transform', `translate(${margin.left},${margin.top})`);
+  
+        const xScale = d3.scalePoint().domain([0, 1, 2, 3, 4, 5, 6]).range([0, width]);
+  
+        const yScale = d3.scalePoint().domain([0, 2, 3, 4, 5, 6, 7]).range([height, 0]);
+  
+        const yScaleLeft = d3.scalePoint().domain([0, "0", 0, 1, 2, 3, 4,5]).range([height, 0]);
+  
+        const colorMap = {
+          L: '#4c7c04',
+          LM: '#a0d070',
+          M: '#f9d909',
+          H: '#f99d09',
+          VH: '#f90909'
+        };
+  
+        const riskTextMap = {
+          L: 'Review\nRequired',
+          LM: 'Appropriate',
+          M: 'Caution',
+          H: 'Consider\nMeasures',
+          VH: 'Measures\nRequired'
+        };
+  
+        // リスクマトリックスの色を更新するメソッド
+        const updateRiskMatrixColors = () => {
+          const xRatio = (this.controlPoint.x - 1) / 29;
+          const yRatio = (this.controlPoint.y - 2) / 5;
+  
+          this.riskMatrix = this.riskMatrixInitial.map((row) => ({
+            ...row,
+            risk: row.risk.map((risk, j) => {
+              const adjustedX = j + xRatio * 6 - 3;
+              const adjustedY = row.likelihood - yRatio * 6 + 3;
+              const average = (adjustedX + adjustedY) / 2;
+              if (average < 1) return 'L';
+              if (average < 2) return 'LM';
+              if (average < 3) return 'M';
+              if (average < 4) return 'H';
+              return 'VH';
+            })
+          }));
+        };
+  
+        // リスクマトリックスを描画するメソッド
+        const drawRiskMatrix = () => {
+          svg.selectAll('.risk-cell').remove();
+          svg.selectAll('.risk-text').remove();
+  
+          const cellWidth = width / 6;
+          const cellHeight = height / 6;
+  
+          this.riskMatrix.forEach((row, i) => {
+            row.risk.forEach((risk, j) => {
+              svg.append('rect')
+                .attr('x', j * cellWidth)
+                .attr('y', (7 - row.likelihood) * cellHeight)
+                .attr('width', cellWidth)
+                .attr('height', cellHeight)
+                .attr('fill', colorMap[risk])
+                .attr('stroke', '#000')
+                .attr('stroke-width', 1)
+                .attr('class', 'risk-cell');
+  
+              svg.append('text')
+                .attr('x', j * cellWidth + cellWidth / 2)
+                .attr('y', (7 - row.likelihood) * cellHeight + cellHeight / 2)
+                .attr('dy', '.35em')
+                .attr('text-anchor', 'middle')
+                .attr('class', 'risk-text')
+                .text(riskTextMap[risk])
+                .attr('fill', '#000')
+                .style('font-size', '8px') /* フォントサイズを小さく変更 */
+                .style('white-space', 'pre-line'); /* 改行を有効にする */
+            });
           });
-        });
-      };
-
-      const line = d3.line()
-        .x(d => xScale(d.x))
-        .y(d => yScale(d.y))
-        .curve(d3.curveBasis);
-
-      const updateChart = () => {
-        svg.selectAll('.line-path').remove();
-        svg.selectAll('.axis').remove();
-        svg.selectAll('.control-point').remove();
-
-        updateRiskMatrixColors();
-        drawRiskMatrix();
-
-        const dataWithControl = [
-          this.controlPoints[setting]
-        ];
-
-        svg.append('path')
-          .datum(dataWithControl)
-          .attr('class', 'line-path')
-          .attr('fill', 'none')
-          .attr('stroke', 'steelblue')
-          .attr('stroke-width', 1.5)
-          .attr('d', line);
-
-        svg.append('g')
-          .attr('class', 'axis')
-          .attr('transform', `translate(0,${height})`)
-          .call(d3.axisBottom(xScale).tickFormat((d, i) => i === 5 ? '30+' : d));
-
-        svg.append('g')
-          .attr('class', 'axis')
-          .call(d3.axisLeft(yScale).ticks(5));
-
-        svg.append('text')
-          .attr('transform', 'rotate(-90)')
-          .attr('y', 0 - margin.left)
-          .attr('x', 0 - (height / 2))
-          .attr('dy', '1em')
-          .style('text-anchor', 'middle')
-          .text('Possibility of continuous production');
-
-        svg.append('text')
-          .attr('x', width / 2)
-          .attr('y', height + margin.bottom)
-          .attr('dy', '-0.5em')
-          .style('text-anchor', 'middle')
-          .text('MTTR[days]');
-
-        svg.selectAll('circle')
-          .data([this.controlPoints[setting]])
-          .enter()
-          .append('circle')
-          .attr('class', 'control-point')
-          .attr('cx', d => xScale(d.x))
-          .attr('cy', d => yScale(d.y))
-          .attr('r', 5)
-          .attr('fill', 'red')
-          .call(d3.drag()
-            .on('start', function (event) {
-              d3.select(this).raise().attr('stroke', 'black');
-            })
-            .on('drag', (event, d) => {
-              const invertX = Math.max(1, Math.min(width, event.x));
-              const closestX = [1, 3, 7, 10, 30].reduce((prev, curr) => Math.abs(xScale(curr) - invertX) < Math.abs(xScale(prev) - invertX) ? curr : prev);
-              const invertY = Math.max(0, Math.min(5, yScale.invert(event.y)));
-              d.x = closestX;
-              d.y = invertY;
-              this.controlPoints[setting] = { x: d.x, y: d.y };
-              updateChart();
-              if (setting === this.selectedSetting) {
-                this.updateRiskText(); // 現在の設定の場合のみリスクテキストを更新
-              }
-            })
-            .on('end', function (event) {
-              d3.select(this).attr('stroke', null);
-            }));
-      };
-
-      updateChart();
-    },
-    saveControlPoint(setting) {
-      this.controlPoints[setting] = { ...this.controlPoints[setting] };
-    },
-    resetToDefault(setting) {
-      this.controlPoints[setting] = { x: 7, y: 2.5 };
-      this.drawChart(setting);
-    },
-    getMttrIndex(mttr) {
-      if (mttr < 1 || mttr >= 30) return 4;
-      if (mttr < 3) return 0;
-      if (mttr < 7) return 1;
-      if (mttr < 10) return 2;
-      return 3;
-    },
-    getPossibilityIndex(possibility) {
-      if (possibility < 1) return 4;
-      if (possibility < 2) return 3;
-      if (possibility < 3) return 2;
-      if (possibility < 4) return 1;
-      return 0;
-    },
-    mapRiskText(riskText) {
-      const textMap = {
-        'L': 'Low',
-        'M': 'Middle',
-        'H': 'High',
-        'VH': 'High+'
-      };
-      return textMap[riskText] || riskText;
-    },
-    updateRiskMatrix() {
-      switch (this.selectedSetting) {
-        case 1:
-          this.riskMatrix = this.riskMatrixLow;
-          break;
-        case 2:
-          this.riskMatrix = this.riskMatrixMiddle;
-          break;
-        case 3:
-          this.riskMatrix = this.riskMatrixHigh;
-          break;
-        default:
-          this.riskMatrix = this.riskMatrixLow;
-      }
-    },
-    updateRiskText() {
-      if (this.mttr !== null && this.possibility !== null && this.selectedSetting !== null) {
-        const mttrIndex = this.getMttrIndex(this.mttr);
-        const possibilityIndex = this.getPossibilityIndex(this.possibility);
-
-        if (this.riskMatrix[possibilityIndex] && this.riskMatrix[possibilityIndex].risk[mttrIndex]) {
-          const riskText = this.riskMatrix[possibilityIndex].risk[mttrIndex];
-          console.log(`Setting: ${this.selectedSetting}, MTTR: ${this.mttr}, Possibility: ${this.possibility}, MTTR Index: ${mttrIndex}, Possibility Index: ${possibilityIndex}, RiskText: ${riskText}`);
-          console.log('RiskMatrix at this position:', this.riskMatrix[possibilityIndex].risk);
-          this.riskText = this.mapRiskText(riskText);
-        } else {
-          console.error('Invalid risk matrix index:', { mttrIndex, possibilityIndex });
-          this.riskText = '';
+        };
+  
+        const line = d3
+          .line()
+          .x((d) => xScale(d.x))
+          .y((d) => yScale(d.y))
+          .curve(d3.curveBasis);
+  
+        // グラフを更新するメソッド
+        const updateChart = () => {
+          svg.selectAll('.line-path').remove();
+          svg.selectAll('.axis').remove();
+          svg.selectAll('.control-point').remove();
+  
+          updateRiskMatrixColors();
+          drawRiskMatrix();
+  
+          const dataWithControl = [this.data[0], this.controlPoint, this.data[2]];
+  
+          svg.append('path').datum(dataWithControl).attr('class', 'line-path').attr('fill', 'none').attr('stroke', 'steelblue').attr('stroke-width', 1.5).attr('d', line);
+  
+          svg.append('g')
+            .attr('class', 'axis')
+            .attr('transform', `translate(0,${height})`)
+            .call(
+              d3
+                .axisBottom(xScale)
+                .tickPadding(15)
+                .tickFormat((d) => d.toString())
+            );
+  
+          svg.append('g')
+            .attr('class', 'axis')
+            .call(
+              d3
+                .axisLeft(yScale)
+                .tickPadding(15)
+                .tickFormat((d) => d.toString())
+            );
+  
+          svg.append('g')
+            .attr('class', 'axis')
+            .attr('transform', `translate(${-60},0)`)
+            .call(
+              d3
+                .axisLeft(yScaleLeft)
+                .tickPadding(15)
+                .tickFormat((d) => d.toString())
+            );
+  
+          svg.append('text')
+            .attr('transform', 'rotate(-90)')
+            .attr('y', 0 - margin.left + 60)
+            .attr('x', 0 - height / 2)
+            .attr('dy', '1em')
+            .style('text-anchor', 'middle')
+            .text('Number of PM04 occurrences in the past 5 years');
+  
+          svg.append('text')
+            .attr('transform', 'rotate(-90)')
+            .attr('y', 0 - margin.left + 100)
+            .attr('x', 0 - height / 2)
+            .attr('dy', '1em')
+            .style('text-anchor', 'middle')
+            .text('Number of PM03 occurrences in the past 5 years');
+  
+          svg.append('text')
+            .attr('x', width / 2)
+            .attr('y', height + margin.bottom)
+            .attr('dy', '-0.5em')
+            .style('text-anchor', 'middle')
+            .text('Time of occurrence on PM02');
+  
+          svg.selectAll('circle')
+            .data([this.controlPoint])
+            .enter()
+            .append('circle')
+            .attr('class', 'control-point')
+            .attr('cx', (d) => xScale(d.x))
+            .attr('cy', (d) => yScale(d.y))
+            .attr('r', 5)
+            .attr('fill', 'red')
+            .call(
+              d3
+                .drag()
+                .on('start', function (event) {
+                  d3.select(this).raise().attr('stroke', 'black');
+                })
+                .on('drag', (event, d) => {
+                  const invertX = Math.max(0, Math.min(width, event.x));
+                  const closestX = [0, 1, 2, 3, 4, 5, 6].reduce((prev, curr) => (Math.abs(xScale(curr) - invertX) < Math.abs(xScale(prev) - invertX) ? curr : prev));
+                  const invertY = Math.max(0, Math.min(height, event.y));
+                  const closestY = [0, 2, 3, 4, 5, 6, 7].reduce((prev, curr) => (Math.abs(yScale(curr) - invertY) < Math.abs(yScale(prev) - invertY) ? curr : prev));
+                  d.x = closestX;
+                  d.y = closestY;
+                  this.controlPoint = { x: d.x, y: d.y };
+                  updateChart();
+                  this.updateRiskText();
+                })
+                .on('end', function (event) {
+                  d3.select(this).attr('stroke', null);
+                })
+            );
+        };
+  
+        updateChart();
+      },
+  
+      // コントロールポイントを保存するメソッド
+      saveControlPoint() {
+        this.savedControlPoints[1] = { ...this.controlPoint };
+      },
+  
+      // コントロールポイントを初期値にリセットするメソッド
+      resetToDefault() {
+        this.controlPoint = { x: 3, y: 4 };
+        this.saveControlPoint();
+        this.drawChart();
+      },
+  
+      // 入力値に基づいてリスクテキストを更新するメソッド
+      updateRiskText() {
+        const pm04Index = this.numPm04Occurrences !== null ? this.getPm04Index(this.numPm04Occurrences) : null;
+        const pm03Index = this.numPm03Occurrences !== null ? this.getPm03Index(this.numPm03Occurrences) : null;
+  
+        const selectedIndex = pm04Index !== null ? pm04Index : pm03Index;
+        const timeIndex = this.getIndex(this.timeOfOccurrence, [1, 2, 3, 4, 5]);
+  
+        const riskMatrix = this.riskMatrix;
+        const riskText = riskMatrix[selectedIndex]?.risk[timeIndex] ?? 'N/A';
+  
+        console.log(`Time of occurrence on PM02: ${this.timeOfOccurrence}, Number of PM03: ${this.numPm03Occurrences}, Number of PM04: ${this.numPm04Occurrences}`);
+        console.log(`Selected Index: ${selectedIndex}, Time Index: ${timeIndex}, Risk Text: ${riskText}`);
+        this.riskText = this.mapRiskText(riskText);
+      },
+  
+      // PM04の入力値に基づいてインデックスを取得するメソッド
+      getPm04Index(value) {
+        if (value >= 4) return 0;
+        if (value >= 3) return 1;
+        if (value >= 2) return 2;
+        if (value >= 1) return 3;
+        return 4;
+      },
+  
+      // PM03の入力値に基づいてインデックスを取得するメソッド
+      getPm03Index(value) {
+        return this.getIndex(value, [2, 3, 4, 5, 6, 7]);
+      },
+  
+      // 入力値に基づいてインデックスを取得するメソッド
+      getIndex(value, thresholds) {
+        for (let i = 0; i < thresholds.length; i++) {
+          if (value < thresholds[i]) {
+            return i;
+          }
         }
-      }
-    },
-    getSelectedRiskMatrix() {
-      switch (this.selectedSetting) {
-        case 1:
-          return this.riskMatrixLow;
-        case 2:
-          return this.riskMatrixMiddle;
-        case 3:
-          return this.riskMatrixHigh;
-        default:
-          return this.riskMatrixLow;
+        return thresholds.length;
+      },
+  
+      // リスクテキストをマッピングするメソッド
+      mapRiskText(riskText) {
+        const textMap = {
+          L: 'Review\nRequired',
+          LM: 'Appropriate',
+          M: 'Caution',
+          H: 'Consider\nMeasures',
+          VH: 'Measures\nRequired'
+        };
+        return textMap[riskText] || riskText;
       }
     }
+  };
+  </script>
+  
+  <style scoped>
+  .chart-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 400px;
+    margin-top: 40px; /* テーブルとチャート間のマージン */
   }
-};
-</script>
-
-<style scoped>
-.chart-container {
-  display: inline-block;
-  vertical-align: top;
-  width: 100%;
-  height: 400px;
-  margin-top: 40px;
-}
-
-.controls {
-  display: flex;
-  justify-content: space-around;
-}
-
-.settings {
-  display: inline-block;
-  vertical-align: top;
-  margin-right: 20px;
-  width: 30%;
-}
-
-.pointer-position {
-  margin-top: 10px;
-  font-size: 14px;
-}
-
-.VH {
-  background-color: #f90909;
-  font-weight: 550 !important;
-}
-
-.H {
-  background-color: #f99d09;
-  font-weight: 550 !important;
-}
-
-.M {
-  background-color: #f9d909;
-  height: 60px;
-  font-weight: 550 !important;
-}
-
-.L {
-  background-color: #4c7c04;
-  font-weight: 550 !important;
-}
-
-.risk-text {
-  font-size: 12px;
-  font-weight: bold;
-}
-</style>
+  
+  .controls {
+    display: inline-block;
+    vertical-align: top;
+    margin-right: 20px;
+  }
+  
+  .pointer-position {
+    margin-top: 10px;
+    font-size: 14px;
+  }
+  
+  .VH {
+    background-color: #f90909;
+    font-weight: 550 !important;
+  }
+  
+  .H {
+    background-color: #f99d09;
+    font-weight: 550 !important;
+  }
+  
+  .M {
+    background-color: #f9d909;
+    height: 60px;
+    font-weight: 550 !important;
+  }
+  
+  .LM {
+    background-color: #a0d070;
+    font-weight: 550 !important;
+  }
+  
+  .L {
+    background-color: #4c7c04;
+    font-weight: 550 !important;
+  }
+  
+  .risk-text {
+    font-size: 8px; /* フォントサイズを小さく変更 */
+    font-weight: bold;
+    white-space: pre-line; /* 改行を有効にする */
+    text-align: center; /* テキストを中央揃えにする */
+  }
+  </style>
+  
