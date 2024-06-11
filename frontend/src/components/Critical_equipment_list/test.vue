@@ -1,22 +1,26 @@
 <template>
   <div>
-    <RiskMatrix_impact :inputData="emittedData" @update-risk-texts="updateImpactForProduction" />
-    <CriticalEquipmentList @data-emitted="handleDataEmitted" ref="equipmentList" />
+    <RiskMatrixImpact :inputData="emittedData" @update-risk-texts="updateImpactForProduction" />
+    <RiskMatrixPossibility :inputData="emittedData" @update-risk-texts="handleRiskTexts" />
+    <CriticalEquipmentList :riskTexts="riskTexts" @data-emitted="handleDataEmitted" ref="equipmentList" />
   </div>
 </template>
 
 <script>
 import CriticalEquipmentList from './CriticalEquipmentList.vue';
-import RiskMatrix from './Risk_Matrix_impact_for_productionOnlyMatrix.vue';
+import RiskMatrixImpact from './Risk_Matrix_impact_for_productionOnlyMatrix.vue';
+import RiskMatrixPossibility from './Risk_matrix_possibility_Of_FailureOnlyMatrix.vue';
 
 export default {
   components: {
     CriticalEquipmentList,
-    RiskMatrix
+    RiskMatrixImpact,
+    RiskMatrixPossibility
   },
   data() {
     return {
-      emittedData: []
+      emittedData: [],
+      riskTexts: [] // 新たに追加
     };
   },
   methods: {
@@ -29,6 +33,11 @@ export default {
       riskTexts.forEach((impactForProduction, index) => {
         this.$refs.equipmentList.updateImpactForProduction({ index, impactForProduction });
       });
+    },
+    handleRiskTexts(data) {
+      console.log('Received Risk Texts:', data);
+      this.riskTexts.push(data);
+      this.$refs.equipmentList.updateProbabilityOfFailure(data);
     }
   }
 };

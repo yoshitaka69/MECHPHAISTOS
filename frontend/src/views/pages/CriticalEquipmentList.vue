@@ -57,6 +57,15 @@ function customRendererForProbability(instance, td, row, col, prop, value, cellP
       case '見直検討':
         td.style.backgroundColor = '#00B050';
         break;
+      case 'Caution':
+        td.style.backgroundColor = '#f9d909';
+        break;
+      case 'Consider Measures':
+        td.style.backgroundColor = '#f99d09';
+        break;
+      case 'Measures Required':
+        td.style.backgroundColor = '#f90909';
+        break;
     }
   }
 }
@@ -116,6 +125,22 @@ function customRendererForMttr(instance, td, row, col, prop, value, cellProperti
 }
 
 const CriticalEquipmentList = defineComponent({
+  props: {
+    riskTexts: {
+      type: Array,
+      required: true
+    }
+  },
+  watch: {
+    riskTexts: {
+      handler(newVal) {
+        newVal.forEach(({ index, probabilityOfFailure }) => {
+          this.updateProbabilityOfFailure({ index, probabilityOfFailure });
+        });
+      },
+      immediate: true
+    }
+  },
   data() {
     return {
       hotSettings: {
@@ -157,7 +182,7 @@ const CriticalEquipmentList = defineComponent({
           { data: "countOfPM04", width: 100, className: 'htRight', type: 'numeric' },
           { data: "latestPM04", width: 100, className: 'htRight', type: 'date', dateFormat: 'YYYY-MM-DD', correctFormat: false },
           { data: "impactForProduction", renderer: customRenderer, width: 100, className: 'htCenter', readOnly: true },
-          { data: "probabilityOfFailure", renderer: customRendererForProbability, width: 100, className: 'htCenter', readOnly: true },
+          { data: "probabilityOfFailure", renderer: customRendererForProbability, width: 100, className: 'htCenter', readOnly: false },
           { data: "assessment", renderer: customRendererForAssessment, readOnly: true, width: 100, className: 'htCenter' },
           { data: "typicalTaskName", type: "text" },
           { data: "typicalTaskCost", type: 'numeric' },
@@ -294,7 +319,12 @@ const CriticalEquipmentList = defineComponent({
 
     updateProbabilityOfFailure({ index, probabilityOfFailure }) {
       console.log(`Updating probabilityOfFailure at row ${index} with value ${probabilityOfFailure}`);
-      this.$refs.hotTableComponent.hotInstance.setDataAtCell(index, 16, probabilityOfFailure);
+
+      if (typeof index === 'number' && index >= 0) { // indexが正の整数であることを確認
+        this.$refs.hotTableComponent.hotInstance.setDataAtCell(index, 16, probabilityOfFailure);
+      } else {
+        console.error('Invalid index value:', index);
+      }
     }
   },
 

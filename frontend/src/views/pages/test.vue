@@ -1,8 +1,8 @@
 <template>
   <div>
     <RiskMatrixImpact :inputData="emittedData" @update-risk-texts="updateImpactForProduction" />
-    <RiskMatrixPossibility :inputData="emittedData" @update-risk-texts="updateProbabilityOfFailure" />
-    <CriticalEquipmentList @data-emitted="handleDataEmitted" ref="equipmentList" />
+    <RiskMatrixPossibility :inputData="emittedData" @update-risk-texts="handleRiskTexts" />
+    <CriticalEquipmentList :riskTexts="riskTexts" @data-emitted="handleDataEmitted" ref="equipmentList" />
   </div>
 </template>
 
@@ -19,7 +19,8 @@ export default {
   },
   data() {
     return {
-      emittedData: []
+      emittedData: [],
+      riskTexts: [] // 新たに追加
     };
   },
   methods: {
@@ -33,9 +34,10 @@ export default {
         this.$refs.equipmentList.updateImpactForProduction({ index, impactForProduction });
       });
     },
-    updateProbabilityOfFailure(probabilityOfFailure, index) {
-      console.log(`Updating probabilityOfFailure at row ${index} with value ${probabilityOfFailure}`);
-      this.$refs.equipmentList.updateProbabilityOfFailure({ index, probabilityOfFailure });
+    handleRiskTexts(data) {
+      console.log('Received Risk Texts:', data);
+      this.riskTexts.push(data);
+      this.$refs.equipmentList.updateProbabilityOfFailure(data);
     }
   }
 };

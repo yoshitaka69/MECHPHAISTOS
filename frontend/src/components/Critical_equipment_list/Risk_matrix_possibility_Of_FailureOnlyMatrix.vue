@@ -1,21 +1,5 @@
 <template>
   <div>
-    <div>
-      <label>Time of occurrence on PM02:
-        <input type="number" v-model.number="timeOfOccurrence" />
-      </label>
-    </div>
-    <div>
-      <label>Number of PM03 occurrences in the past 5 years:
-        <input type="number" v-model.number="numPm03Occurrences" />
-      </label>
-    </div>
-    <div>
-      <label>Number of PM04 occurrences in the past 5 years:
-        <input type="number" v-model.number="numPm04Occurrences" />
-      </label>
-    </div>
-    <p>リスクテキスト: {{ riskText }}</p>
     <div class="controls">
       <button @click="saveControlPoint">保存</button>
       <button @click="resetToDefault">初期値</button>
@@ -32,6 +16,12 @@ import * as d3 from 'd3';
 
 export default {
   name: 'RiskMatrixPossibilityOfFailureOnlyMatrix',
+  props: {
+    inputData: {
+      type: Array,
+      required: true
+    }
+  },
   data() {
     return {
       data: [
@@ -56,7 +46,7 @@ export default {
         { likelihood: 3, description: 'Rare', risk: ['L', 'L', 'L', 'M', 'H', 'VH'] },
         { likelihood: 2, description: 'Very rare', risk: ['L', 'L', 'L', 'L', 'M', 'H'] }
       ],
-      riskClasses: ['Review Required', 'Appropriate', 'Caution', 'Consider Measures', 'Measures Required'],
+      riskClasses: ['Review', 'Appropriate', 'Caution', 'Measures', 'Danger'],
       savedControlPoints: {
         1: { x: 3, y: 4 },
         2: { x: 3, y: 4 },
@@ -70,14 +60,18 @@ export default {
     };
   },
   watch: {
-    timeOfOccurrence() {
-      this.updateRiskText();
-    },
-    numPm03Occurrences() {
-      this.updateRiskText();
-    },
-    numPm04Occurrences() {
-      this.updateRiskText();
+    inputData: {
+      handler(newVal) {
+        if (newVal.length > 0) {
+          newVal.forEach((item, index) => {
+            this.timeOfOccurrence = item.countOfPM02;
+            this.numPm03Occurrences = item.countOfPM03;
+            this.numPm04Occurrences = item.countOfPM04;
+            this.updateRiskText(index);
+          });
+        }
+      },
+      immediate: true
     }
   },
   mounted() {
@@ -116,11 +110,11 @@ export default {
       };
 
       const riskTextMap = {
-        L: 'Review Required',
+        L: 'Review',
         LM: 'Appropriate',
         M: 'Caution',
-        H: 'Consider Measures',
-        VH: 'Measures Required'
+        H: 'Measures',
+        VH: 'Danger'
       };
 
       const updateRiskMatrixColors = () => {
@@ -175,7 +169,7 @@ export default {
                 .attr('dy', `${index * 10}px`)
                 .text(line)
                 .attr('fill', '#000')
-                .style('font-size', '8px'); /* フォントサイズを小さく変更 */
+                .style('font-size', '10px'); /* フォントサイズを小さく変更 */
             });
           });
         });
@@ -305,33 +299,74 @@ export default {
       }
       return thresholds.length;
     },
-    updateRiskText() {
-      const pm04Index = this.numPm04Occurrences !== null && this.numPm04Occurrences >= 1 ? this.getIndex(this.numPm04Occurrences, [1, 2, 3, 4, 5]) : null;
-      const pm03Index = pm04Index === null ? this.getIndex(this.numPm03Occurrences, [1, 2, 3, 4, 5]) : null;
+    updateRiskText(index) {
+      const pm04Index = this.getPm04Index(this.numPm04Occurrences);
+      const pm03Index = this.getPm03Index(this.numPm03Occurrences, pm04Index);
       const timeIndex = this.getIndex(this.timeOfOccurrence, [1, 2, 3, 4, 5]);
 
       const selectedIndex = pm04Index !== null ? pm04Index : pm03Index;
 
-      const riskMatrix = this.riskMatrix;
-      const riskText = riskMatrix[selectedIndex]?.risk[timeIndex] ?? 'N/A';
+      let riskText = '';
+      if (selectedIndex === null || timeIndex === null) {
+        riskText = '';
+      } else {
+        const riskMatrix = this.riskMatrix;
+        riskText = riskMatrix[selectedIndex]?.risk[timeIndex] ?? '';
+      }
 
       console.log(`Time of occurrence on PM02: ${this.timeOfOccurrence}, Number of PM03: ${this.numPm03Occurrences}, Number of PM04: ${this.numPm04Occurrences}`);
       console.log(`Selected Index: ${selectedIndex}, Time Index: ${timeIndex}, Risk Text: ${riskText}`);
       this.riskText = this.mapRiskText(riskText);
+      console.log(`Emitting risk text to parent: { index: ${index}, probabilityOfFailure: ${this.riskText} }`);
+      this.$emit('update-risk-texts', { index, probabilityOfFailure: this.riskText }); // 親にテキストを渡す
+    },
+    getPm04Index(value) {
+      if (value === null || value <= 0) {
+        return null;
+      } else if (value >= 1 && value < 2) {
+        return 3;
+      } else if (value >= 2 && value < 3) {
+        return 2;
+      } else if (value >= 3 && value < 4) {
+        return 1;
+      } else if (value >= 4) {
+        return 0;
+      }
+    },
+    getPm03Index(value, pm04Index) {
+      if (value === null || value <= 0 || pm04Index !== null) {
+        return null;
+      } else if (value < 2) {
+        return 5;
+      } else if (value >= 2 && value < 3) {
+        return 4;
+      } else if (value >= 3 && value < 4) {
+        return 3;
+      } else if (value >= 4 && value < 5) {
+        return 2;
+      } else if (value >= 5 && value < 6) {
+        return 1;
+      } else if (value >= 6) {
+        return 0;
+      }
     },
     mapRiskText(riskText) {
       const textMap = {
-        L: 'Review Required',
+        L: 'Review',
         LM: 'Appropriate',
         M: 'Caution',
-        H: 'Consider Measures',
-        VH: 'Measures Required'
+        H: 'Measures',
+        VH: 'Danger'
       };
       return textMap[riskText] || riskText;
     }
   }
 };
 </script>
+
+
+
+
 
 <style scoped>
 .chart-container {

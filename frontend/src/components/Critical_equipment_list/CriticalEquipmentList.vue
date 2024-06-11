@@ -57,6 +57,15 @@ function customRendererForProbability(instance, td, row, col, prop, value, cellP
       case '見直検討':
         td.style.backgroundColor = '#00B050';
         break;
+      case 'Caution':
+        td.style.backgroundColor = '#f9d909';
+        break;
+      case 'Consider Measures':
+        td.style.backgroundColor = '#f99d09';
+        break;
+      case 'Measures Required':
+        td.style.backgroundColor = '#f90909';
+        break;
     }
   }
 }
@@ -96,7 +105,6 @@ function customRendererForSituation(instance, td, row, col, prop, value, cellPro
   }
 }
 
-
 function customRendererForMttr(instance, td, row, col, prop, value, cellProperties) {
   if (td) {
     Handsontable.renderers.TextRenderer.apply(this, arguments);
@@ -117,6 +125,22 @@ function customRendererForMttr(instance, td, row, col, prop, value, cellProperti
 }
 
 const CriticalEquipmentList = defineComponent({
+  props: {
+    riskTexts: {
+      type: Array,
+      required: true
+    }
+  },
+  watch: {
+    riskTexts: {
+      handler(newVal) {
+        newVal.forEach(({ index, probabilityOfFailure }) => {
+          this.updateProbabilityOfFailure({ index, probabilityOfFailure });
+        });
+      },
+      immediate: true
+    }
+  },
   data() {
     return {
       hotSettings: {
@@ -158,7 +182,7 @@ const CriticalEquipmentList = defineComponent({
           { data: "countOfPM04", width: 100, className: 'htRight', type: 'numeric' },
           { data: "latestPM04", width: 100, className: 'htRight', type: 'date', dateFormat: 'YYYY-MM-DD', correctFormat: false },
           { data: "impactForProduction", renderer: customRenderer, width: 100, className: 'htCenter', readOnly: true },
-          { data: "probabilityOfFailure", renderer: customRendererForProbability, width: 100, className: 'htCenter', readOnly: true },
+          { data: "probabilityOfFailure", renderer: customRendererForProbability, width: 100, className: 'htCenter', readOnly: false },
           { data: "assessment", renderer: customRendererForAssessment, readOnly: true, width: 100, className: 'htCenter' },
           { data: "typicalTaskName", type: "text" },
           { data: "typicalTaskCost", type: 'numeric' },
@@ -269,26 +293,38 @@ const CriticalEquipmentList = defineComponent({
     },
 
     emitData() {
-  const hotInstance = this.$refs.hotTableComponent.hotInstance;
-  const rows = hotInstance.countRows();
-  const emittedData = [];
+      const hotInstance = this.$refs.hotTableComponent.hotInstance;
+      const rows = hotInstance.countRows();
+      const emittedData = [];
 
-  for (let row = 0; row < rows; row++) {
-    const levelSetValue = hotInstance.getDataAtCell(row, 4); // levelSetValueの値を取得
-    const mttr = customRendererForMttr(hotInstance, null, row, 7); // MTTRの値を取得するためにcustomRendererForMttrを呼び出す
-    const possibilityOfContinuousProduction = hotInstance.getDataAtCell(row, 8); // possibilityOfContinuousProductionの値を取得
+      for (let row = 0; row < rows; row++) {
+        const levelSetValue = hotInstance.getDataAtCell(row, 4); // levelSetValueの値を取得
+        const mttr = customRendererForMttr(hotInstance, null, row, 7); // MTTRの値を取得するためにcustomRendererForMttrを呼び出す
+        const possibilityOfContinuousProduction = hotInstance.getDataAtCell(row, 8); // possibilityOfContinuousProductionの値を取得
+        const countOfPM02 = hotInstance.getDataAtCell(row, 9); // countOfPM02の値を取得
+        const countOfPM03 = hotInstance.getDataAtCell(row, 11); // countOfPM03の値を取得
+        const countOfPM04 = hotInstance.getDataAtCell(row, 13); // countOfPM04の値を取得
 
-    emittedData.push({ levelSetValue, mttr, possibilityOfContinuousProduction });
-  }
+        emittedData.push({ levelSetValue, mttr, possibilityOfContinuousProduction, countOfPM02, countOfPM03, countOfPM04 });
+      }
 
-  console.log('Emitting Data:', emittedData);
-  this.$emit('data-emitted', emittedData);
-},
-
+      console.log('Emitting Data:', emittedData);
+      this.$emit('data-emitted', emittedData);
+    },
 
     updateImpactForProduction({ index, impactForProduction }) {
       console.log(`Updating impactForProduction at row ${index} with value ${impactForProduction}`);
       this.$refs.hotTableComponent.hotInstance.setDataAtCell(index, 15, impactForProduction);
+    },
+
+    updateProbabilityOfFailure({ index, probabilityOfFailure }) {
+      console.log(`Updating probabilityOfFailure at row ${index} with value ${probabilityOfFailure}`);
+
+      if (typeof index === 'number' && index >= 0) { // indexが正の整数であることを確認
+        this.$refs.hotTableComponent.hotInstance.setDataAtCell(index, 16, probabilityOfFailure);
+      } else {
+        console.error('Invalid index value:', index);
+      }
     }
   },
 
