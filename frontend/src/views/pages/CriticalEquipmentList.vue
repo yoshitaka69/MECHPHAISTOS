@@ -96,7 +96,6 @@ function customRendererForSituation(instance, td, row, col, prop, value, cellPro
   }
 }
 
-
 function customRendererForMttr(instance, td, row, col, prop, value, cellProperties) {
   if (td) {
     Handsontable.renderers.TextRenderer.apply(this, arguments);
@@ -269,26 +268,33 @@ const CriticalEquipmentList = defineComponent({
     },
 
     emitData() {
-  const hotInstance = this.$refs.hotTableComponent.hotInstance;
-  const rows = hotInstance.countRows();
-  const emittedData = [];
+      const hotInstance = this.$refs.hotTableComponent.hotInstance;
+      const rows = hotInstance.countRows();
+      const emittedData = [];
 
-  for (let row = 0; row < rows; row++) {
-    const levelSetValue = hotInstance.getDataAtCell(row, 4); // levelSetValueの値を取得
-    const mttr = customRendererForMttr(hotInstance, null, row, 7); // MTTRの値を取得するためにcustomRendererForMttrを呼び出す
-    const possibilityOfContinuousProduction = hotInstance.getDataAtCell(row, 8); // possibilityOfContinuousProductionの値を取得
+      for (let row = 0; row < rows; row++) {
+        const levelSetValue = hotInstance.getDataAtCell(row, 4); // levelSetValueの値を取得
+        const mttr = customRendererForMttr(hotInstance, null, row, 7); // MTTRの値を取得するためにcustomRendererForMttrを呼び出す
+        const possibilityOfContinuousProduction = hotInstance.getDataAtCell(row, 8); // possibilityOfContinuousProductionの値を取得
+        const countOfPM02 = hotInstance.getDataAtCell(row, 9); // countOfPM02の値を取得
+        const countOfPM03 = hotInstance.getDataAtCell(row, 11); // countOfPM03の値を取得
+        const countOfPM04 = hotInstance.getDataAtCell(row, 13); // countOfPM04の値を取得
 
-    emittedData.push({ levelSetValue, mttr, possibilityOfContinuousProduction });
-  }
+        emittedData.push({ levelSetValue, mttr, possibilityOfContinuousProduction, countOfPM02, countOfPM03, countOfPM04 });
+      }
 
-  console.log('Emitting Data:', emittedData);
-  this.$emit('data-emitted', emittedData);
-},
-
+      console.log('Emitting Data:', emittedData);
+      this.$emit('data-emitted', emittedData);
+    },
 
     updateImpactForProduction({ index, impactForProduction }) {
       console.log(`Updating impactForProduction at row ${index} with value ${impactForProduction}`);
       this.$refs.hotTableComponent.hotInstance.setDataAtCell(index, 15, impactForProduction);
+    },
+
+    updateProbabilityOfFailure({ index, probabilityOfFailure }) {
+      console.log(`Updating probabilityOfFailure at row ${index} with value ${probabilityOfFailure}`);
+      this.$refs.hotTableComponent.hotInstance.setDataAtCell(index, 16, probabilityOfFailure);
     }
   },
 

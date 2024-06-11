@@ -32,6 +32,12 @@ import * as d3 from 'd3';
 
 export default {
   name: 'RiskMatrixPossibilityOfFailureOnlyMatrix',
+  props: {
+    inputData: {
+      type: Array,
+      required: true
+    }
+  },
   data() {
     return {
       data: [
@@ -70,14 +76,29 @@ export default {
     };
   },
   watch: {
+    inputData: {
+      handler(newVal) {
+        if (newVal.length > 0) {
+          this.timeOfOccurrence = newVal[0].countOfPM02;
+          this.numPm03Occurrences = newVal[0].countOfPM03;
+          this.numPm04Occurrences = newVal[0].countOfPM04;
+          this.updateRiskText();
+          this.emitRiskText();
+        }
+      },
+      immediate: true
+    },
     timeOfOccurrence() {
       this.updateRiskText();
+      this.emitRiskText();
     },
     numPm03Occurrences() {
       this.updateRiskText();
+      this.emitRiskText();
     },
     numPm04Occurrences() {
       this.updateRiskText();
+      this.emitRiskText();
     }
   },
   mounted() {
@@ -276,6 +297,7 @@ export default {
                 this.controlPoint = { x: d.x, y: d.y };
                 updateChart();
                 this.updateRiskText();
+                this.emitRiskText();
               })
               .on('end', function (event) {
                 d3.select(this).attr('stroke', null);
@@ -328,6 +350,9 @@ export default {
         VH: 'Measures Required'
       };
       return textMap[riskText] || riskText;
+    },
+    emitRiskText() {
+      this.$emit('update-risk-texts', this.riskText);
     }
   }
 };

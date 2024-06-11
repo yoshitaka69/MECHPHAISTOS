@@ -1,6 +1,6 @@
 <template>
   <div>
-    <RiskMatrix :inputData="emittedData" @update-risk-texts="updateImpactForProduction" />
+    <RiskMatrix_impact :inputData="emittedData" @update-risk-texts="updateImpactForProduction" />
     <CriticalEquipmentList @data-emitted="handleDataEmitted" ref="equipmentList" />
   </div>
 </template>
