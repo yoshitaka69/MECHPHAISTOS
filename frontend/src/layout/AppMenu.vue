@@ -10,6 +10,7 @@ const model = ref([
             { label: 'What is MECHPHAISTOS', icon: 'pi pi-fw pi-home', to: '/about' },
             { label: 'NEWS', icon: 'pi pi-fw pi-home', to: '/news' },
             { label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/' },
+            { label: 'Maintenance Optimization', icon: 'pi pi-fw pi-home', to: '/Maintenance_optimization' },
             { label: 'Input Form', icon: 'pi pi-fw pi-home', to: '/input_form' },
             ],
     },

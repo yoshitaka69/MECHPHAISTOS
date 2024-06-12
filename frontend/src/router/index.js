@@ -19,6 +19,11 @@ const router = createRouter({
 					component: () => import('../views/Dashboard.vue')
 				},
 				{
+					path: '/Maintenance_optimization',
+					name:'Maintenance_optimization',
+					component: () => import('../views/pages/Maintenance_optimization.vue')
+				},
+				{
 					path: '/news',
 					name:'News',
 					component: () => import('../views/pages/News.vue')
