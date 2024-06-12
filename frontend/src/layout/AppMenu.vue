@@ -18,6 +18,7 @@ const model = ref([
         items: [
             { label: 'Critical equipment list', icon: 'pi pi-fw pi-id-card', to: '/critical_equipment_list' },
             { label: 'Repairing cost', icon: 'pi pi-fw pi-check-square', to: '/repairing_cost' },
+            { label: 'Prediction&Estimate', icon: 'pi pi-fw pi-bookmark', to: '/Prediction&Estimate' },
             { label: 'Safety', icon: 'pi pi-fw pi-bookmark', to: '/Safety' },
             { label: 'Spare_parts', icon: 'pi pi-fw pi-exclamation-circle', to: '/spare_parts' },
             { label: 'Communications',icon: 'pi pi-fw pi-exclamation-circle', 
@@ -29,6 +30,11 @@ const model = ref([
               items:[
                 {label:'Calendar',icon:'pi pi-fw pi-bookmark', to: '/schedule/calendar'},
                 {label:'Ganttchart',icon:'pi pi-fw pi-bookmark', to: '/schedule/ganttchart'},
+              ]
+            },
+            { label: 'Working Report',icon: 'pi pi-fw pi-exclamation-circle', 
+              items:[
+                {label:'Maintenance Report',icon:'pi pi-fw pi-bookmark', to: '/workingReport/maintenance_Report'},
               ]
             },
             { label: 'SCADA', icon: 'pi pi-fw pi-list', to: '/scada' },

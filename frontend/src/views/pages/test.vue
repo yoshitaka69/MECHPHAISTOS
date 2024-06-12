@@ -1,139 +1,180 @@
 <template>
-  <div class="report-container">
-    <div class="header">
-      <h1>作業報告書</h1>
-    </div>
-    <form @submit.prevent="handleSubmit" class="report-form">
+  <div>
+    <h1>Summed Planned Cost Optimization</h1>
+    <form @submit.prevent="optimize">
       <div>
-        <label for="date">日付:</label>
-        <input type="date" v-model="form.date" required />
+        <label for="failureProb">Failure Probability:</label>
+        <input id="failureProb" v-model.number="failureProb" type="number" step="0.01" min="0" max="1" required>
       </div>
       <div>
-        <label for="equipment_number">設備番号:</label>
-        <input type="text" v-model="form.equipment_number" required />
+        <label for="repairCost">Repair Cost:</label>
+        <input id="repairCost" v-model.number="repairCost" type="number" step="0.01" required>
       </div>
       <div>
-        <label for="task_number">タスク番号:</label>
-        <input type="text" v-model="form.task_number" required />
+        <label for="impact">Impact of Failure:</label>
+        <input id="impact" v-model.number="impact" type="number" step="0.01" required>
       </div>
-      <div>
-        <label for="image">画像登録:</label>
-        <input type="file" @change="handleImageUpload" required />
-      </div>
-      <div>
-        <label for="description">概要説明:</label>
-        <textarea v-model="form.description" required></textarea>
-      </div>
-      <div class="form-actions">
-        <button type="submit">保存</button>
-        <button type="button" @click="handleCancel">キャンセル</button>
-      </div>
+      <button type="submit">Run Bayesian Optimization</button>
     </form>
-    <button @click="generatePDF" class="pdf-button">PDF出力</button>
-    <div class="footer">
-      <p>Footer Content</p>
-    </div>
+    <div id="graph"></div>
   </div>
 </template>
 
 <script>
 import axios from 'axios';
+import Plotly from 'plotly.js-dist-min';
+import { useUserStore } from '@/stores/userStore'; // ストアのパスに応じて適宜変更してください
+import { computed, ref, onMounted } from 'vue';
 
 export default {
-  data() {
-    return {
-      form: {
-        date: '',
-        equipment_number: '',
-        task_number: '',
-        image: null,
-        description: ''
+  setup() {
+    const userStore = useUserStore();
+    const companyCode = computed(() => userStore.companyCode);
+    const year = new Date().getFullYear();
+    const graphData = ref(null);
+    const optimizedData = ref(null);
+
+    const failureProb = ref(0.1); // 初期値を適当に設定
+    const repairCost = ref(1000); // 初期値を適当に設定
+    const impact = ref(10); // 初期値を適当に設定
+
+    onMounted(() => {
+      fetchData();
+    });
+
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('http://127.0.0.1:8000/api/calculation/summedPlannedCostByCompany/');
+        const data = response.data;
+        const companyData = data.find(item => item.companyCode === companyCode.value);
+        
+        if (companyData && companyData.summedPlannedCostList.length > 0) {
+          const costData = companyData.summedPlannedCostList.find(item => item.year === year);
+          if (costData) {
+            plotGraph(costData, 'Planned vs Optimized Costs');
+            graphData.value = costData;
+          } else {
+            console.error(`No data found for the specified company code and year ${year}.`);
+          }
+        } else {
+          console.error('No data found for the specified company code.');
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
       }
     };
-  },
-  methods: {
-    handleImageUpload(event) {
-      this.form.image = event.target.files[0];
-    },
-    handleSubmit() {
-      const formData = new FormData();
-      formData.append('date', this.form.date);
-      formData.append('equipment_number', this.form.equipment_number);
-      formData.append('task_number', this.form.task_number);
-      formData.append('image', this.form.image);
-      formData.append('description', this.form.description);
 
-      axios.post('/api/reports/', formData)
-        .then(response => {
-          console.log(response.data);
-        })
-        .catch(error => {
-          console.error(error);
+    const plotGraph = (costData, title, optimizedData = null) => {
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const plannedCosts = [
+        parseFloat(costData.sumJan),
+        parseFloat(costData.sumFeb),
+        parseFloat(costData.sumMar),
+        parseFloat(costData.sumApr),
+        parseFloat(costData.sumMay),
+        parseFloat(costData.sumJun),
+        parseFloat(costData.sumJul),
+        parseFloat(costData.sumAug),
+        parseFloat(costData.sumSep),
+        parseFloat(costData.sumOct),
+        parseFloat(costData.sumNov),
+        parseFloat(costData.sumDec),
+      ];
+
+      const traces = [
+        {
+          x: months,
+          y: plannedCosts,
+          type: 'scatter',
+          mode: 'lines+markers',
+          name: 'Planned Costs',
+          marker: { color: 'blue' },
+        },
+      ];
+
+      if (optimizedData) {
+        const optimizedCosts = months.map(month => optimizedData[month]);
+
+        traces.push({
+          x: months,
+          y: optimizedCosts,
+          type: 'scatter',
+          mode: 'lines+markers',
+          name: 'Optimized Costs',
+          marker: { color: 'red' },
         });
-    },
-    handleCancel() {
-      this.form = {
-        date: '',
-        equipment_number: '',
-        task_number: '',
-        image: null,
-        description: ''
+
+        // 探索領域を色付け
+        const lowerBound = plannedCosts.map(cost => cost * 0.8); // 仮の下限値
+        const upperBound = plannedCosts.map(cost => cost * 1.2); // 仮の上限値
+
+        traces.push({
+          x: [...months, ...months.reverse()],
+          y: [...upperBound, ...lowerBound.reverse()],
+          fill: 'toself',
+          fillcolor: 'rgba(0, 100, 255, 0.2)',
+          line: { color: 'transparent' },
+          showlegend: false,
+        });
+      }
+
+      const layout = {
+        title: title,
+        xaxis: { title: 'Month' },
+        yaxis: { title: 'Cost (in units)' }
       };
-    },
-    generatePDF() {
-      // PDF生成のロジックをここに追加
-    }
+
+      Plotly.newPlot('graph', traces, layout);
+    };
+
+    const optimize = async () => {
+      if (graphData.value) {
+        try {
+          const response = await axios.post('http://127.0.0.1:8000/api/calculation/optimize-repair-cost/', {
+            companyCode: companyCode.value,
+            year: year,
+            failureProb: failureProb.value,
+            repairCost: repairCost.value,
+            impact: impact.value
+          });
+          console.log('Optimization result:', response.data);
+          optimizedData.value = response.data.optimized_costs;
+          plotGraph(graphData.value, 'Planned vs Optimized Costs', optimizedData.value);
+        } catch (error) {
+          console.error('Error during optimization:', error);
+        }
+      } else {
+        console.error('No data available to optimize.');
+      }
+    };
+
+    return {
+      companyCode,
+      year,
+      failureProb,
+      repairCost,
+      impact,
+      graphData,
+      optimizedData,
+      fetchData,
+      plotGraph,
+      optimize
+    };
   }
 };
 </script>
 
-
 <style scoped>
-.report-container {
-  width: 210mm; /* A4 width */
-  height: 297mm; /* A4 height */
-  padding: 20mm;
-  background-color: white;
-  border: 1px solid #ddd;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+form {
+  margin-bottom: 20px;
 }
 
-.header, .footer {
-  text-align: center;
-  padding: 10px;
-  background-color: #f7f7f7;
-  border-top: 1px solid #ddd;
-  border-bottom: 1px solid #ddd;
+form div {
+  margin-bottom: 10px;
 }
 
-.header {
-  border-bottom: none;
-}
-
-.footer {
-  border-top: none;
-}
-
-.report-form {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.report-form > div {
-  margin-bottom: 1em;
-}
-
-.form-actions {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.pdf-button {
-  align-self: flex-end;
-  margin-top: 20px;
+#graph {
+  width: 100%;
+  height: 500px;
 }
 </style>

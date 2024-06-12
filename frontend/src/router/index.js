@@ -44,6 +44,11 @@ const router = createRouter({
 					component: () => import('../views/pages/Safety.vue')
 				},
 				{
+					path: '/prediction&estimate',
+					name:'Prediction&Estimate',
+					component: () => import('../views/pages/Prediction&Estimate.vue')
+				},
+				{
 					path: '/spare_parts',
 					name:'Spare_parts',
 					component: () => import('../views/pages/Spare_parts/Spare_parts.vue')
@@ -81,6 +86,16 @@ const router = createRouter({
 					path: '/trend&demand',
 					name:'Trend&demand',
 					component: () => import('../views/pages/Trend&Demand.vue')
+				},
+				{
+					path: '/workingReport',
+					name:'Working_Report',
+					children:[
+						{
+							path: '/workingReport/maintenance_report',
+							component: () => import('../views/pages/Working_Report/maintenanceReport.vue')
+						},
+					]
 				},
 				{
 					path: '/settings',

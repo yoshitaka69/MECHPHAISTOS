@@ -4,12 +4,13 @@
             <div class="card card-solid">
                 <TabView v-model:activeIndex="activeIndex" @tab-change="onTabChange">
                     <TabPanel header="Critical equipment list">
-                        <p class="line-height-3 m-0">
-                            Critical Equipment List. This data is sample.
-                            <br />
-                            <br />
-                            <Critical_equipment_list />
-                        </p>
+                        <p class="line-height-3 m-0"></p>
+                        <div>
+                            <RiskMatrixImpact :inputData="emittedData" @update-risk-texts="updateImpactForProduction" />
+                            <RiskMatrixPossibility :inputData="emittedData" @update-risk-texts="handleRiskTexts" />
+                            <CriticalEquipmentList :riskTexts="riskTexts" @data-emitted="handleDataEmitted"
+                                ref="equipmentList" />
+                        </div>
                     </TabPanel>
                     <TabPanel header="Priority Tasks">
                         <div class="row">
@@ -44,32 +45,57 @@
 </template>
 
 <script>
-import Critical_equipment_list from '@/components/Critical_equipment_list/Critical_equipment_list.vue';
-import Assessment_rate from '@/components/Critical_equipment_list/Assessment_rate.vue';
+//first tab
+import CriticalEquipmentList from '@/components/Critical_equipment_list/CriticalEquipmentList.vue';
+import RiskMatrixImpact from '@/components/Risk_Matrix/Risk_Matrix_impact_for_productionOnlyMatrix.vue';
+import RiskMatrixPossibility from '@/components/Risk_Matrix/Risk_matrix_possibility_Of_FailureOnlyMatrix.vue';
 
+//second tab
+import Assessment_rate from '@/components/Critical_equipment_list/Assessment_rate.vue';
 import Top20_priority_task from '@/components/Critical_equipment_list/Top20_priority_task.vue';
 
+//third tab
 import Risk_Matrix_impact_for_production from '@/components/Risk_Matrix/Risk_Matrix_impact_for_production.vue';
 import Risk_matrix_possibility_Of_Failure from '@/components/Risk_Matrix/Risk_matrix_possibility_Of_Failure.vue';
 
 export default {
     components: {
-        Critical_equipment_list,
-        Assessment_rate,
+        CriticalEquipmentList,
+        RiskMatrixImpact,
+        RiskMatrixPossibility,
 
+        Assessment_rate,
         Top20_priority_task,
+
         Risk_Matrix_impact_for_production,
         Risk_matrix_possibility_Of_Failure
     },
     data() {
         return {
-            activeIndex: parseInt(localStorage.getItem('activeTabIndex')) || 0
+            activeIndex: parseInt(localStorage.getItem('activeTabIndex')) || 0,
+            emittedData: [],
+            riskTexts: [] // 新たに追加
         };
     },
     methods: {
         onTabChange(event) {
             this.activeIndex = event.index;
             localStorage.setItem('activeTabIndex', this.activeIndex);
+        },
+        handleDataEmitted(data) {
+            console.log('Emitted Data:', data);
+            this.emittedData = data;
+        },
+        updateImpactForProduction(riskTexts) {
+            console.log('Updated Risk Texts:', riskTexts);
+            riskTexts.forEach((impactForProduction, index) => {
+                this.$refs.equipmentList.updateImpactForProduction({ index, impactForProduction });
+            });
+        },
+        handleRiskTexts(data) {
+            console.log('Received Risk Texts:', data);
+            this.riskTexts.push(data);
+            this.$refs.equipmentList.updateProbabilityOfFailure(data);
         }
     }
 };
@@ -84,7 +110,8 @@ export default {
 .risk-matrix-container {
     display: flex;
     flex-direction: column;
-    gap: 40px; /* コンポーネント間の隙間 */
+    gap: 40px;
+    /* コンポーネント間の隙間 */
 }
 
 .risk-matrix-item {
