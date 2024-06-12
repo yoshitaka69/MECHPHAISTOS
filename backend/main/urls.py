@@ -22,4 +22,7 @@ urlpatterns = [
     path("api/", include('calculation.urls')),
     path("api/", include('agora.urls')),
     path("api/", include('workOrder.urls')),
+
+    path("api/", include('reliability.urls')),
+    
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

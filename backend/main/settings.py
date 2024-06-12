@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'agora',
     'workOrder',
     'benefit',
+    'reliability',
 ]
 
 

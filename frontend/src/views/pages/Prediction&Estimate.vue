@@ -6,6 +6,8 @@
             <TabPanel header="Breakdown Prediction">
               <p class="line-height-3 m-0"></p>
               <BathtubCurve />
+              <weibull_Distribution />
+              <Bayesian_estimation /> 
             </TabPanel>
             <TabPanel header="Cost Estimate">
               <p class="line-height-3 m-0"></p>
@@ -25,13 +27,20 @@
   </template>
   
   <script>
+  //first tab
   import BathtubCurve from '@/components/Breakdown_prediction/BathtubCurve.vue';
+  import Bayesian_estimation from '@/components/Breakdown_prediction/Bayesian_estimation.vue';
+  import weibull_Distribution from '@/components/Breakdown_prediction/Weibull_Distribution.vue';
+
+  //second tab
   import RepairCostPredictionChart from '@/components/Cost_Prediction/RepairCostPredictionChart.vue';
   import AnnualCostPredictionChart from '@/components/Cost_Prediction/AnnualCostPredictionChart.vue';
   
   export default {
     components: {
       BathtubCurve,
+      Bayesian_estimation,
+      weibull_Distribution,
       RepairCostPredictionChart,
       AnnualCostPredictionChart,
     },
