@@ -1,6 +1,6 @@
 from django.db import models
 
-class Image(models.Model):
+class ImageAnalysis(models.Model):
     image = models.ImageField(upload_to='images/')
     label = models.CharField(max_length=100, blank=True)
 

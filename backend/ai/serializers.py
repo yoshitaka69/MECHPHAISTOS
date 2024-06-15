@@ -1,7 +1,7 @@
 from rest_framework import serializers
-from .models import Image
+from .models import ImageAnalysis
 
-class ImageSerializer(serializers.ModelSerializer):
+class ImageAnalysisSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Image
+        model = ImageAnalysis
         fields = '__all__'

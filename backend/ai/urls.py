@@ -1,9 +1,9 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import ImageViewSet
+from .views import ImageAnalysisViewSet
 
 router = DefaultRouter()
-router.register(r'images', ImageViewSet)
+router.register(r'images', ImageAnalysisViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
