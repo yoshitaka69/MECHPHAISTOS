@@ -1,16 +1,21 @@
-"""
-ASGI config for main project.
 
-It exposes the ASGI callable as a module-level variable named ``application``.
+#DjangoはデフォルトでWSGI (Web Server Gateway Interface) を使用していますが、リアルタイム通信やWebSocketのような非同期機能をサポートするためにASGIが必要です。ASGIは非同期処理をサポートしており、チャットアプリケーションやリアルタイムデータフィードなどに適しています。
 
-For more information on this file, see
-https://docs.djangoproject.com/en/5.0/howto/deployment/asgi/
-"""
+
 
 import os
-
 from django.core.asgi import get_asgi_application
+from channels.routing import ProtocolTypeRouter, URLRouter
+from channels.auth import AuthMiddlewareStack
+import audio_recognition.routing
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "main.settings")
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'myproject.settings')
 
-application = get_asgi_application()
+application = ProtocolTypeRouter({
+    "http": get_asgi_application(),
+    "websocket": AuthMiddlewareStack(
+        URLRouter(
+            audio_recognition.routing.websocket_urlpatterns
+        )
+    ),
+})

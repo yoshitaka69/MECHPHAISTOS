@@ -9,6 +9,7 @@ const model = ref([
         items: [
             { label: 'What is MECHPHAISTOS', icon: 'pi pi-fw pi-home', to: '/about' },
             { label: 'NEWS', icon: 'pi pi-fw pi-home', to: '/news' },
+            { label: 'AI', icon: 'pi pi-fw pi-tablet', to: '/ai' },
             { label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/' },
             { label: 'Maintenance Optimization', icon: 'pi pi-fw pi-home', to: '/Maintenance_optimization' },
             { label: 'Input Form', icon: 'pi pi-fw pi-home', to: '/input_form' },
@@ -21,6 +22,7 @@ const model = ref([
             { label: 'Repairing cost', icon: 'pi pi-fw pi-check-square', to: '/repairing_cost' },
             { label: 'Prediction&Estimate', icon: 'pi pi-fw pi-bookmark', to: '/Prediction&Estimate' },
             { label: 'Safety', icon: 'pi pi-fw pi-bookmark', to: '/Safety' },
+            { label: 'Badactor management', icon: 'pi pi-fw pi-bookmark', to: '/badactor_management' },
             { label: 'Spare_parts', icon: 'pi pi-fw pi-exclamation-circle', to: '/spare_parts' },
             { label: 'Communications',icon: 'pi pi-fw pi-exclamation-circle', 
               items:[
@@ -36,12 +38,13 @@ const model = ref([
             { label: 'Working Report',icon: 'pi pi-fw pi-exclamation-circle', 
               items:[
                 {label:'Maintenance Report',icon:'pi pi-fw pi-bookmark', to: '/workingReport/maintenance_Report'},
+                {label:'Specsheet form',icon:'pi pi-fw pi-bookmark', to: '/workingReport/specsheet_form'},
               ]
             },
             { label: 'SCADA', icon: 'pi pi-fw pi-list', to: '/scada' },
             { label: 'Trend & Demand', icon: 'pi pi-fw pi-list', to: '/trend&demand' },
             { label: 'Work order', icon: 'pi pi-fw pi-share-alt', to: '/work_order' },
-            { label: 'AI', icon: 'pi pi-fw pi-tablet', to: '/ai' },
+            { label: 'Design', icon: 'pi pi-fw pi-image', to: '/design' },
             { label: 'Energy', icon: 'pi pi-fw pi-clone', to: '/energy' },
             { label: 'Benefit', icon: 'pi pi-fw pi-image', to: '/benefit' },
 
@@ -51,6 +54,7 @@ const model = ref([
         label: 'Utilities',
         items: [
             { label: 'How to use', icon: 'pi pi-fw pi-prime', to: '/how_to_use' },
+            { label: 'Handbook', icon: 'pi pi-fw pi-image', to: '/handbook' },
             { label: 'Settings', icon: 'pi pi-fw pi-circle', to: '/settings' }
         ]
     },

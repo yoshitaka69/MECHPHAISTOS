@@ -54,6 +54,11 @@ const router = createRouter({
 					component: () => import('../views/pages/Prediction&Estimate.vue')
 				},
 				{
+					path: '/badactor_management',
+					name:'Badactor_management',
+					component: () => import('../views/pages/Badactor_management.vue')
+				},
+				{
 					path: '/spare_parts',
 					name:'Spare_parts',
 					component: () => import('../views/pages/Spare_parts/Spare_parts.vue')
@@ -100,6 +105,10 @@ const router = createRouter({
 							path: '/workingReport/maintenance_report',
 							component: () => import('../views/pages/Working_Report/maintenanceReport.vue')
 						},
+						{
+							path: '/workingReport/specsheet_form',
+							component: () => import('../views/pages/Working_Report/Specsheet_form.vue')
+						},
 					]
 				},
 				{
@@ -131,6 +140,16 @@ const router = createRouter({
 					path: '/benefit',
 					name:'Benefit',
 					component: () => import('../views/pages/Benefit.vue')
+				},
+				{
+					path: '/design',
+					name:'Design',
+					component: () => import('../views/pages/Design.vue')
+				},
+				{
+					path: '/handbook',
+					name:'Handbook',
+					component: () => import('../views/pages/Handbook.vue')
 				},
 			]
 		},

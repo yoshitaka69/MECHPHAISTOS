@@ -24,5 +24,7 @@ urlpatterns = [
     path("api/", include('workOrder.urls')),
 
     path("api/", include('reliability.urls')),
+    path("api/", include('workingReport.urls')),
+    path("api/", include('audio_recognition.urls')),
     
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

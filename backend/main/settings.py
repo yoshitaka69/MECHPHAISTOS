@@ -1,5 +1,6 @@
 from pathlib import Path
 from datetime import timedelta
+import os
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -9,6 +10,50 @@ SECRET_KEY = "django-insecure-_qv0fxcogfc^1gxjyx)7_3u9b=c&l15$vlv1-^bmk%m&o5oxeq
 DEBUG = True
 
 ALLOWED_HOSTS = []
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'CRITICAL',  # ログレベルをCRITICALに設定
+            'class': 'logging.FileHandler',
+            #'class': 'logging.NullHandler',  # NullHandlerを使用してログを無効にする
+            'filename': os.path.join(BASE_DIR, 'debug.log'),
+            'formatter': 'verbose',
+        },
+    },
+    'root': {
+        'handlers': ['file'],
+        'level': 'CRITICAL',  # ログレベルをCRITICALに設定
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'CRITICAL',  # ログレベルをCRITICALに設定
+            'propagate': True,
+        },
+        'corsheaders': {
+            'handlers': ['file'],
+            'level': 'CRITICAL',  # ログレベルをCRITICALに設定
+            'propagate': True,
+        },
+    },
+}
+
+
+
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -36,6 +81,9 @@ INSTALLED_APPS = [
     'workOrder',
     'benefit',
     'reliability',
+    'workingReport',
+    'audio_recognition',
+    'channels',
 ]
 
 
@@ -90,7 +138,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:8001",
 ]
 
-CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_CREDENTIALS = True # 開発中はすべてのオリジンを許可しますが、本番環境ではセキュリティを考慮して設定する必要あり。
 
 CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:8000"]
 
@@ -170,16 +218,13 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
+ASGI_APPLICATION = 'myproject.asgi.application'
 
-LOGGING = {
-    'version': 1,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
         },
-    },
-    'root': {
-        'handlers': ['console'],
-        'level': 'INFO',
     },
 }
