@@ -68,6 +68,10 @@ const router = createRouter({
 					name:'Communications',
 					children:[
 						{
+							path: '/communications/minutes',
+							component: () => import('../views/pages/Communications/Minutes.vue')
+						},
+						{
 							path: '/communications/whiteboard',
 							component: () => import('../views/pages/Communications/Whiteboard.vue')
 						},
@@ -151,6 +155,7 @@ const router = createRouter({
 					name:'Handbook',
 					component: () => import('../views/pages/Handbook.vue')
 				},
+				
 			]
 		},
 		{

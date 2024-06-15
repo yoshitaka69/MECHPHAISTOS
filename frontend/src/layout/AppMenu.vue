@@ -26,6 +26,7 @@ const model = ref([
             { label: 'Spare_parts', icon: 'pi pi-fw pi-exclamation-circle', to: '/spare_parts' },
             { label: 'Communications',icon: 'pi pi-fw pi-exclamation-circle', 
               items:[
+                {label:'Minutes',icon:'pi pi-fw pi-bookmark', to: '/communications/minutes'},
                 {label:'Whiteboard',icon:'pi pi-fw pi-bookmark', to: '/communications/whiteboard'},
               ]
             },
