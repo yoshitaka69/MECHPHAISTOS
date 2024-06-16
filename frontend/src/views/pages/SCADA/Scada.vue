@@ -8,7 +8,7 @@
         :items="canvasItems"
         :selectedShape="selectedShape"
         :showGrid="showGrid"
-        :lines="canvasLines" 
+        :lines="canvasLines"
         @itemDropped="addItemToCanvas"
         @updateItem="updateItemPosition"
       />
@@ -37,24 +37,21 @@ export default {
     Footer,
   },
   setup() {
-    const canvasItems = ref([]) // キャンバス上のアイテムを保持する配列
-    const canvasLines = ref([]) // キャンバス上の線を保持する配列
-    const showGrid = ref(false) // グリッド線の表示状態を管理するフラグ
-    const selectedShape = ref(null) // 選択された形状を保持する変数
-    const canvasRef = ref(null) // キャンバスの参照を保持する変数
+    const canvasItems = ref([])
+    const canvasLines = ref([])
+    const showGrid = ref(false)
+    const selectedShape = ref(null)
+    const canvasRef = ref(null)
 
-    // キャンバスにアイテムを追加するメソッド
     const addItemToCanvas = (item) => {
       canvasItems.value.push(item)
     }
 
-    // 選択された形状をキャンバスに追加するメソッド
     const addShapeToCanvas = (shape) => {
       selectedShape.value = shape
       console.log('addShapeToCanvas:', shape)
     }
 
-    // キャンバス上のアイテムの位置を更新するメソッド
     const updateItemPosition = (item) => {
       const index = canvasItems.value.findIndex((i) => i.id === item.id)
       if (index !== -1) {
@@ -62,16 +59,14 @@ export default {
       }
     }
 
-    // グリッド線の表示状態を切り替えるメソッド
     const toggleGridLines = () => {
       showGrid.value = !showGrid.value
     }
 
-    // キャンバスの状態を保存するメソッド
     const saveCanvas = async () => {
       const data = {
         items: canvasItems.value,
-        lines: canvasLines.value, // キャンバスの線を取得
+        lines: canvasLines.value,
       }
 
       try {
@@ -94,13 +89,12 @@ export default {
       }
     }
 
-    // キャンバスの状態を読み込むメソッド
     const loadCanvas = async () => {
       try {
         const response = await fetch('http://127.0.0.1:8000/api/canvas/')
         if (response.ok) {
           const data = await response.json()
-          const latestCanvas = data[0] // 最新のキャンバスデータを取得
+          const latestCanvas = data[0]
           if (latestCanvas) {
             canvasItems.value = latestCanvas.data.items
             canvasLines.value = latestCanvas.data.lines

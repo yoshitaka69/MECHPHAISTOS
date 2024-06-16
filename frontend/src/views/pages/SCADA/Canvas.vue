@@ -3,9 +3,7 @@
     class="canvas"
     @drop="dropItem"
     @dragover="allowDrop"
-    @mousedown="startDrawing"
-    @mousemove="draw"
-    @mouseup="endDrawing"
+    ref="canvas"
     :class="{ grid: showGrid }"
   >
     <div
@@ -15,7 +13,8 @@
       :style="{ top: item.y + 'px', left: item.x + 'px' }"
       draggable
       @dragstart="startDrag($event, item)"
-      @dragend="endDrag($event, item)"
+      @drag="onDrag($event)"
+      @dragend="endDrag($event)"
     >
       <img :src="getIcon(item.name)" alt="" />
       <p>{{ item.name }}</p>
@@ -43,87 +42,119 @@
 </template>
 
 <script>
-import { ref, watchEffect } from 'vue'
+import { ref, onMounted } from 'vue'
 
 export default {
-  props: ['items', 'showGrid', 'selectedShape', 'lines'], // 'lines'をpropsに追加
+  props: ['items', 'showGrid', 'selectedShape', 'lines'],
   setup(props, { emit }) {
-    const currentLine = ref(null) // 現在描画中の線を保持する変数
-    let dragItem = null // ドラッグ中のアイテムを保持する変数
-    let drawing = false // 描画中かどうかを示すフラグ
-    let startX = 0 // 描画開始位置のX座標
-    let startY = 0 // 描画開始位置のY座標
+    const currentLine = ref(null)
+    const canvasRef = ref(null)
+    const dragItem = ref(null)
+    const offsetX = ref(0)
+    const offsetY = ref(0)
 
-    watchEffect(() => {
-      console.log('selectedShape:', props.selectedShape)
+    onMounted(() => {
+      canvasRef.value = document.querySelector('.canvas')
     })
 
-    // ドロップを許可するメソッド
     const allowDrop = (event) => {
       event.preventDefault()
     }
 
-    // ドラッグを開始するメソッド
     const startDrag = (event, item) => {
-      dragItem = item
+      dragItem.value = item
+      offsetX.value = event.clientX - (item.x || 0)
+      offsetY.value = event.clientY - (item.y || 0)
       console.log('startDrag:', item)
     }
 
-    // ドラッグを終了するメソッド
-    const endDrag = (event, item) => {
-      if (dragItem) {
-        dragItem.x = event.offsetX
-        dragItem.y = event.offsetY
-        emit('updateItem', dragItem)
-        dragItem = null
-        console.log('endDrag:', item)
+    const onDrag = (event) => {
+      if (dragItem.value) {
+        let x = event.clientX - offsetX.value
+        let y = event.clientY - offsetY.value
+
+        // キャンバス内に位置を制限
+        const canvas = canvasRef.value
+        if (canvas) {
+          x = Math.max(0, Math.min(x, canvas.clientWidth - 50))
+          y = Math.max(0, Math.min(y, canvas.clientHeight - 50))
+        }
+
+        dragItem.value.x = x
+        dragItem.value.y = y
+        console.log('onDrag:', x, y)
       }
     }
 
-    // ドロップされたアイテムを処理するメソッド
+    const endDrag = (event) => {
+      if (dragItem.value) {
+        let x = event.clientX - offsetX.value
+        let y = event.clientY - offsetY.value
+
+        // キャンバス内に位置を制限
+        const canvas = canvasRef.value
+        if (canvas) {
+          x = Math.max(0, Math.min(x, canvas.clientWidth - 50))
+          y = Math.max(0, Math.min(y, canvas.clientHeight - 50))
+        }
+
+        dragItem.value.x = x
+        dragItem.value.y = y
+        emit('updateItem', dragItem.value)
+        dragItem.value = null
+        console.log('endDrag:', x, y)
+      }
+    }
+
     const dropItem = (event) => {
-      if (dragItem) {
-        dragItem.x = event.offsetX
-        dragItem.y = event.offsetY
-        emit('updateItem', dragItem)
-        console.log('dropItem:', dragItem)
+      event.preventDefault()
+      if (dragItem.value) {
+        let x = event.clientX - offsetX.value
+        let y = event.clientY - offsetY.value
+
+        // キャンバス内に位置を制限
+        const canvas = canvasRef.value
+        if (canvas) {
+          x = Math.max(0, Math.min(x, canvas.clientWidth - 50))
+          y = Math.max(0, Math.min(y, canvas.clientHeight - 50))
+        }
+
+        dragItem.value.x = x
+        dragItem.value.y = y
+        emit('updateItem', dragItem.value)
+        dragItem.value = null
+        console.log('dropItem:', x, y)
       }
     }
 
-    // 線の描画を開始するメソッド
     const startDrawing = (event) => {
       if (props.selectedShape === 'line') {
-        drawing = true
-        startX = event.offsetX
-        startY = event.offsetY
-        currentLine.value = { x1: startX, y1: startY, x2: startX, y2: startY }
-        console.log('startDrawing:', currentLine.value)
+        currentLine.value = {
+          x1: event.offsetX,
+          y1: event.offsetY,
+          x2: event.offsetX,
+          y2: event.offsetY,
+        }
       }
     }
 
-    // 線を描画するメソッド
     const draw = (event) => {
-      if (drawing && props.selectedShape === 'line') {
-        const x2 = event.offsetX
-        const y2 = event.offsetY
-        currentLine.value = { x1: startX, y1: startY, x2, y2 }
-        console.log('draw:', currentLine.value)
+      if (currentLine.value) {
+        currentLine.value.x2 = event.offsetX
+        currentLine.value.y2 = event.offsetY
       }
     }
 
-    // 線の描画を終了するメソッド
     const endDrawing = (event) => {
-      if (drawing && props.selectedShape === 'line') {
-        const x2 = event.offsetX
-        const y2 = event.offsetY
-        props.lines.push({ id: Date.now(), x1: startX, y1: startY, x2, y2 }) // props.linesに追加
-        drawing = false
-        console.log('endDrawing:', props.lines)
+      if (currentLine.value) {
+        props.lines.push({
+          id: Date.now(),
+          ...currentLine.value,
+        })
         currentLine.value = null
       }
     }
 
-    // アイテムのアイコンを取得するメソッド
     const getIcon = (name) => {
       switch (name) {
         case 'Pump':
@@ -140,19 +171,19 @@ export default {
     return {
       allowDrop,
       startDrag,
+      onDrag,
       endDrag,
       dropItem,
-      getIcon,
       startDrawing,
       draw,
       endDrawing,
+      getIcon,
       currentLine,
+      canvasRef,
     }
   }
 }
 </script>
-
-
 
 <style>
 .canvas {
@@ -160,6 +191,7 @@ export default {
   position: relative;
   background-color: white;
   border: 1px solid #ccc;
+  overflow: hidden;
 }
 .canvas-item {
   position: absolute;
@@ -203,3 +235,4 @@ export default {
   background-size: 20px 20px;
 }
 </style>
+
