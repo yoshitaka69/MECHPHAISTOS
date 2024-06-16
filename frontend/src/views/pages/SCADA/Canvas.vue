@@ -46,9 +46,8 @@
 import { ref, watchEffect } from 'vue'
 
 export default {
-  props: ['items', 'showGrid', 'selectedShape'],
+  props: ['items', 'showGrid', 'selectedShape', 'lines'], // 'lines'をpropsに追加
   setup(props, { emit }) {
-    const lines = ref([]) // キャンバス上の線を保持する配列
     const currentLine = ref(null) // 現在描画中の線を保持する変数
     let dragItem = null // ドラッグ中のアイテムを保持する変数
     let drawing = false // 描画中かどうかを示すフラグ
@@ -117,9 +116,9 @@ export default {
       if (drawing && props.selectedShape === 'line') {
         const x2 = event.offsetX
         const y2 = event.offsetY
-        lines.value.push({ id: Date.now(), x1: startX, y1: startY, x2, y2 })
+        props.lines.push({ id: Date.now(), x1: startX, y1: startY, x2, y2 }) // props.linesに追加
         drawing = false
-        console.log('endDrawing:', lines.value)
+        console.log('endDrawing:', props.lines)
         currentLine.value = null
       }
     }
@@ -147,12 +146,12 @@ export default {
       startDrawing,
       draw,
       endDrawing,
-      lines,
       currentLine,
     }
   }
 }
 </script>
+
 
 
 <style>

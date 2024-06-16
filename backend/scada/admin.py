@@ -1,3 +1,7 @@
 from django.contrib import admin
+from .models import CanvasState
 
-# Register your models here.
+@admin.register(CanvasState)
+class CanvasStateAdmin(admin.ModelAdmin):
+    list_display = ('id', 'created_at')
+    readonly_fields = ('created_at',)
