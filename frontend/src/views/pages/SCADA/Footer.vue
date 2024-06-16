@@ -1,31 +1,45 @@
 <template>
-  <footer>
+  <div class="footer-bar">
     <button @click="toggleGrid">グリッド線オン/オフ</button>
-  </footer>
+    <button @click="saveCanvas">保存</button>
+    <button @click="loadCanvas">読み込み</button>
+  </div>
 </template>
 
 <script>
 export default {
-  emits: ['toggleGrid']
+  emits: ['toggleGrid', 'saveCanvas', 'loadCanvas'],
+  methods: {
+    toggleGrid() {
+      this.$emit('toggleGrid')
+    },
+    saveCanvas() {
+      this.$emit('saveCanvas')
+    },
+    loadCanvas() {
+      this.$emit('loadCanvas')
+    }
+  }
 }
 </script>
 
 <style>
-footer {
+.footer-bar {
   background-color: #333;
   color: white;
   padding: 1rem;
   display: flex;
   justify-content: center;
+  gap: 1rem;
 }
-button {
+.footer-bar button {
   background: none;
   border: 1px solid white;
   color: white;
   padding: 0.5rem 1rem;
   cursor: pointer;
 }
-button:hover {
+.footer-bar button:hover {
   background-color: white;
   color: #333;
 }

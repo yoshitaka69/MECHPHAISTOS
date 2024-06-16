@@ -12,6 +12,7 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -84,6 +85,7 @@ INSTALLED_APPS = [
     'workingReport',
     'audio_recognition',
     'channels',
+    'scada',
     'ai',
 ]
 

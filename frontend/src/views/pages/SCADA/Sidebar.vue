@@ -1,7 +1,8 @@
 <template>
   <aside>
     <div v-for="item in items" :key="item.name" draggable @dragstart="startDrag(item)">
-      {{ item.name }}
+      <img :src="item.icon" alt="" />
+      <p>{{ item.name }}</p>
     </div>
   </aside>
 </template>
@@ -12,9 +13,9 @@ export default {
   data() {
     return {
       items: [
-        { name: 'Pump' },
-        { name: 'Valve' },
-        { name: 'Tank' }
+        { name: 'Pump', icon: '/icons/pump-icon.png' },
+        { name: 'Valve', icon: '/icons/valve-icon.png' },
+        { name: 'Tank', icon: '/icons/tank-icon.png' }
       ]
     }
   },
@@ -40,5 +41,14 @@ div[draggable] {
   padding: 0.5rem;
   border: 1px solid #ccc;
   background-color: white;
+  text-align: center;
+}
+img {
+  max-width: 100%;
+  height: auto;
+}
+p {
+  margin: 0;
+  font-size: 0.9rem;
 }
 </style>

@@ -1,11 +1,18 @@
 <template>
   <div id="app">
-    <Header />
+    <Header @shapeAdded="addShapeToCanvas" />
     <div class="main">
-      <Sidebar @itemDragged="addItemToCanvas"/>
-      <Canvas ref="canvasRef" :items="canvasItems" @lineAdded="addLineToCanvas"/>
+      <Sidebar @itemDragged="addItemToCanvas" />
+      <Canvas
+        ref="canvasRef"
+        :items="canvasItems"
+        :selectedShape="selectedShape"
+        :showGrid="showGrid"
+        @itemDropped="addItemToCanvas"
+        @updateItem="updateItemPosition"
+      />
     </div>
-    <Footer @toggleGrid="toggleGridLines"/>
+    <Footer @toggleGrid="toggleGridLines" />
   </div>
 </template>
 
@@ -17,7 +24,7 @@ import Footer from './Footer.vue'
 import { ref } from 'vue'
 
 export default {
-  name: 'App',
+  name: 'Scada',
   components: {
     Header,
     Sidebar,
@@ -25,31 +32,49 @@ export default {
     Footer,
   },
   setup() {
-    const canvasItems = ref([])
-    const canvasRef = ref(null)
+    const canvasItems = ref([]) // キャンバス上のアイテムを保持する配列
+    const showGrid = ref(false) // グリッド線の表示状態を管理するフラグ
+    const selectedShape = ref(null) // 選択された形状を保持する変数
+    const canvasRef = ref(null) // キャンバスの参照を保持する変数
 
+    // キャンバスにアイテムを追加するメソッド
     const addItemToCanvas = (item) => {
       canvasItems.value.push(item)
     }
 
-    const addLineToCanvas = (line) => {
-      canvasItems.value.push(line)
+    // 選択された形状をキャンバスに追加するメソッド
+    const addShapeToCanvas = (shape) => {
+      selectedShape.value = shape
+      console.log('addShapeToCanvas:', shape)
     }
 
+    // キャンバス上のアイテムの位置を更新するメソッド
+    const updateItemPosition = (item) => {
+      const index = canvasItems.value.findIndex((i) => i.id === item.id)
+      if (index !== -1) {
+        canvasItems.value[index] = item
+      }
+    }
+
+    // グリッド線の表示状態を切り替えるメソッド
     const toggleGridLines = () => {
-      canvasRef.value.toggleGrid()
+      showGrid.value = !showGrid.value
     }
 
     return {
       canvasItems,
-      canvasRef,
+      selectedShape,
+      showGrid,
       addItemToCanvas,
-      addLineToCanvas,
-      toggleGridLines
+      addShapeToCanvas,
+      updateItemPosition,
+      toggleGridLines,
+      canvasRef,
     }
   }
 }
 </script>
+
 
 <style>
 #app {
