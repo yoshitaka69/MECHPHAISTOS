@@ -1,29 +1,29 @@
 <template>
   <div class="optimaize-container">
     <h1 class="title">Summed Planned Cost Optimization</h1>
-    <form @submit.prevent="optimize" class="optimization-form">
-      <div class="form-row">
-        <label for="failureProb">Failure Probability:</label>
-        <input id="failureProb" v-model.number="failureProb" type="number" step="0.01" min="0" max="1" required>
-      </div>
-      <div class="form-row">
-        <label for="repairCost">Repair Cost:</label>
-        <input id="repairCost" v-model.number="repairCost" type="number" step="0.01" required>
-      </div>
-      <div class="form-row">
-        <label for="impact">Impact of Failure:</label>
-        <input id="impact" v-model.number="impact" type="number" step="0.01" required>
-      </div>
-      <button type="submit">Run Bayesian Optimization</button>
-    </form>
     <div class="content">
       <div class="indicator-container">
-        <Maintenance_Indicator :width="400" :height="400" />
+        <Maintenance_Indicator :width="350" :height="350" />
       </div>
       <div class="content-container">
         <div id="OptimaizeByBaize"></div>
       </div>
     </div>
+    <form @submit.prevent="optimize" class="optimization-form">
+      <div class="form-row">
+        <label for="failureProb">Critical Equipment:</label>
+        <input id="failureProb" v-model.number="failureProb" type="number" step="0.01" min="0" max="1" required>
+      </div>
+      <div class="form-row">
+        <label for="repairCost">Work Order:</label>
+        <input id="repairCost" v-model.number="repairCost" type="number" step="0.01" required>
+      </div>
+      <div class="form-row">
+        <label for="impact">Mainte Task:</label>
+        <input id="impact" v-model.number="impact" type="number" step="0.01" required>
+      </div>
+      <Button label="Run Bayesian Optimization" severity="secondary" raised class="submit-button"/>
+    </form>
   </div>
 </template>
 
@@ -33,10 +33,12 @@ import Plotly from 'plotly.js-dist-min';
 import { useUserStore } from '@/stores/userStore'; // ストアのパスに応じて適宜変更してください
 import { computed, ref, onMounted } from 'vue';
 import Maintenance_Indicator from '@/components/Maintenance_Optimization/MaintenanceIndicator.vue';
+import Button from 'primevue/button';
 
 export default {
   components: {
     Maintenance_Indicator,
+    Button
   },
   setup() {
     const userStore = useUserStore();
@@ -201,6 +203,11 @@ export default {
   gap: 10px;
 }
 
+.submit-button {
+  width: auto; /* ボタンの幅を自動に設定 */
+  align-self: flex-start; /* ボタンを左揃え */
+}
+
 .content {
   display: flex;
   width: 100%;
@@ -208,11 +215,11 @@ export default {
 }
 
 .indicator-container {
-  flex: 1 1 15%;
+  flex: 2; /* 2/5 */
 }
 
 .content-container {
-  flex: 1 1 85%;
+  flex: 3; /* 3/5 */
 }
 
 #OptimaizeByBaize {

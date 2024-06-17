@@ -2,9 +2,9 @@
 	<div class="container">
 	  <div ref="ternaryPlot" class="plot-container"></div>
 	  <div class="coordinates">
-		<p>test1: <span id="coordTest1">0</span>%</p>
-		<p>test2: <span id="coordTest2">0</span>%</p>
-		<p>test3: <span id="coordTest3">0</span>%</p>
+		<p>Critical Equipment Lv: <span id="coordCriticalEquipmentLv">0</span>%</p>
+		<p>Work Order Lv: <span id="coordWorkOrderLv">0</span>%</p>
+		<p>Task List: <span id="coordTaskList">0</span>%</p>
 	  </div>
 	</div>
   </template>
@@ -54,14 +54,22 @@
 		  .attr('stroke', 'black')
 		  .attr('fill', '#FFE4C4'); // 三角形の内部を肌色で塗りつぶす
   
-		const labels = ["test1", "test2", "test3"];
+		const labels = ["Critical Equipment Lv", "Work Order Lv", "Task List"];
 		const labelOffset = 20;
 		svg.selectAll('.label')
 		  .data(vertices)
 		  .enter()
 		  .append('text')
 		  .attr('class', 'label')
-		  .attr('x', (d, i) => i === 0 ? d.x - labelOffset : d.x)
+		  .attr('x', (d, i) => {
+			if (i === 0) {
+			  return d.x - labelOffset;
+			} else if (i === 1) {
+			  return d.x - labelOffset * 2; // Work Order Lvを左に調整
+			} else {
+			  return d.x + labelOffset * 2; // Task Listを右に調整
+			}
+		  })
 		  .attr('y', (d, i) => i === 0 ? d.y - labelOffset : d.y + labelOffset)
 		  .attr('text-anchor', 'middle')
 		  .text((d, i) => labels[i]);
@@ -171,9 +179,9 @@
 		  const b = (x / plotWidth) * 2 / 2;
 		  const c = 1 - a - b;
   
-		  document.getElementById('coordTest1').textContent = (a * 100).toFixed(2);
-		  document.getElementById('coordTest2').textContent = (b * 100).toFixed(2);
-		  document.getElementById('coordTest3').textContent = (c * 100).toFixed(2);
+		  document.getElementById('coordCriticalEquipmentLv').textContent = (a * 100).toFixed(2);
+		  document.getElementById('coordWorkOrderLv').textContent = (b * 100).toFixed(2);
+		  document.getElementById('coordTaskList').textContent = (c * 100).toFixed(2);
 		}
 	  }
 	}
