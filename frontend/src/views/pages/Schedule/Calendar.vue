@@ -17,7 +17,7 @@
 
 
 <script>
-import Calendar from '@/components/Calendar/Calendar.vue'
+import Calendar from '@/components/Calendar/MainCalendar.vue'
 
 
 export default {

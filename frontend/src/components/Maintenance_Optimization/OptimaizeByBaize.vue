@@ -1,22 +1,29 @@
 <template>
-  <div>
-    <h1>Summed Planned Cost Optimization</h1>
-    <form @submit.prevent="optimize">
-      <div>
+  <div class="optimaize-container">
+    <h1 class="title">Summed Planned Cost Optimization</h1>
+    <form @submit.prevent="optimize" class="optimization-form">
+      <div class="form-row">
         <label for="failureProb">Failure Probability:</label>
         <input id="failureProb" v-model.number="failureProb" type="number" step="0.01" min="0" max="1" required>
       </div>
-      <div>
+      <div class="form-row">
         <label for="repairCost">Repair Cost:</label>
         <input id="repairCost" v-model.number="repairCost" type="number" step="0.01" required>
       </div>
-      <div>
+      <div class="form-row">
         <label for="impact">Impact of Failure:</label>
         <input id="impact" v-model.number="impact" type="number" step="0.01" required>
       </div>
       <button type="submit">Run Bayesian Optimization</button>
     </form>
-    <div id="graph"></div>
+    <div class="content">
+      <div class="indicator-container">
+        <Maintenance_Indicator :width="400" :height="400" />
+      </div>
+      <div class="content-container">
+        <div id="OptimaizeByBaize"></div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -25,8 +32,12 @@ import axios from 'axios';
 import Plotly from 'plotly.js-dist-min';
 import { useUserStore } from '@/stores/userStore'; // ストアのパスに応じて適宜変更してください
 import { computed, ref, onMounted } from 'vue';
+import Maintenance_Indicator from '@/components/Maintenance_Optimization/MaintenanceIndicator.vue';
 
 export default {
+  components: {
+    Maintenance_Indicator,
+  },
   setup() {
     const userStore = useUserStore();
     const companyCode = computed(() => userStore.companyCode);
@@ -124,7 +135,7 @@ export default {
         yaxis: { title: 'Cost (in units)' }
       };
 
-      Plotly.newPlot('graph', traces, layout);
+      Plotly.newPlot('OptimaizeByBaize', traces, layout);
     };
 
     const optimize = async () => {
@@ -165,15 +176,46 @@ export default {
 </script>
 
 <style scoped>
-form {
-  margin-bottom: 20px;
+.optimaize-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 20px;
 }
 
-form div {
+.title {
+  align-self: flex-start;
   margin-bottom: 10px;
 }
 
-#graph {
+.optimization-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.content {
+  display: flex;
+  width: 100%;
+  gap: 20px;
+}
+
+.indicator-container {
+  flex: 1 1 15%;
+}
+
+.content-container {
+  flex: 1 1 85%;
+}
+
+#OptimaizeByBaize {
   width: 100%;
   height: 500px;
 }

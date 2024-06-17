@@ -5,11 +5,14 @@
                 <TabView v-model:activeIndex="activeIndex" @tab-change="onTabChange">
                     <TabPanel header="NearMiss List">
                         <div class="row">
-                            <div class="col-12 lg:col-6 xl:col-6">
+                            <div class="col-12 lg:col-4 xl:col-4">
                                 <Count_of_nearMiss />
                             </div>
-                            <div class="col-12 lg:col-6 xl:col-6">
+                            <div class="col-12 lg:col-4 xl:col-4">
                                 <Action_items />
+                            </div>
+                            <div class="col-12 lg:col-4 xl:col-4">
+                                <Safety_clock />
                             </div>
                         </div>
                         <br />
@@ -106,6 +109,7 @@ import Safety_indicators_alert from '@/components/Safety/Cards/Safety_indicators
 import Count_of_nearMiss from '@/components/Safety/Cards/Count_of_nearMiss';
 import Danger_area from '@/components/Safety/Cards/Danger_area';
 import Action_items from '@/components/Safety/Cards/Action_items';
+import Safety_clock from '@/components/Safety/Safety_clock.vue'
 
 export default {
     components: {
@@ -119,7 +123,8 @@ export default {
         Safety_indicators_alert,
         Count_of_nearMiss,
         Danger_area,
-        Action_items
+        Action_items,
+        Safety_clock
     },
     data() {
         return {

@@ -5,7 +5,9 @@
       <h1 class="title">Welcome to MECHPHASTOS</h1>
     </div>
     <div class="content-container">
-      <div class="side-container left-side"></div>
+      <div class="side-container left-side">
+        <MiniCalendar :events="events" @update-events="updateEvents" />
+      </div>
       <div class="main-content">
         <div class="section world-clock-section">
           <WorldClock />
@@ -16,6 +18,9 @@
         </div>
         <div class="section">
           <News_content />
+        </div>
+        <div class="section calendar-section">
+          <MainCalendar :events="events" @update-events="updateEvents" />
         </div>
       </div>
       <div class="side-container right-side"></div>
@@ -28,6 +33,9 @@ import News_content from '@/components/News/News_content.vue';
 import WorldClock from '@/components/Clock/WorldClock.vue';
 import Weather from '@/components/Weather/Weather.vue';
 import InformationBox from '@/components/Information_box/Information_box.vue';
+import MainCalendar from '@/components/Calendar/MainCalendar.vue';
+import MiniCalendar from '@/components/Calendar/MiniCalendar.vue';
+import { INITIAL_EVENTS } from '@/components/Calendar/event-utils';
 
 export default {
   components: {
@@ -35,6 +43,18 @@ export default {
     WorldClock,
     Weather,
     InformationBox,
+    MainCalendar,
+    MiniCalendar,
+  },
+  data() {
+    return {
+      events: INITIAL_EVENTS,
+    };
+  },
+  methods: {
+    updateEvents(events) {
+      this.events = events;
+    },
   },
 };
 </script>
@@ -90,7 +110,7 @@ export default {
 .side-container {
   width: 240px; /* サイドコンテナの幅を狭める */
   background-color: #f0f0f0; /* サイドコンテナの背景色 */
-  height: 500vh; /* 縦に伸ばす */
+  height: 100vh; /* 縦に伸ばす */
 }
 
 .main-content {

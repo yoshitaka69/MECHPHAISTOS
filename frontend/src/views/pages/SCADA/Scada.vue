@@ -9,6 +9,11 @@
         :selectedShape="selectedShape"
         :showGrid="showGrid"
         :lines="canvasLines"
+        :curves="canvasCurves"
+        :rectangles="canvasRectangles"
+        :ellipses="canvasEllipses"
+        :arrows="canvasArrows"
+        :texts="canvasTexts"
         @itemDropped="addItemToCanvas"
         @updateItem="updateItemPosition"
       />
@@ -39,11 +44,17 @@ export default {
   setup() {
     const canvasItems = ref([])
     const canvasLines = ref([])
+    const canvasCurves = ref([])
+    const canvasRectangles = ref([])
+    const canvasEllipses = ref([])
+    const canvasArrows = ref([])
+    const canvasTexts = ref([])
     const showGrid = ref(false)
     const selectedShape = ref(null)
     const canvasRef = ref(null)
 
     const addItemToCanvas = (item) => {
+      item.signalColors = { color1: 'gray', color2: 'gray', color3: 'gray' }
       canvasItems.value.push(item)
     }
 
@@ -67,6 +78,11 @@ export default {
       const data = {
         items: canvasItems.value,
         lines: canvasLines.value,
+        curves: canvasCurves.value,
+        rectangles: canvasRectangles.value,
+        ellipses: canvasEllipses.value,
+        arrows: canvasArrows.value,
+        texts: canvasTexts.value,
       }
 
       try {
@@ -98,6 +114,11 @@ export default {
           if (latestCanvas) {
             canvasItems.value = latestCanvas.data.items
             canvasLines.value = latestCanvas.data.lines
+            canvasCurves.value = latestCanvas.data.curves
+            canvasRectangles.value = latestCanvas.data.rectangles
+            canvasEllipses.value = latestCanvas.data.ellipses
+            canvasArrows.value = latestCanvas.data.arrows
+            canvasTexts.value = latestCanvas.data.texts
           }
         } else {
           alert('Failed to load canvas.')
@@ -111,6 +132,11 @@ export default {
     return {
       canvasItems,
       canvasLines,
+      canvasCurves,
+      canvasRectangles,
+      canvasEllipses,
+      canvasArrows,
+      canvasTexts,
       selectedShape,
       showGrid,
       addItemToCanvas,
@@ -124,6 +150,7 @@ export default {
   }
 }
 </script>
+
 
 
 

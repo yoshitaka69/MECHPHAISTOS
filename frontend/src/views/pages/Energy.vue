@@ -4,6 +4,9 @@
             <div class="card card-solid">
                 <TabView v-model:activeIndex="activeIndex" @tab-change="onTabChange">
                     <TabPanel header="Sustainability">
+                        <div class="col-12 xl:col-12">
+                            <Main_energy_trend />
+                        </div>
                         <div class="row">
                             <div class="col-12 xl:col-6">
                                 <div class="card" style="background-color: #f2f2f2;">
@@ -90,6 +93,7 @@
 </template>
 
 <script>
+import Main_energy_trend from '@/components/Energy/Main_energy_trend.vue'
 import Co2_trend from '@/components/Energy/Co2_trend.vue';
 import STM_trend from '@/components/Energy/STM_trend.vue';
 import Elec_trend from '@/components/Energy/Elec_trend.vue';
@@ -101,6 +105,7 @@ import ExGas_trend from '@/components/Energy/ExGas_trend.vue';
 
 export default {
     components: {
+        Main_energy_trend,
         Co2_trend,
         STM_trend,
         Elec_trend,
