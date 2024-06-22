@@ -1,10 +1,10 @@
 <template>
 	<div>
-	  <h1>Image Recognition</h1>
+	  <h1>Machine/Part Recognition</h1>
 	  <input type="file" @change="uploadImage" />
-	  <div v-if="prediction">
+	  <div v-if="prediction !== null">
 		<h2>Prediction: {{ prediction }}</h2>
-		<img :src="imageUrl" alt="Uploaded Image" />
+		<img :src="imageUrl" alt="Uploaded Image" v-if="imageUrl" class="uploaded-image" />
 	  </div>
 	  <div v-if="error">
 		<h2>Error: {{ error }}</h2>
@@ -37,7 +37,7 @@
 			},
 		  });
   
-		  this.prediction = response.data.predicted_label;
+		  this.prediction = response.data.predicted_class;
 		  this.imageUrl = 'http://localhost:8000' + response.data.image;
 		} catch (err) {
 		  this.error = err.response ? err.response.data.error : err.message;
@@ -46,4 +46,11 @@
 	},
   };
   </script>
+  
+  <style>
+  .uploaded-image {
+	max-width: 300px;
+	max-height: 300px;
+  }
+  </style>
   

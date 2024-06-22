@@ -132,7 +132,13 @@ import TriStateCheckbox from 'primevue/tristatecheckbox';
 import VirtualScroller from 'primevue/virtualscroller';
 import 'primeicons/primeicons.css'
 
+//konva
+import VueKonva from 'vue-konva'
+
+
 const app = createApp(App)
+
+
 
 // Pinia ストアを作成して登録
 const pinia = createPinia();
@@ -140,6 +146,10 @@ app.use(pinia);
 
 app.use(router);
 app.use(VueAxios, axios);
+
+//konva
+app.use(VueKonva)
+
 
 app.use(PrimeVue, { ripple: true });
 app.use(ToastService);
@@ -261,5 +271,6 @@ registerAllValidators();
 // register all plugins at once
 // or, register all of Handsontable's modules at once
 registerAllModules();
+
 
 app.mount('#app')

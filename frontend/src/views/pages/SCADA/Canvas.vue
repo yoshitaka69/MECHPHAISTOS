@@ -1,388 +1,261 @@
 <template>
-  <div
-    class="canvas"
-    @drop="dropItem"
-    @dragover="allowDrop"
-    @mousedown="startDrawing"
-    @mousemove="draw"
-    @mouseup="endDrawing"
-    ref="canvas"
-    :class="{ grid: showGrid }"
-  >
-    <div
-      v-for="item in items"
-      :key="item.id"
-      class="canvas-item"
-      :style="{ top: item.y + 'px', left: item.x + 'px' }"
-      draggable
-      @dragstart="startDrag($event, item)"
-      @drag="onDrag($event)"
-      @dragend="endDrag($event)"
-    >
-      <img :src="getIcon(item.name)" alt="" />
-      <p>{{ item.name }}</p>
-      <SignalLight
-        :color1="item.signalColors.color1"
-        :color2="item.signalColors.color2"
-        :color3="item.signalColors.color3"
-      />
+  <div class="container">
+    <!-- サイドバー -->
+    <div class="sidebar">
+      <img :src="pumpIconSrc" @click="addPumpIcon" class="icon" alt="Pump Icon" />
     </div>
-    <svg class="canvas-svg">
-      <line
-        v-for="line in lines"
-        :key="line.id"
-        :x1="line.x1"
-        :y1="line.y1"
-        :x2="line.x2"
-        :y2="line.y2"
-        stroke="black"
-      />
-      <path
-        v-for="curve in curves"
-        :key="curve.id"
-        :d="curve.path"
-        stroke="black"
-        fill="none"
-      />
-      <rect
-        v-for="rect in rectangles"
-        :key="rect.id"
-        :x="rect.x"
-        :y="rect.y"
-        :width="rect.width"
-        :height="rect.height"
-        stroke="black"
-        fill="none"
-      />
-      <ellipse
-        v-for="ellipse in ellipses"
-        :key="ellipse.id"
-        :cx="ellipse.cx"
-        :cy="ellipse.cy"
-        :rx="ellipse.rx"
-        :ry="ellipse.ry"
-        stroke="black"
-        fill="none"
-      />
-      <polygon
-        v-for="arrow in arrows"
-        :key="arrow.id"
-        :points="arrow.points"
-        stroke="black"
-        fill="none"
-      />
-      <text
-        v-for="text in texts"
-        :key="text.id"
-        :x="text.x"
-        :y="text.y"
-        stroke="black"
-      >
-        {{ text.content }}
-      </text>
-      <line
-        v-if="currentLine"
-        :x1="currentLine.x1"
-        :y1="currentLine.y1"
-        :x2="currentLine.x2"
-        :y2="currentLine.y2"
-        stroke="black"
-      />
-      <path
-        v-if="currentCurve"
-        :d="currentCurve.path"
-        stroke="black"
-        fill="none"
-      />
-      <rect
-        v-if="currentRectangle"
-        :x="currentRectangle.x"
-        :y="currentRectangle.y"
-        :width="currentRectangle.width"
-        :height="currentRectangle.height"
-        stroke="black"
-        fill="none"
-      />
-      <ellipse
-        v-if="currentEllipse"
-        :cx="currentEllipse.cx"
-        :cy="currentEllipse.cy"
-        :rx="currentEllipse.rx"
-        :ry="currentEllipse.ry"
-        stroke="black"
-        fill="none"
-      />
-      <polygon
-        v-if="currentArrow"
-        :points="currentArrow.points"
-        stroke="black"
-        fill="none"
-      />
-      <text
-        v-if="currentText"
-        :x="currentText.x"
-        :y="currentText.y"
-        stroke="black"
-      >
-        {{ currentText.content }}
-      </text>
-    </svg>
+    <!-- 描画ツールのボタン -->
+    <div class="toolbar">
+      <button @click="setDrawingMode('line')">Draw Line</button>
+      <button @click="setDrawingMode('spline')">Draw Spline</button>
+      <button @click="setDrawingMode('circle')">Draw Circle</button>
+      <button @click="setDrawingMode('rect')">Draw Rectangle</button>
+      <button @click="setDrawingMode('text')">Draw Text</button>
+      <button @click="zoomIn">Zoom In</button>
+      <button @click="zoomOut">Zoom Out</button>
+    </div>
+    <!-- キャンバス -->
+    <div class="canvas-container">
+      <v-stage ref="stage" :config="stageConfig">
+        <v-layer ref="layer">
+          <!-- 背景用の白い矩形 -->
+          <v-rect :config="backgroundConfig" />
+          <!-- 描画した図形を表示 -->
+          <v-line v-for="(line, index) in lines" :key="index" :config="line" @dragend="onDragEnd(index, 'line')" draggable />
+          <v-rect v-for="(rect, index) in rects" :key="index" :config="rect" @dragend="onDragEnd(index, 'rect')" draggable />
+          <v-circle v-for="(circle, index) in circles" :key="index" :config="circle" @dragend="onDragEnd(index, 'circle')" draggable />
+          <v-text v-for="(text, index) in texts" :key="index" :config="text" @dragend="onDragEnd(index, 'text')" draggable />
+          <v-image v-for="(pump, index) in pumps" :key="index" :config="pump.config" @dragend="onDragEnd(index, 'pump')" />
+        </v-layer>
+      </v-stage>
+    </div>
   </div>
 </template>
 
 <script>
-import { ref, onMounted } from 'vue'
-import SignalLight from './SignalLight.vue'
+import pumpIcon from '@/assets/pump_icon.png'
 
 export default {
-  props: ['items', 'showGrid', 'selectedShape', 'lines', 'curves', 'rectangles', 'ellipses', 'arrows', 'texts'],
-  components: { SignalLight },
-  setup(props, { emit }) {
-    const currentLine = ref(null)
-    const currentCurve = ref(null)
-    const currentRectangle = ref(null)
-    const currentEllipse = ref(null)
-    const currentArrow = ref(null)
-    const currentText = ref(null)
-    const canvasRef = ref(null)
-    const dragItem = ref(null)
-    const offsetX = ref(0)
-    const offsetY = ref(0)
-    const drawing = ref(false)
-
-    onMounted(() => {
-      canvasRef.value = document.querySelector('.canvas')
-    })
-
-    const allowDrop = (event) => {
-      event.preventDefault()
-    }
-
-    const startDrag = (event, item) => {
-      dragItem.value = item
-      offsetX.value = event.clientX - (item.x || 0)
-      offsetY.value = event.clientY - (item.y || 0)
-      console.log('startDrag:', item)
-    }
-
-    const onDrag = (event) => {
-      if (dragItem.value) {
-        let x = event.clientX - offsetX.value
-        let y = event.clientY - offsetY.value
-
-        // キャンバス内に位置を制限
-        const canvas = canvasRef.value
-        if (canvas) {
-          x = Math.max(0, Math.min(x, canvas.clientWidth - 50))
-          y = Math.max(0, Math.min(y, canvas.clientHeight - 50))
-        }
-
-        dragItem.value.x = x
-        dragItem.value.y = y
-        console.log('onDrag:', x, y)
-      }
-    }
-
-    const endDrag = (event) => {
-      if (dragItem.value) {
-        let x = event.clientX - offsetX.value
-        let y = event.clientY - offsetY.value
-
-        // キャンバス内に位置を制限
-        const canvas = canvasRef.value
-        if (canvas) {
-          x = Math.max(0, Math.min(x, canvas.clientWidth - 50))
-          y = Math.max(0, Math.min(y, canvas.clientHeight - 50))
-        }
-
-        dragItem.value.x = x
-        dragItem.value.y = y
-        emit('updateItem', dragItem.value)
-        dragItem.value = null
-        console.log('endDrag:', x, y)
-      }
-    }
-
-    const dropItem = (event) => {
-      event.preventDefault()
-      if (dragItem.value) {
-        let x = event.clientX - offsetX.value
-        let y = event.clientY - offsetY.value
-
-        // キャンバス内に位置を制限
-        const canvas = canvasRef.value
-        if (canvas) {
-          x = Math.max(0, Math.min(x, canvas.clientWidth - 50))
-          y = Math.max(0, Math.min(y, canvas.clientHeight - 50))
-        }
-
-        dragItem.value.x = x
-        dragItem.value.y = y
-        emit('updateItem', dragItem.value)
-        dragItem.value = null
-        console.log('dropItem:', x, y)
-      }
-    }
-
-    const startDrawing = (event) => {
-      drawing.value = true
-      const startX = event.offsetX
-      const startY = event.offsetY
-
-      if (props.selectedShape === 'line') {
-        currentLine.value = { x1: startX, y1: startY, x2: startX, y2: startY }
-      } else if (props.selectedShape === 'curve') {
-        currentCurve.value = { id: Date.now(), path: `M${startX},${startY} Q${startX},${startY} ${startX},${startY}` }
-      } else if (props.selectedShape === 'rectangle') {
-        currentRectangle.value = { x: startX, y: startY, width: 0, height: 0 }
-      } else if (props.selectedShape === 'ellipse') {
-        currentEllipse.value = { cx: startX, cy: startY, rx: 0, ry: 0 }
-      } else if (props.selectedShape === 'arrow') {
-        currentArrow.value = { id: Date.now(), points: `${startX},${startY} ${startX},${startY}` }
-      } else if (props.selectedShape === 'text') {
-        const textContent = prompt('Enter text:')
-        if (textContent) {
-          currentText.value = { x: startX, y: startY, content: textContent }
-        } else {
-          drawing.value = false
-        }
-      }
-    }
-
-    const draw = (event) => {
-      if (!drawing.value) return
-
-      const currentX = event.offsetX
-      const currentY = event.offsetY
-
-      if (currentLine.value) {
-        currentLine.value.x2 = currentX
-        currentLine.value.y2 = currentY
-      } else if (currentCurve.value) {
-        const [x1, y1] = currentCurve.value.path.match(/\d+/g).map(Number)
-        currentCurve.value.path = `M${x1},${y1} Q${(x1 + currentX) / 2},${(y1 + currentY) / 2} ${currentX},${currentY}`
-      } else if (currentRectangle.value) {
-        currentRectangle.value.width = Math.abs(currentX - currentRectangle.value.x)
-        currentRectangle.value.height = Math.abs(currentY - currentRectangle.value.y)
-        if (currentX < currentRectangle.value.x) currentRectangle.value.x = currentX
-        if (currentY < currentRectangle.value.y) currentRectangle.value.y = currentY
-      } else if (currentEllipse.value) {
-        currentEllipse.value.rx = Math.abs(currentX - currentEllipse.value.cx)
-        currentEllipse.value.ry = Math.abs(currentY - currentEllipse.value.cy)
-      } else if (currentArrow.value) {
-        const [x1, y1] = currentArrow.value.points.match(/\d+/g).map(Number)
-        currentArrow.value.points = `${x1},${y1} ${currentX},${currentY}`
-      }
-    }
-
-    const endDrawing = (event) => {
-      if (!drawing.value) return
-
-      drawing.value = false
-
-      if (currentLine.value) {
-        props.lines.push({ ...currentLine.value, id: Date.now() })
-        currentLine.value = null
-      } else if (currentCurve.value) {
-        props.curves.push({ ...currentCurve.value, id: Date.now() })
-        currentCurve.value = null
-      } else if (currentRectangle.value) {
-        props.rectangles.push({ ...currentRectangle.value, id: Date.now() })
-        currentRectangle.value = null
-      } else if (currentEllipse.value) {
-        props.ellipses.push({ ...currentEllipse.value, id: Date.now() })
-        currentEllipse.value = null
-      } else if (currentArrow.value) {
-        props.arrows.push({ ...currentArrow.value, id: Date.now() })
-        currentArrow.value = null
-      } else if (currentText.value) {
-        props.texts.push({ ...currentText.value, id: Date.now() })
-        currentText.value = null
-      }
-    }
-
-    const getIcon = (name) => {
-      switch (name) {
-        case 'Pump':
-          return '/icons/pump-icon.png'
-        case 'Valve':
-          return '/icons/valve-icon.png'
-        case 'Tank':
-          return '/icons/tank-icon.png'
-        default:
-          return ''
-      }
-    }
-
+  data() {
     return {
-      allowDrop,
-      startDrag,
-      onDrag,
-      endDrag,
-      dropItem,
-      startDrawing,
-      draw,
-      endDrawing,
-      getIcon,
-      currentLine,
-      currentCurve,
-      currentRectangle,
-      currentEllipse,
-      currentArrow,
-      currentText,
-      canvasRef,
+      stageConfig: {
+        width: window.innerWidth - 100,
+        height: window.innerHeight - 50,
+        scaleX: 1,
+        scaleY: 1,
+      },
+      backgroundConfig: {
+        x: 0,
+        y: 0,
+        width: window.innerWidth - 100,
+        height: window.innerHeight - 50,
+        fill: 'white',
+      },
+      drawingMode: 'none',
+      isDrawing: false,
+      lines: [],
+      rects: [],
+      circles: [],
+      texts: [],
+      pumps: [],
+      currentShape: null,
+      pumpIconSrc: pumpIcon,
     }
-  }
-}
+  },
+  methods: {
+    setDrawingMode(mode) {
+      this.drawingMode = mode;
+    },
+    startDrawing(e) {
+      if (this.drawingMode === 'none') return;
+      this.isDrawing = true;
+      const stage = this.$refs.stage.getStage();
+      const pointerPosition = stage.getPointerPosition();
+      if (this.drawingMode === 'line' || this.drawingMode === 'spline') {
+        this.currentShape = [{ x: pointerPosition.x, y: pointerPosition.y }];
+      } else if (this.drawingMode === 'rect') {
+        this.currentShape = {
+          x: pointerPosition.x,
+          y: pointerPosition.y,
+          width: 0,
+          height: 0,
+          fill: 'transparent',
+          stroke: 'black',
+          strokeWidth: 2,
+        };
+        this.rects.push(this.currentShape);
+      } else if (this.drawingMode === 'circle') {
+        this.currentShape = {
+          x: pointerPosition.x,
+          y: pointerPosition.y,
+          radius: 0,
+          fill: 'transparent',
+          stroke: 'black',
+          strokeWidth: 2,
+        };
+        this.circles.push(this.currentShape);
+      } else if (this.drawingMode === 'text') {
+        this.currentShape = {
+          x: pointerPosition.x,
+          y: pointerPosition.y,
+          text: 'Sample Text',
+          fontSize: 20,
+          fill: 'black',
+        };
+        this.texts.push(this.currentShape);
+      }
+    },
+    draw(e) {
+      if (!this.isDrawing) return;
+      const stage = this.$refs.stage.getStage();
+      const pointerPosition = stage.getPointerPosition();
+      if (this.drawingMode === 'line' || this.drawingMode === 'spline') {
+        this.currentShape = [
+          ...this.currentShape,
+          { x: pointerPosition.x, y: pointerPosition.y },
+        ];
+        this.lines = [
+          ...this.lines.slice(0, -1),
+          {
+            points: this.currentShape.flatMap(point => [point.x, point.y]),
+            stroke: 'black',
+            strokeWidth: 2,
+            lineCap: 'round',
+            lineJoin: this.drawingMode === 'spline' ? 'round' : 'miter',
+          },
+        ];
+      } else if (this.drawingMode === 'rect') {
+        const rect = this.currentShape;
+        rect.width = pointerPosition.x - rect.x;
+        rect.height = pointerPosition.y - rect.y;
+      } else if (this.drawingMode === 'circle') {
+        const circle = this.currentShape;
+        const dx = pointerPosition.x - circle.x;
+        const dy = pointerPosition.y - circle.y;
+        circle.radius = Math.sqrt(dx * dx + dy * dy);
+      }
+    },
+    endDrawing() {
+      if (!this.isDrawing) return;
+      this.isDrawing = false;
+      if (this.drawingMode === 'line' || this.drawingMode === 'spline') {
+        this.lines.push({
+          points: this.currentShape.flatMap(point => [point.x, point.y]),
+          stroke: 'black',
+          strokeWidth: 2,
+          lineCap: 'round',
+          lineJoin: this.drawingMode === 'spline' ? 'round' : 'miter',
+        });
+      }
+      this.currentShape = null;
+      this.drawingMode = 'none';
+    },
+    addPumpIcon() {
+      const stage = this.$refs.stage.getStage();
+      const pointerPosition = stage.getPointerPosition();
+      const img = new window.Image();
+      img.src = this.pumpIconSrc;
+      img.onload = () => {
+        this.pumps.push({
+          config: {
+            x: pointerPosition.x,
+            y: pointerPosition.y,
+            image: img,
+            width: 50,
+            height: 50,
+            draggable: true,
+          },
+        });
+      }
+    },
+    onDragEnd(index, type) {
+      const shape = this[type + 's'][index].config;
+      const stage = this.$refs.stage.getStage();
+      const pointerPosition = stage.getPointerPosition();
+      shape.x = pointerPosition.x;
+      shape.y = pointerPosition.y;
+    },
+    zoomIn() {
+      this.stageConfig.scaleX *= 1.2;
+      this.stageConfig.scaleY *= 1.2;
+    },
+    zoomOut() {
+      this.stageConfig.scaleX /= 1.2;
+      this.stageConfig.scaleY /= 1.2;
+    },
+    handleKeyDown(e) {
+      if (e.key === 'Escape' || e.key === 'Backspace') {
+        this.deleteSelectedShape();
+      }
+    },
+    deleteSelectedShape() {
+      // 選択された図形を削除する処理
+      // ここでは仮に最後に追加された図形を削除する実装例を示します
+      if (this.lines.length) {
+        this.lines.pop();
+      } else if (this.rects.length) {
+        this.rects.pop();
+      } else if (this.circles.length) {
+        this.circles.pop();
+      } else if (this.texts.length) {
+        this.texts.pop();
+      } else if (this.pumps.length) {
+        this.pumps.pop();
+      }
+    },
+  },
+  mounted() {
+    const stage = this.$refs.stage.getStage();
+    stage.on('mousedown touchstart', this.startDrawing);
+    stage.on('mousemove touchmove', this.draw);
+    stage.on('mouseup touchend', this.endDrawing);
+    window.addEventListener('keydown', this.handleKeyDown);
+  },
+  beforeDestroy() {
+    window.removeEventListener('keydown', this.handleKeyDown);
+  },
+};
 </script>
 
 <style>
-.canvas {
-  flex: 1;
-  position: relative;
-  background-color: white;
-  border: 1px solid #ccc;
-  overflow: hidden;
+body {
+  margin: 0;
+  padding: 0;
+  display: flex;
 }
-.canvas-item {
-  position: absolute;
-  padding: 0.5rem;
-  text-align: center;
-  cursor: move;
+
+.container {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
 }
-.canvas-svg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
+
+.sidebar {
+  width: 100px;
+  background-color: #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 20px;
 }
-.grid {
-  background-image: linear-gradient(
-      0deg,
-      transparent 24%,
-      rgba(0, 0, 0, 0.1) 25%,
-      rgba(0, 0, 0, 0.1) 26%,
-      transparent 27%,
-      transparent 74%,
-      rgba(0, 0, 0, 0.1) 75%,
-      rgba(0, 0, 0, 0.1) 76%,
-      transparent 77%,
-      transparent
-    ),
-    linear-gradient(
-      90deg,
-      transparent 24%,
-      rgba(0, 0, 0, 0.1) 25%,
-      rgba(0, 0, 0, 0.1) 26%,
-      transparent 27%,
-      transparent 74%,
-      rgba(0, 0, 0, 0.1) 75%,
-      rgba(0, 0, 0, 0.1) 76%,
-      transparent 77%,
-      transparent
-    );
-  background-size: 20px 20px;
+
+.icon {
+  width: 50px;
+  height: 50px;
+  margin-bottom: 20px;
+  cursor: pointer;
+}
+
+.toolbar {
+  width: calc(100% - 100px);
+  height: 50px;
+  background-color: #ccc;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+}
+
+.canvas-container {
+  flex-grow: 1;
 }
 </style>

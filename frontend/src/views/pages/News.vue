@@ -2,7 +2,7 @@
   <div class="home-contents">
     <div class="header">
       <img src="@/assets/MECHPHAISTOS cover.jpg" />
-      <h1 class="title">Welcome to MECHPHASTOS</h1>
+      <h1 class="title">Welcome to MECHPHAISTOS</h1>
     </div>
     <div class="content-container">
       <div class="side-container left-side">
@@ -12,15 +12,15 @@
         <div class="section world-clock-section">
           <WorldClock />
         </div>
+        <div class="section mechphaistos-ai-section">
+          <Mechphaistos_Ai />
+        </div>
         <div class="section weather-info-container">
           <Weather />
           <InformationBox message="これは管理人からのお知らせです。" />
         </div>
         <div class="section">
           <News_content />
-        </div>
-        <div class="section calendar-section">
-          <MainCalendar :events="events" @update-events="updateEvents" />
         </div>
       </div>
       <div class="side-container right-side"></div>
@@ -36,6 +36,7 @@ import InformationBox from '@/components/Information_box/Information_box.vue';
 import MainCalendar from '@/components/Calendar/MainCalendar.vue';
 import MiniCalendar from '@/components/Calendar/MiniCalendar.vue';
 import { INITIAL_EVENTS } from '@/components/Calendar/event-utils';
+import Mechphaistos_Ai from '@/components/Mechphaistos_Ai/Mechphaistos_Ai.vue';
 
 export default {
   components: {
@@ -45,6 +46,7 @@ export default {
     InformationBox,
     MainCalendar,
     MiniCalendar,
+    Mechphaistos_Ai,
   },
   data() {
     return {
@@ -131,7 +133,7 @@ export default {
 .weather-info-container {
   display: flex;
   justify-content: space-between; /* 子要素を横並びに */
-  gap: 20px; /* 子要素間のスペース */
+  gap: 10px; /* 子要素間のスペース */
 }
 
 .weather-info-container > * {
@@ -140,6 +142,19 @@ export default {
 
 /* world-clock-section と weather-info-container の間隔を狭める */
 .world-clock-section {
-  margin-bottom: 1px; /* デフォルトの間隔より狭く設定 */
+  margin-bottom: 0px; /* デフォルトの間隔より狭く設定 */
 }
+
+/* mechphaistos-ai-section の配置と幅を調整 */
+.mechphaistos-ai-section {
+  width: calc(100% - 240px); /* 左側のサイドバーの幅を考慮して右に移動 */
+  margin-top: 0px; /* セクション間のスペースを調整 */
+  margin-left: 240px; /* 左側のサイドバーの幅を考慮して右に移動 */
+}
+
+/* 右側のサイドバーを少し下にずらす */
+.right-side {
+  margin-top: 240px; /* 必要に応じて値を調整 */
+}
+
 </style>

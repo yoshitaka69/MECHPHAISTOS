@@ -1,54 +1,30 @@
 <template>
-  <aside>
-    <div v-for="item in items" :key="item.name" draggable @dragstart="startDrag(item)">
-      <img :src="item.icon" alt="" />
-      <p>{{ item.name }}</p>
+  <aside class="app-sidebar">
+    <div @click="$emit('itemSelected', { name: 'Pump', icon: 'pump-icon.png' })">
+      <img src="/icons/pump-icon.png" alt="Pump" />
+      <p>Pump</p>
     </div>
   </aside>
 </template>
 
 <script>
 export default {
-  emits: ['itemDragged'],
-  data() {
-    return {
-      items: [
-        { name: 'Pump', icon: '/icons/pump-icon.png' },
-        { name: 'Valve', icon: '/icons/valve-icon.png' },
-        { name: 'Tank', icon: '/icons/tank-icon.png' }
-      ]
-    }
-  },
-  methods: {
-    startDrag(item) {
-      this.$emit('itemDragged', item)
-    }
-  }
+  name: 'Sidebar'
 }
 </script>
 
-<style>
-aside {
-  background-color: #f4f4f4;
+<style scoped>
+.app-sidebar {
   width: 200px;
+  background-color: #f4f4f4;
   padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
 }
-div[draggable] {
-  cursor: grab;
-  padding: 0.5rem;
-  border: 1px solid #ccc;
-  background-color: white;
+.app-sidebar div {
+  margin-bottom: 1rem;
+  cursor: pointer;
   text-align: center;
 }
-img {
+.app-sidebar img {
   max-width: 100%;
-  height: auto;
-}
-p {
-  margin: 0;
-  font-size: 0.9rem;
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div id="world-clock">
     <div v-for="(city, index) in cities" :key="city.name" class="clock-container">
-      <h2>{{ city.name }}</h2>
+      <h2 class="city-name">{{ city.name }}</h2>
       <Clock :timezone="city.timezone"></Clock>
     </div>
   </div>
@@ -48,14 +48,33 @@ export default {
 <style scoped>
 #world-clock {
   display: flex;
-  justify-content: space-around;
-  align-items: center;
+  justify-content: center; /* コンテナを中央揃え */
+  align-items: flex-start; /* コンテナを上に揃える */
   flex-wrap: wrap;
+  gap: 1px; /* コンテナ間の間隔を調整 */
+  padding: 1px; /* 外側の余白を追加 */
 }
 
 .clock-container {
   text-align: center;
-  margin: 1px; /* ここを調整 */
+  flex: 1 0 200px; /* 各コンテナの最小幅を設定 */
+  max-width: 180px; /* 最大幅を設定 */
+  box-sizing: border-box; /* ボックスサイズを含む */
+  position: relative; /* 相対位置を設定 */
+  padding-top: 5px; /* 上部の余白を設定 */
+  margin: 0; /* マージンをリセット */
+}
+
+.city-name {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%; /* 横幅をコンテナ全体に設定 */
+  margin: 0;
+  font-size: 1.0em;
+  font-weight: bold;
+  text-align: center; /* テキストを中央揃え */
 }
 
 .clock-container h2 {
