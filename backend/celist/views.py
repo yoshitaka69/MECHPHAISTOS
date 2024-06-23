@@ -73,6 +73,9 @@ def post_risk_matrix_impact(request):
     x_value = request.data.get('x')
     y_value = request.data.get('y')
     
+    # ログを出力
+    print(f"Received POST request with data: companyCode={company_code_str}, levelSetValue={level_set_value}, x={x_value}, y={y_value}")
+
     if not company_code_str:
         return Response({"error": "companyCode is required"}, status=status.HTTP_400_BAD_REQUEST)
     
@@ -89,16 +92,22 @@ def post_risk_matrix_impact(request):
     )
     risk_matrix_impact.save()
 
+    # 最新10件のみ保持し、それ以上は削除
+    impacts = RiskMatrixImpact.objects.filter(companyCode=company_code, levelSetValue=level_set_value).order_by('-timestamp')
+    if impacts.count() > 10:
+        for impact in impacts[10:]:
+            impact.delete()
+
     serializer = RiskMatrixImpactSerializer(risk_matrix_impact)
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 @api_view(['GET'])
-def get_latest_risk_matrix_impacts(request, company_code):
+def get_latest_risk_matrix_impacts(request, company_code, level_set_value):
     try:
         company_code_instance = CompanyCode.objects.get(companyCode=company_code)
     except CompanyCode.DoesNotExist:
         return Response({"error": "Invalid companyCode"}, status=status.HTTP_400_BAD_REQUEST)
 
-    latest_impacts = RiskMatrixImpact.objects.filter(companyCode=company_code_instance).order_by('-timestamp')[:10]
+    latest_impacts = RiskMatrixImpact.objects.filter(companyCode=company_code_instance, levelSetValue=level_set_value).order_by('-timestamp')[:10]
     serializer = RiskMatrixImpactSerializer(latest_impacts, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
