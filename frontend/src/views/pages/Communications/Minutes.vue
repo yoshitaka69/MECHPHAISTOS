@@ -28,7 +28,7 @@
 		  this.mediaRecorder = new MediaRecorder(stream);
 		  this.mediaRecorder.start();
   
-		  this.socket = new WebSocket('ws://localhost:8000/ws/audio/');
+		  this.socket = new WebSocket('ws://localhost:8000/minutes/ws/audio/');
 		  this.socket.onopen = () => console.log("WebSocket connection opened.");
 		  this.socket.onerror = (error) => console.error("WebSocket error:", error);
 		  this.socket.onclose = () => console.log("WebSocket connection closed.");

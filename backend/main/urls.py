@@ -25,8 +25,8 @@ urlpatterns = [
 
     path("api/", include('reliability.urls')),
     path("api/", include('workingReport.urls')),
-    path('', include('audio_recognition.urls')),
-    path('', include('scada.urls')),
+    path('minutes/', include('audio_recognition.urls')),
+    path('scada/', include('scada.urls')),
     path('api/', include('ai.urls')),
     
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

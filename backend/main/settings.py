@@ -3,13 +3,21 @@ from datetime import timedelta
 import os
 
 
+
+# Voskのログレベルを設定
+os.environ["KALDI_ROOT"] = "log-level=ERROR"
+
+# TensorFlowのログレベルを設定
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = "django-insecure-_qv0fxcogfc^1gxjyx)7_3u9b=c&l15$vlv1-^bmk%m&o5oxeq"
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 
 
@@ -49,6 +57,17 @@ LOGGING = {
             'handlers': ['file'],
             'level': 'CRITICAL',  # ログレベルをCRITICALに設定
             'propagate': True,
+        },
+        # VoskのKaldiログレベルを設定
+        'vosk': {
+            'handlers': ['file'],
+            'level': 'CRITICAL',
+            'propagate': False,
+        },
+        'tensorflow': {
+            'handlers': ['file'],
+            'level': 'CRITICAL',
+            'propagate': False,
         },
     },
 }
@@ -143,7 +162,10 @@ CORS_ALLOWED_ORIGINS = [
 
 CORS_ALLOW_CREDENTIALS = True # 開発中はすべてのオリジンを許可しますが、本番環境ではセキュリティを考慮して設定する必要あり。
 
-CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:8000"]
+CSRF_TRUSTED_ORIGINS = [
+    "http://127.0.0.1:8000",
+    "http://localhost:8000",
+]
 
 #INTERNAL_IPS = ['127.0.0.1',]
 
@@ -221,13 +243,17 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
-ASGI_APPLICATION = 'myproject.asgi.application'
 
+# ASGI Application
+ASGI_APPLICATION = 'main.asgi.application'
+
+
+# Channel Layers
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [('127.0.0.1', 6380)],
+            "hosts": [('127.0.0.1', 6379)],
         },
     },
 }

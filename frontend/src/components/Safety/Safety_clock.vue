@@ -179,69 +179,75 @@
   </script>
   
   <style>
-  .clock {
+
+.clock {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
-	height: 100vh;
+	height: auto; /* 必要に応じて調整 */
 	background-color: #fff;
 	position: relative;
-  }
-  
-  .message-container {
+	margin: 0 auto; /* 時計を水平に中央に配置 */
+	padding: 70px; /* 必要に応じてパディングを追加 */
+	margin-top: 5px; /* 必要に応じて上部マージンを追加 */
+	margin-bottom: 5px; /* 必要に応じて下部マージンを追加 */
+}
+
+.message-container {
 	position: absolute;
 	top: 20px;
-  }
-  
-  .clock-face {
+	margin-bottom: 20px; /* message-containerとclockの間に追加のマージンを設定 */
+}
+
+.clock-face {
 	width: 300px;
 	height: 300px;
-	background-color: #f0f0f0; /* Light gray background for a stylish look */
+	background-color: #f0f0f0; /* スタイリッシュなライトグレーの背景 */
 	border-radius: 50%;
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .clock-border {
+}
+
+.clock-border {
 	fill: none;
 	stroke: #333;
 	stroke-width: 2;
-  }
-  
-  .hand {
+}
+
+.hand {
 	stroke-linecap: round;
 	transform-origin: center;
-  }
-  
-  .hour-hand {
-	fill: #333; /* Black color */
-  }
-  
-  .minute-hand {
-	fill: #333; /* Black color */
-  }
-  
-  .second-hand {
-	fill: #333; /* Black color */
-  }
-  
-  .center-dot {
-	fill: #333; /* Center dot color */
-  }
-  
-  .hour-text {
+}
+
+.hour-hand {
+	fill: #333; /* 黒色 */
+}
+
+.minute-hand {
+	fill: #333; /* 黒色 */
+}
+
+.second-hand {
+	fill: #333; /* 黒色 */
+}
+
+.center-dot {
+	fill: #333; /* センターのドットの色 */
+}
+
+.hour-text {
 	font-size: 6px;
 	text-anchor: middle;
-	fill: #333; /* Black color for text */
-  }
-  
-  .warning-text {
-	font-size: 5px; /* Adjusted font size */
+	fill: #333; /* テキストの黒色 */
+}
+
+.warning-text {
+	font-size: 5px; /* 調整されたフォントサイズ */
 	fill: #ff0000;
 	font-weight: bold;
-  }
-  
-  .description-box {
+}
+
+.description-box {
 	margin-top: 20px;
 	padding: 10px;
 	border: 1px solid #333;
@@ -249,6 +255,7 @@
 	width: 300px;
 	text-align: center;
 	font-size: 14px;
-  }
+}
+
   </style>
   

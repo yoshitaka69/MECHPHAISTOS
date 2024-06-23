@@ -15,15 +15,14 @@
         <div class="section mechphaistos-ai-section">
           <Mechphaistos_Ai />
         </div>
-        <div class="section weather-info-container">
-          <Weather />
-          <InformationBox message="これは管理人からのお知らせです。" />
-        </div>
-        <div class="section">
+        <div class="section news-and-sidebar">
           <News_content />
+          <div class="side-container right-side">
+            <Weather />
+            <InformationBox message="これは管理人からのお知らせです。" />
+          </div>
         </div>
       </div>
-      <div class="side-container right-side"></div>
     </div>
   </div>
 </template>
@@ -110,7 +109,7 @@ export default {
 }
 
 .side-container {
-  width: 240px; /* サイドコンテナの幅を狭める */
+  width: 240px; /* サイドコンテナの幅 */
   background-color: #f0f0f0; /* サイドコンテナの背景色 */
   height: 100vh; /* 縦に伸ばす */
 }
@@ -152,9 +151,15 @@ export default {
   margin-left: 240px; /* 左側のサイドバーの幅を考慮して右に移動 */
 }
 
-/* 右側のサイドバーを少し下にずらす */
-.right-side {
-  margin-top: 240px; /* 必要に応じて値を調整 */
+/* news-and-sidebar の横並び配置 */
+.news-and-sidebar {
+  display: flex;
+  gap: 20px; /* News_content とサイドバーの間のスペース */
 }
 
+.right-side {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* コンポーネント間のスペース */
+}
 </style>

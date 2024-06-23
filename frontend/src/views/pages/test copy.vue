@@ -1,32 +1,22 @@
 <template>
-  <div class="container">
-    <div class="chart-section">
-      <div class="controls">
-        <button @click="saveControlPoint">Save</button>
-        <button @click="resetToDefault">Reset</button>
-      </div>
-      <div class="chart-container">
-        <div ref="chart"></div>
-        <div class="pointer-position">Pointer Position: x={{ controlPoint.x.toFixed(2) }}, y={{ controlPoint.y.toFixed(2) }}</div>
-      </div>
+  <div>
+    <div class="controls">
+      <button @click="saveControlPoint">Save</button>
+      <button @click="resetToDefault">Reset</button>
     </div>
-    <div class="history-container">
-      <h3>History</h3>
-      <div class="history-buttons">
-        <button v-for="item in history" :key="item.timestamp" @click="setControlPoint(item)" class="history-button">
-          {{ item.formattedTimestamp }} - x: {{ item.x }}, y: {{ item.y }}
-        </button>
-      </div>
+    <div class="chart-container">
+      <div ref="chart"></div>
+      <div class="pointer-position">Pointer Position: x={{ controlPoint.x.toFixed(2) }}, y={{ controlPoint.y.toFixed(2)
+        }}</div>
     </div>
   </div>
 </template>
 
 
-
 <script>
 import * as d3 from 'd3';
 import axios from 'axios';
-import { useUserStore } from '@/stores/userStore';
+import { useUserStore } from '@/stores/userStore'; // piniaのストアをインポート
 
 export default {
   name: 'RiskMatrixPossibilityOfFailureOnlyMatrix',
@@ -34,7 +24,7 @@ export default {
     inputData: {
       type: Array,
       required: false,
-      default: () => [] 
+      default: () => [] // デフォルト値を空の配列に設定
     }
   },
   data() {
@@ -71,8 +61,7 @@ export default {
       numPm03Occurrences: null,
       numPm04Occurrences: null,
       riskText: '',
-      selectedSetting: 1,
-      history: [] 
+      selectedSetting: 1
     };
   },
   watch: {
@@ -92,7 +81,6 @@ export default {
   },
   mounted() {
     this.drawChart();
-    this.loadHistory(); 
   },
   methods: {
     drawChart() {
@@ -297,8 +285,8 @@ export default {
       updateChart();
     },
     async saveControlPoint() {
-      const userStore = useUserStore(); 
-      const companyCode = userStore.companyCode; 
+      const userStore = useUserStore(); // piniaのストアからユーザーデータを取得
+      const companyCode = userStore.companyCode; // companyCodeを取得
 
       this.savedControlPoints[1] = { ...this.controlPoint };
       console.log('Saving control point:', this.controlPoint);
@@ -314,43 +302,17 @@ export default {
       try {
         const response = await axios.post('http://127.0.0.1:8000/api/ceList/risk_matrix_possibility/', payload, {
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}` 
+            'Authorization': `Bearer ${localStorage.getItem('token')}` // トークンを使用して認証
           }
         });
 
         console.log('Control point saved:', response.data);
-        this.loadHistory(); 
       } catch (error) {
         console.error('Error saving control point:', error);
         if (error.response) {
           console.error('Response data:', error.response.data);
         }
       }
-    },
-    async loadHistory() {
-      const userStore = useUserStore(); 
-      const companyCode = userStore.companyCode; 
-
-      try {
-        const response = await axios.get(`http://127.0.0.1:8000/api/ceList/risk_matrix_possibility/${companyCode}/`, {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}` 
-          }
-        });
-
-        this.history = response.data.map(item => {
-          const date = new Date(item.timestamp);
-          item.formattedTimestamp = `${date.getFullYear()}-${('0' + (date.getMonth() + 1)).slice(-2)}-${('0' + date.getDate()).slice(-2)} ${('0' + date.getHours()).slice(-2)}:${('0' + date.getMinutes()).slice(-2)}`;
-          return item;
-        });
-        console.log('History loaded:', this.history);
-      } catch (error) {
-        console.error('Error loading history:', error);
-      }
-    },
-    setControlPoint(item) {
-      this.controlPoint = { x: item.x, y: item.y };
-      this.drawChart();
     },
     loadControlPoint() {
       this.controlPoint = { ...this.savedControlPoints[1] };
@@ -434,17 +396,11 @@ export default {
 };
 </script>
 
+
+
+
+
 <style scoped>
-.container {
-  display: flex;
-  justify-content: space-between; /* 左右にスペースを確保 */
-  align-items: flex-start; /* 上揃え */
-}
-
-.chart-section {
-  flex: 1; /* チャートセクションが残りのスペースを占有 */
-}
-
 .chart-container {
   display: flex;
   justify-content: center;
@@ -452,19 +408,13 @@ export default {
   width: 100%;
   height: 400px;
   margin-top: 40px;
-  padding: 0 20px; /* 両側に20pxのパディングを追加 */
-  margin-left: 20px; /* 左側に20pxのマージンを追加 */
-  margin-right: 20px; /* 右側に20pxのマージンを追加 */
+  /* テーブルとチャート間のマージン */
 }
 
 .controls {
-  display: flex; /* ボタンを横並びにする */
-  justify-content: flex-start;
-  margin-bottom: 20px;
-}
-
-.controls button {
-  margin-right: 10px; /* ボタン間のスペース */
+  display: inline-block;
+  vertical-align: top;
+  margin-right: 20px;
 }
 
 .pointer-position {
@@ -472,36 +422,39 @@ export default {
   font-size: 14px;
 }
 
-.history-container {
-  width: 250px; /* 履歴コンテナの幅を設定 */
-  margin-left: 20px; /* チャートセクションとの間にスペースを確保 */
+.VH {
+  background-color: #f90909;
+  font-weight: 550 !important;
+}
+
+.H {
+  background-color: #f99d09;
+  font-weight: 550 !important;
+}
+
+.M {
+  background-color: #f9d909;
+  height: 60px;
+  font-weight: 550 !important;
+}
+
+.LM {
+  background-color: #a0d070;
+  font-weight: 550 !important;
+}
+
+.L {
+  background-color: #4c7c04;
+  font-weight: 550 !important;
+}
+
+.risk-text {
+  font-size: 8px;
+  /* フォントサイズを小さく変更 */
+  font-weight: bold;
+  white-space: pre-line;
+  /* 改行を有効にする */
   text-align: center;
-}
-
-.history-buttons {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-}
-
-.history-button {
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  padding: 10px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 14px;
-  cursor: pointer;
-  border-radius: 5px;
-  transition-duration: 0.4s;
-  width: 100%; /* 履歴コンテナの幅に合わせる */
-  max-width: 100%;
-}
-
-.history-button:hover {
-  background-color: #45a049;
+  /* テキストを中央揃えにする */
 }
 </style>
