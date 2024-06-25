@@ -1,3 +1,4 @@
+
 from rest_framework import serializers
 from .models import MasterDataTable,BomAndTask,CeListAndTask,BadActorManagement,EventYearPPM,GapOfRepairingCost
 from taskList.models import TypicalTaskList,TaskListPPM02,TaskListPPM03,TaskListAPM04,TaskListPPM05
@@ -39,8 +40,6 @@ class MasterDataTableSerializer(serializers.ModelSerializer):
     latestPM03 = create_slug_related_field('latestPM03', TaskListPPM03.objects.all())
     countOfPM04 = create_slug_related_field('countOfPM04', TaskListAPM04.objects.all())
     latestPM04 = create_slug_related_field('latestPM04', TaskListAPM04.objects.all())
-
-
 
     
     class Meta:
@@ -160,4 +159,3 @@ class CompanyCodeGapOfRepairingCostSerializer(serializers.ModelSerializer):
     class Meta:
         model = CompanyCode
         fields = ['companyCode', 'GapOfRepairingCostList']
-

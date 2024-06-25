@@ -108,6 +108,7 @@ class MasterDataTable(models.Model):
         verbose_name = 'Master Data Table'
         verbose_name_plural = 'Master Data Table'
         ordering = ('ceListNo',) #モデルのクエリセットを取得した際にどのような順番でフィールドを並べ変えるかを決める。
+        unique_together = ('companyCode', 'ceListNo') #companyCodeとceListNoの組み合わせがユニークであることを示す。
     
 
     def __str__(self):
