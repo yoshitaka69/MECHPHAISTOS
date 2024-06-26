@@ -1,4 +1,5 @@
-
+#このコードは、PM02、PM03、PM04、PM05の予定と実績のデータを取得、更新、保存するためのAPIを提供します。
+# calculation appにsignal.pyを持っているので注意してください。
 from rest_framework import serializers
 from accounts.models import CompanyCode
 from .models import PlannedPM02,ActualPM02,PlannedPM03,ActualPM03,ActualPM04,PlannedPM05,ActualPM05
@@ -522,28 +523,47 @@ class CompanyCodeAPM03Serializer(serializers.ModelSerializer):
 
 
 
-
-
-
-
-
 #PM04-actual
+#----------------------------------------------------------------------------------------
 class ActualPM04Serializer(serializers.ModelSerializer):
     class Meta:
         model = ActualPM04
-        fields = ['companyCode','plant','year','jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec','commitment','totalCost',]
-
+        fields = ['companyCode', 'plant', 'year', 'jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec', 'commitment', 'totalCost']
 
     companyCode = serializers.SlugRelatedField(
-        slug_field='companyCode', 
+        slug_field='companyCode',
         queryset=CompanyCode.objects.all()
     )
     plant = serializers.SlugRelatedField(
-        slug_field='plant', 
+        slug_field='plant',
         queryset=Plant.objects.all()
     )
 
-    
+    def create(self, validated_data):
+        return self._create_or_update(validated_data)
+
+    def update(self, instance, validated_data):
+        return self._create_or_update(validated_data, instance)
+
+    def _create_or_update(self, validated_data, instance=None):
+        company_code = validated_data.pop('companyCode', None)
+        plant_name = validated_data.pop('plant', None)
+
+        if instance:
+            for attr, value in validated_data.items():
+                setattr(instance, attr, value)
+            if company_code:
+                instance.companyCode = company_code
+            if plant_name:
+                instance.plant = plant_name
+            instance.save()
+            return instance
+        else:
+            return ActualPM04.objects.create(
+                companyCode=company_code,
+                plant=plant_name,
+                **validated_data
+            )
 
 class PlantAPM04Serializer(serializers.ModelSerializer):
     actualPM04 = ActualPM04Serializer(many=True, source='actualPM04_plant') 
@@ -552,6 +572,34 @@ class PlantAPM04Serializer(serializers.ModelSerializer):
         model = Plant
         fields = ['plant', 'actualPM04']
     
+    def create(self, validated_data):
+        return self._create_or_update(validated_data)
+
+    def update(self, instance, validated_data):
+        return self._create_or_update(validated_data, instance)
+
+    def _create_or_update(self, validated_data, instance=None):
+        actual_pm04_data = validated_data.pop('actualPM04_plant', [])
+        
+        if instance:
+            for attr, value in validated_data.items():
+                setattr(instance, attr, value)
+            instance.save()
+        else:
+            instance = Plant.objects.create(**validated_data)
+
+        for actual_pm04 in actual_pm04_data:
+            actual_pm04['plant'] = instance
+            actual_pm04_instance, created = ActualPM04.objects.get_or_create(
+                plant=instance,
+                year=actual_pm04.get('year'),
+                defaults=actual_pm04
+            )
+
+            if not created:
+                ActualPM04Serializer().update(actual_pm04_instance, actual_pm04)
+        
+        return instance
 
 class CompanyCodeAPM04Serializer(serializers.ModelSerializer):
     actualPM04List = PlantAPM04Serializer(many=True, source='plant_companyCode')
@@ -560,11 +608,24 @@ class CompanyCodeAPM04Serializer(serializers.ModelSerializer):
         model = CompanyCode
         fields = ['companyCode', 'actualPM04List']
 
+    def create(self, validated_data):
+        return self._create_or_update(validated_data)
+
     def update(self, instance, validated_data):
+        return self._create_or_update(validated_data, instance)
+
+    def _create_or_update(self, validated_data, instance=None):
         plant_data_list = validated_data.pop('plant_companyCode', [])
         
+        if instance:
+            for attr, value in validated_data.items():
+                setattr(instance, attr, value)
+            instance.save()
+        else:
+            instance = CompanyCode.objects.create(**validated_data)
+
         for plant_data in plant_data_list:
-            actual_pm04_data = plant_data.pop('actualPM04_plant', [])
+            plant_data['companyCode'] = instance
             plant_instance, created = Plant.objects.get_or_create(
                 companyCode=instance,
                 plant=plant_data.get('plant'),
@@ -572,73 +633,12 @@ class CompanyCodeAPM04Serializer(serializers.ModelSerializer):
             )
 
             if not created:
-                for key, value in plant_data.items():
-                    setattr(plant_instance, key, value)
-                plant_instance.save()
-
-            for actual_pm04 in actual_pm04_data:
-                actual_pm04_instance, created = ActualPM04.objects.get_or_create(
-                    plant=plant_instance, 
-                    year=actual_pm04.get('year'),
-                    defaults=actual_pm04
-                )
-
-                if not created:
-                    for key, value in actual_pm04.items():
-                        setattr(actual_pm04_instance, key, value)
-                    actual_pm04_instance.save()
-
-        for attr, value in validated_data.items():
-            setattr(instance, attr, value)
-        instance.save()
-
+                PlantAPM04Serializer().update(plant_instance, plant_data)
+            else:
+                PlantAPM04Serializer().create(plant_data)
+        
         return instance
-
-    def create(self, validated_data):
-        plant_data_list = validated_data.pop('plant_companyCode', [])
-        company_code_data = validated_data.pop('companyCode')
-        company_code_instance, created = CompanyCode.objects.get_or_create(
-            companyCode=company_code_data, 
-            defaults=validated_data
-        )
-
-        if not created:
-            for attr, value in validated_data.items():
-                setattr(company_code_instance, attr, value)
-            company_code_instance.save()
-
-        for plant_data in plant_data_list:
-            actual_pm04_data = plant_data.pop('actualPM04_plant', [])
-            plant_instance, created = Plant.objects.get_or_create(
-                companyCode=company_code_instance, 
-                plant=plant_data.get('plant'),
-                defaults=plant_data
-            )
-
-            if not created:
-                for key, value in plant_data.items():
-                    setattr(plant_instance, key, value)
-                plant_instance.save()
-
-            for actual_pm04 in actual_pm04_data:
-                actual_pm04_instance, created = ActualPM04.objects.get_or_create(
-                    plant=plant_instance, 
-                    year=actual_pm04.get('year'),
-                    defaults=actual_pm04
-                )
-
-                if not created:
-                    for key, value in actual_pm04.items():
-                        setattr(actual_pm04_instance, key, value)
-                    actual_pm04_instance.save()
-
-        return company_code_instance
-
-
-    class Meta:
-        model = CompanyCode
-        fields = ['companyCode', 'actualPM04List']
-
+#----------------------------------------------------------------------------------------
 
 
 
