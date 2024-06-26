@@ -1,7 +1,8 @@
 <template>
-	<div id="PM03actualtable">
+	<div id="PM04actualtable">
 	  <hot-table ref="hotTableComponent" :settings="hotSettings"></hot-table>
-	  <button v-on:click="updateData" class="controls">Update Data</button>
+	  <p>*You cannot enter the same plant name and year more than once.</p>
+	  <Button label="Update Data" severity="secondary" raised class="updateData" @click="updateData"/>
 	</div>
   </template>
   
@@ -84,7 +85,22 @@
 		  fillHandle: {
 			autoInsertRow: true
 		  },
-		  licenseKey: 'non-commercial-and-evaluation'
+		  licenseKey: 'non-commercial-and-evaluation',
+		  afterChange: (changes, source) => {
+			if (source !== 'loadData' && changes) {
+			  changes.forEach(([row, prop, oldValue, newValue]) => {
+				const instance = this.$refs.hotTableComponent.hotInstance;
+				const cell = instance.getCell(row, instance.propToCol(prop));
+				if (newValue === null || newValue === '') {
+				  cell.style.backgroundColor = ''; // 空欄の場合は背景色をリセット
+				} else if (isNaN(newValue)) {
+				  cell.style.backgroundColor = '#ffcccc'; // 薄い赤色
+				} else {
+				  cell.style.backgroundColor = ''; // 正しい値の場合は背景色をリセット
+				}
+			  });
+			}
+		  }
 		}
 	  };
 	},
@@ -171,7 +187,7 @@
 		  });
 	  },
   
-  
+	  // updateDataメソッドでのデータ確認
 	  updateData: function () {
 		const userStore = useUserStore();
 		const userCompanyCode = userStore.companyCode;
@@ -185,9 +201,15 @@
 		console.log("Table Data to be posted:", tableData); // ポストするデータをログに出力
   
 		let actualPM04List = {};
+		let deletedRows = [];
   
 		tableData.forEach(row => {
 		  let plantName = row[0];
+		  if (!plantName) {
+			// plantNameがnullまたは空の場合はスキップ
+			return;
+		  }
+  
 		  if (!actualPM04List[plantName]) {
 			actualPM04List[plantName] = {
 			  plant: plantName,
@@ -196,7 +218,7 @@
 		  }
   
 		  // 年次データを追加
-		  actualPM04List[plantName].actualPM04.push({
+		  const yearData = {
 			companyCode: userCompanyCode,
 			plant: plantName,
 			year: row[1],
@@ -213,13 +235,33 @@
 			nov: row[12] || 0,
 			dec: row[13] || 0,
 			commitment: row[14] || 0,
-			totalCost: row[15] || 0
-		  });
+			totalCost: row.slice(2, 15).reduce((acc, val) => acc + (parseFloat(val) || 0), 0) // Janからcommitmentまでの合計
+		  };
+  
+		  actualPM04List[plantName].actualPM04.push(yearData);
 		});
+  
+		// 削除された行を収集
+		const physicalRowCount = this.$refs.hotTableComponent.hotInstance.countRows();
+		for (let i = 0; i < physicalRowCount; i++) {
+		  const row = this.$refs.hotTableComponent.hotInstance.getDataAtRow(i);
+		  if (!row[0] && !row[1]) {
+			// plantNameとyearがnullまたは空の場合は削除対象
+			continue;
+		  }
+		  if (!actualPM04List[row[0]]) {
+			deletedRows.push({
+			  companyCode: userCompanyCode,
+			  plant: row[0],
+			  year: row[1]
+			});
+		  }
+		}
   
 		let postData = {
 		  companyCode: userCompanyCode,
-		  actualPM04List: Object.values(actualPM04List)
+		  actualPM04List: Object.values(actualPM04List),
+		  deletedRows: deletedRows
 		};
 		console.log("Post Data:", postData); // ポストデータをログに出力
   
@@ -230,6 +272,8 @@
 		  })
 		  .catch(error => {
 			console.error("Error in posting data", error);
+			console.log("Posted Data:", postData); // POSTしたデータをログに出力
+			console.log("Response Error Data:", error.response.data); // エラーレスポンスをログに出力
 		  });
 	  }
   
