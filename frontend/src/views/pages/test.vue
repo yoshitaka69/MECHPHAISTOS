@@ -1,347 +1,370 @@
 <template>
-  <div id="SparePartsList">
-    <hot-table ref="hotTableComponent" :settings="hotSettings"></hot-table><br />
-    <button v-on:click="updateData" class="controls">Update Data</button>
+  <div id="TaskList">
+      <hot-table ref="hotTableComponent" :settings="hotSettings"></hot-table><br />
+      <Button label="Update Data" severity="secondary" raised class="submit-button" @click="updateData" />
   </div>
 </template>
 
 <script>
-import axios from 'axios';
-import Handsontable from 'handsontable';
+import Handsontable from 'handsontable'; //独自のレンダラーを使用するときに使う。
 import { defineComponent } from 'vue';
 import { HotTable } from '@handsontable/vue3';
 import { registerAllModules } from 'handsontable/registry';
 import 'handsontable/dist/handsontable.full.css';
+import axios from "axios";
 import { useUserStore } from '@/stores/userStore'; // Piniaストアをインポート
+import 'primevue/resources/themes/saga-blue/theme.css';      // theme
+import 'primevue/resources/primevue.min.css';                // core css
+import 'primeicons/primeicons.css';                          // icons
+import Button from 'primevue/button';
 
 // register Handsontable's modules
 registerAllModules();
 
-function customRendererForAlertOrder(instance, td, row, col, prop, value, cellProperties) {
-  Handsontable.renderers.TextRenderer.apply(this, arguments); // 常に基本のテキストレンダラーを適用
-  if (value === 'order') {
-    td.style.backgroundColor = '#FF0000'; // 注文が必要な場合は赤色
-    td.style.color = 'black';
-  } else if (cellProperties.readOnly) {
-    td.style.backgroundColor = '#f5f5f5'; // 読み取り専用のセルは薄い灰色
-  }
-}
-
-function imageRenderer(instance, td, row, col, prop, value, cellProperties) {
-  if (value) {
-    const img = document.createElement('img');
-    img.src = value;
-    img.style.width = '50px';
-    img.style.height = '50px';
-    td.appendChild(img);
-  }
-  return td;
-}
-
-const SparePartsComponent = defineComponent({
+const TaskListComponent = defineComponent({
   data() {
-    return {
-      hotSettings: {
-        data: [
-          ["image_url", "1", "1", "Motor", "Standard", "RX-78-5.7", "12345-98", "Change motor", 900000, 1, "pieces", "warehouse1", "8", false, false, "classification", "inventoryTurnover", "when we change No.1 agitator, we have to change this motor too"],//1
-          ["image_url", "2", "2", "Agitator", "Inventory", "ag89-78-5.7", "1233333-9", "Replace agitator", 180000, 4, "pieces", "warehouse2", "14", false, false, "classification", "inventoryTurnover", "This agitator is bad actor,we keep this agitator every time"],//2
-          ["image_url", "3", "3", "Pump", "Standard", "zew99-0045", "135455333-9", "Exchange pump", 550000, 2, "pieces", "plantA", "60", false, false, "classification", "inventoryTurnover", "This pump is needed exchange by operator"],//3
-          ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],//4
-          ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],//5
-          ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],//6
-          ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],//7
-          ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],//8
-          ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],//9
-          ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],//10
-          ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],//11
-          ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],//12
-          ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],//13
-          ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],//14
-          ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],//15
-          ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],//16
-          ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],//17
-          ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],//18
-          ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],//19
-          ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],//20
-        ],
-        colHeaders: [
-          "Image", "parts No", "BOM <br>Code.", "Parts Name", "Category", "Model", "Serial Number", "Task Code", "Price", "Number <br>of ~", "Unit", "Location", "Delivery <br>Time", "Alert <br>order", "Order <br>situation", 'classification', 'inventoryTurnover', "Description"
-        ],
+      return {
+          hotSettings: {
+              data: [
+                  ['PlantA', 'Dryer', 'blower', '2018-10-20', 'Change bearing', '5000', '5', 'true', 'BomCode-1', '58090', '111222', '', '遅延', 'true', '', '', '', '', '', '', '', '', '', 'true',],//1
+                  ['PlantA', 'Dryer', 'blower', '2018-10-20', 'Change bearing', '5000', '5', 'true', 'BomCode-1', '58090', '111222', '', '遅延', 'true', '', '', '', '', '', '', '', '', '', '', 'true',],//2
+                  ['PlantA', 'Dryer', 'blower', '2018-10-20', 'Change bearing', '5000', '5', 'true', 'BomCode-1', '58090', '111222', '', '遅延', 'true', '', '', '', '', '', '', '', '', '', '', 'true',],//3
+                  ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//4
+                  ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//5
+                  ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//6
+                  ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//7
+                  ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//8
+                  ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//9
+                  ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//10
+                  ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//11
+                  ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//12
+                  ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//13
+                  ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//14
+                  ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],//15
 
-        columns: [
-          {//Image
-            data: 'image',
-            renderer: imageRenderer,
-            editor: Handsontable.editors.TextEditor,
-          },
-          {//Parts No
-            data: 'partsNo',
-            type: "text",
-            readOnly: true,
-          },
-          {//BOM Code.
-            data: 'bomCode',
-            type: "numeric",
-          },
-          {//PartsName
-            data: 'partsName',
-            type: "text",
-            className: 'htCenter',
-          },
-          {//Category
-            data: 'category',
-            className: 'htRight',
-            type: 'dropdown',
-            source: ['Standard', 'Inventory', 'consumables']
-          },
-          {//Model
-            data: 'partsModel',
-            type: 'text',
-          },
-          {//SerialNumber
-            data: 'serialNumber',
-            type: 'text',
-            className: 'htRight',
-          },
-          {//TaskCode
-            data: 'taskCode',
-            type: 'text',
-            className: 'htCenter',
-          },
-          {//PartsCost
-            data: 'partsCost',
-            type: 'numeric',
-            className: 'htRight',
-          },
-          {//Number of ~
-            data: 'numberOf',
-            width: 60,
-            className: 'htRight',
-            type: 'numeric',
-          },
-          {//Unit
-            data: 'unit',
-            width: 60,
-            type: 'numeric',
-            className: 'htRight',
-          },
-          {//Location
-            data: 'location',
-            className: 'htRight',
-            type: 'text',
-            className: 'htRight',
-          },
-          {//Delivery Parts time
-            data: 'partsDeliveryTime',
-            width: 60,
-            className: 'htRight',
-            type: 'numeric',
-          },
-          {//Alert order
-            data: 'orderAlert',
-            width: 100,
-            className: 'htCenter',
-            type: 'text',
-            renderer: customRendererForAlertOrder,
-            readOnly: true,
-          },
-          {//Order situation
-            data: 'orderSituation',
-            width: 100,
-            className: 'htCenter',
-            type: 'checkbox',
-          },
-          {//classification
-            data: 'classification',
-            width: 100,
-            className: 'htCenter',
-            type: 'text'
-          },
-          {//inventoryTurnover
-            data: 'inventoryTurnover',
-            width: 100,
-            className: 'htCenter',
-            type: 'text'
-          },
-          {//Description
-            data: 'partsDescription',
-            className: 'htCenter',
-            type: 'text',
-          },
-        ],
+              ],
+              colHeaders: this.generateColHeaders(), // ヘッダーを生成するメソッドを使用 消すな‼
 
-        afterGetColHeader: (col, TH) => {
-          if (col === -1) {  // ヘッダー行の場合
-            return;
+              columns: [
+                  {//taskListNo
+                      data: 'taskListNo',
+                      type: "text",
+                      readOnly: true,
+                      renderer: function(instance, td, row, col, prop, value, cellProperties) {
+                          Handsontable.renderers.TextRenderer.apply(this, arguments);
+                          td.style.backgroundColor = '#f5f5f5'; // 背景色を灰色に設定
+                          td.style.color = 'black'; // テキスト色を黒に設定
+                      }
+                  },
+                  {//plant
+                      data: 'plant',
+                      type: "text",
+                  },
+                  {//Equipment
+                      data: 'equipment',
+                      type: "text",
+
+                  },
+                  {//MachineName
+                      data: 'machineName',
+                      type: "text",
+
+                  },
+                  {//Latest Date PM
+                      data: 'typicalLatestDate',
+                      type: 'date',
+                      dateFormat: 'YYYY-MM-DD',
+                      correctFormat: false,
+                      readOnly: true,
+                      renderer: function(instance, td, row, col, prop, value, cellProperties) {
+                          Handsontable.renderers.TextRenderer.apply(this, arguments);
+                          td.style.backgroundColor = '#f5f5f5'; // 背景色を灰色に設定
+                          td.style.color = 'black'; // テキスト色を黒に設定
+                      }
+                  },
+                  {//TaskName
+                      data: 'typicalTaskName',
+                      type: "text",
+                  },
+                  {//TaskLaborCost
+                      data: 'typicalTaskCost',
+                      type: 'numeric',
+                  },
+                  {//TaskConstructionCost
+                      data: 'typicalConstPeriod',
+                      type: 'numeric',
+                  },
+                  {//MultiTasking
+                      data: 'multiTasking',
+                      type: 'checkbox',
+                      className: 'htCenter'
+                  },
+                  {//BomCode
+                      data: 'bomCode',
+                      type: 'text',
+                      readOnly: true,
+                      renderer: function(instance, td, row, col, prop, value, cellProperties) {
+                          Handsontable.renderers.TextRenderer.apply(this, arguments);
+                          td.style.backgroundColor = '#f5f5f5'; // 背景色を灰色に設定
+                          td.style.color = 'black'; // テキスト色を黒に設定
+                      }
+                  },
+                  {//BomCost
+                      data: 'bomCodeCost',
+                      type: 'numeric',
+                      readOnly: true,
+                      renderer: function(instance, td, row, col, prop, value, cellProperties) {
+                          Handsontable.renderers.TextRenderer.apply(this, arguments);
+                          td.style.backgroundColor = '#f5f5f5'; // 背景色を灰色に設定
+                          td.style.color = 'black'; // テキスト色を黒に設定
+                      }
+                  },
+                  {//TotalCost
+                      data: 'totalCost',
+                      type: 'numeric',
+                  },
+                  {//Next event date
+                      data: 'typicalNextEventDate',
+                      type: 'numeric',
+                      readOnly: true,
+                      renderer: function(instance, td, row, col, prop, value, cellProperties) {
+                          Handsontable.renderers.TextRenderer.apply(this, arguments);
+                          td.style.backgroundColor = '#f5f5f5'; // 背景色を灰色に設定
+                          td.style.color = 'black'; // テキスト色を黒に設定
+                      }
+                  },
+                  {//Situation
+                      data: 'typicalSituation',
+                      type: 'text',
+                      readOnly: true,
+                      renderer: function(instance, td, row, col, prop, value, cellProperties) {
+                          Handsontable.renderers.TextRenderer.apply(this, arguments);
+                          td.style.backgroundColor = '#f5f5f5'; // 背景色を灰色に設定
+                          td.style.color = 'black'; // テキスト色を黒に設定
+                      }
+                  },
+                  {//現時点からの10年先まで繰り返し（今）
+                      data: 'thisYear',
+                      type: 'checkbox',
+                      className: 'htCenter'
+                  },
+                  {//現時点からの10年先まで繰り返し（1年後）
+                      data: 'thisYear1later',
+                      type: 'checkbox',
+                      className: 'htCenter'
+                  },
+                  {//現時点からの10年先まで繰り返し（2年後）
+                      data: 'thisYear2later',
+                      type: 'checkbox',
+                      className: 'htCenter'
+                  },
+                  {//現時点からの10年先まで繰り返し（3年後）
+                      data: 'thisYear3later',
+                      type: 'checkbox',
+                      className: 'htCenter'
+                  },
+                  {//現時点からの10年先まで繰り返し（4年後）
+                      data: 'thisYear4later',
+                      type: 'checkbox',
+                      className: 'htCenter'
+                  },
+                  {//現時点からの10年先まで繰り返し（5年後）
+                      data: 'thisYear5later',
+                      type: 'checkbox',
+                      className: 'htCenter'
+                  },
+                  {//現時点からの10年先まで繰り返し（6年後）
+                      data: 'thisYear6later',
+                      type: 'checkbox',
+                      className: 'htCenter'
+                  },
+                  {//現時点からの10年先まで繰り返し（7年後）
+                      data: 'thisYear7later',
+                      type: 'checkbox',
+                      className: 'htCenter'
+                  },
+                  {//現時点からの10年先まで繰り返し（8年後）
+                      data: 'thisYear8later',
+                      type: 'checkbox',
+                      className: 'htCenter'
+                  },
+                  {//現時点からの10年先まで繰り返し（9年後）
+                      data: 'thisYear9later',
+                      type: 'checkbox',
+                      className: 'htCenter'
+                  },
+                  {//現時点からの10年先まで繰り返し（10年後）
+                      data: 'thisYear10later',
+                      type: 'checkbox',
+                      className: 'htCenter'
+                  },
+              ],
+
+              afterGetColHeader: (col, TH) => {
+                  if (col === -1) {  // ヘッダー行の場合
+                      return;
+                  }
+                  // 全ヘッダーセルにスタイルを設定
+                  TH.style.backgroundColor = '#FFFFCC'; // 薄い黄色
+                  TH.style.color = 'black';  // テキスト色を黒に設定
+                  TH.style.fontWeight = 'bold';  // テキストを太字に設定
+              },
+
+              rowHeaders: true,
+
+              width: '100%',
+              height: 'auto',
+              contextMenu: true,//コンテキストメニュー
+              autoWrapRow: true,
+              autoWrapCol: true,
+              fixedColumnsStart: 2,//カラム固定
+              fixedRowsTop: 2,//列固定
+              manualColumnFreeze: true,//コンテキストメニュー手動でコラム解除
+              manualColumnResize: true,//手動での列幅調整
+              manualRowResize: true,//列の手動高さ調整
+              filters: true,
+              dropdownMenu: true,
+              comments: true,//コメントの有り無し
+              fillHandle: {
+                  autoInsertRow: true
+              },
+              licenseKey: 'non-commercial-and-evaluation'
           }
-          // 全ヘッダーセルに薄い青色の背景を設定
-          TH.style.backgroundColor = '#E6F7FF'; // 薄い青色
-          TH.style.color = 'black';  // テキスト色を黒に設定
-          TH.style.fontWeight = 'bold';  // テキストを太字に設定
-        },
-
-        cells: function (row, col, prop) {
-          const cellProperties = {};
-          const readOnlyColumns = ['inventoryTurnover'];
-
-          if (readOnlyColumns.includes(this.columns[col].data)) {
-            cellProperties.readOnly = true; // 列を読み取り専用に設定
-            cellProperties.renderer = customRendererForAlertOrder; // すべての読み取り専用列にカスタムレンダラーを適用
-          }
-          return cellProperties;
-        },
-
-        width: '100%',
-        height: 'auto',
-        stretchH: 'all', // 'none' is default 様子見
-        contextMenu: true,//コンテキストメニュー
-        autoWrapRow: true,
-        autoWrapCol: true,
-        fixedColumnsStart: 2,//カラム固定
-        fixedRowsTop: 2,//列固定
-        manualColumnFreeze: true,//コンテキストメニュー手動でコラム解除
-        manualColumnResize: true,//手動での列幅調整
-        manualRowResize: true,//列の手動高さ調整
-        filters: true,
-        dropdownMenu: true,
-        comments: true,//コメントの有り無し
-        fillHandle: {
-          autoInsertRow: true
-        },
-
-        licenseKey: 'non-commercial-and-evaluation'
-      }
-    };
+      };
   },
 
   created() {
-    this.getDataAxios();
+      this.getDataAxios();
   },
 
   methods: {
-    getDataAxios() {
-      const userStore = useUserStore();
-      const userCompanyCode = userStore.companyCode;
+      generateColHeaders() {
+          const currentYear = new Date().getFullYear();
+          const futureYears = Array.from({ length: 11 }, (_, index) => (currentYear + index).toString());
 
-      if (!userCompanyCode) {
-        console.error("Error: No company code found for the user.");
-        return;
-      }
+          return [
+              'TaskListNo', 'Plant', 'Equipment', 'MachineName', 'LatestDate<br>PM', 'TaskName', 'TaskLabor<br>Cost', 'TaskConstruction<br>Period',
+              'Multi<br>Tasking', 'BomCode', 'BomCost', 'TotalCost', 'Next Even<br>date', 'Situation', ...futureYears
+          ];
+      },
 
-      const url = `http://127.0.0.1:8000/api/spareParts/sparePartsByCompany/?format=json&companyCode=${userCompanyCode}`;
+      getDataAxios() {
+          const userStore = useUserStore();
+          const userCompanyCode = userStore.companyCode;
 
-      axios.get(url, {
-        headers: {
-          "Content-Type": "application/json"
-        },
-        withCredentials: true
-      })
-        .then(response => {
-          const sparePartsData = response.data;
+          if (!userCompanyCode) {
+              console.error("Error: No company code found for the user.");
+              return;
+          }
 
-          // データ抽出
-          const index = ['image', 'partsNo', 'bomCode', 'partsName', 'category', 'partsModel', 'serialNumber', 'taskCode', 'partsCost', 'numberOf', 'unit', 'location', 'partsDeliveryTime', 'orderAlert', 'orderSituation', 'classification', "inventoryTurnover", "partsDescription"];
+          const url = `http://127.0.0.1:8000/api/task/taskListByCompany/?format=json&companyCode=${userCompanyCode}`;
 
-          const tableData = sparePartsData.flatMap(companyData =>
-            companyData.sparePartsList.flatMap(partData => {
-              const rowData = {};
-              index.forEach(key => {
-                // 数値データに対してはparseFloatを適用し、それ以外は直接代入
-                rowData[key] = (key === 'partsCost' || key === 'numberOf') ? parseFloat(partData[key]) || 0 : partData[key];
+          axios.get(url, {
+              headers: {
+                  "Content-Type": "application/json"
+              },
+              withCredentials: true
+          })
+              .then(response => {
+                  const taskListData = response.data.flatMap(companyData => companyData.taskList);
+                  console.log("Fetched Task List Data:", taskListData);
+
+                  // 空行を追加
+                  const blankRows = Array.from({ length: 20 }, () => ({}));
+                  const newData = taskListData.concat(blankRows);
+
+                  // Handsontable設定の更新
+                  this.$refs.hotTableComponent.hotInstance.updateSettings({
+                      data: newData,
+                      // ここで他の必要な設定を更新することも可能
+                  });
+              })
+              .catch(error => {
+                  console.error("Error fetching data:", error);
               });
-              return rowData;
-            })
-          );
+      },
 
-          const blankRows = Array.from({ length: 10 }, () => ({}));
-          const newData = tableData.concat(blankRows);
+      updateData() {
+    const userStore = useUserStore();
+    const userCompanyCode = userStore.companyCode;
 
-          // table settings
-          this.$refs.hotTableComponent.hotInstance.updateSettings({
-            data: newData,
-          });
-        })
-        .catch(error => {
-          console.error("Error fetching data:", error);
-        });
-    },
-
-    updateData() {
-      const userStore = useUserStore();
-      const userCompanyCode = userStore.companyCode;
-
-      if (!userCompanyCode) {
+    if (!userCompanyCode) {
         console.error("Error: No company code found for the user.");
         return;
-      }
+    }
 
-      const tableData = this.$refs.hotTableComponent.hotInstance.getData();
-      let sparePartsList = [];
+    const hotInstance = this.$refs.hotTableComponent.hotInstance;
+    const rowCount = hotInstance.countRows();
+    let taskList = [];
 
-      tableData.forEach(row => {
-        let image = row[0]; // 画像
-        let partsNo = row[1]; // partsナンバー
-        let bomCode = row[2]; // BOMコード
-        let partsName = row[3]; // パーツネーム
-        let category = row[4]; // カテゴリー
-        let partsModel = row[5]; // 型式
-        let serialNumber = row[6]; // シリアルナンバー
-        let taskCode = row[7]; // タスクコード
-        let partsCost = row[8]; // パーツコスト
-        let numberOf = row[9]; // 個数
-        let unit = row[10]; // カテゴリー
-        let location = row[11]; // 型式
-        let partsDeliveryTime = row[12]; // シリアルナンバー
-        let orderAlert = row[13]; // タスクコード
-        let orderSituation = row[14]; // パーツコスト
-        let classification = row[15]; // 区分
-        let inventoryTurnover = row[16]; // 在庫回転率
-        let partsDescription = row[17]; // 詳細
+    for (let i = 0; i < rowCount; i++) {
+        let rowData = hotInstance.getDataAtRow(i);
+        let taskListNo = i + 1; // 0-indexedから1-indexedに変更
 
-        sparePartsList.push({
-          companyCode: userCompanyCode,
-          image: image,
-          partsNo: partsNo,
-          bomCode: bomCode,
-          partsName: partsName,
-          category: category,
-          partsModel: partsModel,
-          serialNumber: serialNumber,
-          taskCode: taskCode,
-          partsCost: partsCost,
-          numberOf: numberOf,
-          unit: unit,
-          location: location,
-          partsDeliveryTime: partsDeliveryTime,
-          orderAlert: orderAlert,
-          orderSituation: orderSituation,
-          classification: classification,
-          inventoryTurnover: inventoryTurnover,
-          partsDescription: partsDescription
-        });
-      });
+        let taskListItem = {
+            companyCode: userCompanyCode,
+            taskListNo: taskListNo,
+            plant: rowData[1],
+            equipment: rowData[2],
+            machineName: rowData[3],
+            typicalLatestDatePM: rowData[4],
+            typicalTaskName: rowData[5],
+            typicalTaskCost: rowData[6],
+            typicalConstPeriod: rowData[7],
+            multiTasking: rowData[8],
+            bomCode: rowData[9],
+            bomCodeCost: rowData[10],
+            totalCost: rowData[11],
+            typicalNextEventDate: rowData[12],
+            typicalSituation: rowData[13],
+            thisYear: rowData[14],
+            thisYear1later: rowData[15],
+            thisYear2later: rowData[16],
+            thisYear3later: rowData[17],
+            thisYear4later: rowData[18],
+            thisYear5later: rowData[19],
+            thisYear6later: rowData[20],
+            thisYear7later: rowData[21],
+            thisYear8later: rowData[22],
+            thisYear9later: rowData[23],
+            thisYear10later: rowData[24],
+        };
 
-      let postData = {
+        // taskListItemのすべてのフィールドが空欄またはnullであるかを確認
+        const isRowEmpty = Object.values(taskListItem).every(value => value === null || value === '' || value === false);
+
+        if (!isRowEmpty) {
+            taskList.push(taskListItem);
+        }
+    }
+
+    let postData = {
         companyCode: userCompanyCode,
-        sparePartsList: sparePartsList
-      };
-      console.log("postData", postData)
+        taskList: taskList
+    };
 
-      const backendUrl = `http://127.0.0.1:8000/api/spareParts/sparePartsByCompany/?format=json&companyCode=${userCompanyCode}`;
-      axios.post(backendUrl, postData)
+    console.log("postData", postData);
+
+    const backendUrl = `http://127.0.0.1:8000/api/task/taskListByCompany/`;
+    axios.post(backendUrl, postData)
         .then(response => {
-          console.log("Data posted successfully", response.data);
+            console.log("Data posted successfully", response.data);
         })
         .catch(error => {
-          console.error("Error in posting data", error);
+            console.error("Error in posting data", error);
+            if (error.response) {
+                console.error("Response data:", error.response.data);
+            }
         });
-    },
+}
+
+
   },
 
   components: {
-    HotTable,
+      HotTable,
+      Button,
   },
 });
-
-export default SparePartsComponent;
+export default TaskListComponent;
 </script>

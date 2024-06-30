@@ -1,18 +1,29 @@
-from django.shortcuts import render
+# views.py
+
+from rest_framework import status
+from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
-
-from .models import SpareParts,BomList,SparePartsManagement
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from django.core.files.storage import default_storage
+from .models import SpareParts, BomList, SparePartsManagement
 from accounts.models import CompanyCode
-from .serializers import SparePartsSerializer,CompanyCodeSPSerializer,BomListSerializer,CompanyBomListSerializer,SparePartsManagementSerializer,CompanySparePartsManagementSerializer
+from .serializers import (
+    SparePartsSerializer, CompanyCodeSPSerializer, 
+    BomListSerializer, CompanyBomListSerializer, 
+    SparePartsManagementSerializer, CompanySparePartsManagementSerializer
+)
 
 
 
+# SparePartsのViewSet
+from rest_framework import viewsets
+from .models import SpareParts, CompanyCode
+from .serializers import SparePartsSerializer, CompanyCodeSPSerializer
 
-#SparePartsList
 class SparePartsViewSet(viewsets.ModelViewSet):
     queryset = SpareParts.objects.all()
     serializer_class = SparePartsSerializer
-
 
 class CompanyCodeSPViewSet(viewsets.ModelViewSet):
     serializer_class = CompanyCodeSPSerializer
@@ -24,16 +35,34 @@ class CompanyCodeSPViewSet(viewsets.ModelViewSet):
         return CompanyCode.objects.all()
 
 
-#BomCode
+
+
+
+
+# 画像アップロード用のビュー
+@api_view(['POST'])
+def upload_image(request):
+    if 'image' in request.FILES:
+        image = request.FILES['image']
+        file_path = default_storage.save(f'images/{image.name}', image)
+        image_url = default_storage.url(file_path)
+        return Response({'imageUrl': image_url})
+    return Response({'error': 'Invalid request'}, status=400)
+
+
+
+
+# BomListのViewSet
 class BomListViewSet(viewsets.ModelViewSet):
     queryset = BomList.objects.all()
     serializer_class = BomListSerializer
 
+# CompanyCodeに関連するBomListのViewSet
 class CompanyBomListViewSet(viewsets.ModelViewSet):
     queryset = CompanyCode.objects.all()
     serializer_class = CompanyBomListSerializer
 
-#クエリパラメータでのフィルターリング
+    # クエリパラメータに基づいてクエリセットをフィルタリング
     def get_queryset(self):
         queryset = CompanyCode.objects.prefetch_related('bomList_companyCode').all()
         company_code = self.request.query_params.get('companyCode', None)
@@ -43,17 +72,17 @@ class CompanyBomListViewSet(viewsets.ModelViewSet):
 
 
 
-
-#SparePartsManagement
+# SparePartsManagementのViewSet
 class SparePartsManagementViewSet(viewsets.ModelViewSet):
     queryset = SparePartsManagement.objects.all()
     serializer_class = SparePartsManagementSerializer
 
+# CompanyCodeに関連するSparePartsManagementのViewSet
 class CompanySparePartsManagementViewSet(viewsets.ModelViewSet):
     queryset = CompanyCode.objects.all()
     serializer_class = CompanySparePartsManagementSerializer
 
-#クエリパラメータでのフィルターリング
+    # クエリパラメータに基づいてクエリセットをフィルタリング
     def get_queryset(self):
         queryset = CompanyCode.objects.prefetch_related('sparePartsManagement_companyCode').all()
         company_code = self.request.query_params.get('companyCode', None)

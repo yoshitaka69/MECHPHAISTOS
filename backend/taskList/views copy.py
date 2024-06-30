@@ -132,12 +132,6 @@ class CompanyCodeTypicalTaskListViewSet(viewsets.ModelViewSet):
 
 
 #TaskList
-from rest_framework import viewsets, status
-from rest_framework.response import Response
-from rest_framework.decorators import action
-from .models import TaskList, CompanyCode
-from .serializers import TaskListSerializer, CompanyTaskListSerializer
-
 class TaskListViewSet(viewsets.ModelViewSet):
     queryset = TaskList.objects.all()
     serializer_class = TaskListSerializer
@@ -146,18 +140,4 @@ class CompanyCodeTaskListViewSet(viewsets.ModelViewSet):
     serializer_class = CompanyTaskListSerializer
 
     def get_queryset(self):
-        company_code = self.request.query_params.get('companyCode', None)
-        if company_code is not None:
-            return CompanyCode.objects.filter(companyCode=company_code).prefetch_related('taskList_companyCode')
-        return CompanyCode.objects.all()
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        try:
-            serializer.is_valid(raise_exception=True)
-            self.perform_create(serializer)
-            headers = self.get_success_headers(serializer.data)
-            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-        except Exception as e:
-            return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
+        return CompanyCode.objects.prefetch_related('taskList_companyCode').all()

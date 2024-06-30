@@ -13,7 +13,7 @@
 <script>
  import { useUserStore } from '@/stores/userStore'; // Piniaストアをインポート
 import { mapState } from 'pinia';
-import Overlay from './Overlay.vue';
+import Overlay from '../Overlay/Overlay.vue';
 
 export default {
   components: {

@@ -36,41 +36,22 @@ LOGGING = {
     },
     'handlers': {
         'file': {
-            'level': 'CRITICAL',  # ログレベルをCRITICALに設定
+            'level': 'DEBUG',  # デバッグレベルに変更
             'class': 'logging.FileHandler',
-            #'class': 'logging.NullHandler',  # NullHandlerを使用してログを無効にする
             'filename': os.path.join(BASE_DIR, 'debug.log'),
             'formatter': 'verbose',
         },
     },
-    'root': {
-        'handlers': ['file'],
-        'level': 'CRITICAL',  # ログレベルをCRITICALに設定
-    },
     'loggers': {
         'django': {
             'handlers': ['file'],
-            'level': 'CRITICAL',  # ログレベルをCRITICALに設定
+            'level': 'DEBUG',  # デバッグレベルに変更
             'propagate': True,
-        },
-        'corsheaders': {
-            'handlers': ['file'],
-            'level': 'CRITICAL',  # ログレベルをCRITICALに設定
-            'propagate': True,
-        },
-        # VoskのKaldiログレベルを設定
-        'vosk': {
-            'handlers': ['file'],
-            'level': 'CRITICAL',
-            'propagate': False,
-        },
-        'tensorflow': {
-            'handlers': ['file'],
-            'level': 'CRITICAL',
-            'propagate': False,
         },
     },
 }
+
+
 
 
 
@@ -103,7 +84,7 @@ INSTALLED_APPS = [
     'reliability',
     'workingReport',
     'audio_recognition',
-    'channels',
+    #'channels',
     'scada',
     'ai',
 ]

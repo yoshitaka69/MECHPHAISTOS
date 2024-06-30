@@ -5,7 +5,6 @@
 	</div>
   </template>
   
-  
   <script>
   import axios from 'axios';
   import Handsontable from 'handsontable';
@@ -23,9 +22,50 @@
 	if (value === 'order') {
 	  td.style.backgroundColor = '#FF0000'; // 注文が必要な場合は赤色
 	  td.style.color = 'black';
+	} else if (value === 'ordered') {
+	  td.style.backgroundColor = '#00FF00'; // 注文済みの場合は緑色
+	  td.style.color = 'black';
 	} else if (cellProperties.readOnly) {
 	  td.style.backgroundColor = '#f5f5f5'; // 読み取り専用のセルは薄い灰色
 	}
+  }
+  
+  function imageRenderer(instance, td, row, col, prop, value, cellProperties) {
+	Handsontable.renderers.TextRenderer.apply(this, arguments); // テキストレンダラーを基本に適用
+	if (value) {
+	  const img = document.createElement('img');
+	  img.src = value;
+	  img.style.width = '50px';
+	  img.style.height = '50px';
+	  td.appendChild(img);
+	}
+  }
+  
+  function imageEditor(instance, td, row, col, prop, value, cellProperties) {
+	const input = document.createElement('input');
+	input.type = 'file';
+	input.accept = 'image/*';
+	input.style.display = 'none';
+  
+	input.addEventListener('change', (event) => {
+	  const file = event.target.files[0];
+	  const formData = new FormData();
+	  formData.append('image', file);
+  
+	  axios.post('http://127.0.0.1:8000/api/spareParts/upload_image/', formData, {
+		headers: {
+		  'Content-Type': 'multipart/form-data'
+		}
+	  }).then(response => {
+		const imageUrl = response.data.imageUrl;
+		instance.setDataAtCell(row, col, imageUrl);
+	  }).catch(error => {
+		console.error('Image upload failed:', error);
+	  });
+	});
+  
+	td.appendChild(input);
+	input.click();
   }
   
   const SparePartsComponent = defineComponent({
@@ -33,107 +73,133 @@
 	  return {
 		hotSettings: {
 		  data: [
-			["", 1, "Motor", "Standard", "RX-78-5.7", "12345-98", "Change motor", 900000, 1, "pieces", "warehouse1", "8", "", "", "when we change No.1 agitator, we have to change this motor too"],//1
-			["", 2, "Agitator", "Inventory", "ag89-78-5.7", "1233333-9", "Replace agitator", 180000, 4, "pieces", "warehouse2", "14", "", "", "This agitator is bad actor,we keep this agitator every time"],//2
-			["", 3, "Pump", "Standard", "zew99-0045", "135455333-9", "Exchange pump", 550000, 2, "pieces", "plantA", "60", "", "", "This pump is needed exchange by operator"],//3
-			["", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],//4
-			["", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],//5
-			["", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],//6
-			["", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],//7
-			["", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],//8
-			["", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],//9
-			["", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],//10
-			["", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],//11
-			["", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],//12
-			["", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],//13
-			["", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],//14
-			["", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],//15
-			["", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],//16
-			["", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],//17
-			["", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],//18
-			["", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],//19
-			["", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],//20
-  
+			["image_url", "1", "1", "Motor", "Standard", "RX-78-5.7", "12345-98", "Change motor", 900000, 1, "pieces", "warehouse1", "8", "order", false, "classification", "inventoryTurnover", "when we change No.1 agitator, we have to change this motor too"],//1
+			["image_url", "2", "2", "Agitator", "Inventory", "ag89-78-5.7", "1233333-9", "Replace agitator", 180000, 4, "pieces", "warehouse2", "14", "order", false, "classification", "inventoryTurnover", "This agitator is bad actor,we keep this agitator every time"],//2
+			["image_url", "3", "3", "Pump", "Standard", "zew99-0045", "135455333-9", "Exchange pump", 550000, 2, "pieces", "plantA", "60", "order", false, "classification", "inventoryTurnover", "This pump is needed exchange by operator"],//3
+			["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],//4
+			["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],//5
+			["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],//6
+			["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],//7
+			["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],//8
+			["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],//9
+			["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],//10
+			["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],//11
+			["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],//12
+			["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],//13
+			["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],//14
+			["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],//15
+			["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],//16
+			["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],//17
+			["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],//18
+			["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],//19
+			["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],//20
 		  ],
 		  colHeaders: [
-			"parts No", "Image", "BOM <br>Code.", "Parts Name", "Category", "Model", "Serial Number", "Task Code", "Price", "Number <br>of ~", "Unit", "Location", "Delivery <br>Time", "Alert <br>order", "Order <br>situation", 'classification', 'inventoryTurnover', "Description"
+			"Image", "parts No", "BOM <br>Code.", "Parts Name", "Category", "Model", "Serial Number", "Task Code", "Price", "Number <br>of ~", "Unit", "Location", "Delivery <br>Time", "Alert <br>order", "Order <br>situation", 'classification', 'inventoryTurnover', "Description"
 		  ],
-  
+		  rowHeaders: true, // ここで行ヘッダーを有効にします
 		  columns: [
-			{//Parts No
-			  type: "numeric",
-			},
 			{//Image
+			  data: 'image',
+			  renderer: imageRenderer,
+			  editor: imageEditor,
+			},
+			{//Parts No
+			  data: 'partsNo',
+			  type: "text",
+			  readOnly: true,
+			  renderer: function(instance, td, row, col, prop, value, cellProperties) {
+				Handsontable.renderers.TextRenderer.apply(this, arguments);
+				td.style.backgroundColor = '#f5f5f5'; // 背景色を灰色に設定
+				td.style.color = 'black'; // テキスト色を黒に設定
+			  }
 			},
 			{//BOM Code.
-			  type: "numeric",
+			  data: 'bomCode',
+			  type: "text",
 			},
 			{//PartsName
+			  data: 'partsName',
 			  type: "text",
 			  className: 'htCenter',
 			},
 			{//Category
+			  data: 'category',
 			  className: 'htRight',
 			  type: 'dropdown',
 			  source: ['Standard', 'Inventory', 'consumables']
 			},
 			{//Model
+			  data: 'partsModel',
 			  type: 'text',
 			},
 			{//SerialNumber
+			  data: 'serialNumber',
 			  type: 'text',
 			  className: 'htRight',
 			},
 			{//TaskCode
+			  data: 'taskCode',
 			  type: 'text',
 			  className: 'htCenter',
 			},
 			{//PartsCost
+			  data: 'partsCost',
 			  type: 'numeric',
 			  className: 'htRight',
 			},
 			{//Number of ~
+			  data: 'numberOf',
 			  width: 60,
 			  className: 'htRight',
 			  type: 'numeric',
 			},
 			{//Unit
+			  data: 'unit',
 			  width: 60,
 			  type: 'numeric',
 			  className: 'htRight',
 			},
 			{//Location
+			  data: 'location',
 			  className: 'htRight',
 			  type: 'text',
 			  className: 'htRight',
 			},
 			{//Delivery Parts time
+			  data: 'partsDeliveryTime',
 			  width: 60,
 			  className: 'htRight',
 			  type: 'numeric',
 			},
 			{//Alert order
+			  data: 'orderAlert',
 			  width: 100,
 			  className: 'htCenter',
-			  type: "text",
-			  renderer: customRendererForAlertOrder
+			  type: 'text',
+			  renderer: customRendererForAlertOrder,
+			  readOnly: true,
 			},
 			{//Order situation
+			  data: 'orderSituation',
 			  width: 100,
 			  className: 'htCenter',
-			  type: 'checkbox'
+			  type: 'checkbox',
 			},
 			{//classification
+			  data: 'classification',
 			  width: 100,
 			  className: 'htCenter',
 			  type: 'text'
 			},
 			{//inventoryTurnover
+			  data: 'inventoryTurnover',
 			  width: 100,
 			  className: 'htCenter',
 			  type: 'text'
 			},
 			{//Description
+			  data: 'partsDescription',
 			  className: 'htCenter',
 			  type: 'text',
 			},
@@ -149,9 +215,24 @@
 			TH.style.fontWeight = 'bold';  // テキストを太字に設定
 		  },
   
+		  afterChange: function (changes, source) {
+			if (changes) {
+			  changes.forEach(([row, prop, oldValue, newValue]) => {
+				if (prop === 'orderSituation') {
+				  const alertOrderValue = this.getDataAtCell(row, 13);
+				  if (newValue === true && alertOrderValue === 'order') {
+					this.setDataAtCell(row, 13, 'ordered');
+				  } else if (newValue === false && alertOrderValue === 'ordered') {
+					this.setDataAtCell(row, 13, 'order');
+				  }
+				}
+			  });
+			}
+		  },
+  
 		  cells: function (row, col, prop) {
 			const cellProperties = {};
-			const readOnlyColumns = ['orderAlert', 'orderSituation', 'inventoryTurnover'];
+			const readOnlyColumns = ['inventoryTurnover'];
   
 			if (readOnlyColumns.includes(this.columns[col].data)) {
 			  cellProperties.readOnly = true; // 列を読み取り専用に設定
@@ -179,7 +260,6 @@
 		  },
   
 		  licenseKey: 'non-commercial-and-evaluation'
-  
 		}
 	  };
 	},
@@ -189,7 +269,6 @@
 	},
   
 	methods: {
-  
 	  getDataAxios() {
 		const userStore = useUserStore();
 		const userCompanyCode = userStore.companyCode;
@@ -210,10 +289,8 @@
 		  .then(response => {
 			const sparePartsData = response.data;
   
-  
-  
 			// データ抽出
-			const index = ['partsNo', 'image', 'bomCode', 'partsName', 'category', 'partsModel', 'serialNumber', 'taskCode', 'partsCost', 'numberOf', 'unit', 'location', 'partsDeliveryTime', 'orderAlert', 'orderSituation', 'classification', "inventoryTurnover", "partsDescription"];
+			const index = ['image', 'partsNo', 'bomCode', 'partsName', 'category', 'partsModel', 'serialNumber', 'taskCode', 'partsCost', 'numberOf', 'unit', 'location', 'partsDeliveryTime', 'orderAlert', 'orderSituation', 'classification', "inventoryTurnover", "partsDescription"];
   
 			const tableData = sparePartsData.flatMap(companyData =>
 			  companyData.sparePartsList.flatMap(partData => {
@@ -226,36 +303,15 @@
 			  })
 			);
   
-			// columns の設定
-			const columns = [
-			  { data: "partsNo", type: 'text', readOnly: true },
-			  { data: "image" },
-			  { data: "bomCode" },
-			  { data: "partsName" },
-			  { data: "category" },
-			  { data: "partsModel" },
-			  { data: "serialNumber" },
-			  { data: "taskCode" },
-			  { data: "partsCost" },
-			  { data: "numberOf" },
-			  { data: "unit" },
-			  { data: "location" },
-			  { data: "partsDeliveryTime" },
-			  { data: "orderAlert", renderer: customRendererForAlertOrder, readOnly: true },
-			  { data: "orderSituation", readOnly: true },
-			  { data: "classification" },
-			  { data: "inventoryTurnover", readOnly: true },
-			  { data: "partsDescription" },
-			];
-			console.log("Table Data:", tableData); // テーブルデータをログに出力
+			// partsNoでソート
+			tableData.sort((a, b) => (parseInt(a.partsNo, 10) || 0) - (parseInt(b.partsNo, 10) || 0));
   
 			const blankRows = Array.from({ length: 10 }, () => ({}));
 			const newData = tableData.concat(blankRows);
   
-			//table setting
+			// table settings
 			this.$refs.hotTableComponent.hotInstance.updateSettings({
 			  data: newData,
-			  columns,
 			});
 		  })
 		  .catch(error => {
@@ -263,9 +319,7 @@
 		  });
 	  },
   
-  
-  
-	  updateData: function () {
+	  updateData() {
 		const userStore = useUserStore();
 		const userCompanyCode = userStore.companyCode;
   
@@ -278,8 +332,8 @@
 		let sparePartsList = [];
   
 		tableData.forEach(row => {
-		  let partsNo = row[0]; // partsナンバー
-		  let image = row[1]; // 画像
+		  let image = row[0]; // 画像
+		  let partsNo = row[1]; // partsナンバー
 		  let bomCode = row[2]; // BOMコード
 		  let partsName = row[3]; // パーツネーム
 		  let category = row[4]; // カテゴリー
@@ -292,47 +346,52 @@
 		  let location = row[11]; // 型式
 		  let partsDeliveryTime = row[12]; // シリアルナンバー
 		  let orderAlert = row[13]; // タスクコード
-		  let orderSituation = row[14]; // パーツコスト
+		  let orderSituation = row[14] === true; // パーツコスト
 		  let classification = row[15]; // 区分
 		  let inventoryTurnover = row[16]; // 在庫回転率
 		  let partsDescription = row[17]; // 詳細
   
-		  sparePartsList.push({
-			companyCode: userCompanyCode,
-			partsNo: partsNo,
-			image: image,
-			bomCode: bomCode,
-			partsName: partsName,
-			category: category,
-			partsModel: partsModel,
-			serialNumber: serialNumber,
-			taskCode: taskCode,
-			partsCost: partsCost,
-			numberOf: numberOf,
-			unit: unit,
-			location: location,
-			partsDeliveryTime: partsDeliveryTime,
-			orderAlert: orderAlert,
-			orderSituation: orderSituation,
-			classification: classification,
-			inventoryTurnover: inventoryTurnover,
-			partsDescription: partsDescription
-		  });
+		  // orderSituationを除外した全フィールドが空欄またはnullであるかを確認
+		  const isRowEmpty = [image, partsNo, bomCode, partsName, category, partsModel, serialNumber, taskCode, partsCost, numberOf, unit, location, partsDeliveryTime, orderAlert, classification, inventoryTurnover, partsDescription].every(field => field === null || field === '');
+  
+		  if (!isRowEmpty) {
+			sparePartsList.push({
+			  companyCode: userCompanyCode,
+			  image: image,
+			  partsNo: partsNo,
+			  bomCode: bomCode,
+			  partsName: partsName,
+			  category: category,
+			  partsModel: partsModel,
+			  serialNumber: serialNumber,
+			  taskCode: taskCode,
+			  partsCost: partsCost,
+			  numberOf: numberOf,
+			  unit: unit,
+			  location: location,
+			  partsDeliveryTime: partsDeliveryTime,
+			  orderAlert: orderAlert,
+			  orderSituation: orderSituation,
+			  classification: classification,
+			  inventoryTurnover: inventoryTurnover,
+			  partsDescription: partsDescription
+			});
+		  }
 		});
   
 		let postData = {
-		  companyCode: userCompanyCode,
 		  sparePartsList: sparePartsList
 		};
-		console.log("postData", postData)
+		console.log("postData", postData);
   
-		const backendUrl = `http://127.0.0.1:8000/api/spareParts/sparePartsByCompany/?format=json&companyCode=${userCompanyCode}`;
+		const backendUrl = `http://127.0.0.1:8000/api/spareParts/sparePartsByCompany/?format=json`;
 		axios.post(backendUrl, postData)
 		  .then(response => {
 			console.log("Data posted successfully", response.data);
 		  })
 		  .catch(error => {
 			console.error("Error in posting data", error);
+			console.error("Response data:", error.response.data);
 		  });
 	  },
 	},
@@ -340,9 +399,8 @@
 	components: {
 	  HotTable,
 	},
-  }
-  );
+  });
   
   export default SparePartsComponent;
-  
   </script>
+  
