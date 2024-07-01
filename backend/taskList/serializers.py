@@ -357,6 +357,7 @@ def create_slug_related_field(field_name, queryset):
 
 
 
+
 #-------------------------------------------------------
 
 from rest_framework import serializers
@@ -368,60 +369,109 @@ class TaskListSerializer(serializers.ModelSerializer):
         queryset=CompanyCode.objects.all()
     )
     plant = serializers.SlugRelatedField(
-        slug_field='plant',  # 正しいフィールド名に変更
-        queryset=Plant.objects.all()
+        slug_field='plant',
+        queryset=Plant.objects.all(),
+        allow_null=True,
+        required=False
     )
     equipment = serializers.SlugRelatedField(
-        slug_field='equipment',  # 正しいフィールド名に変更
-        queryset=Equipment.objects.all()
+        slug_field='equipment',
+        queryset=Equipment.objects.all(),
+        allow_null=True,
+        required=False
     )
     machineName = serializers.SlugRelatedField(
-        slug_field='machineName',  # 正しいフィールド名に変更
-        queryset=Machine.objects.all()
+        slug_field='machineName',
+        queryset=Machine.objects.all(),
+        allow_null=True,
+        required=False
     )
-    typicalLatestDate = serializers.SlugRelatedField(
-        slug_field='typicalLatestDate',  # 正しいフィールド名に変更
-        queryset=TypicalTaskList.objects.all()
+    typicalLatestDatePM = serializers.SlugRelatedField(
+        slug_field='taskCode',
+        queryset=TypicalTaskList.objects.all(),
+        allow_null=True,
+        required=False
     )
     typicalTaskName = serializers.SlugRelatedField(
-        slug_field='typicalTaskName',  # 正しいフィールド名に変更
-        queryset=TypicalTaskList.objects.all()
+        slug_field='taskCode',
+        queryset=TypicalTaskList.objects.all(),
+        allow_null=True,
+        required=False
     )
     typicalTaskCost = serializers.SlugRelatedField(
-        slug_field='typicalTaskCost',  # 正しいフィールド名に変更
-        queryset=TypicalTaskList.objects.all()
+        slug_field='taskCode',
+        queryset=TypicalTaskList.objects.all(),
+        allow_null=True,
+        required=False
     )
     typicalConstPeriod = serializers.SlugRelatedField(
-        slug_field='typicalConstPeriod',  # 正しいフィールド名に変更
-        queryset=TypicalTaskList.objects.all()
+        slug_field='taskCode',
+        queryset=TypicalTaskList.objects.all(),
+        allow_null=True,
+        required=False
     )
     multiTasking = serializers.SlugRelatedField(
-        slug_field='multiTasking',  # 正しいフィールド名に変更
-        queryset=TypicalTaskList.objects.all()
+        slug_field='taskCode',
+        queryset=TypicalTaskList.objects.all(),
+        allow_null=True,
+        required=False
     )
     typicalNextEventDate = serializers.SlugRelatedField(
-        slug_field='typicalNextEventDate',  # 正しいフィールド名に変更
-        queryset=TypicalTaskList.objects.all()
+        slug_field='taskCode',
+        queryset=TypicalTaskList.objects.all(),
+        allow_null=True,
+        required=False
     )
     typicalSituation = serializers.SlugRelatedField(
-        slug_field='typicalSituation',  # 正しいフィールド名に変更
-        queryset=TypicalTaskList.objects.all()
+        slug_field='taskCode',
+        queryset=TypicalTaskList.objects.all(),
+        allow_null=True,
+        required=False
     )
     bomCode = serializers.SlugRelatedField(
-        slug_field='bomCode',  # 正しいフィールド名に変更
-        queryset=BomList.objects.all()
+        slug_field='taskCode',
+        queryset=BomList.objects.all(),
+        allow_null=True,
+        required=False
     )
     bomCost = serializers.SlugRelatedField(
-        slug_field='bomCost',  # 正しいフィールド名に変更
-        queryset=BomList.objects.all()
+        slug_field='taskCode',
+        queryset=BomList.objects.all(),
+        allow_null=True,
+        required=False
     )
 
     class Meta:
         model = TaskList
-        fields = ["companyCode", 'plant', 'equipment', 'machineName', 'taskListNo', 'typicalLatestDate', 'typicalTaskName', 'typicalTaskCost', 'typicalConstPeriod', 'multiTasking', 'typicalNextEventDate', 'typicalSituation', 'bomCode', 'bomCost', 'totalCost', 'thisYear', 'thisYear1later', 'thisYear2later', 'thisYear3later', 'thisYear4later', 'thisYear5later', 'thisYear6later', 'thisYear7later', 'thisYear8later', 'thisYear9later', 'thisYear10later']
+        fields = [
+            'companyCode', 'plant', 'equipment', 'machineName', 'taskListNo',
+            'typicalLatestDatePM', 'typicalTaskName', 'typicalTaskCost', 'typicalConstPeriod',
+            'multiTasking', 'typicalNextEventDate', 'typicalSituation', 'bomCode', 'bomCost',
+            'totalCost', 'thisYear', 'thisYear1later', 'thisYear2later', 'thisYear3later',
+            'thisYear4later', 'thisYear5later', 'thisYear6later', 'thisYear7later',
+            'thisYear8later', 'thisYear9later', 'thisYear10later'
+        ]
+
+    def to_internal_value(self, data):
+        equipment_data = data.get('equipment')
+        machine_name_data = data.get('machineName')
+        typical_latest_date_pm_data = data.get('typicalLatestDatePM')
+
+        if equipment_data and not Equipment.objects.filter(equipment=equipment_data).exists():
+            data['equipment'] = Equipment.objects.create(equipment=equipment_data).equipment
+
+        if machine_name_data and not Machine.objects.filter(machineName=machine_name_data).exists():
+            data['machineName'] = Machine.objects.create(machineName=machine_name_data).machineName
+
+        if typical_latest_date_pm_data and not TypicalTaskList.objects.filter(taskCode=typical_latest_date_pm_data).exists():
+            data['typicalLatestDatePM'] = TypicalTaskList.objects.create(taskCode=typical_latest_date_pm_data).taskCode
+
+        return super().to_internal_value(data)
+
+
 
 class CompanyTaskListSerializer(serializers.ModelSerializer):
-    taskList = TaskListSerializer(many=True, read_only=True, source='taskList_companyCode')
+    taskList = TaskListSerializer(many=True, source='taskList_companyCode')
 
     class Meta:
         model = CompanyCode
@@ -429,45 +479,57 @@ class CompanyTaskListSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         task_list_data = validated_data.pop('taskList_companyCode')
-        company_code_instance = CompanyCode.objects.create(**validated_data)
+        company_code_instance = CompanyCode.objects.get(companyCode=validated_data['companyCode'])
         
         for task_data in task_list_data:
             company_code_str = task_data.pop('companyCode')
             company_code_instance = CompanyCode.objects.get(companyCode=company_code_str)
 
             task_list_no = task_data.get('taskListNo')
-            task_list_instance = TaskList.objects.filter(companyCode=company_code_instance, taskListNo=task_list_no).first()
+            task_instance = TaskList.objects.filter(companyCode=company_code_instance, taskListNo=task_list_no).first()
 
-            if task_list_instance:
+            if task_instance:
                 # 更新
-                serializer = TaskListSerializer(task_list_instance, data=task_data)
+                serializer = TaskListSerializer(task_instance, data=task_data)
                 if serializer.is_valid():
                     serializer.save()
             else:
-                # 新規作成
-                TaskList.objects.create(companyCode=company_code_instance, **task_data)
+                # taskListNoを自動生成
+                existing_task_nos = TaskList.objects.values_list('taskListNo', flat=True).order_by('taskListNo')
+                existing_task_nos_int = [int(taskListNo) for taskListNo in existing_task_nos if taskListNo.isdigit()]
+                if existing_task_nos_int:
+                    missing_no = next((i for i in range(1, max(existing_task_nos_int) + 2) if i not in existing_task_nos_int), None)
+                    task_list_no = missing_no if missing_no is not None else max(existing_task_nos_int) + 1
+                else:
+                    task_list_no = 1
+
+                task_data['taskListNo'] = str(task_list_no)  # taskListNoを文字列として保存
+
+                # すべてのフィールドが空欄またはnullでないことを確認（orderSituationを除外）
+                if any(value for key, value in task_data.items() if key != 'orderSituation'):
+                    TaskList.objects.create(companyCode=company_code_instance, **task_data)
         
         return company_code_instance
 
     def update(self, instance, validated_data):
         task_list_data = validated_data.pop('taskList_companyCode')
-        existing_task_list = TaskList.objects.filter(companyCode=instance)
+        existing_tasks = TaskList.objects.filter(companyCode=instance)
 
         # 更新するタスクリストの管理
         task_list_no_list = [task['taskListNo'] for task in task_list_data]
 
         # 削除するタスクを特定
-        for existing_task in existing_task_list:
+        for existing_task in existing_tasks:
             if existing_task.taskListNo not in task_list_no_list:
                 existing_task.delete()
 
         for task_data in task_list_data:
             task_list_no = task_data.get('taskListNo')
-            task_list_instance = TaskList.objects.filter(companyCode=instance, taskListNo=task_list_no).first()
+            task_instance = TaskList.objects.filter(companyCode=instance, taskListNo=task_list_no).first()
             
-            if task_list_instance:
+            if task_instance:
                 # 更新
-                serializer = TaskListSerializer(task_list_instance, data=task_data)
+                serializer = TaskListSerializer(task_instance, data=task_data)
                 if serializer.is_valid():
                     serializer.save()
             else:
@@ -476,10 +538,25 @@ class CompanyTaskListSerializer(serializers.ModelSerializer):
                 company_code_instance = CompanyCode.objects.get(companyCode=company_code_str)
                 task_data['companyCode'] = company_code_instance
 
-                TaskList.objects.create(**task_data)
+                # taskListNoを自動生成
+                existing_task_nos = TaskList.objects.values_list('taskListNo', flat=True).order_by('taskListNo')
+                existing_task_nos_int = [int(taskListNo) for taskListNo in existing_task_nos if taskListNo.isdigit()]
+                if existing_task_nos_int:
+                    missing_no = next((i for i in range(1, max(existing_task_nos_int) + 2) if i not in existing_task_nos_int), None)
+                    task_list_no = missing_no if missing_no is not None else max(existing_task_nos_int) + 1
+                else:
+                    task_list_no = 1
+
+                task_data['taskListNo'] = str(task_list_no)
+
+                # すべてのフィールドが空欄またはnullでないことを確認（orderSituationを除外）
+                if any(value for key, value in task_data.items() if key != 'orderSituation'):
+                    TaskList.objects.create(**task_data)
         
         instance.save()
         return instance
+
+
 
 
 #-------------------------------------------------------

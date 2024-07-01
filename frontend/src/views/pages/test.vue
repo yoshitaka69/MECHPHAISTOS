@@ -304,30 +304,30 @@ const TaskListComponent = defineComponent({
         let taskListItem = {
             companyCode: userCompanyCode,
             taskListNo: taskListNo,
-            plant: rowData[1],
-            equipment: rowData[2],
-            machineName: rowData[3],
-            typicalLatestDatePM: rowData[4],
-            typicalTaskName: rowData[5],
-            typicalTaskCost: rowData[6],
-            typicalConstPeriod: rowData[7],
-            multiTasking: rowData[8],
-            bomCode: rowData[9],
-            bomCodeCost: rowData[10],
-            totalCost: rowData[11],
-            typicalNextEventDate: rowData[12],
-            typicalSituation: rowData[13],
-            thisYear: rowData[14],
-            thisYear1later: rowData[15],
-            thisYear2later: rowData[16],
-            thisYear3later: rowData[17],
-            thisYear4later: rowData[18],
-            thisYear5later: rowData[19],
-            thisYear6later: rowData[20],
-            thisYear7later: rowData[21],
-            thisYear8later: rowData[22],
-            thisYear9later: rowData[23],
-            thisYear10later: rowData[24],
+            plant: rowData[0],  // Adjusted index according to your columns
+            equipment: rowData[1],
+            machineName: rowData[2],
+            typicalLatestDatePM: rowData[3],
+            typicalTaskName: rowData[4],
+            typicalTaskCost: rowData[5],
+            typicalConstPeriod: rowData[6],
+            multiTasking: rowData[7],
+            bomCode: rowData[8],
+            bomCodeCost: rowData[9],
+            totalCost: rowData[10],
+            typicalNextEventDate: rowData[11],
+            typicalSituation: rowData[12],
+            thisYear: rowData[13] !== null ? rowData[13] : false,
+            thisYear1later: rowData[14] !== null ? rowData[14] : false,
+            thisYear2later: rowData[15] !== null ? rowData[15] : false,
+            thisYear3later: rowData[16] !== null ? rowData[16] : false,
+            thisYear4later: rowData[17] !== null ? rowData[17] : false,
+            thisYear5later: rowData[18] !== null ? rowData[18] : false,
+            thisYear6later: rowData[19] !== null ? rowData[19] : false,
+            thisYear7later: rowData[20] !== null ? rowData[20] : false,
+            thisYear8later: rowData[21] !== null ? rowData[21] : false,
+            thisYear9later: rowData[22] !== null ? rowData[22] : false,
+            thisYear10later: rowData[23] !== null ? rowData[23] : false,
         };
 
         // taskListItemのすべてのフィールドが空欄またはnullであるかを確認
@@ -339,13 +339,13 @@ const TaskListComponent = defineComponent({
     }
 
     let postData = {
-        companyCode: userCompanyCode,
+      companyCode: userCompanyCode,
         taskList: taskList
     };
 
     console.log("postData", postData);
 
-    const backendUrl = `http://127.0.0.1:8000/api/task/taskListByCompany/`;
+    const backendUrl = `http://127.0.0.1:8000/api/task/taskList/`;
     axios.post(backendUrl, postData)
         .then(response => {
             console.log("Data posted successfully", response.data);
@@ -357,6 +357,8 @@ const TaskListComponent = defineComponent({
             }
         });
 }
+
+
 
 
   },
