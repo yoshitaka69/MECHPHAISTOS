@@ -1,4 +1,7 @@
 from django.db import models
+from accounts.models import CompanyCode
+from django.utils import timezone
+
 
 class PlanOptimizationBenefit(models.Model):
 
@@ -36,7 +39,7 @@ class PlanOptimizationBenefit(models.Model):
 class ImprovementBenefit(models.Model):
 
     #on_delateはいちよPROTECTにしておく。ビッグデータは財産として残したいがプライバシーポリシーとも相談になる。
-    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='planOptimizationBenefit_companyCode',null=True, blank=True)
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='improvementBenefit_companyCode',null=True, blank=True)
 
     improvementJan = models.DecimalField(verbose_name='improvementJan', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     improvementFeb = models.DecimalField(verbose_name='improvementFeb', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
@@ -68,7 +71,7 @@ class ImprovementBenefit(models.Model):
 class RiskAvoidanceBenefit(models.Model):
 
     #on_delateはいちよPROTECTにしておく。ビッグデータは財産として残したいがプライバシーポリシーとも相談になる。
-    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='planOptimizationBenefit_companyCode',null=True, blank=True)
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='riskAvoidanceBenefit_companyCode',null=True, blank=True)
 
     riskAvoidJan = models.DecimalField(verbose_name='riskAvoidJan', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     riskAvoidFeb = models.DecimalField(verbose_name='riskAvoidFeb', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
@@ -101,7 +104,7 @@ class RiskAvoidanceBenefit(models.Model):
 class VendorSelectionBenefit(models.Model):
 
     #on_delateはいちよPROTECTにしておく。ビッグデータは財産として残したいがプライバシーポリシーとも相談になる。
-    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='planOptimizationBenefit_companyCode',null=True, blank=True)
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='vendorSelectionBenefit_companyCode',null=True, blank=True)
 
     vendorSelectJan = models.DecimalField(verbose_name='vendorSelectJan', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     vendorSelectFeb = models.DecimalField(verbose_name='vendorSelectFeb', max_digits=12, decimal_places=2,default=0,null=True, blank=True)

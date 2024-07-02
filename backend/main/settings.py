@@ -1,60 +1,14 @@
 from pathlib import Path
-from datetime import timedelta
 import os
 
-
-
-# Voskのログレベルを設定
-os.environ["KALDI_ROOT"] = "log-level=ERROR"
-
-# TensorFlowのログレベルを設定
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-
+# 環境変数で無効にするアプリケーションを指定
+disabled_apps = os.getenv('DISABLE_APPS', '').split(',')
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = "django-insecure-_qv0fxcogfc^1gxjyx)7_3u9b=c&l15$vlv1-^bmk%m&o5oxeq"
-
 DEBUG = True
-
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
-
-
-
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': '{levelname} {asctime} {module} {message}',
-            'style': '{',
-        },
-        'simple': {
-            'format': '{levelname} {message}',
-            'style': '{',
-        },
-    },
-    'handlers': {
-        'file': {
-            'level': 'DEBUG',  # デバッグレベルに変更
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'debug.log'),
-            'formatter': 'verbose',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['file'],
-            'level': 'DEBUG',  # デバッグレベルに変更
-            'propagate': True,
-        },
-    },
-}
-
-
-
-
-
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -65,7 +19,6 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     'rest_framework',
     'rest_framework.authtoken',
-    #'rest_framework_simplejwt',
     'corsheaders',
     'djoser',
     'accounts.apps.AccountsConfig',
@@ -83,23 +36,14 @@ INSTALLED_APPS = [
     'benefit',
     'reliability',
     'workingReport',
-    'audio_recognition',
-    #'channels',
-    'scada',
-    'ai',
+    #'audio_recognition',  # コメントアウト
+    #'channels',  # コメントアウト
+    #'ai',  # コメントアウト
+    #'scada',  # コメントアウト
 ]
 
-
-
-
-#JWT_AUTH設定
-#SIMPLE_JWT = {
-    #'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
-    #'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-    # その他の設定...
-#}
-
-
+# INSTALLED_APPSから無効にするアプリを除外
+INSTALLED_APPS = [app for app in INSTALLED_APPS if app not in disabled_apps]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -110,7 +54,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-
 ]
 
 ROOT_URLCONF = "main.urls"
@@ -141,33 +84,11 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:8001",
 ]
 
-CORS_ALLOW_CREDENTIALS = True # 開発中はすべてのオリジンを許可しますが、本番環境ではセキュリティを考慮して設定する必要あり。
-
+CORS_ALLOW_CREDENTIALS = True
 CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:8000",
     "http://localhost:8000",
 ]
-
-#INTERNAL_IPS = ['127.0.0.1',]
-
-
-#Django rest frame work setting
-#REST_FRAMEWORK = {
-    #'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    #'PAGE_SIZE': 10,
-    #'DEFAULT_PERMISSION_CLASSES': (
-        #'rest_framework.permissions.IsAuthenticated',
-   # ),
-    #'DEFAULT_AUTHENTICATION_CLASSES': (
-        #'rest_framework.authentication.SessionAuthentication',
-        #'rest_framework.authentication.BasicAuthentication',
-       # 'rest_framework_simplejwt.authentication.JWTAuthentication',
-    #),
-#}
-
-# Database
-# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
 
 DATABASES = {
     "default": {
@@ -175,11 +96,6 @@ DATABASES = {
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
-
-
-
-# Password validation
-# https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -196,40 +112,21 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/5.0/topics/i18n/
-
 LANGUAGE_CODE = "en-us"
-
 TIME_ZONE = "UTC"
-
 USE_I18N = True
-
 USE_TZ = True
-
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = "/static/"
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media/'
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
-
-# ASGI Application
 ASGI_APPLICATION = 'main.asgi.application'
 
-
-# Channel Layers
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',

@@ -1,11 +1,8 @@
 from django.conf import settings
 from django.conf.urls.static import static
-
 from django.contrib import admin
-from django.urls import path,include
-
-
-
+from django.urls import path, include
+import os
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -22,11 +19,23 @@ urlpatterns = [
     path("api/", include('calculation.urls')),
     path("api/", include('agora.urls')),
     path("api/", include('workOrder.urls')),
-
     path("api/", include('reliability.urls')),
     path("api/", include('workingReport.urls')),
-    path('minutes/', include('audio_recognition.urls')),
-    path('scada/', include('scada.urls')),
-    path('api/', include('ai.urls')),
-    
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# 無効化されたアプリを環境変数から取得
+disabled_apps = os.getenv('DISABLE_APPS', '').split(',')
+
+# 無効化されたアプリに基づいてURLパターンを追加
+if 'audio_recognition' not in disabled_apps:
+    urlpatterns.append(path('minutes/', include('audio_recognition.urls')))
+
+if 'ai' not in disabled_apps:
+    urlpatterns.append(path('api/', include('ai.urls')))
+
+if 'scada' not in disabled_apps:
+    urlpatterns.append(path('scada/', include('scada.urls')))
+
+if 'channels' not in disabled_apps:
+    # channels関連のURLパターンを追加
+    pass
