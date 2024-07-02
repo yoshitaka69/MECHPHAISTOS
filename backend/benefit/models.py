@@ -65,7 +65,7 @@ class ImprovementBenefit(models.Model):
         return f"{self.companyCode}"
 
 
-class riskAvoidanceBenefit(models.Model):
+class RiskAvoidanceBenefit(models.Model):
 
     #on_delateはいちよPROTECTにしておく。ビッグデータは財産として残したいがプライバシーポリシーとも相談になる。
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='planOptimizationBenefit_companyCode',null=True, blank=True)
@@ -98,7 +98,7 @@ class riskAvoidanceBenefit(models.Model):
 
 
 
-class vendorSelectionBenefit(models.Model):
+class VendorSelectionBenefit(models.Model):
 
     #on_delateはいちよPROTECTにしておく。ビッグデータは財産として残したいがプライバシーポリシーとも相談になる。
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='planOptimizationBenefit_companyCode',null=True, blank=True)
