@@ -49,6 +49,11 @@ const router = createRouter({
 					component: () => import('../views/pages/Safety.vue')
 				},
 				{
+					path: '/near_miss_input_form',
+					name:'Near_Miss_input_form',
+					component: () => import('@/components/Safety/Near_miss/Near_miss_form.vue')
+				},
+				{
 					path: '/prediction&estimate',
 					name:'Prediction&Estimate',
 					component: () => import('../views/pages/Prediction&Estimate.vue')

@@ -12,14 +12,29 @@ class UserSerializer(serializers.ModelSerializer):
         model = CustomUser
         fields = ('userName',)  # ここでユーザー名のみをシリアライズ
 
+
 class NearMissSerializer(serializers.ModelSerializer):
-    userName = UserSerializer() 
+    userName = UserSerializer()
+    companyCode = serializers.SlugRelatedField(slug_field='companyCode', queryset=CompanyCode.objects.all())
     dateOfOccurrence = serializers.DateField(format="%Y-%m-%d")
-    updateDay = serializers.DateTimeField(format="%Y-%m-%d",read_only=True)
+    updateDay = serializers.DateTimeField(format="%Y-%m-%d", read_only=True)
 
     class Meta:
         model = NearMiss
-        fields = ['nearMissNo','userName','department','dateOfOccurrence','placeOfOccurrence','typeOfAccident','factor','injuredLv','equipmentDamageLv','affectOfEnviroment','newsCoverage','measures','description','updateDay',]
+        fields = [
+            'companyCode', 'nearMissNo', 'userName', 'department', 'dateOfOccurrence', 'placeOfOccurrence', 
+            'typeOfAccident', 'factor', 'injuredLv', 'equipmentDamageLv', 'affectOfEnviroment', 
+            'newsCoverage', 'measures','actionItems','solvedActionItems', 'description', 'updateDay'
+        ]
+
+    def create(self, validated_data):
+        user_data = validated_data.pop('userName')
+        user, created = CustomUser.objects.get_or_create(userName=user_data['userName'])
+        company_code = validated_data.pop('companyCode')
+        near_miss = NearMiss.objects.create(userName=user, companyCode=company_code, **validated_data)
+        return near_miss
+
+
 
 
 class CompanyNearMissSerializer(serializers.ModelSerializer):

@@ -135,6 +135,13 @@ import 'primeicons/primeicons.css'
 //konva
 import VueKonva from 'vue-konva'
 
+//fontawesome
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
+
+library.add(faPen, faTrash);
+
 
 const app = createApp(App)
 
@@ -149,6 +156,11 @@ app.use(VueAxios, axios);
 
 //konva
 app.use(VueKonva)
+
+//fontawesome
+app.component('font-awesome-icon', FontAwesomeIcon);
+
+
 
 
 app.use(PrimeVue, { ripple: true });
