@@ -6,12 +6,13 @@ from rest_framework import serializers
 
 
 
+from rest_framework import serializers
+from .models import NearMiss, CompanyCode, CustomUser
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ('userName',)  # ここでユーザー名のみをシリアライズ
-
 
 class NearMissSerializer(serializers.ModelSerializer):
     userName = UserSerializer()
@@ -24,7 +25,7 @@ class NearMissSerializer(serializers.ModelSerializer):
         fields = [
             'companyCode', 'nearMissNo', 'userName', 'department', 'dateOfOccurrence', 'placeOfOccurrence', 
             'typeOfAccident', 'factor', 'injuredLv', 'equipmentDamageLv', 'affectOfEnviroment', 
-            'newsCoverage', 'measures','actionItems','solvedActionItems', 'description', 'updateDay'
+            'newsCoverage', 'measures', 'actionItems', 'solvedActionItems', 'description', 'updateDay'
         ]
 
     def create(self, validated_data):
@@ -37,12 +38,15 @@ class NearMissSerializer(serializers.ModelSerializer):
 
 
 
+
+
 class CompanyNearMissSerializer(serializers.ModelSerializer):
     nearMissList = NearMissSerializer(many=True, read_only=True, source='nearMiss_companyCode')
 
     class Meta:
         model = CompanyCode
         fields = ['companyCode', 'nearMissList']
+
 
 
 

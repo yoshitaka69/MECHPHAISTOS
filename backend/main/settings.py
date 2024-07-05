@@ -36,14 +36,22 @@ INSTALLED_APPS = [
     'benefit',
     'reliability',
     'workingReport',
-    #'audio_recognition',  # コメントアウト
-    #'channels',  # コメントアウト
-    #'ai',  # コメントアウト
-    #'scada',  # コメントアウト
 ]
 
 # INSTALLED_APPSから無効にするアプリを除外
 INSTALLED_APPS = [app for app in INSTALLED_APPS if app not in disabled_apps]
+
+if 'audio_recognition' not in disabled_apps:
+    INSTALLED_APPS.append('audio_recognition')
+
+if 'ai' not in disabled_apps:
+    INSTALLED_APPS.append('ai')
+
+if 'scada' not in disabled_apps:
+    INSTALLED_APPS.append('scada')
+
+if 'channels' not in disabled_apps:
+    INSTALLED_APPS.append('channels')
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",

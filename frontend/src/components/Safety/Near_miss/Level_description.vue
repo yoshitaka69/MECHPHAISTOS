@@ -68,7 +68,7 @@
   <style scoped>
   .table-container {
 	width: 100%;
-	max-width: 600px; /* 任意の最大幅に調整 */
+	max-width: 800px; /* 任意の最大幅に調整 */
 	margin: 0 auto; /* 中央に配置 */
 	overflow-x: auto; /* 水平方向のスクロールを可能に */
   }

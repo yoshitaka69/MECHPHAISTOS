@@ -61,11 +61,9 @@
   
         const targetPlotLayout = {
           title: 'Target Plot for Precision and Accuracy',
-          xaxis: { range: [-15, 15], dtick: 1, zeroline: false, showgrid: false, tick0: 0, autorange: false, fixedrange: false },
-          yaxis: { range: [-15, 15], dtick: 1, zeroline: false, showgrid: false, tick0: 0, autorange: false, fixedrange: false },
+          xaxis: { range: [-15, 15], dtick: 1, zeroline: true, showgrid: false, tick0: 0 },
+          yaxis: { range: [-15, 15], dtick: 1, zeroline: true, showgrid: false, tick0: 0 },
           shapes: [
-            { type: 'line', x0: 0, x1: 0, y0: -15, y1: 15, line: { color: 'red', width: 2 } }, // 固定の縦のセンターライン
-            { type: 'line', x0: -15, x1: 15, y0: 0, y1: 0, line: { color: 'red', width: 2 } }, // 固定の横のセンターライン
             { type: 'circle', xref: 'x', yref: 'y', x0: -15, y0: -15, x1: 15, y1: 15, fillcolor: 'rgba(255, 255, 255, 0.3)', line: { color: 'rgba(0, 0, 0, 0.3)' }, layer: 'below' },
             { type: 'circle', xref: 'x', yref: 'y', x0: -7.5, y0: -7.5, x1: 7.5, y1: 7.5, fillcolor: 'rgba(0, 0, 0, 0.3)', line: { color: 'rgba(0, 0, 0, 0.3)' }, layer: 'below' },
             { type: 'circle', xref: 'x', yref: 'y', x0: -5, y0: -5, x1: 5, y1: 5, fillcolor: 'rgba(0, 0, 255, 0.3)', line: { color: 'rgba(0, 0, 0, 0.3)' }, layer: 'below' },
@@ -74,10 +72,19 @@
           ],
           width: 800,
           height: 800,
-          dragmode: 'pan',
         };
   
         Plotly.react(this.$refs.targetPlot, targetPlotData, targetPlotLayout);
+  
+        // Calculate Accuracy and Precision
+        const meanX = this.sampleDataX.reduce((a, b) => a + b, 0) / this.sampleDataX.length;
+        const meanY = this.sampleDataY.reduce((a, b) => a + b, 0) / this.sampleDataY.length;
+  
+        const accuracy = 100 - (Math.sqrt(Math.pow(meanX, 2) + Math.pow(meanY, 2)) * 100 / Math.sqrt(2));
+        const precision = 100 - (Math.sqrt(this.sampleDataX.map((x, i) => Math.pow(x - meanX, 2)).reduce((a, b) => a + b, 0) / this.sampleDataX.length) * 100);
+  
+        this.accuracy = accuracy.toFixed(2);
+        this.precision = precision.toFixed(2);
       },
       renderHistogram() {
         console.log('Rendering histogram with data:', this.sampleDataX);
@@ -132,15 +139,11 @@
         const histogramPlotLayout = {
           title: 'Precision and Accuracy Histogram',
           barmode: 'overlay',
-          xaxis: { title: 'Values', range: [-15, 15], dtick: 1, zeroline: false, showgrid: false, tick0: 0, autorange: false, fixedrange: false },
-          yaxis: { title: 'Frequency', rangemode: 'tozero', dtick: 1, zeroline: false, showgrid: false, tick0: 0, fixedrange: true },
-          shapes: [
-            { type: 'line', x0: 0, x1: 0, y0: 0, y1: 1, xref: 'x', yref: 'paper', line: { color: 'red', width: 2 } }, // 固定の縦のセンターライン
-          ],
+          xaxis: { title: 'Values', range: [-15, 15], dtick: 1, zeroline: true, showgrid: false, tick0: 0 },
+          yaxis: { title: 'Frequency', rangemode: 'tozero', dtick: 1, zeroline: true, showgrid: false, tick0: 0 },
           legend: { x: 1, y: 1, xanchor: 'right', yanchor: 'top' },
           width: 800,
           height: 400,
-          dragmode: 'pan',
         };
   
         Plotly.react(this.$refs.histogram, histogramPlotData, histogramPlotLayout);

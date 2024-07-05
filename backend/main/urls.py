@@ -4,6 +4,9 @@ from django.contrib import admin
 from django.urls import path, include
 import os
 
+# 環境変数で無効にするアプリケーションを指定
+disabled_apps = os.getenv('DISABLE_APPS', '').split(',')
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", include('djoser.urls')),
@@ -23,10 +26,6 @@ urlpatterns = [
     path("api/", include('workingReport.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-# 無効化されたアプリを環境変数から取得
-disabled_apps = os.getenv('DISABLE_APPS', '').split(',')
-
-# 無効化されたアプリに基づいてURLパターンを追加
 if 'audio_recognition' not in disabled_apps:
     urlpatterns.append(path('minutes/', include('audio_recognition.urls')))
 
