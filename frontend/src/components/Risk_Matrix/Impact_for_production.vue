@@ -14,8 +14,8 @@
         <tr>
           <td>・Recovery possible by operator・Replacement device or easy recovery possible・Equipment is divided into two lines, making recovery easy.Spare parts are on hand and restoration is easily possible with WI</td>
           <td>・Recovery within 1 day・Recovery by operator is not possible・Restoration by knowledgeable and professional contractors.Spare parts and replacement machines available・Parts delivery time for restoration is within 3 days</td>
-          <td>・Recovery within 1 to 3 days・Recovery by operator is not possible・Restoration by knowledgeable and professional contractors.No spare parts or replacement equipment available・The parts delivery time required for restoration is between 1 and 3 days。</td>
-          <td>・Recovery within 3 to 14 days・Manufacturing by changing manufacturing conditions such as single-lung operation・Irregular operations by operators occur after provisional recovery・Special parts are required and the parts delivery time is 3 days or more。</td>
+          <td>・Recovery within 1 to 3 days・Recovery by operator is not possible・Restoration by knowledgeable and professional contractors.No spare parts or replacement equipment available・The parts delivery time required for restoration is between 1 and 3 days</td>
+          <td>・Recovery within 3 to 14 days・Manufacturing by changing manufacturing conditions such as single-lung operation・Irregular operations by operators occur after provisional recovery・Special parts are required and the parts delivery time is 3 days or more</td>
           <td>・Due to severe equipment damage, recovery with replacement equipment is not possible.・Individual response is required after coordinating with each department</td>
         </tr>
       </tbody>

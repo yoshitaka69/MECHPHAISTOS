@@ -99,7 +99,7 @@ export default {
       const filteredData = this.data.filter(d => d.date >= new Date(currentDate.getFullYear(), currentDate.getMonth() - 12, 1) && d.date <= new Date(currentDate.getFullYear(), currentDate.getMonth() + 12, 1));
       const filteredFaultMap = this.faultMap.filter(d => d.date >= new Date(currentDate.getFullYear(), currentDate.getMonth() - 12, 1) && d.date <= new Date(currentDate.getFullYear(), currentDate.getMonth() + 12, 1));
 
-      // x軸と y軸の描画
+      // x軸とy軸の描画
       this.xAxis = svg.append('g').call(d3.axisBottom(this.xScale)).attr('transform', `translate(0,${height})`);
       this.yAxis = svg.append('g').call(d3.axisLeft(this.yScale).ticks(d3.timeMonth.every(1)).tickFormat(d3.timeFormat('%Y-%m')));
 
@@ -221,7 +221,7 @@ export default {
         .attr('r', 5)
         .style('fill', 'blue')
         .style('cursor', 'pointer')
-        .on('click', () => this.toggleVisibility('event', 'event', eventLegend));
+        .on('click', () => this.toggleVisibility('event'));
       eventLegend.append('text')
         .attr('x', graphWidth - 110)
         .attr('y', 15)
@@ -229,7 +229,7 @@ export default {
         .style('font-size', '12px')
         .attr('alignment-baseline', 'middle')
         .style('cursor', 'pointer')
-        .on('click', () => this.toggleVisibility('event', 'event', eventLegend));
+        .on('click', () => this.toggleVisibility('event'));
 
       // PM04の凡例の追加
       const PM04Legend = svg.append('g').attr('class', 'legend-pm04');
@@ -241,7 +241,7 @@ export default {
         .style('stroke', 'black')
         .style('stroke-width', 1)
         .style('cursor', 'pointer')
-        .on('click', () => this.toggleVisibility('PM04', 'fault', PM04Legend));
+        .on('click', () => this.toggleVisibility('PM04'));
       PM04Legend.append('text')
         .attr('x', graphWidth - 110)
         .attr('y', 35)
@@ -249,7 +249,7 @@ export default {
         .style('font-size', '12px')
         .attr('alignment-baseline', 'middle')
         .style('cursor', 'pointer')
-        .on('click', () => this.toggleVisibility('PM04', 'fault', PM04Legend));
+        .on('click', () => this.toggleVisibility('PM04'));
 
       // PM03の凡例の追加
       const PM03Legend = svg.append('g').attr('class', 'legend-pm03');
@@ -261,7 +261,7 @@ export default {
         .style('stroke', 'black')
         .style('stroke-width', 1)
         .style('cursor', 'pointer')
-        .on('click', () => this.toggleVisibility('PM03', 'fault', PM03Legend));
+        .on('click', () => this.toggleVisibility('PM03'));
       PM03Legend.append('text')
         .attr('x', graphWidth - 110)
         .attr('y', 55)
@@ -269,7 +269,7 @@ export default {
         .style('font-size', '12px')
         .attr('alignment-baseline', 'middle')
         .style('cursor', 'pointer')
-        .on('click', () => this.toggleVisibility('PM03', 'fault', PM03Legend));
+        .on('click', () => this.toggleVisibility('PM03'));
 
       // ドラッグ機能の設定
       const drag = d3.drag()
@@ -411,7 +411,7 @@ export default {
         .style('fill', 'green')
         .style('opacity', 0.5)
         .style('cursor', 'pointer')
-        .on('click', () => this.toggleVisibility('event', 'event', eventLegend));
+        .on('click', () => this.toggleVisibility('event'));
       eventLegend.append('text')
         .attr('x', graphWidth - 105)
         .attr('y', 20)
@@ -419,7 +419,7 @@ export default {
         .style('font-size', '12px')
         .attr('alignment-baseline', 'middle')
         .style('cursor', 'pointer')
-        .on('click', () => this.toggleVisibility('event', 'event', eventLegend));
+        .on('click', () => this.toggleVisibility('event'));
 
       // 故障マップの凡例の追加
       const faultLegend = svg.append('g').attr('class', 'legend-fault');
@@ -431,7 +431,7 @@ export default {
         .style('fill', 'red')
         .style('opacity', 0.5)
         .style('cursor', 'pointer')
-        .on('click', () => this.toggleVisibility('fault', 'fault', faultLegend));
+        .on('click', () => this.toggleVisibility('fault'));
       faultLegend.append('text')
         .attr('x', graphWidth - 105)
         .attr('y', 40)
@@ -439,7 +439,7 @@ export default {
         .style('font-size', '12px')
         .attr('alignment-baseline', 'middle')
         .style('cursor', 'pointer')
-        .on('click', () => this.toggleVisibility('fault', 'fault', faultLegend));
+        .on('click', () => this.toggleVisibility('fault'));
 
       // ドラッグ機能の設定
       const drag = d3.drag()
@@ -583,7 +583,7 @@ export default {
         .style('fill', 'blue')
         .style('opacity', 0.5)
         .style('cursor', 'pointer')
-        .on('click', () => this.toggleVisibility('eventCost', 'cost', eventCostLegend));
+        .on('click', () => this.toggleVisibility('eventCost'));
       eventCostLegend.append('text')
         .attr('x', graphWidth - 105)
         .attr('y', 20)
@@ -591,7 +591,7 @@ export default {
         .style('font-size', '12px')
         .attr('alignment-baseline', 'middle')
         .style('cursor', 'pointer')
-        .on('click', () => this.toggleVisibility('eventCost', 'cost', eventCostLegend));
+        .on('click', () => this.toggleVisibility('eventCost'));
 
       // 故障マップの凡例の追加
       const faultCostLegend = svg.append('g').attr('class', 'legend-faultCost');
@@ -603,7 +603,7 @@ export default {
         .style('fill', 'red')
         .style('opacity', 0.5)
         .style('cursor', 'pointer')
-        .on('click', () => this.toggleVisibility('faultCost', 'faultCost', faultCostLegend));
+        .on('click', () => this.toggleVisibility('faultCost'));
       faultCostLegend.append('text')
         .attr('x', graphWidth - 105)
         .attr('y', 40)
@@ -611,7 +611,7 @@ export default {
         .style('font-size', '12px')
         .attr('alignment-baseline', 'middle')
         .style('cursor', 'pointer')
-        .on('click', () => this.toggleVisibility('faultCost', 'faultCost', faultCostLegend));
+        .on('click', () => this.toggleVisibility('faultCost'));
 
       // ドラッグ機能の設定
       const drag = d3.drag()
@@ -692,11 +692,9 @@ export default {
         return posX;
       });
     },
-    toggleVisibility(type, className, legend) {
+    toggleVisibility(type) {
       this.legendState[type] = !this.legendState[type];
-      d3.selectAll(`.${className}`).style('display', this.legendState[type] ? null : 'none');
-      legend.selectAll('text').style('fill', this.legendState[type] ? 'black' : 'lightgrey');
-      legend.selectAll('circle, rect').style('fill', this.legendState[type] ? null : 'lightgrey');
+      d3.selectAll(`.${type}`).style('display', this.legendState[type] ? null : 'none');
     },
   },
 };

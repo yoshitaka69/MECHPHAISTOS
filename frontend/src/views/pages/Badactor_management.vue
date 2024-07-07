@@ -5,8 +5,7 @@
         <TabView v-model:activeIndex="activeIndex" @tab-change="onTabChange">
           <TabPanel header="Precision and Accuracy">
             <div>
-              <TargetPlot :sampleDataX="sampleDataX" :sampleDataY="sampleDataY" />
-              <Histogram :sampleDataX="sampleDataX" />
+              <PrecisionAndAccuracy />
             </div>
           </TabPanel>
           <TabPanel header="FTA Analysis">
@@ -22,13 +21,11 @@
 </template>
 
 <script>
-import Histogram from '@/components/Badactor_management/Histogram.vue';
-import TargetPlot from '@/components/Badactor_management/TargetPlot.vue';
+import PrecisionAndAccuracy from '@/components/Badactor_management/PrecisionAndAccuracy.vue';
 
 export default {
   components: {
-    Histogram,
-    TargetPlot,
+    PrecisionAndAccuracy,
   },
   data() {
     return {
