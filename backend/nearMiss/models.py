@@ -14,6 +14,7 @@ class NearMiss(models.Model):
 
     nearMissNo = models.CharField(verbose_name='nearMissNo', max_length=50, null=True, blank=True)
     userName = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='nearMiss_userName', null=True, blank=True)
+    email = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='nearMiss_email', null=True, blank=True)
     department = models.CharField(verbose_name='department', max_length=200, null=True, blank=True)
     dateOfOccurrence = models.DateField(verbose_name='dateOfOccurrence', null=True, blank=True, default=timezone.now)
     placeOfOccurrence = models.CharField(verbose_name='placeOfOccurrence', max_length=200, null=True, blank=True)
@@ -40,15 +41,15 @@ class NearMiss(models.Model):
     def __str__(self):
         return f"{self.companyCode}"
 
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
+    #def save(self, *args, **kwargs):
+        #super().save(*args, **kwargs)
 
         # 追加の処理を呼び出し
-        update_total_of_near_miss(self.companyCode_id)
-        update_total_of_action_items(self.companyCode_id)
-        update_total_of_solved_action_items(self.companyCode_id)
-        update_count_of_level_a(self.companyCode_id)
-        update_danger_area(self.companyCode_id)
+        #update_total_of_near_miss(self.companyCode_id)
+        #update_total_of_action_items(self.companyCode_id)
+        #update_total_of_solved_action_items(self.companyCode_id)
+        #update_count_of_level_a(self.companyCode_id)
+        #update_danger_area(self.companyCode_id)
 
 
 

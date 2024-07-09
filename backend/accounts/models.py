@@ -158,7 +158,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     userName = models.CharField(verbose_name='userName',max_length=200,null=True,blank=True)
 
-    email = models.EmailField(unique=True)
+    email = models.EmailField(unique=True, null=True, blank=True)  # emailフィールドをオプションに設定
     phoneNumber = models.CharField(verbose_name='phoneNumber',max_length=200,null=True,blank=True)
 
     is_active = models.BooleanField(default=True)

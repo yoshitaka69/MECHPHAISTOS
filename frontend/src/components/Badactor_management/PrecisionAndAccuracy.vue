@@ -1,8 +1,11 @@
 <template>
   <div id="app">
     <div ref="plotGraph" class="graph"></div>
+    <div ref="plotLegend" class="legend"></div>
     <div ref="histogramGraph" class="graph"></div>
+    <div ref="histogramLegend" class="legend"></div>
     <div ref="costHistogramGraph" class="graph"></div>
+    <div ref="costLegend" class="legend"></div>
   </div>
 </template>
 
@@ -58,6 +61,9 @@ export default {
     this.createPlotGraph();
     this.createHistogramGraph();
     this.createCostHistogramGraph();
+    this.createPlotLegend();
+    this.createHistogramLegend();
+    this.createCostLegend();
   },
   methods: {
     createPlotGraph() {
@@ -156,7 +162,7 @@ export default {
         .data(filteredFaultMap)
         .enter()
         .append('g')
-        .attr('class', 'fault')
+        .attr('class', d => `fault ${d.typeOfTask}`)
         .attr('transform', d => `translate(${this.xScale(d.equipmentNo) + this.xScale.bandwidth() / 2},${this.yScale(d.date)})`);
 
       const sizesPM04 = [15, 12, 9, 6, 3];
@@ -191,7 +197,7 @@ export default {
         .data(filteredFaultMap.filter(d => d.typeOfTask === 'PM04'))
         .enter()
         .append('rect')
-        .attr('class', 'band')
+        .attr('class', 'PM04')
         .attr('x', d => this.xScale(d.equipmentNo) + this.xScale.bandwidth() / 2 - sizesPM04[0]) // 矢の的の最外周の位置に帯を配置
         .attr('y', 0) // 上端から下端まで
         .attr('width', sizesPM04[0] * 2) // 矢の的の最外周の幅に合わせる
@@ -212,64 +218,6 @@ export default {
         .attr('x', 0)
         .attr('dy', (d, i) => i * 12) // 各行の間にスペースを追加
         .text(d => d);
-
-      // イベントデータの凡例の追加
-      const eventLegend = svg.append('g').attr('class', 'legend-event');
-      eventLegend.append('circle')
-        .attr('cx', graphWidth - 120)
-        .attr('cy', 10)
-        .attr('r', 5)
-        .style('fill', 'blue')
-        .style('cursor', 'pointer')
-        .on('click', () => this.toggleVisibility('event'));
-      eventLegend.append('text')
-        .attr('x', graphWidth - 110)
-        .attr('y', 15)
-        .text('Event')
-        .style('font-size', '12px')
-        .attr('alignment-baseline', 'middle')
-        .style('cursor', 'pointer')
-        .on('click', () => this.toggleVisibility('event'));
-
-      // PM04の凡例の追加
-      const PM04Legend = svg.append('g').attr('class', 'legend-pm04');
-      PM04Legend.append('circle')
-        .attr('cx', graphWidth - 120)
-        .attr('cy', 30)
-        .attr('r', 7.5)
-        .style('fill', 'yellow')
-        .style('stroke', 'black')
-        .style('stroke-width', 1)
-        .style('cursor', 'pointer')
-        .on('click', () => this.toggleVisibility('PM04'));
-      PM04Legend.append('text')
-        .attr('x', graphWidth - 110)
-        .attr('y', 35)
-        .text('PM04')
-        .style('font-size', '12px')
-        .attr('alignment-baseline', 'middle')
-        .style('cursor', 'pointer')
-        .on('click', () => this.toggleVisibility('PM04'));
-
-      // PM03の凡例の追加
-      const PM03Legend = svg.append('g').attr('class', 'legend-pm03');
-      PM03Legend.append('circle')
-        .attr('cx', graphWidth - 120)
-        .attr('cy', 50)
-        .attr('r', 7.5)
-        .style('fill', 'white')
-        .style('stroke', 'black')
-        .style('stroke-width', 1)
-        .style('cursor', 'pointer')
-        .on('click', () => this.toggleVisibility('PM03'));
-      PM03Legend.append('text')
-        .attr('x', graphWidth - 110)
-        .attr('y', 55)
-        .text('PM03')
-        .style('font-size', '12px')
-        .attr('alignment-baseline', 'middle')
-        .style('cursor', 'pointer')
-        .on('click', () => this.toggleVisibility('PM03'));
 
       // ドラッグ機能の設定
       const drag = d3.drag()
@@ -401,46 +349,6 @@ export default {
         .style('fill', 'red')
         .style('opacity', 0.5); // 半透明にする
 
-      // イベントデータの凡例の追加
-      const eventLegend = svg.append('g').attr('class', 'legend-event');
-      eventLegend.append('rect')
-        .attr('x', graphWidth - 120)
-        .attr('y', 10)
-        .attr('width', 10)
-        .attr('height', 10)
-        .style('fill', 'green')
-        .style('opacity', 0.5)
-        .style('cursor', 'pointer')
-        .on('click', () => this.toggleVisibility('event'));
-      eventLegend.append('text')
-        .attr('x', graphWidth - 105)
-        .attr('y', 20)
-        .text('Event')
-        .style('font-size', '12px')
-        .attr('alignment-baseline', 'middle')
-        .style('cursor', 'pointer')
-        .on('click', () => this.toggleVisibility('event'));
-
-      // 故障マップの凡例の追加
-      const faultLegend = svg.append('g').attr('class', 'legend-fault');
-      faultLegend.append('rect')
-        .attr('x', graphWidth - 120)
-        .attr('y', 30)
-        .attr('width', 10)
-        .attr('height', 10)
-        .style('fill', 'red')
-        .style('opacity', 0.5)
-        .style('cursor', 'pointer')
-        .on('click', () => this.toggleVisibility('fault'));
-      faultLegend.append('text')
-        .attr('x', graphWidth - 105)
-        .attr('y', 40)
-        .text('Fault')
-        .style('font-size', '12px')
-        .attr('alignment-baseline', 'middle')
-        .style('cursor', 'pointer')
-        .on('click', () => this.toggleVisibility('fault'));
-
       // ドラッグ機能の設定
       const drag = d3.drag()
         .on('drag', (event) => {
@@ -548,11 +456,11 @@ export default {
         .text('Cost');
 
       // コストヒストグラムのバーの描画
-      this.costBars = svg.selectAll('rect.cost')
+      this.costBars = svg.selectAll('rect.eventCost')
         .data(eventCostData)
         .enter()
         .append('rect')
-        .attr('class', 'cost')
+        .attr('class', 'eventCost')
         .attr('x', d => this.costHistXScale(d.equipmentNo))
         .attr('y', d => yScale(d.totalCost))
         .attr('width', this.costHistXScale.bandwidth() / 2) // バーの幅を半分にする
@@ -573,46 +481,6 @@ export default {
         .style('fill', 'red')
         .style('opacity', 0.5); // 半透明にする
 
-      // イベントデータの凡例の追加
-      const eventCostLegend = svg.append('g').attr('class', 'legend-eventCost');
-      eventCostLegend.append('rect')
-        .attr('x', graphWidth - 120)
-        .attr('y', 10)
-        .attr('width', 10)
-        .attr('height', 10)
-        .style('fill', 'blue')
-        .style('opacity', 0.5)
-        .style('cursor', 'pointer')
-        .on('click', () => this.toggleVisibility('eventCost'));
-      eventCostLegend.append('text')
-        .attr('x', graphWidth - 105)
-        .attr('y', 20)
-        .text('Event Cost')
-        .style('font-size', '12px')
-        .attr('alignment-baseline', 'middle')
-        .style('cursor', 'pointer')
-        .on('click', () => this.toggleVisibility('eventCost'));
-
-      // 故障マップの凡例の追加
-      const faultCostLegend = svg.append('g').attr('class', 'legend-faultCost');
-      faultCostLegend.append('rect')
-        .attr('x', graphWidth - 120)
-        .attr('y', 30)
-        .attr('width', 10)
-        .attr('height', 10)
-        .style('fill', 'red')
-        .style('opacity', 0.5)
-        .style('cursor', 'pointer')
-        .on('click', () => this.toggleVisibility('faultCost'));
-      faultCostLegend.append('text')
-        .attr('x', graphWidth - 105)
-        .attr('y', 40)
-        .text('Fault Cost')
-        .style('font-size', '12px')
-        .attr('alignment-baseline', 'middle')
-        .style('cursor', 'pointer')
-        .on('click', () => this.toggleVisibility('faultCost'));
-
       // ドラッグ機能の設定
       const drag = d3.drag()
         .on('drag', (event) => {
@@ -627,6 +495,106 @@ export default {
         .style('fill', 'none')
         .style('pointer-events', 'all')
         .call(drag);
+    },
+    createPlotLegend() {
+      const legendData = [
+        { label: 'Event', color: 'blue', type: 'event' },
+        { label: 'PM04', color: 'yellow', type: 'PM04' },
+        { label: 'PM03', color: 'white', type: 'PM03' }
+      ];
+
+      const legend = d3.select(this.$refs.plotLegend)
+        .append('svg')
+        .attr('width', 600)
+        .attr('height', 30);
+
+      const legendItem = legend.selectAll('g')
+        .data(legendData)
+        .enter()
+        .append('g')
+        .attr('transform', (d, i) => `translate(${i * 150}, 0)`)
+        .style('cursor', 'pointer')
+        .on('click', (event, d) => this.toggleVisibility(d.type));
+
+      legendItem.append('rect')
+        .attr('x', 10)
+        .attr('y', 10)
+        .attr('width', 20)
+        .attr('height', 20)
+        .style('fill', d => d.color);
+
+      legendItem.append('text')
+        .attr('x', 40)
+        .attr('y', 25)
+        .text(d => d.label)
+        .style('font-size', '12px')
+        .attr('alignment-baseline', 'middle');
+    },
+    createHistogramLegend() {
+      const legendData = [
+        { label: 'Event', color: 'green', type: 'event' },
+        { label: 'Fault', color: 'red', type: 'fault' }
+      ];
+
+      const legend = d3.select(this.$refs.histogramLegend)
+        .append('svg')
+        .attr('width', 400)
+        .attr('height', 30);
+
+      const legendItem = legend.selectAll('g')
+        .data(legendData)
+        .enter()
+        .append('g')
+        .attr('transform', (d, i) => `translate(${i * 150}, 0)`)
+        .style('cursor', 'pointer')
+        .on('click', (event, d) => this.toggleVisibility(d.type));
+
+      legendItem.append('rect')
+        .attr('x', 10)
+        .attr('y', 10)
+        .attr('width', 20)
+        .attr('height', 20)
+        .style('fill', d => d.color);
+
+      legendItem.append('text')
+        .attr('x', 40)
+        .attr('y', 25)
+        .text(d => d.label)
+        .style('font-size', '12px')
+        .attr('alignment-baseline', 'middle');
+    },
+    createCostLegend() {
+      const legendData = [
+        { label: 'Event Cost', color: 'blue', type: 'eventCost' },
+        { label: 'Fault Cost', color: 'red', type: 'faultCost' }
+      ];
+
+      const legend = d3.select(this.$refs.costLegend)
+        .append('svg')
+        .attr('width', 400)
+        .attr('height', 30);
+
+      const legendItem = legend.selectAll('g')
+        .data(legendData)
+        .enter()
+        .append('g')
+        .attr('transform', (d, i) => `translate(${i * 150}, 0)`)
+        .style('cursor', 'pointer')
+        .on('click', (event, d) => this.toggleVisibility(d.type));
+
+      legendItem.append('rect')
+        .attr('x', 10)
+        .attr('y', 10)
+        .attr('width', 20)
+        .attr('height', 20)
+        .style('fill', d => d.color);
+
+      legendItem.append('text')
+        .attr('x', 40)
+        .attr('y', 25)
+        .text(d => d.label)
+        .style('font-size', '12px')
+        .attr('alignment-baseline', 'middle');
     },
     updateAxes() {
       const { margin, width, plotHeight } = this;
@@ -702,6 +670,9 @@ export default {
 
 <style>
 .graph {
+  margin-bottom: 10px;
+}
+.legend {
   margin-bottom: 50px;
 }
 </style>

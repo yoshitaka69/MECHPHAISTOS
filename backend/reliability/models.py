@@ -15,3 +15,13 @@ class FailureData(models.Model):
 class WeibullData(models.Model):
     failure_time = models.FloatField()
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+
+class BayesianPrediction(models.Model):
+    time = models.IntegerField()
+    failure_count = models.IntegerField()
+    failure_type = models.CharField(max_length=100)
+    failure_cause = models.CharField(max_length=100)
+    maintenance_type = models.CharField(max_length=100)
+    maintenance_result = models.CharField(max_length=100)

@@ -17,3 +17,12 @@ class WeibullDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = WeibullData
         fields = ['failure_time']
+
+
+
+from .models import BayesianPrediction
+
+class BayesianPredictionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BayesianPrediction
+        fields = '__all__'  # 全フィールドをシリアライズ

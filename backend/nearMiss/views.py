@@ -7,16 +7,25 @@ from .serializers import (NearMissSerializer,CompanyNearMissSerializer,
                           TrendSafetyIndicatorsSerializer,CompanyTrendSafetyIndicatorsSerializer)
 
 
-
-
+# views.py
+from rest_framework.decorators import api_view
 from rest_framework import viewsets, status
 from rest_framework.response import Response
-from .models import NearMiss, CompanyCode
+from .models import NearMiss, CompanyCode, CustomUser
 from .serializers import NearMissSerializer, CompanyNearMissSerializer
 
 class NearMissViewSet(viewsets.ModelViewSet):
     queryset = NearMiss.objects.all()
     serializer_class = NearMissSerializer
+
+@api_view(['POST'])
+def create_near_miss(request):
+    if request.method == 'POST':
+        serializer = NearMissSerializer(data=request.data)
+        if serializer.is_valid():
+            near_miss = serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class CompanyNearMissViewSet(viewsets.ModelViewSet):
     queryset = CompanyCode.objects.all()
@@ -40,18 +49,15 @@ class CompanyNearMissViewSet(viewsets.ModelViewSet):
             return Response({'error': f'Invalid company code: {company_code_value}'}, status=status.HTTP_400_BAD_REQUEST)
 
         near_miss_data = request.data.copy()
-        near_miss_data['companyCode'] = company_code.pk  # 外部キーとして設定
+        near_miss_data['companyCode'] = company_code_value  # 文字列で登録
 
         serializer = NearMissSerializer(data=near_miss_data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
-            print(serializer.errors)  # ここでシリアライザーのエラーを出力
+            print(f"Debug info: {serializer.errors}")
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-
 
 
 
