@@ -4,6 +4,18 @@ from django.dispatch import receiver
 from random import choice
 from django.conf import settings
 
+
+
+
+
+
+
+
+
+#----------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
 from accounts.models import CompanyCode,CompanyName,Plant
 from ceList.models import Equipment,CeList,Machine
 from spareParts.models import BomList
@@ -113,6 +125,20 @@ class MasterDataTable(models.Model):
 
     def __str__(self):
         return str('Master Data Table')
+
+
+
+
+
+#----------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
 
 
 

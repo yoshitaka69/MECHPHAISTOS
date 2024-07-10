@@ -15,10 +15,11 @@ from .serializers import  (MasterDataTableSerializer, CompanyCodeMDTSerializer,
 
 #-------------------------------------------------------------------------------------------------------------------
 
+
 from rest_framework import status, viewsets
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .models import MasterDataTable, CompanyCode, Plant, Equipment, Machine, TypicalTaskList
+from .models import MasterDataTable, CompanyCode, Plant, Equipment, Machine
 from .serializers import MasterDataTableSerializer
 from django.db import transaction
 
@@ -72,35 +73,8 @@ def master_data_table_by_company(request):
                     # Machineの存在確認と作成
                     machine_name = data.pop('machineName', None)
                     if machine_name:
-                        machine_obj, created = Machine.objects.get_or_create(machineName=machine_name)
+                        machine_obj, created = Machine.objects.get_or_create(name=machine_name)
                         data['machineName'] = machine_obj
-
-                    # TypicalTaskListの存在確認と作成
-                    typical_task_name = data.pop('typicalTaskName', None)
-                    if typical_task_name:
-                        typical_task_obj, created = TypicalTaskList.objects.get_or_create(typicalTaskName=typical_task_name)
-                        data['typicalTaskName'] = typical_task_obj
-
-                    # 他のTypicalTaskListフィールドも同様に処理
-                    typical_task_cost = data.pop('typicalTaskCost', None)
-                    if typical_task_cost:
-                        typical_task_cost_obj, created = TypicalTaskList.objects.get_or_create(typicalTaskCost=typical_task_cost)
-                        data['typicalTaskCost'] = typical_task_cost_obj
-
-                    typical_const_period = data.pop('typicalConstPeriod', None)
-                    if typical_const_period:
-                        typical_const_period_obj, created = TypicalTaskList.objects.get_or_create(typicalConstPeriod=typical_const_period)
-                        data['typicalConstPeriod'] = typical_const_period_obj
-
-                    typical_next_event_date = data.pop('typicalNextEventDate', None)
-                    if typical_next_event_date:
-                        typical_next_event_date_obj, created = TypicalTaskList.objects.get_or_create(typicalNextEventDate=typical_next_event_date)
-                        data['typicalNextEventDate'] = typical_next_event_date_obj
-
-                    typical_situation = data.pop('typicalSituation', None)
-                    if typical_situation:
-                        typical_situation_obj, created = TypicalTaskList.objects.get_or_create(typicalSituation=typical_situation)
-                        data['typicalSituation'] = typical_situation_obj
 
                     ce_list_no = data.pop('ceListNo')
                     obj, created = MasterDataTable.objects.update_or_create(
@@ -156,35 +130,8 @@ class CompanyCodeMDTViewSet(viewsets.ViewSet):
                     # Machineの存在確認と作成
                     machine_name = data.pop('machineName', None)
                     if machine_name:
-                        machine_obj, created = Machine.objects.get_or_create(machineName=machine_name)
+                        machine_obj, created = Machine.objects.get_or_create(name=machine_name)
                         data['machineName'] = machine_obj
-
-                    # TypicalTaskListの存在確認と作成
-                    typical_task_name = data.pop('typicalTaskName', None)
-                    if typical_task_name:
-                        typical_task_obj, created = TypicalTaskList.objects.get_or_create(typicalTaskName=typical_task_name)
-                        data['typicalTaskName'] = typical_task_obj
-
-                    # 他のTypicalTaskListフィールドも同様に処理
-                    typical_task_cost = data.pop('typicalTaskCost', None)
-                    if typical_task_cost:
-                        typical_task_cost_obj, created = TypicalTaskList.objects.get_or_create(typicalTaskCost=typical_task_cost)
-                        data['typicalTaskCost'] = typical_task_cost_obj
-
-                    typical_const_period = data.pop('typicalConstPeriod', None)
-                    if typical_const_period:
-                        typical_const_period_obj, created = TypicalTaskList.objects.get_or_create(typicalConstPeriod=typical_const_period)
-                        data['typicalConstPeriod'] = typical_const_period_obj
-
-                    typical_next_event_date = data.pop('typicalNextEventDate', None)
-                    if typical_next_event_date:
-                        typical_next_event_date_obj, created = TypicalTaskList.objects.get_or_create(typicalNextEventDate=typical_next_event_date)
-                        data['typicalNextEventDate'] = typical_next_event_date_obj
-
-                    typical_situation = data.pop('typicalSituation', None)
-                    if typical_situation:
-                        typical_situation_obj, created = TypicalTaskList.objects.get_or_create(typicalSituation=typical_situation)
-                        data['typicalSituation'] = typical_situation_obj
 
                     ce_list_no = data.pop('ceListNo')
                     obj, created = MasterDataTable.objects.update_or_create(
@@ -203,6 +150,8 @@ class CompanyCodeMDTViewSet(viewsets.ViewSet):
         if company_code:
             queryset = queryset.filter(companyCode=company_code)
         return queryset
+
+
 
 
 

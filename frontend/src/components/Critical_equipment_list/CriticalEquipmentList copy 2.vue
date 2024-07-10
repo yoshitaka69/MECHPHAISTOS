@@ -13,8 +13,8 @@
         <hot-table ref="hotTableComponent" :settings="hotSettings"></hot-table><br />
         <button @click="saveData">Save</button>
     </div>
-  </template>
-  
+</template>
+
   
   <script>
   import axios from 'axios';
@@ -131,47 +131,47 @@
   function customRendererForNextEventYear(instance, td, row, col, prop, value, cellProperties) {
     Handsontable.renderers.TextRenderer.apply(this, arguments);
     applyBaseStyle(td);
-  
+
     const latestPM02ColIndex = 10; // LatestPM02列のインデックス
     const periodColIndex = 20; // Period列のインデックス
-  
+
     const latestPM02Value = instance.getDataAtCell(row, latestPM02ColIndex);
     const periodValue = instance.getDataAtCell(row, periodColIndex);
-  
+
     if (latestPM02Value && periodValue) {
         const latestPM02Date = new Date(latestPM02Value);
         const nextEventDate = new Date(latestPM02Date);
         nextEventDate.setDate(latestPM02Date.getDate() + parseInt(periodValue));
-  
+
         const formattedDate = nextEventDate.toISOString().split('T')[0];
         td.innerText = formattedDate;
         
         // セルのメタデータとして次のイベント日付を保存
         cellProperties.nextEventDate = nextEventDate;
     }
-  }
-  
-  function customRendererForSituation(instance, td, row, col, prop, value, cellProperties) {
+}
+
+function customRendererForSituation(instance, td, row, col, prop, value, cellProperties) {
     Handsontable.renderers.TextRenderer.apply(this, arguments);
     applyBaseStyle(td);
-  
+
     const currentDate = new Date();
-  
+
     // nextEventDate を customRendererForNextEventYear から取得
     const nextEventYearColIndex = 21; // NextEventYear列のインデックス
     const nextEventCellMeta = instance.getCellMeta(row, nextEventYearColIndex);
     const nextEventDate = nextEventCellMeta.nextEventDate;
-  
+
     if (nextEventDate && currentDate > nextEventDate) {
         td.style.backgroundColor = '#FFFF00';
         td.innerText = 'Delay';
     } else if (value === 'Delay') {
         td.style.backgroundColor = '#FFFF00';
     }
-  }
-  
-  
-  
+}
+
+
+
   function customRendererForMttr(instance, td, row, col, prop, value, cellProperties) {
     if (td) {
         Handsontable.renderers.TextRenderer.apply(this, arguments);
@@ -192,8 +192,8 @@
     return mttrValue; // MTTR値を返す
   }
   
-  
-  
+
+
   
   const CriticalEquipmentList = defineComponent({
     props: {
@@ -403,40 +403,36 @@
   
         // Axiosを使用してデータを取得
         getDataAxios() {
-    const userStore = useUserStore();
-    const userCompanyCode = userStore.companyCode;
-
-    if (!userCompanyCode) {
-        console.error('Error: No company code found for the user.');
-        return;
-    }
-
-    const url = `http://127.0.0.1:8000/api/junctionTable/masterDataTableByCompany/?format=json&companyCode=${userCompanyCode}`;
-
-    axios
-        .get(url, {
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            withCredentials: true
-        })
-        .then((response) => {
-            console.log('Raw response data:', response.data); // デバッグ用
-            const masterDataTable = response.data;
-            console.log('Fetched masterDataTable:', masterDataTable);
-
-            const blankRows = Array.from({ length: 10 }, () => ({}));
-            const newData = masterDataTable.concat(blankRows);
-
-            this.$refs.hotTableComponent.hotInstance.loadData(newData);
-        })
-        .catch((error) => {
-            console.error('Error fetching data:', error);
-        });
-},
+            const userStore = useUserStore();
+            const userCompanyCode = userStore.companyCode;
   
+            if (!userCompanyCode) {
+                console.error('Error: No company code found for the user.');
+                return;
+            }
   
+            const url = `http://127.0.0.1:8000/api/junctionTable/masterDataTableByCompany/?format=json&companyCode=${userCompanyCode}`;
   
+            axios
+                .get(url, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    withCredentials: true
+                })
+                .then((response) => {
+                    const masterDataTable = response.data.flatMap((companyData) => companyData.MasterDataTable);
+                    console.log('Fetched masterDataTable:', masterDataTable);
+  
+                    const blankRows = Array.from({ length: 10 }, () => ({}));
+                    const newData = masterDataTable.concat(blankRows);
+  
+                    this.$refs.hotTableComponent.hotInstance.loadData(newData);
+                })
+                .catch((error) => {
+                    console.error('Error fetching data:', error);
+                });
+        },
         saveData() {
     const userStore = useUserStore();
     const userCompanyCode = userStore.companyCode;
@@ -449,70 +445,13 @@
     const hotInstance = this.$refs.hotTableComponent.hotInstance;
     const dataToSave = hotInstance.getData();
 
-    const formattedData = {
-        companyCode: userCompanyCode,
-        MasterDataTable: dataToSave.map(row => {
-            return {
-                companyCode: userCompanyCode,
-                ceListNo: row[0],
-                plant: row[1],
-                equipment: row[2],
-                machineName: row[3],
-                levelSetValue: row[4],
-                typicalConstPeriod: row[5],
-                maxPartsDeliveryTimeInBom: row[6],
-                mttr: row[7],
-                probabilityOfFailure: row[8],
-                countOfPM02: row[9],
-                latestPM02: row[10],
-                countOfPM03: row[11],
-                latestPM03: row[12],
-                countOfPM04: row[13],
-                latestPM04: row[14],
-                impactForProduction: row[15],
-                assessment: row[16],
-                typicalTaskName: row[17],
-                typicalTaskCost: row[18],
-                typicalNextEventDate: row[19],
-                typicalSituation: row[20],
-                bomCode: row[21],
-                bomStock: row[22],
-                rcaOrReplace: row[23],
-                sparePartsOrAlternative: row[24],
-                coveredFromTask: row[25],
-                twoways: row[26],
-                ceDescription: row[27],
-                thisYear10ago: row[28],
-                thisYear9ago: row[29],
-                thisYear8ago: row[30],
-                thisYear7ago: row[31],
-                thisYear6ago: row[32],
-                thisYear5ago: row[33],
-                thisYear4ago: row[34],
-                thisYear3ago: row[35],
-                thisYear2ago: row[36],
-                thisYear1ago: row[37],
-                thisYear: row[38],
-                thisYear1later: row[39],
-                thisYear2later: row[40],
-                thisYear3later: row[41],
-                thisYear4later: row[42],
-                thisYear5later: row[43],
-                thisYear6later: row[44],
-                thisYear7later: row[45],
-                thisYear8later: row[46],
-                thisYear9later: row[47],
-                thisYear10later: row[48]
-            };
-        })
-    };
+    // 送信前にデータを表示
+    console.log('Data to be sent:', dataToSave);
 
-    console.log('Data to be sent:', formattedData);
-
-    const url = `http://127.0.0.1:8000/api/junctionTable/masterDataTableByCompany/`;
-
+    const url = `http://127.0.0.1:8000/api/junctionTable/masterDataTableByCompany/=${userCompanyCode}`;
+    
     axios
-        .post(url, formattedData, {
+        .post(url, dataToSave, {
             headers: {
                 'Content-Type': 'application/json'
             },
@@ -527,12 +466,7 @@
                 console.error('Error response data:', error.response.data);
             }
         });
-}
-
-
-
-,
-  
+},
 
   
         // データをRiskMatrixにemitする
