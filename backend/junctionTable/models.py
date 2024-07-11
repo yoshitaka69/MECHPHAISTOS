@@ -55,6 +55,8 @@ class MasterDataTable(models.Model):
     latestPM05 = models.ForeignKey(TaskListPPM05, on_delete=models.CASCADE, related_name='masterDataTable_latestPM05',null=True, blank=True)
     laborCostOfPM05 = models.ForeignKey(TaskListPPM05, on_delete=models.CASCADE, related_name='masterDataTable_laborCostOfPM05',null=True, blank=True)
 
+    
+
 
     #TypicalTaskList
     typicalTaskName = models.ForeignKey(TypicalTaskList, on_delete=models.CASCADE, related_name='masterDataTable_typicalTaskName',null=True, blank=True)
@@ -65,10 +67,11 @@ class MasterDataTable(models.Model):
     multiTask = models.ForeignKey(TypicalTaskList, on_delete=models.CASCADE, related_name='masterDataTable_multiTask',null=True, blank=True)
 
 
+
     #BomList
     bomCode = models.ForeignKey(BomList, on_delete=models.CASCADE, related_name='masterDataTable_bomList', null=True, blank=True)
     bomCost = models.DecimalField(verbose_name='bomCost',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
-    bomStock = models.DecimalField(verbose_name='bomStock',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
+    bomStock = models.CharField(verbose_name='bomStock', max_length=200, blank=True,null=True,)
     maxPartsDeliveryTimeInBom = models.ForeignKey(BomList, on_delete=models.CASCADE, related_name='masterDataTable_maxPartsDeliveryTimeInBom', null=True, blank=True)
 
     #将来的にcalかここで計算させる。
@@ -77,7 +80,7 @@ class MasterDataTable(models.Model):
     #Impact
     levelSetValue = models.PositiveIntegerField(verbose_name='levelSetValue', null=True,blank=True,default=0)
     mttr = models.PositiveSmallIntegerField(verbose_name='mttr',blank=True,null=True,default=0)
-    possibilityOfProductionLv = models.CharField(verbose_name='possibilityOfProductionLv', max_length=200,null=True,blank=True)
+    possibilityOfContinuousProduction = models.CharField(verbose_name='possibilityOfContinuousProduction', max_length=200,null=True,blank=True)
 
     # Critical Equipment Level
     impactForProduction = models.CharField(verbose_name='impactForProduction', max_length=200, blank=True,null=True,)
@@ -85,11 +88,11 @@ class MasterDataTable(models.Model):
     assessment = models.CharField(verbose_name='assessment', max_length=20, blank=True,null=True,)
 
     #Status of measures
-    rcaOrReplace = models.BooleanField(verbose_name='rcaOrReplace',default=False)
-    sparePartsOrAlternative = models.BooleanField(verbose_name='sparePartsOrAlternative',default=False)
-    coveredFromTask = models.BooleanField(verbose_name='coveredFromTask',default=False)
-    twoways = models.BooleanField(verbose_name='twoways',default=False)
-    ceDescription = models.TextField(verbose_name='ceDescription',blank=True,null=True,max_length=1000)
+    rcaOrReplace = models.BooleanField(verbose_name='rcaOrReplace', default=False, null=True, blank=True)
+    sparePartsOrAlternative = models.BooleanField(verbose_name='sparePartsOrAlternative', default=False, null=True, blank=True)
+    coveredFromTask = models.BooleanField(verbose_name='coveredFromTask', default=False, null=True, blank=True)
+    twoways = models.BooleanField(verbose_name='twoways', default=False, null=True, blank=True)
+    ceDescription = models.TextField(verbose_name='ceDescription', blank=True, null=True, max_length=1000)
 
 
     #period of task

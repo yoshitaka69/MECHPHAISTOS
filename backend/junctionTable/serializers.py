@@ -12,6 +12,9 @@ from ceList.models import Equipment, Machine
 #-------------------------------------------------------------------------------------------------------------------------------------------------
 
 
+from rest_framework import serializers
+from .models import MasterDataTable, CompanyCode, Plant, Equipment, Machine, TypicalTaskList, BomList, TaskListPPM02, TaskListPPM03, TaskListAPM04
+
 #ForeignKeyを文字列で返すslugフィールを関数化する。
 def create_slug_related_field(field_name, queryset):
     return serializers.SlugRelatedField(
@@ -25,30 +28,31 @@ class MasterDataTableSerializer(serializers.ModelSerializer):
     equipment = create_slug_related_field('equipment', Equipment.objects.all())
     machineName = create_slug_related_field('machineName', Machine.objects.all())
 
-    typicalConstPeriod = create_slug_related_field('typicalConstPeriod', TypicalTaskList.objects.all())
-    #typicalLatestDate = create_slug_related_field('typicalLatestDate', TypicalTaskList.objects.all())
+    typicalConstPeriod = serializers.IntegerField(required=False, allow_null=True)
     typicalTaskName = create_slug_related_field('typicalTaskName', TypicalTaskList.objects.all())
-    typicalTaskCost = create_slug_related_field('typicalTaskCost', TypicalTaskList.objects.all())
-    
-    #multiTasking = create_slug_related_field('multiTasking', TypicalTaskList.objects.all())
-    typicalNextEventDate = create_slug_related_field('typicalNextEventDate', TypicalTaskList.objects.all())
+    typicalTaskCost = serializers.DecimalField(max_digits=10, decimal_places=5, required=False, allow_null=True)
+    typicalNextEventDate = serializers.DateField(required=False, allow_null=True)
     typicalSituation = create_slug_related_field('typicalSituation', TypicalTaskList.objects.all())
 
     bomCode = create_slug_related_field('bomCode', BomList.objects.all())
-    #bomCost = create_slug_related_field('bomCost', BomList.objects.all())
-    maxPartsDeliveryTimeInBom = create_slug_related_field('maxPartsDeliveryTimeInBom', BomList.objects.all())
+    bomStock = serializers.CharField(required=False, allow_null=True)
+    maxPartsDeliveryTimeInBom = serializers.IntegerField(required=False, allow_null=True)
 
-    countOfPM02 = create_slug_related_field('countOfPM02', TaskListPPM02.objects.all())
-    latestPM02 = create_slug_related_field('latestPM02', TaskListPPM02.objects.all())
-    countOfPM03 = create_slug_related_field('countOfPM03', TaskListPPM03.objects.all())
-    latestPM03 = create_slug_related_field('latestPM03', TaskListPPM03.objects.all())
-    countOfPM04 = create_slug_related_field('countOfPM04', TaskListAPM04.objects.all())
-    latestPM04 = create_slug_related_field('latestPM04', TaskListAPM04.objects.all())
+    rcaOrReplace = serializers.BooleanField(required=False, allow_null=True)
+    sparePartsOrAlternative = serializers.BooleanField(required=False, allow_null=True)
+    coveredFromTask = serializers.BooleanField(required=False, allow_null=True)
+    twoways = serializers.BooleanField(required=False, allow_null=True)
 
-    
     class Meta:
-        model = MasterDataTable #呼び出すモデル名
-        fields = ["companyCode", 'ceListNo', 'plant', 'equipment', 'machineName', 'levelSetValue', 'typicalConstPeriod', 'maxPartsDeliveryTimeInBom', 'mttr', 'probabilityOfFailure', 'countOfPM02', 'latestPM02', 'countOfPM03', 'latestPM03', 'countOfPM04', 'latestPM04', 'impactForProduction', 'probabilityOfFailure', 'assessment', 'typicalTaskName', 'typicalTaskCost', 'typicalConstPeriod', 'typicalNextEventDate', 'typicalSituation', 'bomCode', 'bomStock', 'rcaOrReplace', 'sparePartsOrAlternative', 'coveredFromTask', 'twoways', 'ceDescription']# API上に表示するモデルのデータ項目
+        model = MasterDataTable
+        fields = [
+            "companyCode", 'ceListNo', 'plant', 'equipment', 'machineName', 'levelSetValue',
+            'typicalConstPeriod', 'maxPartsDeliveryTimeInBom', 'mttr', 'possibilityOfContinuousProduction',
+            'countOfPM02', 'latestPM02', 'countOfPM03', 'latestPM03', 'countOfPM04', 'latestPM04',
+            'impactForProduction', 'probabilityOfFailure', 'assessment', 'typicalTaskName',
+            'typicalTaskCost', 'typicalNextEventDate', 'typicalSituation', 'bomCode', 'bomStock',
+            'rcaOrReplace', 'sparePartsOrAlternative', 'coveredFromTask', 'twoways', 'ceDescription'
+        ]
 
     def create(self, validated_data):
         company_code_data = validated_data.pop('companyCode')
@@ -58,18 +62,43 @@ class MasterDataTableSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         instance.companyCode = validated_data.get('companyCode', instance.companyCode)
         instance.ceListNo = validated_data.get('ceListNo', instance.ceListNo)
-        # 他のフィールドも同様に更新
+        instance.plant = validated_data.get('plant', instance.plant)
+        instance.equipment = validated_data.get('equipment', instance.equipment)
+        instance.machineName = validated_data.get('machineName', instance.machineName)
+        instance.levelSetValue = validated_data.get('levelSetValue', instance.levelSetValue)
+        instance.typicalConstPeriod = validated_data.get('typicalConstPeriod', instance.typicalConstPeriod)
+        instance.maxPartsDeliveryTimeInBom = validated_data.get('maxPartsDeliveryTimeInBom', instance.maxPartsDeliveryTimeInBom)
+        instance.mttr = validated_data.get('mttr', instance.mttr)
+        instance.possibilityOfContinuousProduction = validated_data.get('possibilityOfContinuousProduction', instance.possibilityOfContinuousProduction)
+        instance.countOfPM02 = validated_data.get('countOfPM02', instance.countOfPM02)
+        instance.latestPM02 = validated_data.get('latestPM02', instance.latestPM02)
+        instance.countOfPM03 = validated_data.get('countOfPM03', instance.countOfPM03)
+        instance.latestPM03 = validated_data.get('latestPM03', instance.latestPM03)
+        instance.countOfPM04 = validated_data.get('countOfPM04', instance.countOfPM04)
+        instance.latestPM04 = validated_data.get('latestPM04', instance.latestPM04)
+        instance.impactForProduction = validated_data.get('impactForProduction', instance.impactForProduction)
+        instance.probabilityOfFailure = validated_data.get('probabilityOfFailure', instance.probabilityOfFailure)
+        instance.assessment = validated_data.get('assessment', instance.assessment)
+        instance.typicalTaskName = validated_data.get('typicalTaskName', instance.typicalTaskName)
+        instance.typicalTaskCost = validated_data.get('typicalTaskCost', instance.typicalTaskCost)
+        instance.typicalNextEventDate = validated_data.get('typicalNextEventDate', instance.typicalNextEventDate)
+        instance.typicalSituation = validated_data.get('typicalSituation', instance.typicalSituation)
+        instance.bomCode = validated_data.get('bomCode', instance.bomCode)
+        instance.bomStock = validated_data.get('bomStock', instance.bomStock)
+        instance.rcaOrReplace = validated_data.get('rcaOrReplace', instance.rcaOrReplace)
+        instance.sparePartsOrAlternative = validated_data.get('sparePartsOrAlternative', instance.sparePartsOrAlternative)
+        instance.coveredFromTask = validated_data.get('coveredFromTask', instance.coveredFromTask)
+        instance.twoways = validated_data.get('twoways', instance.twoways)
+        instance.ceDescription = validated_data.get('ceDescription', instance.ceDescription)
         instance.save()
         return instance
 
-
 class CompanyCodeMDTSerializer(serializers.ModelSerializer):
-    MasterDataTable = MasterDataTableSerializer(many=True, read_only=True, source='masterDataTable_companyCode')#ここのsourceは注意
+    MasterDataTable = MasterDataTableSerializer(many=True, read_only=True, source='masterDataTable_companyCode')
 
     class Meta:
         model = CompanyCode
         fields = ['companyCode', 'MasterDataTable']
-
     
     def create(self, validated_data):
         company_code_data = validated_data.pop('companyCode')
@@ -79,9 +108,9 @@ class CompanyCodeMDTSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         instance.companyCode = validated_data.get('companyCode', instance.companyCode)
         instance.ceListNo = validated_data.get('ceListNo', instance.ceListNo)
-        # 他のフィールドも同様に更新
         instance.save()
         return instance
+
 
 
 

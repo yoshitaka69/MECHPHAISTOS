@@ -326,7 +326,7 @@
                     { data: 'typicalConstPeriod', type: 'numeric' },
                     { data: 'typicalNextEventDate', className: 'htRight', type: 'date', dateFormat: 'YYYY-MM-DD', correctFormat: false, readOnly: true, renderer: customRendererForNextEventYear },
                     { data: 'typicalSituation', className: 'htCenter', renderer: customRendererForSituation, readOnly: true },
-                    { data: 'bomCode', className: 'htRight', type: 'dropdown', source: ['Standard', 'Inventory', 'consumables'] },
+                    { data: 'bomCode', className: 'htRight', type: 'text' },
                     { data: 'bomStock', type: 'dropdown', source: ['有', '無'], className: 'htCenter' },
                     { data: 'rcaOrReplace', width: 100, className: 'htCenter', type: 'checkbox' },
                     { data: 'sparePartsOrAlternative', width: 100, className: 'htCenter', type: 'checkbox' },
@@ -437,7 +437,7 @@
   
   
   
-        saveData() {
+saveData() {
     const userStore = useUserStore();
     const userCompanyCode = userStore.companyCode;
 
@@ -471,7 +471,7 @@
                 latestPM04: row[14],
                 impactForProduction: row[15],
                 assessment: row[16],
-                typicalTaskName: row[17],
+                typicalTaskName: row[17] ? row[17].toString() : null,
                 typicalTaskCost: row[18],
                 typicalNextEventDate: row[19],
                 typicalSituation: row[20],
@@ -481,28 +481,7 @@
                 sparePartsOrAlternative: row[24],
                 coveredFromTask: row[25],
                 twoways: row[26],
-                ceDescription: row[27],
-                thisYear10ago: row[28],
-                thisYear9ago: row[29],
-                thisYear8ago: row[30],
-                thisYear7ago: row[31],
-                thisYear6ago: row[32],
-                thisYear5ago: row[33],
-                thisYear4ago: row[34],
-                thisYear3ago: row[35],
-                thisYear2ago: row[36],
-                thisYear1ago: row[37],
-                thisYear: row[38],
-                thisYear1later: row[39],
-                thisYear2later: row[40],
-                thisYear3later: row[41],
-                thisYear4later: row[42],
-                thisYear5later: row[43],
-                thisYear6later: row[44],
-                thisYear7later: row[45],
-                thisYear8later: row[46],
-                thisYear9later: row[47],
-                thisYear10later: row[48]
+                ceDescription: row[27]
             };
         })
     };
@@ -528,6 +507,10 @@
             }
         });
 }
+
+
+
+
 
 
 
