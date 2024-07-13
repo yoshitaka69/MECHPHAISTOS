@@ -10,26 +10,44 @@
 </template>
 
 <script>
-import axios from 'axios';
 import * as d3 from 'd3';
-import { useUserStore } from '@/stores/userStore' // Piniaのstoreをインポート
 
 export default {
   name: 'App',
   data() {
     return {
-      data: [],
-      faultMap: [],
+      data: [
+        { date: new Date('2023-01-01'), equipmentNo: 1, cost: 1000 },
+        { date: new Date('2023-01-02'), equipmentNo: 2, cost: 2000 },
+        { date: new Date('2023-01-03'), equipmentNo: 1, cost: 1500 },
+        { date: new Date('2023-01-04'), equipmentNo: 3, cost: 3000 },
+        { date: new Date('2023-01-05'), equipmentNo: 4, cost: 2500 },
+        { date: new Date('2023-01-06'), equipmentNo: 5, cost: 500 },
+        { date: new Date('2024-01-01'), equipmentNo: 1, cost: 1100 },
+        { date: new Date('2024-01-02'), equipmentNo: 2, cost: 2100 },
+        { date: new Date('2024-01-03'), equipmentNo: 1, cost: 1600 },
+        { date: new Date('2025-01-04'), equipmentNo: 3, cost: 3100 },
+        { date: new Date('2025-01-05'), equipmentNo: 4, cost: 2600 },
+        { date: new Date('2023-01-06'), equipmentNo: 5, cost: 600 },
+        // さらにデータを追加...
+      ],
+      faultMap: [
+        { date: new Date('2023-02-01'), equipmentNo: 1, cost: 1200, typeOfTask: 'PM04' },
+        { date: new Date('2023-03-15'), equipmentNo: 2, cost: 2200, typeOfTask: 'PM03' },
+        { date: new Date('2023-05-20'), equipmentNo: 3, cost: 3200, typeOfTask: 'PM04' },
+        { date: new Date('2024-07-10'), equipmentNo: 4, cost: 2700, typeOfTask: 'PM03' },
+        { date: new Date('2024-09-25'), equipmentNo: 5, cost: 700, typeOfTask: 'PM04' },
+      ],
       xScale: null,
       histXScale: null,
       costHistXScale: null,
       dragOffset: 0,
-      width: 1000,
-      margin: { top: 50, right: 50, bottom: 50, left: 80 },
-      plotHeight: 500,
-      histogramHeight: 300,
-      costHistogramHeight: 300,
-      yStartDate: new Date('2023-01-01'),
+      width: 1000, // 幅を大きく設定
+      margin: { top: 50, right: 50, bottom: 50, left: 80 }, // マージンを調整
+      plotHeight: 500, // プロットグラフの高さ
+      histogramHeight: 300, // ヒストグラムの高さ
+      costHistogramHeight: 300, // コストヒストグラムの高さ
+      yStartDate: new Date('2023-01-01'), // y軸の開始日
       legendState: {
         event: true,
         PM04: true,
@@ -39,8 +57,7 @@ export default {
       }
     };
   },
-  async mounted() {
-    await this.fetchData();
+  mounted() {
     this.createPlotGraph();
     this.createHistogramGraph();
     this.createCostHistogramGraph();
@@ -48,52 +65,7 @@ export default {
     this.createHistogramLegend();
     this.createCostLegend();
   },
-
-
   methods: {
-  async fetchData() {
-    const userStore = useUserStore();
-    const companyCode = userStore.companyCode;
-
-    try {
-      console.log('Fetching data for companyCode:', companyCode);
-      const response = await axios.get('http://127.0.0.1:8000/api/reliability/troubleHistoryByCompany/', {
-        params: {
-          companyCode: companyCode
-        }
-      });
-      console.log('Response data:', response.data);
-
-      // レスポンスが期待する形式かをチェック
-      if (!response.data || !Array.isArray(response.data) || !response.data[0].troubleHistory) {
-        console.error('Unexpected response format:', response.data);
-        return;
-      }
-
-      const troubleHistory = response.data[0].troubleHistory;
-      console.log('Trouble history:', troubleHistory);
-
-      this.data = troubleHistory.map(d => ({
-        ...d,
-        date: new Date(d.date),
-        cost: parseFloat(d.repairCost),
-        equipmentNo: d.ceListNo
-      }));
-      console.log('Processed data:', this.data);
-
-      this.faultMap = troubleHistory.filter(d => d.pmType === 'PM03' || d.pmType === 'PM04').map(d => ({
-        ...d,
-        date: new Date(d.date),
-        cost: parseFloat(d.repairCost),
-        equipmentNo: d.ceListNo,
-        typeOfTask: d.pmType
-      }));
-      console.log('Processed fault map:', this.faultMap);
-    } catch (error) {
-      console.error('Error fetching data', error);
-    }
-  },
-
     createPlotGraph() {
       const { margin, width, plotHeight, yStartDate } = this;
       const graphWidth = width - margin.left - margin.right;

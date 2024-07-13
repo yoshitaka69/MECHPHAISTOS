@@ -12,17 +12,16 @@ from .models import FailureData, WeibullData, TroubleHistory
 
 class TroubleHistorySerializer(serializers.ModelSerializer):
     companyCode = serializers.SlugRelatedField(
-        slug_field='companyCode',  # companyCode モデルの表示したい文字列フィールド
+        slug_field='companyCode',
         queryset=CompanyCode.objects.all()
     )
 
     class Meta:
-        model = TroubleHistory #呼び出すモデル名
-        fields = ['companyCode','equipment','machineName', 'date', 'pmType', 'failureContent', 'failureType', 'repairMethod', 'rootCause',] #表示したいフィールド名
-
+        model = TroubleHistory
+        fields = ['companyCode', 'ceListNo', 'equipment', 'machineName', 'date', 'pmType', 'failureContent', 'failureType', 'repairMethod', 'repairCost', 'rootCause']
 
 class CompanyTroubleHistorySerializer(serializers.ModelSerializer):
-    troubleHistory = TroubleHistorySerializer(many=True, source='troubleHistory_companyCode')#ここのsourceは本当に注意
+    troubleHistory = TroubleHistorySerializer(many=True, source='troubleHistory_companyCode')
 
     class Meta:
         model = CompanyCode

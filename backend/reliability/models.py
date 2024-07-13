@@ -1,6 +1,6 @@
 from django.db import models
 from accounts.models import CompanyCode
-from ceList.models import Equipment,Machine
+from ceList.models import Equipment,Machine,CeList
 from django.utils import timezone
 
 
@@ -10,15 +10,17 @@ from django.utils import timezone
 # 故障履歴モデル
 #-------------------------------------------------------------------------------------------------------------------------------------
 class TroubleHistory(models.Model):
-    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='TroubleHistory_companyCode', null=True, blank=True)
-    equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='TroubleHistory_equipment',null=True, blank=True)
-    machineName = models.ForeignKey(Machine, on_delete=models.CASCADE, related_name='TroubleHistory_machine',null=True, blank=True)
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='troubleHistory_companyCode', null=True, blank=True)
+    ceListNo = models.ForeignKey(CeList, on_delete=models.CASCADE, related_name='troubleHistory_ceListNo',null=True, blank=True)
+    equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='troubleHistory_equipment',null=True, blank=True)
+    machineName = models.ForeignKey(Machine, on_delete=models.CASCADE, related_name='troubleHistory_machine',null=True, blank=True)
 
     date = models.DateField(verbose_name='date', null=True, blank=True, default=timezone.now)
     pmType = models.CharField(verbose_name='pmType', max_length=50, null=True, blank=True)
     failureContent = models.TextField(verbose_name='failureContent', max_length=1000, null=True, blank=True)
-    failureType = models.CharField(verbose_name='nearMissNo', max_length=50, null=True, blank=True)
+    failureType = models.CharField(verbose_name='failureType', max_length=50, null=True, blank=True)
     repairMethod = models.TextField(verbose_name='repairMethod', max_length=1000, null=True, blank=True)
+    repairCost = models.DecimalField(verbose_name='repairCost', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
     rootCause = models.TextField(verbose_name='rootCause', max_length=1000, null=True, blank=True)
 
     class Meta:

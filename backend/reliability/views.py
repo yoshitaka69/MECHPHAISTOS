@@ -24,9 +24,8 @@ class TroubleHistoryViewSet(viewsets.ModelViewSet):
 class CompanyCodeTroubleHistoryViewSet(viewsets.ModelViewSet):
     serializer_class = CompanyTroubleHistorySerializer
 
-#クエリパラメータでのフィルターリング
     def get_queryset(self):
-        queryset = CompanyCode.objects.prefetch_related('eventYearPPM_companyCode').all()
+        queryset = CompanyCode.objects.prefetch_related('troubleHistory_companyCode').all()
         company_code = self.request.query_params.get('companyCode', None)
         if company_code:
             queryset = queryset.filter(companyCode=company_code)
