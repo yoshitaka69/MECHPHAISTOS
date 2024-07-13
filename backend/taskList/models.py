@@ -21,10 +21,12 @@ class TaskListPPM02(models.Model):
 
     taskCode = models.CharField(verbose_name='taskCodePPM02',max_length=200,blank=True,null=True)
     taskName = models.CharField(verbose_name='taskNamePPM2',max_length=200,blank=True,null=True)
-    laborCostOfPPM02 = models.DecimalField(verbose_name='laborCostOfPPM02',max_digits=10,decimal_places=5,blank=True,null=True,default=0.00)
+    laborCostOfPPM02 = models.DecimalField(verbose_name='laborCostOfPPM02',max_digits=20,decimal_places=10,blank=True,null=True,default=0.00)
     countOfPPM02 = models.PositiveSmallIntegerField(verbose_name='countOfPPM02',blank=True,null=True,default=0)
     latestPPM02 = models.DateField(verbose_name='latestPPM02',blank=True,null=True)
     periodOfPPM02 = models.IntegerField(verbose_name='periodOfPPM02', blank=True, null=True)  # 整数フィールドに変更
+    pM02Content = models.TextField(verbose_name='pM02Content',max_length=1000,blank=True,null=True)
+    maintenanceCategory = models.CharField(verbose_name='maintenanceCategory', max_length=200,blank=True,null=True)
     
     #Probability of failure
     constructionPeriod = models.IntegerField(verbose_name='constructionPeriodPPM02', blank=True, null=True)  # 整数フィールドに変更
@@ -120,10 +122,12 @@ class TaskListPPM03(models.Model):
 
     taskCode = models.CharField(verbose_name='taskCodePPM03',max_length=200,blank=True,null=True)
     taskName = models.CharField(verbose_name='taskNamePPM03',max_length=200,blank=True,null=True)
-    laborCostOfPPM03 = models.DecimalField(verbose_name='laborCostOfPPM03',max_digits=10,decimal_places=5,blank=True,null=True,default=0.00)
+    laborCostOfPPM03 = models.DecimalField(verbose_name='laborCostOfPPM03',max_digits=20,decimal_places=10,blank=True,null=True,default=0.00)
     countOfPPM03 = models.PositiveSmallIntegerField(verbose_name='countOfPPM03',blank=True,null=True,default=0)
     latestPPM03 = models.DateField(verbose_name='latestPPM03',blank=True,null=True)
     periodOfPPM03 = models.IntegerField(verbose_name='periodOfPPM03', blank=True, null=True)  # 整数フィールドに変更
+    pM03Content = models.TextField(verbose_name='pM03Content',max_length=1000,blank=True,null=True)
+    maintenanceCategory = models.CharField(verbose_name='maintenanceCategory', max_length=200,blank=True,null=True)
     
     #Probability of failure
     constructionPeriod = models.IntegerField(verbose_name='constructionPeriodPPM03', blank=True, null=True)  # 整数フィールドに変更

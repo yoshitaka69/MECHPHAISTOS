@@ -36,7 +36,7 @@ class TaskListPPM02Serializer(serializers.ModelSerializer):
 
     class Meta:
         model = TaskListPPM02 #呼び出すモデル名
-        fields = ["companyCode","companyName","plant","equipment","machineName","taskCode","taskName","laborCostOfPPM02","countOfPPM02","latestPPM02","periodOfPPM02","constructionPeriod","nextEventDate","situation","thisYear","thisYear1later","thisYear2later","thisYear3later","thisYear4later","thisYear5later","thisYear6later","thisYear7later","thisYear8later","thisYear9later","thisYear10later",]# API上に表示するモデルのデータ項目
+        fields = ["companyCode","companyName","plant","equipment","machineName","taskCode","taskName","laborCostOfPPM02","countOfPPM02","latestPPM02","periodOfPPM02", "pM02Content", "maintenanceCategory","constructionPeriod","nextEventDate","situation","thisYear10ago","thisYear9ago","thisYear8ago","thisYear7ago","thisYear6ago","thisYear5ago","thisYear4ago","thisYear3ago","thisYear2ago","thisYear1ago","thisYear","thisYear1later","thisYear2later","thisYear3later","thisYear4later","thisYear5later","thisYear6later","thisYear7later","thisYear8later","thisYear9later","thisYear10later",]# API上に表示するモデルのデータ項目
         
 
     #situationを判定する関数
@@ -69,6 +69,9 @@ class CompanyTaskListPPM02Serializer(serializers.ModelSerializer):
     class Meta:
         model = CompanyCode
         fields = ['companyCode', 'taskListPPM02']
+
+
+
 
 
 
@@ -123,7 +126,7 @@ class TaskListPPM03Serializer(serializers.ModelSerializer):
 
     class Meta:
         model = TaskListPPM03 #呼び出すモデル名
-        fields = ["companyCode","companyName","plant","equipment","machineName","taskCode","taskName","laborCostOfPPM03","countOfPPM03","latestPPM03","periodOfPPM03","constructionPeriod","nextEventDate","situation","thisYear","thisYear1later","thisYear2later","thisYear3later","thisYear4later","thisYear5later","thisYear6later","thisYear7later","thisYear8later","thisYear9later","thisYear10later",]# API上に表示するモデルのデータ項目
+        fields = ["companyCode","companyName","plant","equipment","machineName","taskCode","taskName","laborCostOfPPM03","countOfPPM03","latestPPM03","periodOfPPM03","pM03Content", "maintenanceCategory","constructionPeriod","nextEventDate","situation","thisYear10ago","thisYear9ago","thisYear8ago","thisYear7ago","thisYear6ago","thisYear5ago","thisYear4ago","thisYear3ago","thisYear2ago","thisYear1ago","thisYear","thisYear1later","thisYear2later","thisYear3later","thisYear4later","thisYear5later","thisYear6later","thisYear7later","thisYear8later","thisYear9later","thisYear10later",]# API上に表示するモデルのデータ項目
         
 
     #situationを判定する関数
@@ -336,7 +339,7 @@ class TypicalTaskListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TypicalTaskList #呼び出すモデル名
-        fields = ["taskCode", 'typicalTaskName', 'typicalTaskCode', 'typicalLatestDate', 'typicalConstPeriod', 'typicalNextEventDate', 'multiTasking','typicalSituation']# API上に表示するモデルのデータ項目
+        fields = ["taskCode", 'typicalTaskName', 'typicalLatestDate', 'typicalConstPeriod', 'typicalNextEventDate', 'multiTasking','typicalSituation']# API上に表示するモデルのデータ項目
         
 class CompanyTypicalTaskListSerializer(serializers.ModelSerializer):
     typicalTaskList = TypicalTaskListSerializer(many=True, read_only=True, source='typicalTaskList_companyCode')#ここのsourceは注意

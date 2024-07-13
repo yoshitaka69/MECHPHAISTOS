@@ -7,6 +7,7 @@
             <div>
               <PrecisionAndAccuracy />
               <TroubleHistoryTable />
+              <PreventMaintenanceTable />
             </div>
           </TabPanel>
           <TabPanel header="FTA Analysis">
@@ -27,6 +28,7 @@
 <script>
 import PrecisionAndAccuracy from '@/components/Badactor_management/PrecisionAndAccuracy.vue';
 import TroubleHistoryTable from '@/components/Badactor_management/TroubleHistoryTable.vue';
+import PreventMaintenanceTable from '@/components/Badactor_management/PreventMaintenanceTable.vue';
 import TroubleTimeline from '@/components/Badactor_management/TroubleTimeline.vue';
 import Tree from '@/components/Badactor_management/Tree.vue';
 import HierarchicalEdgeBundling from '@/components/Badactor_management/HierarchicalEdgeBundling.vue';
@@ -34,6 +36,7 @@ import HierarchicalEdgeBundling from '@/components/Badactor_management/Hierarchi
 export default {
   components: {
     PrecisionAndAccuracy,
+    PreventMaintenanceTable,
     TroubleHistoryTable,
     TroubleTimeline,
     Tree,
