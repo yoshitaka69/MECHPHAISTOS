@@ -1,4 +1,35 @@
 from django.db import models
+from accounts.models import CompanyCode
+from ceList.models import Equipment,Machine
+from django.utils import timezone
+
+
+
+
+
+# 故障履歴モデル
+#-------------------------------------------------------------------------------------------------------------------------------------
+class TroubleHistory(models.Model):
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='TroubleHistory_companyCode', null=True, blank=True)
+    equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='TroubleHistory_equipment',null=True, blank=True)
+    machineName = models.ForeignKey(Machine, on_delete=models.CASCADE, related_name='TroubleHistory_machine',null=True, blank=True)
+
+    date = models.DateField(verbose_name='date', null=True, blank=True, default=timezone.now)
+    pmType = models.CharField(verbose_name='pmType', max_length=50, null=True, blank=True)
+    failureContent = models.TextField(verbose_name='failureContent', max_length=1000, null=True, blank=True)
+    failureType = models.CharField(verbose_name='nearMissNo', max_length=50, null=True, blank=True)
+    repairMethod = models.TextField(verbose_name='repairMethod', max_length=1000, null=True, blank=True)
+    rootCause = models.TextField(verbose_name='rootCause', max_length=1000, null=True, blank=True)
+
+    class Meta:
+        ordering = ['-date']
+
+
+
+#-------------------------------------------------------------------------------------------------------------------------------------
+
+
+
 
 # 故障データモデル
 class FailureData(models.Model):
@@ -25,3 +56,7 @@ class BayesianPrediction(models.Model):
     failure_cause = models.CharField(max_length=100)
     maintenance_type = models.CharField(max_length=100)
     maintenance_result = models.CharField(max_length=100)
+
+
+
+

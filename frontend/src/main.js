@@ -133,6 +133,8 @@ import TriStateCheckbox from 'primevue/tristatecheckbox';
 import VirtualScroller from 'primevue/virtualscroller';
 import 'primeicons/primeicons.css'
 
+import { FilterMatchMode, FilterOperator } from 'primevue/api'
+
 //konva
 import VueKonva from 'vue-konva'
 

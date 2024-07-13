@@ -3,7 +3,7 @@
       <h2>PM Trouble history</h2>
       <DataTable 
         v-model:filters="filters" 
-        :value="filteredTroubles" 
+        :value="troubles" 
         paginator 
         :rows="10" 
         dataKey="date"
@@ -81,12 +81,11 @@
           </li>
         </ul>
       </div>
-      <div ref="timeline" style="height: 400px; background-color: white;"></div>
     </div>
   </template>
   
   <script setup>
-  import { ref, onMounted, watch } from 'vue';
+  import { ref } from 'vue';
   import { FilterMatchMode, FilterOperator } from 'primevue/api';
   import DataTable from 'primevue/datatable';
   import Column from 'primevue/column';
@@ -94,8 +93,6 @@
   import InputText from 'primevue/inputtext';
   import Calendar from 'primevue/calendar';
   import SelectButton from 'primevue/selectbutton';
-  import { Timeline } from 'vis-timeline/standalone';
-  import 'vis-timeline/styles/vis-timeline-graph2d.css';
   
   const pmTypeOptions = [
     { label: 'PM03', value: 'PM03' },
@@ -125,18 +122,16 @@
   ]);
   
   const filteredTroubles = ref([...troubles.value]);
-  const timeline = ref(null);
-  let timelineInstance = null;
   
   const initFilters = () => {
     filters.value = {
       global: { value: null, matchMode: FilterMatchMode.CONTAINS },
       date: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }] },
-      pmType: { value: null, matchMode: FilterMatchMode.EQUALS },
+      pmType: { value: null, matchMode: FilterMatchMode.IN },
       description: { value: null, matchMode: FilterMatchMode.CONTAINS },
-      failureType: { value: null, matchMode: FilterMatchMode.EQUALS },
-      failureCauses: { value: null, matchMode: FilterMatchMode.CONTAINS },
-      repairingType: { value: null, matchMode: FilterMatchMode.CONTAINS },
+      failureType: { value: null, matchMode: FilterMatchMode.IN },
+      failureCauses: { value: null, matchMode: FilterMatchMode.IN },
+      repairingType: { value: null, matchMode: FilterMatchMode.IN },
       tag: { value: null, matchMode: FilterMatchMode.CONTAINS },
     };
   };
@@ -145,6 +140,7 @@
   
   const clearFilter = () => {
     initFilters();
+    filteredTroubles.value = [...troubles.value]; // Clear the filtered results to show all data
   };
   
   const formatDate = (value) => {
@@ -155,39 +151,7 @@
   
   const onFilter = (event) => {
     filteredTroubles.value = event.filteredValue;
-    updateTimeline();
   };
-  
-  const updateTimeline = () => {
-    if (timelineInstance) {
-      const items = filteredTroubles.value.map(trouble => ({
-        start: trouble.date,
-        content: `${trouble.pmType} - ${trouble.description}`,
-      }));
-      timelineInstance.setItems(items);
-    }
-  };
-  
-  onMounted(() => {
-    const start = new Date();
-    const end = new Date();
-    start.setFullYear(start.getFullYear() - 1);
-    timelineInstance = new Timeline(timeline.value, [], {
-      min: start,
-      max: end,
-      start: start,
-      end: end,
-      height: '400px',
-      editable: true,
-      selectable: true,
-    });
-    updateTimeline();
-  });
-  
-  watch(filteredTroubles, () => {
-    updateTimeline();
-  });
-  
   </script>
   
   <style scoped>
