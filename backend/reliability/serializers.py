@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from accounts.models import CompanyCode
 from ceList.models import Equipment,Machine 
-from .models import FailureData, WeibullData, TroubleHistory
+from .models import FailureData, WeibullData, TroubleHistory,FailurePredictionPoint
 
 
 
@@ -28,10 +28,34 @@ class CompanyTroubleHistorySerializer(serializers.ModelSerializer):
         fields = ['companyCode', 'troubleHistory']
 
 
+
+
+#故障予測ポイントモデルのシリアライザー
 #------------------------------------------------------------------------------------------------------
 
 
 
+class FPPSerializer(serializers.ModelSerializer):
+    companyCode = serializers.SlugRelatedField(
+        slug_field='companyCode',
+        queryset=CompanyCode.objects.all()
+    )
+
+    class Meta:
+        model = FailurePredictionPoint
+        fields = ['companyCode', 'ceListNo', 'equipment', 'machineName', 'date', 'pmType']
+
+class CompanyFPPSerializer(serializers.ModelSerializer):
+    failurePredictionPoint = FPPSerializer(many=True, source='failurePredictionPoint_companyCode')
+
+    class Meta:
+        model = CompanyCode
+        fields = ['companyCode', 'failurePredictionPoint']
+
+
+
+
+#------------------------------------------------------------------------------------------------------
 
 
 

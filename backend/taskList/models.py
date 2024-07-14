@@ -16,6 +16,7 @@ class TaskListPPM02(models.Model):
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE,related_name='taskListPPM02_plant', null=True, blank=True)
 
     #CeListより
+    ceListNo = models.CharField(verbose_name='ceListNo', max_length=100,blank=True,null=True)
     equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='taskListPPM02_equipment',null=True, blank=True)
     machineName = models.ForeignKey(Machine, on_delete=models.CASCADE, related_name='taskListPPM02_machineName',null=True, blank=True)
 
@@ -117,6 +118,7 @@ class TaskListPPM03(models.Model):
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE,related_name='taskListPPM03_plant', null=True, blank=True)
 
     #CeListより
+    ceListNo = models.CharField(verbose_name='ceListNo', max_length=100,blank=True,null=True)
     equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='taskListPPM03_equipment',null=True, blank=True)
     machineName = models.ForeignKey(Machine, on_delete=models.CASCADE, related_name='taskListPPM03_machineName',null=True, blank=True)
 

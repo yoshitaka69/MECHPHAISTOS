@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div ref="plotGraph" class="graph"></div>
-    <div ref="plotLegend" class="legend"></div>
+    <div ref="plotLegend" class="legend"></div><CeList />
     <div ref="histogramGraph" class="graph"></div>
     <div ref="histogramLegend" class="legend"></div>
     <div ref="costHistogramGraph" class="graph"></div>
@@ -12,14 +12,19 @@
 <script>
 import axios from 'axios';
 import * as d3 from 'd3';
-import { useUserStore } from '@/stores/userStore' // Piniaのstoreをインポート
+import { useUserStore } from '@/stores/userStore'; // Piniaのstoreをインポート
+import CeList from './CeList.vue'; // CeListコンポーネントをインポート
 
 export default {
   name: 'App',
+  components: {
+    CeList, // CeListコンポーネントを登録
+  },
   data() {
     return {
       data: [],
-      faultMap: [],
+      faultData: [],
+      predictionData: [],
       xScale: null,
       histXScale: null,
       costHistXScale: null,
@@ -36,71 +41,183 @@ export default {
         PM03: true,
         eventCost: true,
         faultCost: true,
+        prediction: true
       }
     };
   },
   async mounted() {
-    await this.fetchData();
-    this.createPlotGraph();
-    this.createHistogramGraph();
-    this.createCostHistogramGraph();
-    this.createPlotLegend();
-    this.createHistogramLegend();
-    this.createCostLegend();
-  },
-
-
-  methods: {
-  async fetchData() {
-    const userStore = useUserStore();
-    const companyCode = userStore.companyCode;
+    try {
+      await this.fetchData();
+      console.log('Data fetched successfully');
+    } catch (error) {
+      console.error('Error in fetchData:', error);
+    }
 
     try {
-      console.log('Fetching data for companyCode:', companyCode);
-      const response = await axios.get('http://127.0.0.1:8000/api/reliability/troubleHistoryByCompany/', {
-        params: {
-          companyCode: companyCode
-        }
-      });
-      console.log('Response data:', response.data);
-
-      // レスポンスが期待する形式かをチェック
-      if (!response.data || !Array.isArray(response.data) || !response.data[0].troubleHistory) {
-        console.error('Unexpected response format:', response.data);
-        return;
-      }
-
-      const troubleHistory = response.data[0].troubleHistory;
-      console.log('Trouble history:', troubleHistory);
-
-      this.data = troubleHistory.map(d => ({
-        ...d,
-        date: new Date(d.date),
-        cost: parseFloat(d.repairCost),
-        equipmentNo: d.ceListNo
-      }));
-      console.log('Processed data:', this.data);
-
-      this.faultMap = troubleHistory.filter(d => d.pmType === 'PM03' || d.pmType === 'PM04').map(d => ({
-        ...d,
-        date: new Date(d.date),
-        cost: parseFloat(d.repairCost),
-        equipmentNo: d.ceListNo,
-        typeOfTask: d.pmType
-      }));
-      console.log('Processed fault map:', this.faultMap);
+      this.createPlotGraph();
+      console.log('Plot graph created successfully');
     } catch (error) {
-      console.error('Error fetching data', error);
+      console.error('Error in createPlotGraph:', error);
+    }
+
+    try {
+      this.createHistogramGraph();
+      console.log('Histogram graph created successfully');
+    } catch (error) {
+      console.error('Error in createHistogramGraph:', error);
+    }
+
+    try {
+      this.createCostHistogramGraph();
+      console.log('Cost histogram graph created successfully');
+    } catch (error) {
+      console.error('Error in createCostHistogramGraph:', error);
+    }
+
+    try {
+      this.createPlotLegend();
+      console.log('Plot legend created successfully');
+    } catch (error) {
+      console.error('Error in createPlotLegend:', error);
+    }
+
+    try {
+      this.createHistogramLegend();
+      console.log('Histogram legend created successfully');
+    } catch (error) {
+      console.error('Error in createHistogramLegend:', error);
+    }
+
+    try {
+      this.createCostLegend();
+      console.log('Cost legend created successfully');
+    } catch (error) {
+      console.error('Error in createCostLegend:', error);
     }
   },
+  methods: {
+    async fetchEventData() {
+      const userStore = useUserStore();
+      const companyCode = userStore.companyCode;
 
-    createPlotGraph() {
-      const { margin, width, plotHeight, yStartDate } = this;
-      const graphWidth = width - margin.left - margin.right;
-      const height = plotHeight - margin.top - margin.bottom;
+      try {
+        // PPM02のデータを取得
+        const responsePPM02 = await axios.get('http://127.0.0.1:8000/api/task/taskListPPM02ByCompany/', {
+          params: { companyCode }
+        });
 
-      // SVG要素の作成
-      const svg = d3
+        // PPM03のデータを取得
+        const responsePPM03 = await axios.get('http://127.0.0.1:8000/api/task/taskListPPM03ByCompany/', {
+          params: { companyCode }
+        });
+
+        // データの整形
+        const eventDataPPM02 = responsePPM02.data.flatMap(item => item.taskListPPM02.map(task => ({
+          date: new Date(task.nextEventDate),
+          repairCost: parseFloat(task.laborCostOfPPM02),
+          ceListNo: task.ceListNo,
+          equipmentNo: parseInt(task.ceListNo), // ここでceListNoを整数に変換
+          pmType: 'PPM02'
+        })));
+
+        const eventDataPPM03 = responsePPM03.data.flatMap(item => item.taskListPPM03.map(task => ({
+          date: new Date(task.nextEventDate),
+          repairCost: parseFloat(task.laborCostOfPPM03),
+          ceListNo: task.ceListNo,
+          equipmentNo: parseInt(task.ceListNo), // ここでceListNoを整数に変換
+          pmType: 'PPM03'
+        })));
+
+        // PPM02とPPM03のデータをマージ
+        this.data = [...eventDataPPM02, ...eventDataPPM03];
+        console.log('Event data:', this.data);
+      } catch (error) {
+        console.error('Error fetching event data', error);
+      }
+    },
+
+    async fetchFaultData() {
+      const userStore = useUserStore();
+      const companyCode = userStore.companyCode;
+
+      try {
+        // Fault dataのデータを取得
+        const response = await axios.get('http://127.0.0.1:8000/api/reliability/troubleHistoryByCompany/', {
+          params: { companyCode }
+        });
+
+        // データの整形
+        this.faultData = response.data.flatMap(item => item.troubleHistory.map(task => ({
+          date: new Date(task.date),
+          repairCost: parseFloat(task.repairCost),
+          ceListNo: task.ceListNo,
+          equipmentNo: parseInt(task.ceListNo), // ここでceListNoを整数に変換
+          pmType: task.pmType
+        })));
+
+        console.log('Fault data:', this.faultData);
+      } catch (error) {
+        console.error('Error fetching fault data', error);
+      }
+    },
+
+    async fetchPredictionData() {
+      const userStore = useUserStore();
+      const companyCode = userStore.companyCode;
+
+      try {
+        // Prediction Pointのデータを取得
+        const response = await axios.get('http://127.0.0.1:8000/api/reliability/failurePredictionPointByCompany/', {
+          params: { companyCode }
+        });
+
+        // データの整形
+        this.predictionData = response.data.flatMap(item => item.failurePredictionPoint.map(task => ({
+          date: new Date(task.date),
+          ceListNo: task.ceListNo,
+          equipmentNo: parseInt(task.ceListNo), // ここでceListNoを整数に変換
+          pmType: task.pmType
+        })));
+
+        console.log('Prediction data:', this.predictionData);
+      } catch (error) {
+        console.error('Error fetching prediction data', error);
+      }
+    },
+
+    async fetchData() {
+      await this.fetchEventData();
+      await this.fetchFaultData();
+      await this.fetchPredictionData();
+
+      // 既存の処理
+      this.faultMap = this.faultData.map(d => ({
+        ...d,
+        date: new Date(d.date),
+        cost: parseFloat(d.repairCost),
+        equipmentNo: parseInt(d.ceListNo), // ceListNoを整数に変換
+        typeOfTask: d.pmType
+      }));
+
+      this.predictionData = this.predictionData.map(d => ({
+        ...d,
+        date: new Date(d.date),
+        equipmentNo: parseInt(d.ceListNo) // ceListNoを整数に変換
+      }));
+    },
+
+   // createPlotGraphメソッドの修正部分
+
+createPlotGraph() {
+    const { margin, width, plotHeight, yStartDate } = this;
+    const graphWidth = width - margin.left - margin.right;
+    const height = plotHeight - margin.top - margin.bottom;
+
+    // 雷の形状パス
+    const lightningPath = "M10 0 L20 20 L0 20 L10 40 L30 10 L10 10 Z";
+
+    // SVG要素の作成
+    const svg = d3
         .select(this.$refs.plotGraph)
         .append('svg')
         .attr('width', width)
@@ -109,8 +226,8 @@ export default {
         .append('g')
         .attr('transform', `translate(${margin.left},${margin.top})`);
 
-      // グラフタイトルの追加
-      svg.append('text')
+    // グラフタイトルの追加
+    svg.append('text')
         .attr('x', graphWidth / 2)
         .attr('y', -margin.top / 2)
         .attr('text-anchor', 'middle')
@@ -118,27 +235,32 @@ export default {
         .style('font-weight', 'bold')
         .text('Precision of the task');
 
-      // x軸の設定
-      const xDomain = d3.range(1, 31); // 1から30までの範囲
-      this.xScale = d3.scaleBand().domain(xDomain).range([0, graphWidth]).padding(0.1);
+    // x軸の設定
+    const xDomain = d3.range(1, 31); // 1から30までの範囲
+    this.xScale = d3.scaleBand().domain(xDomain).range([0, graphWidth]).padding(0.1);
 
-      const currentDate = new Date();
-      const yEndDate = new Date(yStartDate);
-      yEndDate.setMonth(yStartDate.getMonth() + 23);
+    const currentDate = new Date();
+    const yEndDate = new Date(yStartDate);
+    yEndDate.setMonth(yStartDate.getMonth() + 23);
 
-      // y軸の設定
-      this.yScale = d3.scaleTime().domain([new Date(currentDate.getFullYear(), currentDate.getMonth() - 12, 1), new Date(currentDate.getFullYear(), currentDate.getMonth() + 12, 1)]).range([height, 0]);
+    // y軸の設定
+    this.yScale = d3.scaleTime().domain([new Date(currentDate.getFullYear(), currentDate.getMonth() - 12, 1), new Date(currentDate.getFullYear(), currentDate.getMonth() + 12, 1)]).range([height, 0]);
 
-      // データのフィルタリング
-      const filteredData = this.data.filter(d => d.date >= new Date(currentDate.getFullYear(), currentDate.getMonth() - 12, 1) && d.date <= new Date(currentDate.getFullYear(), currentDate.getMonth() + 12, 1));
-      const filteredFaultMap = this.faultMap.filter(d => d.date >= new Date(currentDate.getFullYear(), currentDate.getMonth() - 12, 1) && d.date <= new Date(currentDate.getFullYear(), currentDate.getMonth() + 12, 1));
+    // データのフィルタリング
+    const filteredData = this.data.filter(d => d.date >= new Date(currentDate.getFullYear(), currentDate.getMonth() - 12, 1) && d.date <= new Date(currentDate.getFullYear(), currentDate.getMonth() + 12, 1));
+    const filteredFaultMap = this.faultMap.filter(d => d.date >= new Date(currentDate.getFullYear(), currentDate.getMonth() - 12, 1) && d.date <= new Date(currentDate.getFullYear(), currentDate.getMonth() + 12, 1));
+    const filteredPredictionData = this.predictionData.filter(d => d.date >= new Date(currentDate.getFullYear(), currentDate.getMonth() - 12, 1) && d.date <= new Date(currentDate.getFullYear(), currentDate.getMonth() + 12, 1));
 
-      // x軸とy軸の描画
-      this.xAxis = svg.append('g').call(d3.axisBottom(this.xScale)).attr('transform', `translate(0,${height})`);
-      this.yAxis = svg.append('g').call(d3.axisLeft(this.yScale).ticks(d3.timeMonth.every(1)).tickFormat(d3.timeFormat('%Y-%m')));
+    console.log('Filtered event data:', filteredData);
+    console.log('Filtered fault data:', filteredFaultMap);
+    console.log('Filtered prediction data:', filteredPredictionData);
 
-      // x軸グリッド線の追加
-      svg.append('g')
+    // x軸とy軸の描画
+    this.xAxis = svg.append('g').call(d3.axisBottom(this.xScale)).attr('transform', `translate(0,${height})`);
+    this.yAxis = svg.append('g').call(d3.axisLeft(this.yScale).ticks(d3.timeMonth.every(1)).tickFormat(d3.timeFormat('%Y-%m')));
+
+    // x軸グリッド線の追加
+    svg.append('g')
         .attr('class', 'grid')
         .attr('transform', `translate(0,${height})`)
         .call(d3.axisBottom(this.xScale).tickSize(-height).tickFormat(''))
@@ -147,8 +269,8 @@ export default {
         .style('stroke-opacity', '0.7')
         .style('shape-rendering', 'crispEdges');
 
-      // y軸グリッド線の追加
-      svg.append('g')
+    // y軸グリッド線の追加
+    svg.append('g')
         .attr('class', 'grid')
         .call(d3.axisLeft(this.yScale).tickSize(-graphWidth).tickFormat(''))
         .selectAll('line')
@@ -156,16 +278,16 @@ export default {
         .style('stroke-opacity', '0.7')
         .style('shape-rendering', 'crispEdges');
 
-      // x軸ラベルの追加
-      svg.append('text')
+    // x軸ラベルの追加
+    svg.append('text')
         .attr('x', graphWidth / 2)
         .attr('y', height + margin.bottom / 1.5)
         .attr('text-anchor', 'middle')
         .style('font-size', '12px')
         .text('Critical equipment No.');
 
-      // y軸ラベルの追加
-      svg.append('text')
+    // y軸ラベルの追加
+    svg.append('text')
         .attr('transform', 'rotate(-90)')
         .attr('x', -height / 2)
         .attr('y', -margin.left / 1.5)
@@ -174,58 +296,114 @@ export default {
         .style('font-size', '12px')
         .text('Date');
 
-      // イベントデータのプロット
-      this.circles = svg.selectAll('circle.event')
+    // イベントデータのプロット
+    this.circles = svg.selectAll('circle.event')
         .data(filteredData)
         .enter()
         .append('circle')
         .attr('class', 'event')
-        .attr('cx', d => this.xScale(d.equipmentNo) + this.xScale.bandwidth() / 2)
+        .attr('cx', d => {
+            const posX = this.xScale(d.equipmentNo) + this.xScale.bandwidth() / 2;
+            console.log('Event cx:', posX, 'for equipmentNo:', d.equipmentNo);
+            return posX;
+        })
         .attr('cy', d => this.yScale(d.date))
         .attr('r', 5)
         .style('fill', 'blue');
 
-      // 故障マップのプロット
-      this.faultGroups = svg.selectAll('g.fault')
+    // 故障マップのプロット
+    this.faultGroups = svg.selectAll('g.fault')
         .data(filteredFaultMap)
         .enter()
         .append('g')
         .attr('class', d => `fault ${d.typeOfTask}`)
-        .attr('transform', d => `translate(${this.xScale(d.equipmentNo) + this.xScale.bandwidth() / 2},${this.yScale(d.date)})`);
+        .attr('transform', d => {
+            const posX = this.xScale(d.equipmentNo) + this.xScale.bandwidth() / 2;
+            const posY = this.yScale(d.date);
+            return `translate(${posX},${posY})`;
+        });
 
-      const sizesPM04 = [15, 12, 9, 6, 3];
-      const colorsPM04 = ['white', 'black', 'lightblue', 'red', 'yellow'];
+    const sizesPM04 = [15, 12, 9, 6, 3];
+    const colorsPM04 = ['white', 'black', 'lightblue', 'red', 'yellow'];
 
-      const sizesPM03 = [15, 10, 5];
-      const colorsPM03 = ['white', 'black', 'white'];
+    const sizesPM03 = [15, 10, 5];
+    const colorsPM03 = ['white', 'black', 'white'];
 
-      filteredFaultMap.forEach(d => {
+    filteredFaultMap.forEach(d => {
         const group = this.faultGroups.filter(dd => dd === d);
         if (d.typeOfTask === 'PM04') {
-          sizesPM04.forEach((size, i) => {
-            group.append('circle')
-              .attr('r', size)
-              .style('fill', colorsPM04[i])
-              .style('stroke', i === 0 ? 'black' : 'none')
-              .style('stroke-width', i === 0 ? 1 : 0);
-          });
+            // 雷の形状を赤色にしてプロット
+            group.append('path')
+                .attr('d', lightningPath)
+                .attr('transform', `scale(0.5) translate(-10,-20)`)
+                .style('fill', 'red');
         } else if (d.typeOfTask === 'PM03') {
-          sizesPM03.forEach((size, i) => {
-            group.append('circle')
-              .attr('r', size)
-              .style('fill', colorsPM03[i])
-              .style('stroke', 'black')
-              .style('stroke-width', 1);
-          });
+            sizesPM03.forEach((size, i) => {
+                group.append('circle')
+                    .attr('r', size)
+                    .style('fill', colorsPM03[i])
+                    .style('stroke', 'black')
+                    .style('stroke-width', 1);
+            });
         }
-      });
 
-      // 縦方向の薄い青色の帯を追加 (PM04のみ)
-      this.bands = svg.selectAll('rect.band')
-        .data(filteredFaultMap.filter(d => d.typeOfTask === 'PM04'))
+        // テキスト要素の追加
+        group.append('text')
+            .attr('x', 0)
+            .attr('y', 30)
+            .attr('text-anchor', 'middle')
+            .style('fill', 'red')
+            .style('font-size', '10px')
+            .selectAll('tspan')
+            .data([`${d.pmType}`, `(${d.date.toISOString().split('T')[0]})`])
+            .enter()
+            .append('tspan')
+            .attr('x', 0)
+            .attr('dy', (dd, i) => i * 12) // 各行の間にスペースを追加
+            .text(dd => dd);
+    });
+
+    // 予測データのプロット（的の形状）
+    this.predictionPaths = svg.selectAll('g.prediction')
+        .data(filteredPredictionData)
+        .enter()
+        .append('g')
+        .attr('class', 'prediction')
+        .attr('transform', d => {
+            const posX = this.xScale(d.equipmentNo) + this.xScale.bandwidth() / 2;
+            const posY = this.yScale(d.date);
+            return `translate(${posX},${posY})`;
+        });
+
+    sizesPM04.forEach((size, i) => {
+        this.predictionPaths.append('circle')
+            .attr('r', size)
+            .style('fill', colorsPM04[i])
+            .style('stroke', i === 0 ? 'black' : 'none')
+            .style('stroke-width', i === 0 ? 1 : 0);
+    });
+
+    // 予測データのテキスト要素の追加
+    this.predictionPaths.append('text')
+        .attr('x', 0)
+        .attr('y', 30)
+        .attr('text-anchor', 'middle')
+        .style('fill', 'red')
+        .style('font-size', '10px')
+        .selectAll('tspan')
+        .data(d => [`${d.pmType}`, `(${d.date.toISOString().split('T')[0]})`])
+        .enter()
+        .append('tspan')
+        .attr('x', 0)
+        .attr('dy', (d, i) => i * 12) // 各行の間にスペースを追加
+        .text(d => d);
+
+    // 縦方向の薄い青色の帯を追加 (予測データのみ)
+    this.predictionBands = svg.selectAll('rect.predictionBand')
+        .data(filteredPredictionData)
         .enter()
         .append('rect')
-        .attr('class', 'PM04')
+        .attr('class', 'predictionBand')
         .attr('x', d => this.xScale(d.equipmentNo) + this.xScale.bandwidth() / 2 - sizesPM04[0]) // 矢の的の最外周の位置に帯を配置
         .attr('y', 0) // 上端から下端まで
         .attr('width', sizesPM04[0] * 2) // 矢の的の最外周の幅に合わせる
@@ -233,35 +411,23 @@ export default {
         .style('fill', 'lightblue')
         .style('opacity', 0.3); // 半透明にする
 
-      // PM04と日付を表示するためのテキスト要素を追加
-      this.faultGroups.append('text')
-        .attr('y', 30) // 円の下に距離を空けて表示
-        .attr('text-anchor', 'middle')
-        .style('fill', 'red')
-        .style('font-size', '10px')
-        .selectAll('tspan')
-        .data(d => [`${d.typeOfTask}`, `(${d.date.toISOString().split('T')[0]})`])
-        .enter()
-        .append('tspan')
-        .attr('x', 0)
-        .attr('dy', (d, i) => i * 12) // 各行の間にスペースを追加
-        .text(d => d);
-
-      // ドラッグ機能の設定
-      const drag = d3.drag()
+    // ドラッグ機能の設定
+    const drag = d3.drag()
         .on('drag', (event) => {
-          this.dragOffset += event.dx;
-          this.updateAxes();
+            this.dragOffset += event.dx;
+            this.updateAxes();
         });
 
-      // ドラッグ機能をSVGに追加
-      svg.append('rect')
+    // ドラッグ機能をSVGに追加
+    svg.append('rect')
         .attr('width', graphWidth)
         .attr('height', height)
         .style('fill', 'none')
         .style('pointer-events', 'all')
         .call(drag);
-    },
+},
+
+
     createHistogramGraph() {
       const { margin, width, histogramHeight } = this;
       const graphWidth = width - margin.left - margin.right;
@@ -357,7 +523,10 @@ export default {
         .enter()
         .append('rect')
         .attr('class', 'event')
-        .attr('x', d => this.histXScale(d[0]))
+        .attr('x', d => {
+          const posX = this.histXScale(d[0]);
+          return posX;
+        })
         .attr('y', d => yScale(d[1]))
         .attr('width', this.histXScale.bandwidth())
         .attr('height', d => height - yScale(d[1]))
@@ -370,7 +539,10 @@ export default {
         .enter()
         .append('rect')
         .attr('class', 'fault')
-        .attr('x', d => this.histXScale(d[0]))
+        .attr('x', d => {
+          const posX = this.histXScale(d[0]);
+          return posX;
+        })
         .attr('y', d => yScale(d[1]))
         .attr('width', this.histXScale.bandwidth())
         .attr('height', d => height - yScale(d[1]))
@@ -392,6 +564,7 @@ export default {
         .style('pointer-events', 'all')
         .call(drag);
     },
+
     createCostHistogramGraph() {
       const { margin, width, costHistogramHeight } = this;
       const graphWidth = width - margin.left - margin.right;
@@ -424,7 +597,7 @@ export default {
       // 合計コストデータの作成
       const eventCostData = Array.from(d3.rollup(
         filteredData,
-        v => d3.sum(v, d => d.cost),
+        v => d3.sum(v, d => d.repairCost),
         d => d.equipmentNo
       ), ([equipmentNo, totalCost]) => ({ equipmentNo, totalCost }));
 
@@ -489,7 +662,10 @@ export default {
         .enter()
         .append('rect')
         .attr('class', 'eventCost')
-        .attr('x', d => this.costHistXScale(d.equipmentNo))
+        .attr('x', d => {
+          const posX = this.costHistXScale(d.equipmentNo);
+          return posX;
+        })
         .attr('y', d => yScale(d.totalCost))
         .attr('width', this.costHistXScale.bandwidth() / 2) // バーの幅を半分にする
         .attr('height', d => height - yScale(d.totalCost))
@@ -502,7 +678,10 @@ export default {
         .enter()
         .append('rect')
         .attr('class', 'faultCost')
-        .attr('x', d => this.costHistXScale(d.equipmentNo) + this.costHistXScale.bandwidth() / 2) // 横並びにする
+        .attr('x', d => {
+          const posX = this.costHistXScale(d.equipmentNo) + this.costHistXScale.bandwidth() / 2;
+          return posX;
+        }) // 横並びにする
         .attr('y', d => yScale(d.totalCost))
         .attr('width', this.costHistXScale.bandwidth() / 2) // バーの幅を半分にする
         .attr('height', d => height - yScale(d.totalCost))
@@ -524,11 +703,13 @@ export default {
         .style('pointer-events', 'all')
         .call(drag);
     },
+
     createPlotLegend() {
       const legendData = [
         { label: 'Event', color: 'blue', type: 'event' },
         { label: 'PM04', color: 'yellow', type: 'PM04' },
-        { label: 'PM03', color: 'white', type: 'PM03' }
+        { label: 'PM03', color: 'white', type: 'PM03' },
+        { label: 'Prediction Point', color: 'orange', type: 'prediction' }
       ];
 
       const legend = d3.select(this.$refs.plotLegend)
@@ -558,6 +739,7 @@ export default {
         .style('font-size', '12px')
         .attr('alignment-baseline', 'middle');
     },
+
     createHistogramLegend() {
       const legendData = [
         { label: 'Event', color: 'green', type: 'event' },
@@ -591,6 +773,7 @@ export default {
         .style('font-size', '12px')
         .attr('alignment-baseline', 'middle');
     },
+
     createCostLegend() {
       const legendData = [
         { label: 'Event Cost', color: 'blue', type: 'eventCost' },
@@ -624,6 +807,7 @@ export default {
         .style('font-size', '12px')
         .attr('alignment-baseline', 'middle');
     },
+
     updateAxes() {
       const { margin, width, plotHeight } = this;
       const graphWidth = width - margin.left - margin.right;
@@ -644,6 +828,8 @@ export default {
       const newHistXScale = this.histXScale.copy().domain(newDomain).range([currentOffset, currentOffset + graphWidth]);
       const newCostHistXScale = this.costHistXScale.copy().domain(newDomain).range([currentOffset, currentOffset + graphWidth]);
 
+      console.log('Updated xScale domain:', newXScale.domain());
+
       // x軸の更新
       this.xAxis.call(d3.axisBottom(newXScale));
       this.histXAxis.call(d3.axisBottom(newHistXScale));
@@ -652,17 +838,29 @@ export default {
       // プロットグラフの円の位置を更新
       this.circles.attr('cx', d => {
         const posX = newXScale(d.equipmentNo);
+        console.log('Event cx:', posX, 'for equipmentNo:', d.equipmentNo);
         return posX;
       });
 
+      // 予測データの円の位置を更新
+      this.predictionPaths.attr('transform', d => {
+        const posX = newXScale(d.equipmentNo) + newXScale.bandwidth() / 2;
+        const posY = this.yScale(d.date);
+        return `translate(${posX},${posY})`;
+      });
+
       // 縦方向の薄い青色の帯の位置を更新
-      this.bands.attr('x', d => {
+      this.predictionBands.attr('x', d => {
         const posX = newXScale(d.equipmentNo) + newXScale.bandwidth() / 2 - 15; // 矢の的の最外周の位置に帯を配置
         return posX;
       });
 
       // 故障マップの位置を更新
-      this.faultGroups.attr('transform', d => `translate(${newXScale(d.equipmentNo) + newXScale.bandwidth() / 2},${this.yScale(d.date)})`);
+      this.faultGroups.attr('transform', d => {
+        const posX = newXScale(d.equipmentNo) + newXScale.bandwidth() / 2;
+        const posY = this.yScale(d.date);
+        return `translate(${posX},${posY})`;
+      });
 
       // ヒストグラムのバーの位置を更新
       this.bars.attr('x', d => {
@@ -688,6 +886,7 @@ export default {
         return posX;
       });
     },
+
     toggleVisibility(type) {
       this.legendState[type] = !this.legendState[type];
       d3.selectAll(`.${type}`).style('display', this.legendState[type] ? null : 'none');

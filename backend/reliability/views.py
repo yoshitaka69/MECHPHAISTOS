@@ -1,6 +1,6 @@
 from rest_framework import viewsets
-from .models import FailureData, WeibullData
-from .serializers import FailureDataSerializer, WeibullDataSerializer
+from .models import FailureData, WeibullData,FailurePredictionPoint
+from .serializers import FailureDataSerializer, WeibullDataSerializer,FPPSerializer,CompanyFPPSerializer
 from django.http import JsonResponse
 import numpy as np
 
@@ -26,6 +26,31 @@ class CompanyCodeTroubleHistoryViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = CompanyCode.objects.prefetch_related('troubleHistory_companyCode').all()
+        company_code = self.request.query_params.get('companyCode', None)
+        if company_code:
+            queryset = queryset.filter(companyCode=company_code)
+        return queryset
+#------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+#FailurePredictionPointのviewSet
+#------------------------------------------------------------------------------------------------------------------------
+
+
+class FailurePredictionPointViewSet(viewsets.ModelViewSet):
+    queryset = FailurePredictionPoint.objects.all()
+    serializer_class = FPPSerializer
+
+class CompanyCodeFPPViewSet(viewsets.ModelViewSet):
+    serializer_class = CompanyFPPSerializer
+
+    def get_queryset(self):
+        queryset = CompanyCode.objects.prefetch_related('failurePredictionPoint_companyCode').all()
         company_code = self.request.query_params.get('companyCode', None)
         if company_code:
             queryset = queryset.filter(companyCode=company_code)

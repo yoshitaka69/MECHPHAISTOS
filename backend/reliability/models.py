@@ -32,6 +32,23 @@ class TroubleHistory(models.Model):
 
 
 
+class FailurePredictionPoint(models.Model):
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='failurePredictionPoint_companyCode', null=True, blank=True)
+    ceListNo = models.CharField(verbose_name='ceListNo', max_length=100,blank=True,null=True)
+    equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='failurePredictionPoint_equipment',null=True, blank=True)
+    machineName = models.ForeignKey(Machine, on_delete=models.CASCADE, related_name='failurePredictionPoint_machine',null=True, blank=True)
+
+    date = models.DateField(verbose_name='date', null=True, blank=True, default=timezone.now)
+    pmType = models.CharField(verbose_name='pmType', max_length=50, null=True, blank=True)
+
+    class Meta:
+        ordering = ['-date']
+
+
+
+#-------------------------------------------------------------------------------------------------------------------------------------
+
+
 
 # 故障データモデル
 class FailureData(models.Model):
