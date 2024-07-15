@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div ref="plotGraph" class="graph"></div>
-    <div ref="plotLegend" class="legend"></div><CeList />
+    <div ref="plotLegend" class="legend"></div>
     <div ref="histogramGraph" class="graph"></div>
     <div ref="histogramLegend" class="legend"></div>
     <div ref="costHistogramGraph" class="graph"></div>
@@ -13,13 +13,11 @@
 import axios from 'axios';
 import * as d3 from 'd3';
 import { useUserStore } from '@/stores/userStore'; // Piniaのstoreをインポート
-import CeList from './CeList.vue'; // CeListコンポーネントをインポート
+
 
 export default {
   name: 'App',
-  components: {
-    CeList, // CeListコンポーネントを登録
-  },
+
   data() {
     return {
       data: [],

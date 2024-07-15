@@ -1,61 +1,54 @@
 <template>
-  <div id="app">
-    <div>
+  <div id="app" style="display: flex;">
+    <div style="margin-right: 20px; display: flex; flex-direction: column;">
       <label for="chartType">Select Chart Type:</label>
-      <select v-model="chartType" @change="drawTree">
-        <option value="tree">Tree</option>
-        <option value="cluster">Cluster</option>
-      </select>
-      
+      <p-dropdown v-model="chartType" :options="chartOptions" optionLabel="label" @change="drawTree"></p-dropdown>
+
       <label for="layoutType">Select Layout Type:</label>
-      <select v-model="layoutType" @change="drawTree">
-        <option value="horizontal">Horizontal</option>
-        <option value="vertical">Vertical</option>
-        <option value="circular">Circular</option>
-      </select>
+      <p-dropdown v-model="layoutType" :options="layoutOptions" optionLabel="label" @change="drawTree"></p-dropdown>
       
       <label for="backgroundColor">Select Background Color:</label>
-      <select v-model="backgroundColor" @change="drawTree">
-        <option value="white">White</option>
-        <option value="lightblue">Light Blue</option>
-        <option value="lightgreen">Light Green</option>
-        <option value="lightyellow">Light Yellow</option>
-      </select>
+      <p-dropdown v-model="backgroundColor" :options="backgroundColorOptions" optionLabel="label" @change="drawTree"></p-dropdown>
 
       <label for="nodeTextDisplay">Select Node Text Display:</label>
-      <select v-model="nodeTextDisplay" @change="drawTree">
-        <option value="all">All</option>
-        <option value="leaves">Leaves</option>
-        <option value="extremities">Extremities</option>
-      </select>
+      <p-dropdown v-model="nodeTextDisplay" :options="nodeTextDisplayOptions" optionLabel="label" @change="drawTree"></p-dropdown>
       
       <label for="marginx">Margin X:</label>
-      <input type="number" v-model.number="marginx" @input="drawTree">
+      <p-input-number v-model.number="marginx" @input="drawTree"></p-input-number>
 
       <label for="marginy">Margin Y:</label>
-      <input type="number" v-model.number="marginy" @input="drawTree">
+      <p-input-number v-model.number="marginy" @input="drawTree"></p-input-number>
 
       <label for="radius">Node Radius:</label>
-      <input type="number" v-model.number="radius" @input="drawTree">
+      <p-input-number v-model.number="radius" @input="drawTree"></p-input-number>
 
       <label for="duration">Animation Duration:</label>
-      <input type="number" v-model.number="duration" @input="drawTree">
+      <p-input-number v-model.number="duration" @input="drawTree"></p-input-number>
 
       <label for="leafTextMargin">Leaf Text Margin:</label>
-      <input type="number" v-model.number="leafTextMargin" @input="drawTree">
+      <p-input-number v-model.number="leafTextMargin" @input="drawTree"></p-input-number>
 
       <label for="nodeTextMargin">Node Text Margin:</label>
-      <input type="number" v-model.number="nodeTextMargin" @input="drawTree">
+      <p-input-number v-model.number="nodeTextMargin" @input="drawTree"></p-input-number>
     </div>
-    <svg ref="svg" :style="{ backgroundColor: backgroundColor }" width="800" height="600"></svg>
+    <svg ref="svg" :style="{ backgroundColor: backgroundColor, border: '1px solid black' }" width="800" height="600"></svg>
   </div>
 </template>
 
 <script>
 import * as d3 from 'd3';
+import 'primevue/resources/primevue.min.css';
+import 'primevue/resources/themes/saga-blue/theme.css';
+import 'primeicons/primeicons.css';
+import InputNumber from 'primevue/inputnumber';
+import Dropdown from 'primevue/dropdown';
 
 export default {
   name: 'App',
+  components: {
+    'p-input-number': InputNumber,
+    'p-dropdown': Dropdown
+  },
   data() {
     return {
       chartType: 'tree',   // デフォルトのチャートタイプ
@@ -67,7 +60,27 @@ export default {
       radius: 4, // デフォルトのノード半径
       duration: 750, // デフォルトのアニメーション継続時間
       leafTextMargin: 6, // デフォルトのリーフノードテキストマージン
-      nodeTextMargin: 8 // デフォルトのノードテキストマージン
+      nodeTextMargin: 8, // デフォルトのノードテキストマージン
+      chartOptions: [
+        { label: 'Tree', value: 'tree' },
+        { label: 'Cluster', value: 'cluster' }
+      ],
+      layoutOptions: [
+        { label: 'Horizontal', value: 'horizontal' },
+        { label: 'Vertical', value: 'vertical' },
+        { label: 'Circular', value: 'circular' }
+      ],
+      backgroundColorOptions: [
+        { label: 'White', value: 'white' },
+        { label: 'Light Blue', value: 'lightblue' },
+        { label: 'Light Green', value: 'lightgreen' },
+        { label: 'Light Yellow', value: 'lightyellow' }
+      ],
+      nodeTextDisplayOptions: [
+        { label: 'All', value: 'all' },
+        { label: 'Leaves', value: 'leaves' },
+        { label: 'Extremities', value: 'extremities' }
+      ]
     };
   },
   mounted() {

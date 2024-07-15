@@ -43,6 +43,30 @@
           <SelectButton v-model="filterModel.value" :options="pmTypeOptions" optionLabel="label" optionValue="value" placeholder="Select PM type" showClear />
         </template>
       </Column>
+      <Column 
+        field="failureContent" 
+        header="Description" 
+        sortable 
+        :headerStyle="{ backgroundColor: '#d3e0ea' }"
+      />
+      <Column 
+        field="failureType" 
+        header="Failure Type" 
+        sortable 
+        :headerStyle="{ backgroundColor: '#d3e0ea' }"
+      />
+      <Column 
+        field="rootCause" 
+        header="Failure Causes" 
+        sortable 
+        :headerStyle="{ backgroundColor: '#d3e0ea' }"
+      />
+      <Column 
+        field="repairMethod" 
+        header="Repairing Type" 
+        sortable 
+        :headerStyle="{ backgroundColor: '#d3e0ea' }"
+      />
     </DataTable>
   </div>
 </template>
@@ -55,6 +79,8 @@ import Column from 'primevue/column';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import SelectButton from 'primevue/selectbutton';
+import axios from 'axios';
+import { useUserStore } from '@/stores/userStore'; // Pinia store
 
 const pmTypeOptions = [
   { label: 'PM03', value: 'PM03' },
@@ -66,15 +92,14 @@ const filters = ref({
   pmType: { value: null, matchMode: FilterMatchMode.EQUALS },
 });
 
-const troubles = ref([
-  { date: '2024-07-01', pmType: 'PM03', description: 'Description 1', failureType: 'Type 1', failureCauses: 'Cause 1', repairingType: 'Repair 1', tag: '#001' },
-  { date: '2024-07-02', pmType: 'PM04', description: 'Description 2', failureType: 'Type 2', failureCauses: 'Cause 2', repairingType: 'Repair 2', tag: '#002' },
-  // ここに他の行データを追加できます
-]);
+const troubles = ref([]);
 
 const filteredTroubles = ref([...troubles.value]);
 
 const emit = defineEmits(['update-timeline']);
+
+const userStore = useUserStore();
+const companyCode = userStore.companyCode;
 
 const initFilters = () => {
   filters.value = {
@@ -103,14 +128,29 @@ const onFilter = (event) => {
   emit('update-timeline', JSON.parse(JSON.stringify(filteredTroubles.value)));  // Proxyから純粋なオブジェクトに変換
 };
 
+const fetchTroubles = async () => {
+  try {
+    const response = await axios.get('http://127.0.0.1:8000/api/reliability/troubleHistoryByCompany/', {
+      params: { companyCode }
+    });
+    console.log("API response data:", response.data);
+    const data = response.data.find(item => item.companyCode === companyCode);
+    troubles.value = data ? data.troubleHistory : [];
+    filteredTroubles.value = [...troubles.value];
+    emit('update-timeline', JSON.parse(JSON.stringify(filteredTroubles.value)));  // Proxyから純粋なオブジェクトに変換
+  } catch (error) {
+    console.error('Error fetching troubles:', error);
+  }
+};
+
 watch(filteredTroubles, (newVal) => {
   console.log("Filtered troubles updated:", newVal);
   emit('update-timeline', JSON.parse(JSON.stringify(newVal)));  // Proxyから純粋なオブジェクトに変換
 });
 
 onMounted(() => {
-  console.log("Initial load, emitting all troubles");
-  emit('update-timeline', JSON.parse(JSON.stringify(filteredTroubles.value)));  // Proxyから純粋なオブジェクトに変換
+  console.log("Initial load, fetching troubles");
+  fetchTroubles();
 });
 </script>
 

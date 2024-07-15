@@ -1,5 +1,5 @@
 <template>
-  <DataTable :value="sortedTasks" tableStyle="min-width: 50rem">
+  <DataTable :value="sortedTasks" tableStyle="min-width: 50rem" class="custom-header">
     <Column v-for="col of columns" :key="col.field" :field="col.field" :header="col.header"></Column>
   </DataTable>
 </template>
@@ -71,3 +71,10 @@ const sortedTasks = computed(() => {
   return orderAlertList.value.slice(0, 20); // 20件に制限
 });
 </script>
+
+<style>
+.custom-header .p-datatable-thead > tr > th {
+  background-color: #2d3a4f;
+  color: white;
+}
+</style>

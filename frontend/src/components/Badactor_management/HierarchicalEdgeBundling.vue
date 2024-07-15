@@ -1,27 +1,35 @@
 <template>
-  <div id="app">
-    <div>
+  <div id="app" style="display: flex;">
+    <div style="margin-right: 20px; display: flex; flex-direction: column;">
       <label for="backgroundColor">Select Background Color:</label>
-      <select v-model="backgroundColor" @change="drawChart">
-        <option value="white">White</option>
-        <option value="lightblue">Light Blue</option>
-        <option value="lightgreen">Light Green</option>
-        <option value="lightyellow">Light Yellow</option>
-      </select>
+      <p-dropdown v-model="backgroundColor" :options="backgroundColorOptions" optionLabel="label" @change="drawChart"></p-dropdown>
     </div>
-    <svg ref="svg" :style="{ backgroundColor: backgroundColor }" width="800" height="800"></svg>
+    <svg ref="svg" :style="{ backgroundColor: backgroundColor, border: '1px solid black' }" width="800" height="800"></svg>
   </div>
 </template>
 
 <script>
 import * as d3 from 'd3';
+import 'primevue/resources/primevue.min.css';
+import 'primevue/resources/themes/saga-blue/theme.css';
+import 'primeicons/primeicons.css';
+import Dropdown from 'primevue/dropdown';
 
 export default {
   name: 'HierarchicalEdgeBundling',
+  components: {
+    'p-dropdown': Dropdown
+  },
   data() {
     return {
       backgroundColor: 'white', // デフォルトの背景色
       selectedNode: null, // 現在選択されているノード
+      backgroundColorOptions: [
+        { label: 'White', value: 'white' },
+        { label: 'Light Blue', value: 'lightblue' },
+        { label: 'Light Green', value: 'lightgreen' },
+        { label: 'Light Yellow', value: 'lightyellow' }
+      ]
     };
   },
   mounted() {

@@ -1,7 +1,6 @@
-<!-- components/TroubleHistoryTable.vue -->
 <template>
   <div>
-    <DataTable :value="troubleHistories" :stripedRows="true">
+    <DataTable :value="displayedTroubleHistories" :rows="10" paginator :stripedRows="true" tableStyle="width: 100%">
       <Column field="date" header="Date" />
       <Column field="pmType" header="PM Type" />
       <Column field="failureContent" header="Failure Content" />
@@ -64,16 +63,33 @@ export default {
       }
     };
 
+    const displayedTroubleHistories = computed(() => {
+      const filledTroubleHistories = [...troubleHistories.value];
+      while (filledTroubleHistories.length < 10) {
+        filledTroubleHistories.push({ date: '', pmType: '', failureContent: '', failureType: '', repairCost: '' });
+      }
+      return filledTroubleHistories;
+    });
+
     onMounted(fetchTroubleHistories);
 
     return {
       troubleHistories,
+      displayedTroubleHistories,
     };
   },
 };
 </script>
 
 <style>
+/* Table header customization */
+.p-datatable .p-datatable-thead > tr > th {
+  background-color: #2d3a4f; /* Change header background color */
+  color: white;              /* Change header text color */
+  font-weight: bold;         /* Make header text bold */
+}
+
+/* Zebra striping for table rows */
 .p-datatable .p-datatable-tbody > tr:nth-child(odd) {
   background-color: #f9f9f9;
 }
@@ -82,6 +98,7 @@ export default {
   background-color: #ffffff;
 }
 
+/* Hover effect for table rows */
 .p-datatable .p-datatable-tbody > tr:hover {
   background-color: #f1f1f1;
 }
