@@ -1,96 +1,257 @@
 <template>
-	<div ref="ratingContainer" class="gradient-rating"></div>
+	<div>
+	  <h1>Bayesian Prediction for Failure Rate</h1>
+	  <div class="container">
+		<div class="form-container">
+		  <form @submit.prevent="submitForm">
+			<div>
+			  <label for="sampleData">Select Sample Data:</label>
+			  <select @change="loadSampleData($event)">
+				<option value="" disabled selected>Select a sample data set</option>
+				<option value="sample1">Sample Data 1</option>
+				<option value="sample2">Sample Data 2</option>
+			  </select>
+			</div>
+			<div>
+			  <label for="times">Times (comma separated):</label>
+			  <input type="text" v-model="times" required>
+			</div>
+			<div>
+			  <label for="failures">Failures (comma separated):</label>
+			  <input type="text" v-model="failures" required>
+			</div>
+			<div>
+			  <label for="failure_types">Failure Types (comma separated):</label>
+			  <input type="text" v-model="failureTypes" required>
+			</div>
+			<div>
+			  <label for="failure_causes">Failure Causes (comma separated):</label>
+			  <input type="text" v-model="failureCauses" required>
+			</div>
+			<div>
+			  <label for="maintenance_types">Maintenance Types (comma separated):</label>
+			  <input type="text" v-model="maintenanceTypes" required>
+			</div>
+			<div>
+			  <label for="maintenance_results">Maintenance Results (comma separated):</label>
+			  <input type="text" v-model="maintenanceResults" required>
+			</div>
+			<div>
+			  <label for="window_size">Window Size for Moving Average:</label>
+			  <input type="number" v-model="windowSize" required>
+			</div>
+			<button type="submit">Submit</button>
+		  </form>
+		</div>
+		<div class="chart-container" v-if="predictedFailureRates.length">
+		  <h2>Results:</h2>
+		  <svg id="chart" width="800" height="400"></svg>
+		</div>
+	  </div>
+	</div>
   </template>
   
   <script>
+  import axios from 'axios';
   import * as d3 from 'd3';
   
   export default {
+	data() {
+	  return {
+		times: '',
+		failures: '',
+		failureTypes: '',
+		failureCauses: '',
+		maintenanceTypes: '',
+		maintenanceResults: '',
+		windowSize: 3,
+		predictedFailureRates: [],
+		rateChanges: [],
+		predictedPhases: []
+	  };
+	},
 	mounted() {
-	  this.createGradientRating();
+	  this.loadSampleData({ target: { value: 'sample1' } });
 	},
 	methods: {
-	  createGradientRating() {
-		const width = 600;
-		const height = 50;
-		const sections = 20;
-		const sectionWidth = width / sections;
+	  loadSampleData(event) {
+		const sampleData = {
+		  sample1: {
+			times: "1,2,3,4",
+			failures: "0,1,0,1",
+			failureTypes: "mechanical,electrical,mechanical,electrical",
+			failureCauses: "overload,wear,overload,wear",
+			maintenanceTypes: "regular,preventive,regular,preventive",
+			maintenanceResults: "checked,replaced,checked,replaced",
+			windowSize: 3
+		  },
+		  sample2: {
+			times: "1,2,3,4,5",
+			failures: "0,1,0,1,0",
+			failureTypes: "mechanical,electrical,mechanical,electrical,mechanical",
+			failureCauses: "overload,wear,overload,wear,overload",
+			maintenanceTypes: "regular,preventive,regular,preventive,regular",
+			maintenanceResults: "checked,replaced,checked,replaced,checked",
+			windowSize: 3
+		  }
+		};
+		const selectedSample = sampleData[event.target.value];
+		this.times = selectedSample.times;
+		this.failures = selectedSample.failures;
+		this.failureTypes = selectedSample.failureTypes;
+		this.failureCauses = selectedSample.failureCauses;
+		this.maintenanceTypes = selectedSample.maintenanceTypes;
+		this.maintenanceResults = selectedSample.maintenanceResults;
+		this.windowSize = selectedSample.windowSize;
   
-		const svg = d3.select(this.$refs.ratingContainer)
-		  .append('svg')
-		  .attr('width', width)
-		  .attr('height', height + 20); // +20 for the labels
+		this.submitForm();
+	  },
+	  async submitForm() {
+		const payload = {
+		  times: this.times.split(',').map(Number),
+		  failures: this.failures.split(',').map(Number),
+		  failure_types: this.failureTypes.split(','),
+		  failure_causes: this.failureCauses.split(','),
+		  maintenance_types: this.maintenanceTypes.split(','),
+		  maintenance_results: this.maintenanceResults.split(','),
+		  window_size: this.windowSize
+		};
+		
+		console.log('Sending data to the server:', payload);
   
-		// Create gradient
-		const gradient = svg.append('defs')
-		  .append('linearGradient')
-		  .attr('id', 'gradient')
-		  .attr('x1', '0%')
-		  .attr('y1', '0%')
-		  .attr('x2', '100%')
-		  .attr('y2', '0%');
+		try {
+		  const response = await axios.post('http://127.0.0.1:8000/api/reliability/BayesianPrediction/', payload);
+		  console.log('Server response:', response.data);
+		  this.predictedFailureRates = response.data.predicted_failure_rates;
+		  this.rateChanges = response.data.rate_changes;
+		  this.predictedPhases = response.data.predicted_phases;
+		  this.$nextTick(() => {
+			this.renderChart(response.data.times, response.data.predicted_failure_rates, response.data.rate_changes, response.data.predicted_phases);
+		  });
+		} catch (error) {
+		  console.error('Error:', error);
+		  if (error.response) {
+			console.error('Server response:', error.response.data);
+		  }
+		}
+	  },
+	  renderChart(times, predictedFailureRates, rateChanges, predictedPhases) {
+		const svg = d3.select("#chart");
+		svg.selectAll("*").remove(); // Clear previous chart
   
-		gradient.append('stop')
-		  .attr('offset', '0%')
-		  .attr('stop-color', 'green');
+		const width = +svg.attr("width");
+		const height = +svg.attr("height");
+		const margin = { top: 20, right: 20, bottom: 50, left: 70 };
   
-		gradient.append('stop')
-		  .attr('offset', '33%')
-		  .attr('stop-color', 'yellow');
+		svg.append("rect")
+		  .attr("width", width)
+		  .attr("height", height)
+		  .attr("fill", "white");
   
-		gradient.append('stop')
-		  .attr('offset', '66%')
-		  .attr('stop-color', 'orange');
+		const x = d3.scaleLinear().domain([0, d3.max(times)]).range([margin.left, width - margin.right]);
+		const y = d3.scaleLinear().domain([0, d3.max(predictedFailureRates)]).range([height - margin.bottom, margin.top]);
   
-		gradient.append('stop')
-		  .attr('offset', '100%')
-		  .attr('stop-color', 'red');
+		const line = d3.line()
+		  .x((d, i) => x(times[i]))
+		  .y(d => y(d));
   
-		// Draw a single rect with gradient fill
-		svg.append('rect')
-		  .attr('x', 0)
-		  .attr('y', 0)
-		  .attr('width', width)
-		  .attr('height', height)
-		  .attr('fill', 'url(#gradient)');
+		svg.append("g")
+		  .attr("transform", `translate(0,${height - margin.bottom})`)
+		  .call(d3.axisBottom(x))
+		  .append("text")
+		  .attr("fill", "#000")
+		  .attr("x", width / 2)
+		  .attr("y", 40)
+		  .attr("text-anchor", "middle")
+		  .attr("font-size", "12px")
+		  .text("Time");
   
-		// Draw section borders
-		svg.selectAll('line')
-		  .data(d3.range(1, sections))
+		svg.append("g")
+		  .attr("transform", `translate(${margin.left},0)`)
+		  .call(d3.axisLeft(y))
+		  .append("text")
+		  .attr("fill", "#000")
+		  .attr("transform", "rotate(-90)")
+		  .attr("x", -height / 2)
+		  .attr("y", -50)
+		  .attr("text-anchor", "middle")
+		  .attr("font-size", "12px")
+		  .text("Failure Rate");
+  
+		svg.append("path")
+		  .datum(predictedFailureRates)
+		  .attr("fill", "none")
+		  .attr("stroke", "blue")
+		  .attr("stroke-width", 1.5)
+		  .attr("d", line);
+  
+		const phaseColor = d3.scaleOrdinal()
+		  .domain([0, 1, 2])
+		  .range(["red", "green", "orange"]);
+  
+		svg.selectAll("circle")
+		  .data(predictedPhases)
 		  .enter()
-		  .append('line')
-		  .attr('x1', d => d * sectionWidth)
-		  .attr('y1', 0)
-		  .attr('x2', d => d * sectionWidth)
-		  .attr('y2', height)
-		  .attr('stroke', 'black')
-		  .attr('stroke-width', 0.5);
-  
-		// Draw percentage labels
-		svg.selectAll('text')
-		  .data(d3.range(sections + 1)) // +1 to include 100%
-		  .enter()
-		  .append('text')
-		  .attr('x', d => d * sectionWidth)
-		  .attr('y', height + 15)
-		  .attr('text-anchor', (d, i) => i === sections ? 'end' : 'middle')
-		  .attr('font-size', '12px')
-		  .text(d => `${d * 5}%`); // 0% to 100%
-  
-		// Adjust the last label to not overlap with the previous one
-		svg.select(`text:nth-child(${sections + 1})`)
-		  .attr('x', width)
-		  .attr('text-anchor', 'end');
+		  .append("circle")
+		  .attr("cx", (d, i) => x(times[i + 1]))
+		  .attr("cy", (d, i) => y(predictedFailureRates[i + 1]))
+		  .attr("r", 5)
+		  .attr("fill", d => phaseColor(d));
 	  }
 	}
   };
   </script>
   
   <style>
-  .gradient-rating {
+  .container {
 	display: flex;
-	justify-content: center;
-	margin-top: 20px;
+	flex-direction: row;
+  }
+  
+  .form-container {
+	flex: 1;
+	padding: 20px;
+  }
+  
+  .chart-container {
+	flex: 2;
+	padding: 20px;
+  }
+  
+  #chart {
+	width: 100%;
+	height: 400px;
+  }
+  
+  form {
+	background-color: white;
+	padding: 20px;
+	border-radius: 8px;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  label {
+	display: block;
+	margin: 10px 0 5px;
+  }
+  
+  input, select, button {
+	width: 100%;
+	padding: 8px;
+	margin-bottom: 10px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+  }
+  
+  button {
+	background-color: #007bff;
+	color: white;
+	border: none;
+	cursor: pointer;
+  }
+  
+  button:hover {
+	background-color: #0056b3;
   }
   </style>
   

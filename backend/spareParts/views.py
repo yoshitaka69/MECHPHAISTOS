@@ -17,9 +17,17 @@ from .serializers import (
 
 
 # SparePartsのViewSet
+#------------------------------------------------------------------------------------------------------------------
 from rest_framework import viewsets
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from django.core.files.storage import default_storage
 from .models import SpareParts, CompanyCode
 from .serializers import SparePartsSerializer, CompanyCodeSPSerializer
+
+from django.core.files.uploadedfile import InMemoryUploadedFile
+from PIL import Image
+import io
 
 class SparePartsViewSet(viewsets.ModelViewSet):
     queryset = SpareParts.objects.all()
@@ -34,20 +42,38 @@ class CompanyCodeSPViewSet(viewsets.ModelViewSet):
             return CompanyCode.objects.filter(companyCode=company_code).prefetch_related('spareParts_companyCode')
         return CompanyCode.objects.all()
 
-
-
-
-
-
-# 画像アップロード用のビュー
 @api_view(['POST'])
 def upload_image(request):
     if 'image' in request.FILES:
         image = request.FILES['image']
+        
+        # 画像を開く
+        img = Image.open(image)
+        
+        # 画像をリサイズ（例: 幅を150pxに）
+        img.thumbnail((150, 150))
+        
+        # 新しい画像を保存するためのバッファ
+        buffer = io.BytesIO()
+        img.save(buffer, format='JPEG')
+        
+        # バッファをInMemoryUploadedFileに変換
+        image = InMemoryUploadedFile(buffer, None, 'thumbnail.jpg', 'image/jpeg', buffer.tell, None)
+        
+        # 画像を保存
         file_path = default_storage.save(f'images/{image.name}', image)
         image_url = default_storage.url(file_path)
         return Response({'imageUrl': image_url})
+    
     return Response({'error': 'Invalid request'}, status=400)
+
+#------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
 
 
 
