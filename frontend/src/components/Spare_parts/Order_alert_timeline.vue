@@ -1,6 +1,7 @@
 <template>
   <div class="timeline-wrapper">
       <div ref="timeline" class="timeline-container"></div>
+
   </div>
 </template>
 
@@ -16,38 +17,38 @@ setup() {
   const timeline = ref(null);
   const userStore = useUserStore();
 
-
   onMounted(async () => {
-  const response = await axios.get('http://127.0.0.1:8000/api/agora/alertScheduleByCompany/?format=json', {
-    params: {
-      companyCode: userStore.companyCode
-    }
-  });
+    const response = await axios.get('http://127.0.0.1:8000/api/agora/alertScheduleByCompany/?format=json', {
+      params: {
+        companyCode: userStore.companyCode
+      }
+    });
 
-  const items = new DataSet(response.data.flatMap(item => 
-    item.AlertScheduleList.map(alert => ({
-      content: alert.partsName,
-      start: alert.orderAlertDate
-    }))
-  ));
+    const items = new DataSet(response.data.flatMap(item => 
+      item.AlertScheduleList.map(alert => ({
+        content: alert.partsName,
+        start: alert.orderAlertDate
+      }))
+    ));
 
-  console.log(items);
+    console.log(items);
 
     const now = new Date();
     const threeMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 3, now.getDate());
     const oneYearLater = new Date(now.getFullYear() + 1, now.getMonth(), now.getDate());
 
     const options = {
-        start: threeMonthsAgo,
-        end: oneYearLater,
-        width: '1500px',
-        height: '100%',
-        timeAxis: { scale: 'week', step: 1 },
-        zoomMin: 1000 * 60 * 60 * 24 * 7, // 最小ズームレベル（1週間）
-        zoomMax: 1000 * 60 * 60 * 24 * 31 * 12 * 2 // 最大ズームレベル（2年）
-      };
-      new Timeline(timeline.value, items, options);
-    });
+      start: threeMonthsAgo,
+      end: oneYearLater,
+      width: '1500px',
+      height: '100%',
+      timeAxis: { scale: 'week', step: 1 },
+      zoomMin: 1000 * 60 * 60 * 24 * 7, // 最小ズームレベル（1週間）
+      zoomMax: 1000 * 60 * 60 * 24 * 31 * 12 * 2 // 最大ズームレベル（2年）
+    };
+
+    new Timeline(timeline.value, items, options);
+  });
 
   return {
     timeline
@@ -58,13 +59,15 @@ setup() {
 
 <style>
 .timeline-wrapper {
-width: 100%; 
-overflow-x: auto; 
+  width: 100%; 
+  overflow-x: auto; 
 }
 
 .timeline-container {
-min-width: 1500px; 
-height: 200px;     
-background-color: white; 
+  min-width: 1500px; 
+  height: 200px;     
+  background-color: #f0f0f0; /* さらに薄い灰色に変更 */
 }
+
+
 </style>

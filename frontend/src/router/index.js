@@ -61,7 +61,7 @@ const router = createRouter({
 				{
 					path: '/spare_parts',
 					name:'Spare_parts',
-					component: () => import('../views/pages/Spare_parts/Spare_parts.vue')
+					component: () => import('../views/pages/Spare_parts.vue')
 				},
 				{
 					path: '/communications',
@@ -107,7 +107,7 @@ const router = createRouter({
 					children:[
 						{
 							path: '/workingReport/maintenance_report',
-							component: () => import('../views/pages/Working_Report/maintenanceReport.vue')
+							component: () => import('../views/pages/Working_Report/Maintenance_report.vue')
 						},
 						{
 							path: '/workingReport/specsheet_form',
@@ -167,6 +167,11 @@ const router = createRouter({
 			path: '/near_miss_input_form',
 			name:'Near_Miss_input_form',
 			component: () => import('@/components/Safety/Near_miss/Near_miss_form.vue')
+		},
+		{
+			path: '/maintenance_report_form',
+			name:'maintenance_report_form',
+			component: () => import('@/components/Maintenance_report/Maintenance_report_form.vue')
 		},
 		{
 			path: '/spare_parts_detail/:partsNo',

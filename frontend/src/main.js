@@ -25,6 +25,8 @@ import {
     registerAllModules,
 } from 'handsontable/registry'
 
+
+
 // primeVue
 import PrimeVue from 'primevue/config';
 import 'primevue/resources/themes/aura-light-green/theme.css'
@@ -272,6 +274,7 @@ app.component('TreeSelect', TreeSelect);
 app.component('TreeTable', TreeTable);
 app.component('TriStateCheckbox', TriStateCheckbox);
 app.component('VirtualScroller', VirtualScroller);
+
 
 // vue3-easy-data-table
 app.component('EasyDataTable', Vue3EasyDataTable);

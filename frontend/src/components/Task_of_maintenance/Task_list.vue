@@ -1,5 +1,15 @@
 <template>
     <div id="TaskList">
+        <div class="legend">
+            <div class="legend-item">
+                <div class="color-box" style="background-color: #f0a0a0"></div>
+                <span>Form input format is incorrect</span>
+            </div>
+            <div class="legend-item">
+                <div class="color-box" style="background-color: #f0f0f0"></div>
+                <span>Input not allowed. Value is automatically filled.</span>
+            </div>
+        </div>
         <hot-table ref="hotTableComponent" :settings="hotSettings"></hot-table><br />
         <button v-on:click="updateData" class="controls">Update Data</button>
     </div>
@@ -176,7 +186,7 @@ const TaskListComponent = defineComponent({
                     TH.style.color = 'black';  // テキスト色を黒に設定
                     TH.style.fontWeight = 'bold';  // テキストを太字に設定
                 },
-
+                rowHeaders: true, // 行ヘッダーを有効化
                 width: '100%',
                 height: 'auto',
                 contextMenu: true,//コンテキストメニュー
@@ -326,3 +336,24 @@ const TaskListComponent = defineComponent({
 );
 export default TaskListComponent;
 </script>
+
+<style scoped>
+.legend {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin-right: 15px;
+}
+
+.color-box {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    border: 1px solid #000;
+}
+</style>

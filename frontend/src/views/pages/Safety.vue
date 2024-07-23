@@ -4,76 +4,87 @@
             <div class="card card-solid">
                 <TabView v-model:activeIndex="activeIndex" @tab-change="onTabChange">
                     <TabPanel header="NearMiss List">
-                        <div class="row">
-                            <div class="col-12 lg:col-4 xl:col-4">
-                                <Count_of_nearMiss />
-                            </div>
-                            <div class="col-12 lg:col-4 xl:col-4">
-                                <Action_items />
-                            </div>
-                            <div class="col-12 lg:col-4 xl:col-4">
-                                <Safety_clock />
+                        <div class="line-height-3 m-0">
+                            <div class="flex flex-wrap justify-content-between">
+                                <div class="col-12 lg:col-4 xl:col-4">
+                                    <div class="card card-light-yellow mb-0">
+                                        <div class="flex justify-content-between mb-3" style="height: 150px">
+                                            <Count_of_nearMiss />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 lg:col-4 xl:col-4">
+                                    <div class="card card-light-yellow mb-0">
+                                        <div class="flex justify-content-between mb-3" style="height: 150px">
+                                            <Action_items />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 lg:col-4 xl:col-4">
+                                    <div class="card card-light-yellow mb-0">
+                                        <div class="flex justify-content-between mb-3" style="height: 150px">
+                                            <Safety_clock />
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
+                        <div class="spacer"></div>
                         <br />
                         <br />
-                        <div>
+                        <div class="near-miss-list-container">
                             <Near_miss_list />
+                            <div class="text-center">
+                                <h3>Table. Near Miss List</h3>
+                            </div>
                         </div>
                     </TabPanel>
 
                     <TabPanel header="Analyze">
-                        <div class="row">
+                        <div class="grid">
                             <div class="col-12 lg:col-6 xl:col-3">
-                                <div class="card mb-0">
+                                <div class="card card-light-yellow mb-0">
                                     <div class="flex justify-content-between mb-3" style="height: 150px">
                                         <Safety_indicators_alert />
                                     </div>
                                 </div>
                             </div>
                             <div class="col-12 lg:col-6 xl:col-3">
-                                <div class="card mb-0">
+                                <div class="card card-light-yellow mb-0">
                                     <div class="flex justify-content-between mb-3" style="height: 150px">
                                         <Danger_area />
                                     </div>
                                 </div>
                             </div>
                             <div class="col-12 lg:col-6 xl:col-3">
-                                <div class="card mb-0">
+                                <div class="card card-light-yellow mb-0">
                                     <div class="flex justify-content-between mb-3" style="height: 150px">
-                                        <div style="width: 300px; height: 100px; overflow: hidden">
-                                            <Safety_Factor_rate />
-                                        </div>
+                                        <Safety_Factor_rate />
                                     </div>
                                 </div>
                             </div>
                             <div class="col-12 lg:col-6 xl:col-3">
-                                <div class="card mb-0">
+                                <div class="card card-light-yellow mb-0">
                                     <div class="flex justify-content-between mb-3" style="height: 150px">
-                                        <div style="width: 300px; height: 100px; overflow: hidden">
-                                            <Safety_AccidentType_rate />
-                                        </div>
+                                        <Safety_AccidentType_rate />
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="col-12 lg:col-12 xl:col-12">
-                            <div class="card mb-0">
-                                <div class="Safety_indicator_trend">
+                        <div class="grid">
+                            <div class="col-12 lg:col-6 xl:col-6">
+                                <div class="card mb-0" style="height: 500px;">
                                     <Safety_indicator_trend />
                                 </div>
-                                <div class="Safety_Measure_trend">
+                            </div>
+                            <div class="col-12 lg:col-6 xl:col-6">
+                                <div class="card mb-0" style="height: 500px;">
                                     <Safety_Measure_trend />
                                 </div>
                             </div>
-                            <Message :closable="false">
-                                AI recommendation
-                                <br />
-                                Now developing
-                            </Message>
                         </div>
-
+                        
                         <div class="card mb-0">
                             <Safety_correlation_diagram />
                             <Message :closable="false">
@@ -109,7 +120,7 @@ import Safety_indicators_alert from '@/components/Safety/Cards/Safety_indicators
 import Count_of_nearMiss from '@/components/Safety/Cards/Count_of_nearMiss';
 import Danger_area from '@/components/Safety/Cards/Danger_area';
 import Action_items from '@/components/Safety/Cards/Action_items';
-import Safety_clock from '@/components/Safety/Safety_clock.vue'
+import Safety_clock from '@/components/Safety/Safety_clock.vue';
 
 export default {
     components: {
@@ -139,3 +150,35 @@ export default {
     }
 };
 </script>
+
+<style scoped>
+.card-light-yellow {
+    background-color: #fff9c4; /* 薄い黄色に変更 */
+}
+.flex-wrap {
+    display: flex;
+    flex-wrap: wrap;
+}
+.justify-content-between {
+    justify-content: space-between;
+}
+
+.text-center {
+    text-align: center;
+}
+
+h3 {
+    font-size: 1.25rem; /* Adjust the font size as needed */
+}
+
+.spacer {
+    height: 50px; /* Adjust the height as needed */
+}
+
+.near-miss-list-container {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 薄い影を追加 */
+    padding: 20px; /* パディングを追加して内容を囲む */
+    border-radius: 8px; /* 角を丸くする */
+    background-color: #fff; /* 背景色を白にする */
+}
+</style>

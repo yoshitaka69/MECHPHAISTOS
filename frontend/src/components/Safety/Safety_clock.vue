@@ -1,58 +1,62 @@
 <template>
-	<div class="clock">
-	  <div class="message-container">
-		<Button
-		  v-if="currentWarning === 'Warning'"
-		  label="Warning"
-		  class="warning-button"
-		  severity="danger"
-		/>
-		<Button
-		  v-else
-		  label="Be Safe"
-		  class="safe-button"
-		  severity="success"
-		/>
+	<div class="clock-container">
+	  <div class="clock-content">
+		<svg viewBox="0 0 100 100" class="clock-face">
+		  <defs>
+			<mask id="clock-mask">
+			  <rect x="0" y="0" width="100" height="100" fill="white" />
+			  <circle cx="50" cy="50" r="45" fill="black" />
+			</mask>
+		  </defs>
+		  <circle cx="50" cy="50" r="48" class="clock-border" />
+		  <g v-for="(zone, index) in warningZones" :key="index">
+			<path :d="zone.path" :fill="zone.color" />
+			<text
+			  v-if="zone.label"
+			  :x="getLabelTextX(zone)"
+			  :y="getLabelTextY(zone)"
+			  class="warning-text"
+			  dominant-baseline="middle"
+			  text-anchor="middle"
+			>
+			  {{ zone.label }}
+			</text>
+		  </g>
+		  <circle cx="50" cy="50" r="45" fill="white" mask="url(#clock-mask)" />
+		  <g v-for="hour in 12" :key="hour">
+			<text
+			  :x="getHourTextX(hour)"
+			  :y="getHourTextY(hour)"
+			  class="hour-text"
+			  dominant-baseline="middle"
+			>
+			  {{ hour }}
+			</text>
+		  </g>
+		  <path :d="hourHandPath" class="hand hour-hand" :style="hourHandStyle" />
+		  <path :d="minuteHandPath" class="hand minute-hand" :style="minuteHandStyle" />
+		  <path :d="secondHandPath" class="hand second-hand" :style="secondHandStyle" />
+		  <circle cx="50" cy="50" r="1.5" class="center-dot" />
+		</svg>
 	  </div>
-	  <svg viewBox="0 0 100 100" class="clock-face">
-		<defs>
-		  <mask id="clock-mask">
-			<rect x="0" y="0" width="100" height="100" fill="white" />
-			<circle cx="50" cy="50" r="45" fill="black" />
-		  </mask>
-		</defs>
-		<circle cx="50" cy="50" r="48" class="clock-border" />
-		<g v-for="(zone, index) in warningZones" :key="index">
-		  <path :d="zone.path" :fill="zone.color" />
-		  <text
-			v-if="zone.label"
-			:x="getLabelTextX(zone)"
-			:y="getLabelTextY(zone)"
-			class="warning-text"
-			dominant-baseline="middle"
-			text-anchor="middle"
-		  >
-			{{ zone.label }}
-		  </text>
-		</g>
-		<circle cx="50" cy="50" r="45" fill="white" mask="url(#clock-mask)" />
-		<g v-for="hour in 12" :key="hour">
-		  <text
-			:x="getHourTextX(hour)"
-			:y="getHourTextY(hour)"
-			class="hour-text"
-			dominant-baseline="middle"
-		  >
-			{{ hour }}
-		  </text>
-		</g>
-		<path :d="hourHandPath" class="hand hour-hand" :style="hourHandStyle" />
-		<path :d="minuteHandPath" class="hand minute-hand" :style="minuteHandStyle" />
-		<path :d="secondHandPath" class="hand second-hand" :style="secondHandStyle" />
-		<circle cx="50" cy="50" r="1.5" class="center-dot" />
-	  </svg>
-	  <div class="description-box">
-		WarningTIME means when accidents and injuries occur the most
+	  <div class="info-container">
+		<div class="message-container">
+		  <Button
+			v-if="currentWarning === 'Warning'"
+			label="Warning"
+			class="warning-button"
+			severity="danger"
+		  />
+		  <Button
+			v-else
+			label="Be Safe"
+			class="safe-button"
+			severity="success"
+		  />
+		</div>
+		<div class="description-box">
+		  WarningTIME means when accidents and injuries occur the most
+		</div>
 	  </div>
 	</div>
   </template>
@@ -108,15 +112,6 @@
 	  },
 	  secondHandPath() {
 		return 'M50 50 L50 15 L49.5 15 L50.5 15 Z'; // Custom shape for second hand
-	  },
-	  hourHandColor() {
-		return '#333';
-	  },
-	  minuteHandColor() {
-		return '#333';
-	  },
-	  secondHandColor() {
-		return '#333';
 	  },
 	},
 	methods: {
@@ -179,83 +174,94 @@
   </script>
   
   <style>
-
-.clock {
+  .clock-container {
+	display: flex;
+	align-items: center;
+	width: 100%;
+  }
+  
+  .clock-content {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
-	height: auto; /* 必要に応じて調整 */
-	background-color: #fff;
+	background-color: #fff9c4; /* 薄い黄色に変更 */
 	position: relative;
-	margin: 0 auto; /* 時計を水平に中央に配置 */
-	padding: 70px; /* 必要に応じてパディングを追加 */
-	margin-top: 5px; /* 必要に応じて上部マージンを追加 */
-	margin-bottom: 5px; /* 必要に応じて下部マージンを追加 */
-}
-
-.message-container {
-	position: absolute;
-	top: 20px;
-	margin-bottom: 20px; /* message-containerとclockの間に追加のマージンを設定 */
-}
-
-.clock-face {
-	width: 300px;
-	height: 300px;
-	background-color: #f0f0f0; /* スタイリッシュなライトグレーの背景 */
+	padding: 2%;
+	margin: 0 2%;
+	flex: 1;
+  }
+  
+  .message-container {
+	margin-bottom: 10px;
+	text-align: center;
+  }
+  
+  .safe-button {
+	font-size: 10px;
+  }
+  
+  .clock-face {
+	width: 100%;
+	height: auto;
+	background-color: #f0f0f0;
 	border-radius: 50%;
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.clock-border {
+  }
+  
+  .clock-border {
 	fill: none;
 	stroke: #333;
 	stroke-width: 2;
-}
-
-.hand {
+  }
+  
+  .hand {
 	stroke-linecap: round;
 	transform-origin: center;
-}
-
-.hour-hand {
-	fill: #333; /* 黒色 */
-}
-
-.minute-hand {
-	fill: #333; /* 黒色 */
-}
-
-.second-hand {
-	fill: #333; /* 黒色 */
-}
-
-.center-dot {
-	fill: #333; /* センターのドットの色 */
-}
-
-.hour-text {
-	font-size: 6px;
+  }
+  
+  .hour-hand {
+	fill: #333;
+  }
+  
+  .minute-hand {
+	fill: #333;
+  }
+  
+  .second-hand {
+	fill: #333;
+  }
+  
+  .center-dot {
+	fill: #333;
+  }
+  
+  .hour-text {
+	font-size: 0.6em;
 	text-anchor: middle;
-	fill: #333; /* テキストの黒色 */
-}
-
-.warning-text {
-	font-size: 5px; /* 調整されたフォントサイズ */
+	fill: #333;
+  }
+  
+  .warning-text {
+	font-size: 0.55em;
 	fill: #ff0000;
 	font-weight: bold;
-}
-
-.description-box {
-	margin-top: 20px;
-	padding: 10px;
+  }
+  
+  .info-container {
+	display: flex;
+	flex-direction: column;
+	margin-left: 20px;
+	flex: 1;
+  }
+  
+  .description-box {
+	margin-top: 10px;
+	padding: 5px;
 	border: 1px solid #333;
 	background-color: #f9f9f9;
-	width: 300px;
 	text-align: center;
-	font-size: 14px;
-}
-
+	font-size: 1em;
+  }
   </style>
   

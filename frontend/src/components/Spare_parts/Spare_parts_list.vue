@@ -1,10 +1,21 @@
 <template>
     <div id="SparePartsList">
-      <hot-table ref="hotTableComponent" :settings="hotSettings"></hot-table><br />
-      <Button label="Update Data" severity="secondary" raised class="updateData" @click="updateData"/>
+        <div class="legend">
+            <div class="legend-item">
+                <div class="color-box" style="background-color: #f0a0a0"></div>
+                <span>Form input format is incorrect</span>
+            </div>
+            <div class="legend-item">
+                <div class="color-box" style="background-color: #f0f0f0"></div>
+                <span>Input not allowed. Value is automatically filled.</span>
+            </div>
+        </div>
+        <hot-table ref="hotTableComponent" :settings="hotSettings"></hot-table>
+        <div class="button-container">
+            <Button label="Update Data" severity="secondary" raised class="updateData" @click="updateData" />
+        </div>
     </div>
-  </template>
-  
+</template>
 
 <script>
 import axios from 'axios';
@@ -32,31 +43,30 @@ function customRendererForAlertOrder(instance, td, row, col, prop, value, cellPr
 }
 
 function imageRenderer(instance, td, row, col, prop, value, cellProperties) {
-  td.innerHTML = ''; // セルをクリア
-  
-  const partsNo = instance.getDataAtRowProp(row, 'partsNo'); // partsNo を取得
-  const link = document.createElement('a');
-  link.href = `/spare_parts_detail/${partsNo}`;
-  link.target = '_blank';
-  
-  if (partsNo && value) {
-    const img = document.createElement('img');
-    img.src = value;
-    img.style.width = '50px';
-    img.style.height = '50px';
-    link.appendChild(img);
-    
-    const url = document.createElement('div');
-    url.innerText = value; // 画像のURLを表示
-    url.style.fontSize = '10px';
-    link.appendChild(url);
-  } else if (partsNo) {
-    link.innerText = 'no image';
-  }
+    td.innerHTML = ''; // セルをクリア
 
-  td.appendChild(link);
+    const partsNo = instance.getDataAtRowProp(row, 'partsNo'); // partsNo を取得
+    const link = document.createElement('a');
+    link.href = `/spare_parts_detail/${partsNo}`;
+    link.target = '_blank';
+
+    if (partsNo && value) {
+        const img = document.createElement('img');
+        img.src = value;
+        img.style.width = '50px';
+        img.style.height = '50px';
+        link.appendChild(img);
+
+        const url = document.createElement('div');
+        url.innerText = value; // 画像のURLを表示
+        url.style.fontSize = '10px';
+        link.appendChild(url);
+    } else if (partsNo) {
+        link.innerText = 'no image';
+    }
+
+    td.appendChild(link);
 }
-
 
 function imageEditor(instance, td, row, col, prop, value, cellProperties) {
     const input = document.createElement('input');
@@ -523,3 +533,29 @@ const SparePartsComponent = defineComponent({
 
 export default SparePartsComponent;
 </script>
+
+<style scoped>
+.button-container {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.legend {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin-right: 15px;
+}
+
+.color-box {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    border: 1px solid #000;
+}
+</style>

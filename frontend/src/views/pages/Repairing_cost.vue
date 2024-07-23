@@ -101,11 +101,21 @@
               </div>
               <div>
                 <Task_list />
+                <div class="text-center">
+                    <h3>Table. Task list</h3>
+                </div>
               </div>
             </TabPanel>
             <TabPanel header="Simulations">
               <SimulationGraph :costData="costData" />
+              <div class="text-center">
+                    <h3>Table. Trend of repairing cost month and year</h3>
+                </div>
+                <br>
               <Simulation_table @update-cost-data="handleUpdateCostData" />
+              <div class="text-center">
+                    <h3>Table. Task simulation table</h3>
+                </div>
             </TabPanel>
           </TabView>
         </div>
@@ -131,8 +141,8 @@
   import Display_repairing_cost from '@/components/Repairing_cost/Cards/Display_repairing_cost.vue';
   import Card_predict_cost from '@/components/Task_of_maintenance/Cards/Card_predict_cost.vue';
   
-  import Simulation_table from '@/components/Repairing_cost/Simulations/Simulation_table.vue';
-  import SimulationGraph from '@/components/Repairing_cost/Simulations/Simulation_graph.vue';
+  import Simulation_table from '@/components/Simulations/Simulation_table.vue';
+  import SimulationGraph from '@/components/Simulations/Simulation_graph.vue';
   
   export default {
     components: {
@@ -178,5 +188,13 @@
     display: flex;
     flex-wrap: wrap;
   }
+
+  .text-center {
+    text-align: center;
+}
+
+h3 {
+    font-size: 1.25rem; /* Adjust the font size as needed */
+}
   </style>
   

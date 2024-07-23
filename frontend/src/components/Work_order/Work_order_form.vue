@@ -2,7 +2,6 @@
   <Dialog :visible="visible" @hide="hideModal" modal :closable="false">
     <div class="surface-ground px-4 py-8 md:px-6 lg:px-8">
       <div class="p-fluid flex flex-column lg:flex-row">
-        <!-- 左側のメニュー -->
         <ul class="list-none m-0 p-0 flex flex-row lg:flex-column justify-content-evenly md:justify-content-between lg:justify-content-start mb-5 lg:pr-8 lg:mb-0">
           <li>
             <a v-ripple class="flex align-items-center cursor-pointer p-3 border-round text-800 hover:surface-hover transition-duration-150 transition-colors p-ripple">
@@ -35,42 +34,40 @@
             </a>
           </li>
         </ul>
-        <!-- 右側のフォーム -->
         <div class="surface-card p-5 shadow-2 border-round flex-auto">
           <div class="text-900 font-semibold text-lg mt-3">Work Order Entry</div>
           <Divider></Divider>
-
-          <!-- Part A -->
-          <div class="section">
-            <div class="text-900 font-medium text-md mb-3">Part A</div>
-            <div class="mb-4">
-              <label for="workOrderNo" class="block font-medium text-900 mb-2">Work Order No</label>
-              <InputText id="workOrderNo" v-model="localEntry.workOrderNo" type="text" />
+          <div class="flex gap-5 flex-column-reverse md:flex-row">
+            <div class="flex-auto p-fluid">
+              <div class="mb-4">
+                <label for="workOrderNo" class="block font-medium text-900 mb-2">Work Order No</label>
+                <InputText id="workOrderNo" v-model="localEntry.workOrderNo" type="text" />
+              </div>
+              <div class="mb-4">
+                <label for="plant" class="block font-medium text-900 mb-2">Plant</label>
+                <InputText id="plant" v-model="localEntry.plant" type="text" />
+              </div>
+              <div class="mb-4">
+                <label for="equipment" class="block font-medium text-900 mb-2">Equipment</label>
+                <InputText id="equipment" v-model="localEntry.equipment" type="text" />
+              </div>
+              <div class="mb-4">
+                <label for="description" class="block font-medium text-900 mb-2">Description</label>
+                <Textarea id="description" v-model="localEntry.description" type="text" rows="5" :autoResize="true"></Textarea>
+              </div>
+              <div class="mb-4">
+                <label for="status" class="block font-medium text-900 mb-2">Status</label>
+                <Dropdown id="status" v-model="localEntry.status" :options="statuses" optionLabel="label" optionValue="value" placeholder="Select a Status" />
+              </div>
+              <div>
+                <Button label="Save" icon="pi pi-check" @click="submitEntry" />
+                <Button label="Cancel" icon="pi pi-times" @click="cancelNewEntry" class="p-button-secondary ml-2" />
+              </div>
             </div>
-          </div>
-          <Divider class="divider"></Divider>
-
-          <!-- Part B -->
-          <div class="section">
-            <div class="text-900 font-medium text-md mb-3">Part B</div>
-            <div class="mb-4">
-              <label for="status" class="block font-medium text-900 mb-2">Status</label>
-              <Dropdown id="status" v-model="localEntry.status" :options="statuses" optionLabel="label" optionValue="value" placeholder="Select a Status" />
-            </div>
-          </div>
-          <Divider class="divider"></Divider>
-
-          <!-- Part C -->
-          <div class="section">
-            <div class="text-900 font-medium text-md mb-3">Part C</div>
-            <div class="mb-4 flex align-items-center">
-              <label for="safetyToggle" class="block font-medium text-900 mb-2 mr-3">安全化</label>
-              <InputSwitch id="safetyToggle" v-model="isSafety" />
-              <span class="ml-3">{{ isSafety ? '安全化' : '未安全化' }}</span>
-            </div>
-            <div>
-              <Button :label="isSafety ? '安全化' : '未安全化'" icon="pi pi-check" @click="submitEntry" />
-              <Button label="Cancel" icon="pi pi-times" @click="cancelNewEntry" class="p-button-secondary ml-2" />
+            <div class="flex flex-column align-items-center flex-or">
+              <span class="font-medium text-900 mb-2">Profile Picture</span>
+              <img src="" class="h-10rem w-10rem" />
+              <Button type="button" icon="pi pi-pencil" class="p-button-rounded -mt-4"></Button>
             </div>
           </div>
         </div>
@@ -82,17 +79,16 @@
 <script setup>
 import { ref, watch, defineEmits, defineProps } from 'vue';
 import InputText from 'primevue/inputtext';
+import Textarea from 'primevue/textarea';
 import Button from 'primevue/button';
 import Dropdown from 'primevue/dropdown';
 import Dialog from 'primevue/dialog';
 import Divider from 'primevue/divider';
-import InputSwitch from 'primevue/inputswitch';
 
 const props = defineProps(['visible', 'statuses', 'entry']);
 const emit = defineEmits(['update:visible', 'submit', 'cancel']);
 
 const localEntry = ref({ ...props.entry });
-const isSafety = ref(false);
 
 const hideModal = () => {
   cancelNewEntry();
@@ -118,78 +114,5 @@ watch(() => props.visible, (newValue) => {
 <style scoped>
 .surface-ground {
   padding: 1rem;
-}
-
-.divider {
-  border-top: 1px solid lightgray;
-}
-
-.section {
-  margin-bottom: 2rem;
-}
-
-.list-none {
-  list-style-type: none;
-}
-
-.p-ripple {
-  position: relative;
-  overflow: hidden;
-}
-
-.flex {
-  display: flex;
-}
-
-.align-items-center {
-  align-items: center;
-}
-
-.cursor-pointer {
-  cursor: pointer;
-}
-
-.p-3 {
-  padding: 1rem;
-}
-
-.border-round {
-  border-radius: 0.5rem;
-}
-
-.text-800 {
-  color: #333;
-}
-
-.hover\:surface-hover:hover {
-  background-color: #f4f4f4;
-}
-
-.transition-duration-150 {
-  transition-duration: 0.15s;
-}
-
-.transition-colors {
-  transition-property: color, background-color, border-color;
-}
-
-.m-0 {
-  margin: 0;
-}
-
-.p-0 {
-  padding: 0;
-}
-
-.mb-5 {
-  margin-bottom: 1.25rem;
-}
-
-.lg\:pr-8 {
-  padding-right: 2rem;
-}
-
-.lg\:mb-0 {
-  margin-bottom: 0;
 }
 </style>

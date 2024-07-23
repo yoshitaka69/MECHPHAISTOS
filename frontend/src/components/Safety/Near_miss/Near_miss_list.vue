@@ -1,132 +1,135 @@
 <template>
-	<div>
-	  <Button type="button" label="New Entry" @click="openNewEntry"></Button>
-	  <DataTable
-		v-model:filters="filters"
-		:value="sortedItems"
-		:loading="loading"
-		paginator
-		showGridlines
-		:rows="serverOptions.rowsPerPage"
-		:total-records="serverItemsLength"
-		:lazy="true"
-		:resizable-columns="true"
-		:global-filter-fields="['nearMissNo', 'userName.userName', 'department', 'description']"
-		filter-display="menu"
-		@page="onPage"
-		@sort="onSort"
-		@filter="onFilter"
-		:rows-per-page-options="[5, 10, 20, 50]"
-		class="p-datatable-custom"
-		:sort-field="sortField"
-		:sort-order="sortOrder"
-	  >
-		<!-- ヘッダーとカラム定義 -->
-		<template #header>
-		  <div class="flex justify-between">
-			<Button type="button" icon="pi pi-filter-slash" label="Clear" outlined @click="clearFilter()" />
-			<span class="p-input-icon-left">
-			  <i class="pi pi-search" />
-			  <InputText v-model="filters['global'].value" placeholder="Keyword Search" />
-			</span>
-		  </div>
-		</template>
-		<!-- カラム定義 -->
-		<Column field="nearMissNo" header="NearMiss No." sortable filter filterMatchMode="contains">
-		  <template #filter="{ filterModel }">
-			<InputText v-model="filterModel.value" type="text" placeholder="Search by NearMiss No." />
-		  </template>
-		</Column>
-		<Column field="userName.userName" header="Name" sortable filter filterMatchMode="contains">
-		  <template #body="slotProps">
-			{{ slotProps.data.userName.userName }}
-		  </template>
-		  <template #filter="{ filterModel }">
-			<InputText v-model="filterModel.value" type="text" placeholder="Search by Name" />
-		  </template>
-		</Column>
-		<Column field="department" header="Department" sortable filter filterMatchMode="contains">
-		  <template #filter="{ filterModel }">
-			<InputText v-model="filterModel.value" type="text" placeholder="Search by Department" />
-		  </template>
-		</Column>
-		<Column field="dateOfOccurrence" header="Date" sortable filter filterMatchMode="contains">
-		  <template #filter="{ filterModel }">
-			<Calendar v-model="filterModel.value" dateFormat="yy-mm-dd" placeholder="Select a Date" />
-		  </template>
-		</Column>
-		<Column field="placeOfOccurrence" header="Where?" sortable filter filterMatchMode="contains">
-		  <template #filter="{ filterModel }">
-			<InputText v-model="filterModel.value" type="text" placeholder="Search by Place of Occurrence" />
-		  </template>
-		</Column>
-		<Column field="typeOfAccident" header="Type of Accident" sortable filter filterMatchMode="contains">
-		  <template #filter="{ filterModel }">
-			<InputText v-model="filterModel.value" type="text" placeholder="Search by Type of Accident" />
-		  </template>
-		</Column>
-		<Column field="description" header="Description" sortable filter filterMatchMode="contains">
-		  <template #filter="{ filterModel }">
-			<InputText v-model="filterModel.value" type="text" placeholder="Search by Description" />
-		  </template>
-		</Column>
-		<Column field="factor" header="Factor" sortable filter filterMatchMode="contains">
-		  <template #filter="{ filterModel }">
-			<InputText v-model="filterModel.value" type="text" placeholder="Search by Factor" />
-		  </template>
-		</Column>
-		<Column field="injuredLv" header="Injured Lv." sortable filter filterMatchMode="contains">
-		  <template #filter="{ filterModel }">
-			<InputText v-model="filterModel.value" type="text" placeholder="Search by Injured Lv." />
-		  </template>
-		</Column>
-		<Column field="equipmentDamageLv" header="Equipment Damage Lv." sortable filter filterMatchMode="contains">
-		  <template #filter="{ filterModel }">
-			<InputText v-model="filterModel.value" type="text" placeholder="Search by Equipment Damage Lv." />
-		  </template>
-		</Column>
-		<Column field="affectOfEnviroment" header="Effect on Environment" sortable filter filterMatchMode="contains">
-		  <template #filter="{ filterModel }">
-			<InputText v-model="filterModel.value" type="text" placeholder="Search by Effect on Environment" />
-		  </template>
-		</Column>
-		<Column field="newsCoverage" header="News Coverage" sortable filter filterMatchMode="contains">
-		  <template #filter="{ filterModel }">
-			<InputText v-model="filterModel.value" type="text" placeholder="Search by News Coverage" />
-		  </template>
-		</Column>
-		<Column field="measures" header="Measures" sortable filter filterMatchMode="contains">
-		  <template #filter="{ filterModel }">
-			<InputText v-model="filterModel.value" type="text" placeholder="Search by Measures" />
-		  </template>
-		</Column>
-		<Column field="actionItems" header="Action Items" sortable filter filterMatchMode="contains">
-		  <template #filter="{ filterModel }">
-			<InputText v-model="filterModel.value" type="text" placeholder="Search by Action Items" />
-		  </template>
-		</Column>
-		<Column header="Solved Action Items" sortable filter filterMatchMode="equals">
-		  <template #body="slotProps">
-			<Checkbox v-model="slotProps.data.solvedActionItems" :binary="true" />
-		  </template>
-		  <template #filter="{ filterModel }">
-			<Dropdown v-model="filterModel.value" :options="[{ label: 'True', value: true }, { label: 'False', value: false }]"></Dropdown>
-		  </template>
-		</Column>
-		<Column field="updateDay" header="Update Day" sortable filter filterMatchMode="contains">
-		  <template #filter="{ filterModel }">
-			<InputText v-model="filterModel.value" type="text" placeholder="Search by Update Day" />
-		  </template>
-		</Column>
-		<Column header="Operation">
-		  <template #body="slotProps">
-			<div>
-			  <i class="pi pi-pencil" @click="editItem(slotProps.data)" style="margin-right: 10px; cursor: pointer;"></i>
-			  <i class="pi pi-trash" @click="deleteItem(slotProps.data)" style="cursor: pointer;"></i>
+	<div class="table-container">
+	  <div class="header-container">
+		<DataTable
+		  v-model:filters="filters"
+		  :value="sortedItems"
+		  :loading="loading"
+		  paginator
+		  showGridlines
+		  :rows="serverOptions.rowsPerPage"
+		  :total-records="serverItemsLength"
+		  :lazy="true"
+		  :resizable-columns="true"
+		  :global-filter-fields="['nearMissNo', 'userName.userName', 'department', 'description']"
+		  filter-display="menu"
+		  @page="onPage"
+		  @sort="onSort"
+		  @filter="onFilter"
+		  :rows-per-page-options="[5, 10, 20, 50]"
+		  class="p-datatable-custom"
+		  :sort-field="sortField"
+		  :sort-order="sortOrder"
+		  :row-class="rowClass"
+		  style="width: 100%;"
+		>
+		  <!-- ヘッダーとカラム定義 -->
+		  <template #header>
+			<div class="flex justify-between items-center">
+			  <span class="p-input-icon-left">
+				<i class="pi pi-search" />
+				<InputText v-model="filters['global'].value" placeholder="Keyword Search" />
+			  </span>
+			  <Button type="button" label="New Entry" @click="openNewEntry" />
 			</div>
 		  </template>
-		</Column>
-	  </DataTable>
+		  <!-- カラム定義 -->
+		  <Column field="nearMissNo" header="NearMiss No." sortable filter filterMatchMode="contains">
+			<template #filter="{ filterModel }">
+			  <InputText v-model="filterModel.value" type="text" placeholder="Search by NearMiss No." />
+			</template>
+		  </Column>
+		  <Column field="userName.userName" header="Name" sortable filter filterMatchMode="contains">
+			<template #body="slotProps">
+			  {{ slotProps.data.userName.userName }}
+			</template>
+			<template #filter="{ filterModel }">
+			  <InputText v-model="filterModel.value" type="text" placeholder="Search by Name" />
+			</template>
+		  </Column>
+		  <Column field="department" header="Department" sortable filter filterMatchMode="contains">
+			<template #filter="{ filterModel }">
+			  <InputText v-model="filterModel.value" type="text" placeholder="Search by Department" />
+			</template>
+		  </Column>
+		  <Column field="dateOfOccurrence" header="Date" sortable filter filterMatchMode="contains">
+			<template #filter="{ filterModel }">
+			  <Calendar v-model="filterModel.value" dateFormat="yy-mm-dd" placeholder="Select a Date" />
+			</template>
+		  </Column>
+		  <Column field="placeOfOccurrence" header="Where?" sortable filter filterMatchMode="contains">
+			<template #filter="{ filterModel }">
+			  <InputText v-model="filterModel.value" type="text" placeholder="Search by Place of Occurrence" />
+			</template>
+		  </Column>
+		  <Column field="typeOfAccident" header="Type of Accident" sortable filter filterMatchMode="contains">
+			<template #filter="{ filterModel }">
+			  <InputText v-model="filterModel.value" type="text" placeholder="Search by Type of Accident" />
+			</template>
+		  </Column>
+		  <Column field="description" header="Description" sortable filter filterMatchMode="contains">
+			<template #filter="{ filterModel }">
+			  <InputText v-model="filterModel.value" type="text" placeholder="Search by Description" />
+			</template>
+		  </Column>
+		  <Column field="factor" header="Factor" sortable filter filterMatchMode="contains">
+			<template #filter="{ filterModel }">
+			  <InputText v-model="filterModel.value" type="text" placeholder="Search by Factor" />
+			</template>
+		  </Column>
+		  <Column field="injuredLv" header="Injured Lv." sortable filter filterMatchMode="contains">
+			<template #filter="{ filterModel }">
+			  <InputText v-model="filterModel.value" type="text" placeholder="Search by Injured Lv." />
+			</template>
+		  </Column>
+		  <Column field="equipmentDamageLv" header="Equipment Damage Lv." sortable filter filterMatchMode="contains">
+			<template #filter="{ filterModel }">
+			  <InputText v-model="filterModel.value" type="text" placeholder="Search by Equipment Damage Lv." />
+			</template>
+		  </Column>
+		  <Column field="affectOfEnviroment" header="Effect on Environment" sortable filter filterMatchMode="contains">
+			<template #filter="{ filterModel }">
+			  <InputText v-model="filterModel.value" type="text" placeholder="Search by Effect on Environment" />
+			</template>
+		  </Column>
+		  <Column field="newsCoverage" header="News Coverage" sortable filter filterMatchMode="contains">
+			<template #filter="{ filterModel }">
+			  <InputText v-model="filterModel.value" type="text" placeholder="Search by News Coverage" />
+			</template>
+		  </Column>
+		  <Column field="measures" header="Measures" sortable filter filterMatchMode="contains">
+			<template #filter="{ filterModel }">
+			  <InputText v-model="filterModel.value" type="text" placeholder="Search by Measures" />
+			</template>
+		  </Column>
+		  <Column field="actionItems" header="Action Items" sortable filter filterMatchMode="contains">
+			<template #filter="{ filterModel }">
+			  <InputText v-model="filterModel.value" type="text" placeholder="Search by Action Items" />
+			</template>
+		  </Column>
+		  <Column header="Solved Action Items" sortable filter filterMatchMode="equals">
+			<template #body="slotProps">
+			  <Checkbox v-model="slotProps.data.solvedActionItems" :binary="true" />
+			</template>
+			<template #filter="{ filterModel }">
+			  <Dropdown v-model="filterModel.value" :options="[{ label: 'True', value: true }, { label: 'False', value: false }]"></Dropdown>
+			</template>
+		  </Column>
+		  <Column field="updateDay" header="Update Day" sortable filter filterMatchMode="contains">
+			<template #filter="{ filterModel }">
+			  <InputText v-model="filterModel.value" type="text" placeholder="Search by Update Day" />
+			</template>
+		  </Column>
+		  <Column header="Operation">
+			<template #body="slotProps">
+			  <div>
+				<i class="pi pi-pencil" @click="editItem(slotProps.data)" style="margin-right: 10px; cursor: pointer;"></i>
+				<i class="pi pi-trash" @click="deleteItem(slotProps.data)" style="cursor: pointer;"></i>
+			  </div>
+			</template>
+		  </Column>
+		</DataTable>
+	  </div>
   
 	  <div class="edit-item" v-if="isEditing">
 		<h3>Edit Item</h3>
@@ -328,15 +331,40 @@
 	  solvedActionItems: { value: null, matchMode: FilterMatchMode.EQUALS }
 	};
   };
+  
+  const rowClass = (data, index) => {
+	return index % 2 === 0 ? 'even-row' : 'odd-row';
+  };
   </script>
   
   <style>
+  .table-container {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+  }
+  
+  .header-container {
+	flex: 0 1 auto;
+	width: 100%;
+  }
+  
   .p-datatable-custom .p-datatable-thead > tr > th {
 	background-color: #2d3a4f;
 	color: white;
   }
+  
   .p-input-icon-left .pi {
 	left: 10px;
+  }
+  
+  .even-row {
+	background-color: #f7f7f7; /* 薄い灰色 */
+  }
+  
+  .odd-row {
+	background-color: #ffffff;
   }
   </style>
   
