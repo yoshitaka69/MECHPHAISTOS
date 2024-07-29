@@ -17,10 +17,9 @@
 		  @sort="onSort"
 		  @filter="onFilter"
 		  :rows-per-page-options="[5, 10, 20, 50]"
-		  class="p-datatable-custom"
+		  class="p-datatable-custom custom-near-miss-table"
 		  :sort-field="sortField"
 		  :sort-order="sortOrder"
-		  :row-class="rowClass"
 		  style="width: 100%;"
 		>
 		  <!-- ヘッダーとカラム定義 -->
@@ -331,10 +330,6 @@
 	  solvedActionItems: { value: null, matchMode: FilterMatchMode.EQUALS }
 	};
   };
-  
-  const rowClass = (data, index) => {
-	return index % 2 === 0 ? 'even-row' : 'odd-row';
-  };
   </script>
   
   <style>
@@ -355,16 +350,17 @@
 	color: white;
   }
   
+  /* CSSで交互に背景色を設定 */
+  .custom-near-miss-table .p-datatable-tbody > tr:nth-child(odd) {
+	background-color: #ffffff !important; /* 白色 */
+  }
+  
+  .custom-near-miss-table .p-datatable-tbody > tr:nth-child(even) {
+	background-color: #d3d3d3 !important; /* 薄い灰色 */
+  }
+  
   .p-input-icon-left .pi {
 	left: 10px;
-  }
-  
-  .even-row {
-	background-color: #f7f7f7; /* 薄い灰色 */
-  }
-  
-  .odd-row {
-	background-color: #ffffff;
   }
   </style>
   

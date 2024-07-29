@@ -81,7 +81,7 @@ color: white;
 }
 
 .striped-table .p-datatable-tbody > tr:nth-child(even) {
-background-color: #f9f9f9;
+background-color: #e0e0e0; /* ここを変更して濃い灰色に設定 */
 }
 
 .striped-table .p-datatable-tbody > tr:nth-child(odd) {

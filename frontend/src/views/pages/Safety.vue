@@ -32,7 +32,7 @@
                         <div class="spacer"></div>
                         <br />
                         <br />
-                        <div class="near-miss-list-container">
+                        <div class="near-miss-list-container card-light-yellow">
                             <Near_miss_list />
                             <div class="text-center">
                                 <h3>Table. Near Miss List</h3>
@@ -74,24 +74,30 @@
 
                         <div class="grid">
                             <div class="col-12 lg:col-6 xl:col-6">
-                                <div class="card mb-0" style="height: 500px;">
-                                    <Safety_indicator_trend />
+                                <div class="card-light-yellow-container">
+                                    <div class="card mb-0" style="height: 500px;">
+                                        <Safety_indicator_trend />
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-12 lg:col-6 xl:col-6">
-                                <div class="card mb-0" style="height: 500px;">
-                                    <Safety_Measure_trend />
+                                <div class="card-light-yellow-container">
+                                    <div class="card mb-0" style="height: 500px;">
+                                        <Safety_Measure_trend />
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         
-                        <div class="card mb-0">
-                            <Safety_correlation_diagram />
-                            <Message :closable="false">
-                                AI recommendation
-                                <br />
-                                Now developing
-                            </Message>
+                        <div class="card-light-yellow-container">
+                            <div class="card mb-0">
+                                <Safety_correlation_diagram />
+                                <Message :closable="false">
+                                    AI recommendation
+                                    <br />
+                                    Now developing
+                                </Message>
+                            </div>
                         </div>
                     </TabPanel>
                     <TabPanel header="Target setting">
@@ -155,6 +161,12 @@ export default {
 .card-light-yellow {
     background-color: #fff9c4; /* 薄い黄色に変更 */
 }
+.card-light-yellow-container {
+    background-color: #fff9c4; /* 薄い黄色に変更 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 薄い影を追加 */
+    padding: 20px; /* パディングを追加して内容を囲む */
+    border-radius: 8px; /* 角を丸くする */
+}
 .flex-wrap {
     display: flex;
     flex-wrap: wrap;
@@ -179,6 +191,6 @@ h3 {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 薄い影を追加 */
     padding: 20px; /* パディングを追加して内容を囲む */
     border-radius: 8px; /* 角を丸くする */
-    background-color: #fff; /* 背景色を白にする */
+    background-color: #fff9c4; /* 背景色を薄い黄色に変更 */
 }
 </style>

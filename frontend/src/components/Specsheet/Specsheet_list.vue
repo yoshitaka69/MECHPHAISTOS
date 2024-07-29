@@ -11,7 +11,7 @@
         :total-records="serverItemsLength"
         :lazy="true"
         :resizable-columns="true"
-        :global-filter-fields="['taskName', 'date', 'equipment', 'reporter', 'pmType']"
+        :global-filter-fields="['fileName', 'date', 'userName']"
         filter-display="menu"
         @page="onPage"
         @sort="onSort"
@@ -33,9 +33,9 @@
           </div>
         </template>
         <!-- カラム定義 -->
-        <Column field="taskName" header="Task Name" sortable filter filterMatchMode="contains">
+        <Column field="fileName" header="File Name" sortable filter filterMatchMode="contains">
           <template #filter="{ filterModel }">
-            <InputText v-model="filterModel.value" type="text" placeholder="Search by Task Name" />
+            <InputText v-model="filterModel.value" type="text" placeholder="Search by File Name" />
           </template>
         </Column>
         <Column field="date" header="Date" sortable filter filterMatchMode="contains">
@@ -43,19 +43,9 @@
             <Calendar v-model="filterModel.value" dateFormat="yy-mm-dd" placeholder="Select a Date" />
           </template>
         </Column>
-        <Column field="equipment" header="Equipment" sortable filter filterMatchMode="contains">
+        <Column field="userName" header="User Name" sortable filter filterMatchMode="contains">
           <template #filter="{ filterModel }">
-            <InputText v-model="filterModel.value" type="text" placeholder="Search by Equipment" />
-          </template>
-        </Column>
-        <Column field="reporter" header="Reporter" sortable filter filterMatchMode="contains">
-          <template #filter="{ filterModel }">
-            <InputText v-model="filterModel.value" type="text" placeholder="Search by Reporter" />
-          </template>
-        </Column>
-        <Column field="pmType" header="PM Type" sortable filter filterMatchMode="contains">
-          <template #filter="{ filterModel }">
-            <InputText v-model="filterModel.value" type="text" placeholder="Search by PM Type" />
+            <InputText v-model="filterModel.value" type="text" placeholder="Search by User Name" />
           </template>
         </Column>
         <Column header="Operation">
@@ -83,15 +73,18 @@
 
 <script setup>
 import { ref, computed } from 'vue';
+import { useRouter } from 'vue-router';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import Calendar from 'primevue/calendar';
 
+const router = useRouter();
+
 const selectedItem = ref([]);
 const itemsFromApi = ref([
-  { id: 1, taskName: 'Task A', date: '2023-07-15', equipment: 'Equipment 1', reporter: 'Reporter 1', pmType: 'PM01' },
-  { id: 2, taskName: 'Task B', date: '2023-07-16', equipment: 'Equipment 2', reporter: 'Reporter 2', pmType: 'PM02' },
-  { id: 3, taskName: 'Task C', date: '2023-07-17', equipment: 'Equipment 3', reporter: 'Reporter 3', pmType: 'PM03' },
+  { id: 1, fileName: 'File A', date: '2023-07-15', userName: 'User 1' },
+  { id: 2, fileName: 'File B', date: '2023-07-16', userName: 'User 2' },
+  { id: 3, fileName: 'File C', date: '2023-07-17', userName: 'User 3' },
 ]);
 const serverItemsLength = ref(itemsFromApi.value.length);
 const serverOptions = ref({
@@ -105,11 +98,9 @@ const sortField = ref(null);
 const sortOrder = ref(null);
 const filters = ref({
   global: { value: null, matchMode: 'contains' },
-  taskName: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
+  fileName: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
   date: { operator: 'and', constraints: [{ value: null, matchMode: 'contains' }] },
-  equipment: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
-  reporter: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
-  pmType: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
+  userName: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
 });
 
 const sortedItems = computed(() => {
@@ -126,11 +117,9 @@ const sortedItems = computed(() => {
   while (items.length < serverOptions.value.rowsPerPage) {
     items.push({
       id: '',
-      taskName: '',
+      fileName: '',
       date: '',
-      equipment: '',
-      reporter: '',
-      pmType: '',
+      userName: '',
     });
   }
   return items;
@@ -172,7 +161,10 @@ const deleteItem = (item) => {
 };
 
 const openNewEntry = () => {
-  window.open('/maintenance_report_form', '_blank');
+  const routeData = router.resolve({
+    name: 'specsheet_form'
+  });
+  window.open(routeData.href, '_blank');
 };
 
 const onPage = (event) => {
@@ -183,11 +175,9 @@ const onPage = (event) => {
 const clearFilter = () => {
   filters.value = {
     global: { value: null, matchMode: 'contains' },
-    taskName: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
+    fileName: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
     date: { operator: 'and', constraints: [{ value: null, matchMode: 'contains' }] },
-    equipment: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
-    reporter: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
-    pmType: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
+    userName: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
   };
 };
 </script>

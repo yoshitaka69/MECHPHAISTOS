@@ -1,5 +1,5 @@
 <template>
-  <div class="table-container">
+  <div class="table-container custom-work-order-table">
     <div class="header-container">
       <DataTable
         v-model:filters="filters"
@@ -17,10 +17,9 @@
         @sort="onSort"
         @filter="onFilter"
         :rows-per-page-options="[5, 10, 20, 50]"
-        class="p-datatable-custom"
+        class="p-datatable-custom custom-work-order-table"
         :sort-field="sortField"
         :sort-order="sortOrder"
-        :row-class="rowClass"
         style="width: 100%;"
       >
         <template #header>
@@ -188,10 +187,6 @@ const onPage = (event) => {
   serverOptions.value.rowsPerPage = event.rows;
 };
 
-const rowClass = (data, index) => {
-  return index % 2 === 0 ? 'even-row' : 'odd-row';
-};
-
 const getStatusLabel = (status) => {
     switch (status) {
         case 'COMPLETED':
@@ -214,32 +209,36 @@ const updateVisible = (value) => {
 </script>
 
 <style>
-.table-container {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
+.custom-work-order-table .p-datatable-thead > tr > th {
+  background-color: #2d3a4f !important;
+  color: white !important;
 }
 
-.header-container {
-  flex: 0 1 auto;
-  width: 100%;
+.custom-work-order-table .p-datatable {
+  border: 1px solid black;
 }
 
-.p-datatable-custom .p-datatable-thead > tr > th {
-  background-color: #2d3a4f;
-  color: white;
+.custom-work-order-table .p-datatable-tbody > tr:nth-child(odd) > td {
+  background-color: #ffffff !important; /* 奇数行は白色 */
 }
 
-.p-input-icon-left .pi {
-  left: 10px;
+.custom-work-order-table .p-datatable-tbody > tr:nth-child(even) > td {
+  background-color: #d3d3d3 !important; /* 偶数行は明るい灰色 */
 }
 
-.even-row {
-  background-color: #f7f7f7;
+.custom-work-order-table .p-datatable-tbody > tr > td {
+  border-right: 1px solid black;
 }
 
-.odd-row {
-  background-color: #ffffff;
+.custom-work-order-table .p-datatable-tbody > tr > td:last-child {
+  border-right: none;
+}
+
+.custom-work-order-table .p-datatable-thead > tr > th {
+  border-right: 1px solid black;
+}
+
+.custom-work-order-table .p-datatable-thead > tr > th:last-child {
+  border-right: none;
 }
 </style>

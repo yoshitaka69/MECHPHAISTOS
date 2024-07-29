@@ -110,7 +110,7 @@ const router = createRouter({
 							component: () => import('../views/pages/Working_Report/Maintenance_report.vue')
 						},
 						{
-							path: '/workingReport/specsheet_form',
+							path: '/workingReport/specsheet',
 							component: () => import('../views/pages/Working_Report/Specsheet_form.vue')
 						},
 					]
@@ -174,9 +174,19 @@ const router = createRouter({
 			component: () => import('@/components/Maintenance_report/Maintenance_report_form.vue')
 		},
 		{
+			path: '/specsheet_form',
+			name:'specsheet_form',
+			component: () => import('@/components/Specsheet/Specsheet_form.vue')
+		},
+		{
 			path: '/spare_parts_detail/:partsNo',
 			name: 'SparePartsDetail',
 			component: () => import('@/components/Spare_parts/Spare_parts_detail.vue')
+		},
+		{
+			path: '/how_to_use/repairing_cost',
+			name:'how_to_use_repairing_cost',
+			component: () => import('@/components/How_to_use/How_to_use_repairing_cost.vue')
 		},
 	],
 })

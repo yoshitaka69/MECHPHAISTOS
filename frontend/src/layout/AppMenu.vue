@@ -39,7 +39,7 @@ const model = ref([
             { label: 'Working Report',icon: 'pi pi-fw pi-exclamation-circle', 
               items:[
                 {label:'Maintenance Report',icon:'pi pi-fw pi-bookmark', to: '/workingReport/maintenance_Report'},
-                {label:'Specsheet form',icon:'pi pi-fw pi-bookmark', to: '/workingReport/specsheet_form'},
+                {label:'Specsheet',icon:'pi pi-fw pi-bookmark', to: '/workingReport/specsheet'},
               ]
             },
             { label: 'SCADA', icon: 'pi pi-fw pi-list', to: '/scada' },

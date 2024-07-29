@@ -1,5 +1,5 @@
 <template>
-  <DataTable :value="sortedTasks" tableStyle="min-width: 50rem" class="custom-header">
+  <DataTable :value="sortedTasks" tableStyle="min-width: 50rem" class="custom-datatable">
     <Column v-for="col of columns" :key="col.field" :field="col.field" :header="col.header" sortable></Column>
   </DataTable>
 </template>
@@ -73,28 +73,36 @@ const sortedTasks = computed(() => {
 </script>
 
 <style>
-.custom-header .p-datatable-thead > tr > th {
-  background-color: #2d3a4f;
-  color: white;
+.custom-datatable .p-datatable-thead > tr > th {
+  background-color: #2d3a4f !important;
+  color: white !important;
 }
 
-.p-datatable {
+.custom-datatable .p-datatable {
   border: 1px solid black;
 }
 
-.p-datatable-tbody > tr > td {
+.custom-datatable .p-datatable-tbody > tr:nth-child(odd) {
+  background-color: white !important; /* 奇数行は白色 */
+}
+
+.custom-datatable .p-datatable-tbody > tr:nth-child(even) {
+  background-color: #d3d3d3 !important; /* 偶数行は明るい灰色 */
+}
+
+.custom-datatable .p-datatable-tbody > tr > td {
   border-right: 1px solid black;
 }
 
-.p-datatable-tbody > tr > td:last-child {
+.custom-datatable .p-datatable-tbody > tr > td:last-child {
   border-right: none;
 }
 
-.p-datatable-thead > tr > th {
+.custom-datatable .p-datatable-thead > tr > th {
   border-right: 1px solid black;
 }
 
-.p-datatable-thead > tr > th:last-child {
+.custom-datatable .p-datatable-thead > tr > th:last-child {
   border-right: none;
 }
 </style>

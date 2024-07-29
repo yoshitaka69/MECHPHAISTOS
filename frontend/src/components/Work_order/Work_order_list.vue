@@ -1,5 +1,5 @@
 <template>
-  <div class="table-container">
+  <div class="table-container custom-work-order-table">
     <div class="header-container">
       <DataTable
         v-model:filters="filters"
@@ -17,10 +17,9 @@
         @sort="onSort"
         @filter="onFilter"
         :rows-per-page-options="[5, 10, 20, 50]"
-        class="p-datatable-custom"
+        class="p-datatable-custom custom-work-order-table"
         :sort-field="sortField"
         :sort-order="sortOrder"
-        :row-class="rowClass"
         style="width: 100%;"
       >
         <template #header>
@@ -92,7 +91,7 @@ import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import Tag from 'primevue/tag';
 import Dropdown from 'primevue/dropdown';
-import WorkOrderInputModal from './Work_order_form.vue';
+import WorkOrderInputModal from '@/components/Work_order/Work_order_form.vue';
 
 const userStore = useUserStore(); // Piniaストアを使用
 
@@ -257,32 +256,36 @@ const onRowEditSave = (event) => {
 </script>
 
 <style>
-.table-container {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
+.table-container.custom-work-order-table .p-datatable-thead > tr > th {
+  background-color: #2d3a4f !important;
+  color: white !important;
 }
 
-.header-container {
-  flex: 0 1 auto;
-  width: 100%;
+.table-container.custom-work-order-table .p-datatable {
+  border: 1px solid black;
 }
 
-.p-datatable-custom .p-datatable-thead > tr > th {
-  background-color: #2d3a4f;
-  color: white;
+.table-container.custom-work-order-table .p-datatable-tbody > tr:nth-child(odd) > td {
+  background-color: #ffffff !important; /* 奇数行は白色 */
 }
 
-.p-input-icon-left .pi {
-  left: 10px;
+.table-container.custom-work-order-table .p-datatable-tbody > tr:nth-child(even) > td {
+  background-color: #d3d3d3 !important; /* 偶数行は明るい灰色 */
 }
 
-.even-row {
-  background-color: #f7f7f7;
+.table-container.custom-work-order-table .p-datatable-tbody > tr > td {
+  border-right: 1px solid black;
 }
 
-.odd-row {
-  background-color: #ffffff;
+.table-container.custom-work-order-table .p-datatable-tbody > tr > td:last-child {
+  border-right: none;
+}
+
+.table-container.custom-work-order-table .p-datatable-thead > tr > th {
+  border-right: 1px solid black;
+}
+
+.table-container.custom-work-order-table .p-datatable-thead > tr > th:last-child {
+  border-right: none;
 }
 </style>

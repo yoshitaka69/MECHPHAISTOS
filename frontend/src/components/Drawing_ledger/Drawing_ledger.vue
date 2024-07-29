@@ -2,11 +2,6 @@
   <div class="table-container">
     <div class="header-container">
       <div class="flex justify-between items-center">
-        <span class="p-input-icon-left">
-          <i class="pi pi-search" />
-          <InputText v-model="filters['global'].value" placeholder="Keyword Search" />
-        </span>
-        <Button type="button" label="New Entry" @click="showNewEntryForm" />
         <Button type="button" label="Toggle View" @click="toggleView" />
       </div>
       <DataTable
@@ -33,13 +28,7 @@
         style="width: 100%;"
       >
         <template #header>
-          <div class="flex justify-between items-center">
-            <span class="p-input-icon-left">
-              <i class="pi pi-search" />
-              <InputText v-model="filters['global'].value" placeholder="Keyword Search" />
-            </span>
-            <Button type="button" label="New Entry" @click="showNewEntryForm" />
-          </div>
+          <div class="flex justify-between items-center"></div>
         </template>
         <Column field="file" header="ファイル" sortable filter filterMatchMode="contains">
           <template #body="slotProps">
@@ -71,20 +60,22 @@
         </Column>
       </DataTable>
       <div v-else class="card-view">
-        <div class="p-grid">
-          <div v-for="file in sortedItems" :key="file.id" class="p-col-12 p-md-4">
-            <div class="p-card">
-              <div class="p-card-header">
-                <h4>{{ file.name }}</h4>
-              </div>
-              <div class="p-card-body">
-                <p><strong>ファイル:</strong> <a :href="`/api/cad_files/${file.file}`" download>{{ file.file }}</a></p>
-                <p><strong>登録日:</strong> {{ new Date(file.uploaded_at).toLocaleDateString() }}</p>
-                <p><strong>登録者:</strong> {{ file.uploaded_by }}</p>
-              </div>
-              <div class="p-card-footer">
-                <Button icon="pi pi-pencil" class="p-button-text" @click="editItem(file)" />
-                <Button icon="pi pi-trash" class="p-button-text" @click="deleteItem(file)" />
+        <div class="grid -mt-3 -ml-3 -mr-3">
+          <div v-for="file in sortedItems" :key="file.id" class="col-12 md:col-6 lg:col-4 xl:col-2 border-bottom-1 surface-border md:border-bottom-none">
+            <div class="p-2">
+              <div class="p-card">
+                <div class="p-card-header">
+                  <h4>{{ file.name }}</h4>
+                </div>
+                <div class="p-card-body">
+                  <p><strong>ファイル:</strong> <a :href="`/api/cad_files/${file.file}`" download>{{ file.file }}</a></p>
+                  <p><strong>登録日:</strong> {{ new Date(file.uploaded_at).toLocaleDateString() }}</p>
+                  <p><strong>登録者:</strong> {{ file.uploaded_by }}</p>
+                </div>
+                <div class="p-card-footer">
+                  <Button icon="pi pi-pencil" class="p-button-text" @click="editItem(file)" />
+                  <Button icon="pi pi-trash" class="p-button-text" @click="deleteItem(file)" />
+                </div>
               </div>
             </div>
           </div>
