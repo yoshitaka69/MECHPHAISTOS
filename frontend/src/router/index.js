@@ -179,14 +179,74 @@ const router = createRouter({
 			component: () => import('@/components/Specsheet/Specsheet_form.vue')
 		},
 		{
+			path: '/celist_detail/:ceListNo',
+			name: 'CeListDetail',
+			component: () => import('@/components/Critical_equipment_list/CeListDetail.vue')
+		},
+		{
 			path: '/spare_parts_detail/:partsNo',
 			name: 'SparePartsDetail',
 			component: () => import('@/components/Spare_parts/Spare_parts_detail.vue')
 		},
 		{
+			path: '/how_to_use/critical_equipment_list',
+			name:'how_to_use_critical_equipment_list',
+			component: () => import('@/components/How_to_use/How_to_use_critical_equipment_list.vue')
+		},
+		{
+			path: '/how_to_use/risk_matrix',
+			name:'how_to_use_risk_matrix',
+			component: () => import('@/components/How_to_use/How_to_use_risk_matrix.vue')
+		},
+		{
 			path: '/how_to_use/repairing_cost',
 			name:'how_to_use_repairing_cost',
 			component: () => import('@/components/How_to_use/How_to_use_repairing_cost.vue')
+		},
+		{
+			path: '/how_to_use/near_miss',
+			name:'how_to_use_near_miss',
+			component: () => import('@/components/How_to_use/How_to_use_near_miss.vue')
+		},
+		{
+			path: '/how_to_use/communications',
+			name:'how_to_use_communications',
+			component: () => import('@/components/How_to_use/How_to_use_communications.vue')
+		},
+		{
+			path: '/how_to_use/schedule',
+			name:'how_to_use_schedules',
+			component: () => import('@/components/How_to_use/How_to_use_schedule.vue')
+		},
+		{
+			path: '/how_to_use/trend&demand',
+			name:'how_to_use_trend&demand',
+			component: () => import('@/components/How_to_use/How_to_use_trend&demand.vue')
+		},
+		{
+			path: '/how_to_use/work_order',
+			name:'how_to_use_work_order',
+			component: () => import('@/components/How_to_use/How_to_use_work_order.vue')
+		},
+		{
+			path: '/how_to_use/benefit',
+			name:'how_to_use_benefit',
+			component: () => import('@/components/How_to_use/How_to_use_benefit.vue')
+		},
+		{
+			path: '/how_to_use/spare_parts',
+			name:'how_to_use_spare_parts',
+			component: () => import('@/components/How_to_use/How_to_use_spare_parts.vue')
+		},
+		{
+			path: '/how_to_use/task_list',
+			name:'how_to_use_task_list',
+			component: () => import('@/components/How_to_use/How_to_use_task_list.vue')
+		},
+		{
+			path: '/what_is_pm_type',
+			name:'what_is_pm_type',
+			component: () => import('@/components/How_to_use/What_is_PM_type.vue')
 		},
 	],
 })

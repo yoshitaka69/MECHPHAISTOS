@@ -13,7 +13,7 @@
 	},
 	methods: {
 	  createGradientRating() {
-		const width = 600;
+		const width = 600; // Smaller width
 		const height = 50;
 		const sections = 20;
 		const sectionWidth = width / sections;
@@ -131,6 +131,7 @@
 	padding: 10px;
 	border: 1px solid #ccc;
 	margin: 20px;
+	max-width: 650px; /* Slightly larger than the SVG width */
   }
   
   .gradient-rating {

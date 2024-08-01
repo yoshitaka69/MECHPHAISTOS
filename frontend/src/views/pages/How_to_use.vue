@@ -36,6 +36,22 @@
                         <font-awesome-icon :icon="['fas', 'hand-holding-usd']" class="icon"></font-awesome-icon>
                         <a :href="benefitLink" target="_blank">Benefit</a>
                     </li>
+                    <li>
+                        <font-awesome-icon :icon="['fas', 'exclamation-circle']" class="icon"></font-awesome-icon>
+                        <a :href="riskMatrixLink" target="_blank">Risk Matrix</a>
+                    </li>
+                    <li>
+                        <font-awesome-icon :icon="['fas', 'cogs']" class="icon"></font-awesome-icon>
+                        <a :href="sparePartsLink" target="_blank">Spare Parts</a>
+                    </li>
+                    <li>
+                        <font-awesome-icon :icon="['fas', 'tasks']" class="icon"></font-awesome-icon>
+                        <a :href="taskListLink" target="_blank">Task List</a>
+                    </li>
+                    <li>
+                        <font-awesome-icon :icon="['fas', 'question-circle']" class="icon"></font-awesome-icon>
+                        <a :href="pmTypeLink" target="_blank">What’s PM type</a>
+                    </li>
                 </ul>
             </div>
         </section>
@@ -49,28 +65,40 @@ export default {
             return window.location.origin;
         },
         criticalEquipmentLink() {
-            return `${this.base}/critical_equipment_list`;
+            return `${this.base}/how_to_use/critical_equipment_list`;
         },
         repairingCostLink() {
-            return `${this.base}/repairing_cost`;
+            return `${this.base}/how_to_use/repairing_cost`;
         },
         nearMissLink() {
-            return `${this.base}/near_miss_input_form`;
+            return `${this.base}/how_to_use/near_miss`;
         },
         communicationsLink() {
-            return `${this.base}/communications`;
+            return `${this.base}/how_to_use/communications`;
         },
         scheduleLink() {
-            return `${this.base}/schedule`;
+            return `${this.base}/how_to_use/schedule`;
         },
         trendDemandLink() {
-            return `${this.base}/trend&demand`;
+            return `${this.base}/how_to_use/trend&demand`;
         },
         workOrderLink() {
-            return `${this.base}/work_order`;
+            return `${this.base}/how_to_use/work_order`;
         },
         benefitLink() {
-            return `${this.base}/benefit`;
+            return `${this.base}/how_to_use/benefit`;
+        },
+        riskMatrixLink() {
+            return `${this.base}/how_to_use/risk_matrix`;
+        },
+        sparePartsLink() {
+            return `${this.base}/how_to_use/spare_parts`;
+        },
+        taskListLink() {
+            return `${this.base}/how_to_use/task_list`;
+        },
+        pmTypeLink() {
+            return `${this.base}/what_is_pm_type`;
         }
     }
 }

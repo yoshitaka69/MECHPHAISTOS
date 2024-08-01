@@ -12,6 +12,8 @@
         </div>
         <hot-table ref="hotTableComponent" :settings="hotSettings"></hot-table>
         <div class="button-container">
+            <input type="number" v-model="rowsToAdd" placeholder="Number of rows" />
+            <Button label="Add Rows" severity="primary" @click="addRows" />
             <Button label="Update Data" severity="secondary" raised class="updateData" @click="updateData" />
         </div>
     </div>
@@ -364,7 +366,9 @@ const SparePartsComponent = defineComponent({
                 },
 
                 licenseKey: 'non-commercial-and-evaluation'
-            }
+            },
+            rowsToAdd: 1, // 追加する行数のデフォルト値
+            sparePartsDataStore: [] // データストア
         };
     },
 
@@ -374,77 +378,113 @@ const SparePartsComponent = defineComponent({
 
     methods: {
         getDataAxios() {
-            const userStore = useUserStore();
-            const userCompanyCode = userStore.companyCode;
+        const userStore = useUserStore();
+        const userCompanyCode = userStore.companyCode;
 
-            if (!userCompanyCode) {
-                console.error('Error: No company code found for the user.');
-                return;
-            }
+        if (!userCompanyCode) {
+            console.error('Error: No company code found for the user.');
+            return;
+        }
 
-            const url = `http://127.0.0.1:8000/api/spareParts/sparePartsByCompany/?format=json&companyCode=${userCompanyCode}`;
+        const url = `http://127.0.0.1:8000/api/spareParts/sparePartsByCompany/?format=json&companyCode=${userCompanyCode}`;
 
-            axios
-                .get(url, {
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    withCredentials: true
-                })
-                .then((response) => {
-                    const sparePartsData = response.data;
+        axios
+            .get(url, {
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                withCredentials: true
+            })
+            .then((response) => {
+                const sparePartsData = response.data;
 
-                    // データ抽出
-                    const index = [
-                        'image',
-                        'partsNo',
-                        'bomCode',
-                        'partsName',
-                        'category',
-                        'partsModel',
-                        'serialNumber',
-                        'taskCode',
-                        'partsCost',
-                        'numberOf',
-                        'unit',
-                        'location',
-                        'partsDeliveryTime',
-                        'orderAlert',
-                        'orderSituation',
-                        'classification',
-                        'inventoryTurnover',
-                        'partsDescription'
-                    ];
+                // データ抽出
+                const index = [
+                    'image',
+                    'partsNo',
+                    'bomCode',
+                    'partsName',
+                    'category',
+                    'partsModel',
+                    'serialNumber',
+                    'taskCode',
+                    'partsCost',
+                    'numberOf',
+                    'unit',
+                    'location',
+                    'partsDeliveryTime',
+                    'orderAlert',
+                    'orderSituation',
+                    'classification',
+                    'inventoryTurnover',
+                    'partsDescription'
+                ];
 
-                    const tableData = sparePartsData.flatMap((companyData) =>
-                        companyData.sparePartsList.flatMap((partData) => {
-                            const rowData = {};
-                            index.forEach((key) => {
-                                // 数値データに対してはparseFloatを適用し、それ以外は直接代入
-                                rowData[key] = key === 'partsCost' || key === 'numberOf' ? parseFloat(partData[key]) || 0 : partData[key];
-                                if (key === 'image' && !partData[key]) {
-                                    rowData[key] = ''; // 画像がない場合は空文字に設定
-                                }
-                            });
-                            return rowData;
-                        })
-                    );
+                const tableData = sparePartsData.flatMap((companyData) =>
+                    companyData.sparePartsList.flatMap((partData) => {
+                        const rowData = {};
+                        index.forEach((key) => {
+                            // 数値データに対してはparseFloatを適用し、それ以外は直接代入
+                            rowData[key] = key === 'partsCost' || key === 'numberOf' ? parseFloat(partData[key]) || 0 : partData[key];
+                            if (key === 'image' && !partData[key]) {
+                                rowData[key] = ''; // 画像がない場合は空文字に設定
+                            }
+                        });
+                        return rowData;
+                    })
+                );
 
-                    // partsNoでソート
-                    tableData.sort((a, b) => (parseInt(a.partsNo, 10) || 0) - (parseInt(b.partsNo, 10) || 0));
+                // partsNoでソート
+                tableData.sort((a, b) => (parseInt(a.partsNo, 10) || 0) - (parseInt(b.partsNo, 10) || 0));
 
-                    const blankRows = Array.from({ length: 10 }, () => ({}));
-                    const newData = tableData.concat(blankRows);
+                this.sparePartsDataStore = tableData;
 
-                    // table settings
-                    this.$refs.hotTableComponent.hotInstance.updateSettings({
-                        data: newData
-                    });
-                })
-                .catch((error) => {
-                    console.error('Error fetching data:', error);
+                const blankRows = Array.from({ length: 10 }, () => ({}));
+                const newData = tableData.concat(blankRows);
+
+                // table settings
+                this.$refs.hotTableComponent.hotInstance.updateSettings({
+                    data: newData
                 });
-        },
+            })
+            .catch((error) => {
+                console.error('Error fetching data:', error);
+            });
+    },
+
+    addRows() {
+        const hotInstance = this.$refs.hotTableComponent.hotInstance;
+        const blankRows = Array.from({ length: this.rowsToAdd }, () => {
+            return {
+                image: '',
+                partsNo: '',
+                bomCode: '',
+                partsName: '',
+                category: '',
+                partsModel: '',
+                serialNumber: '',
+                taskCode: '',
+                partsCost: 0,
+                numberOf: 0,
+                unit: '',
+                location: '',
+                partsDeliveryTime: 0,
+                orderAlert: '',
+                orderSituation: false,
+                classification: '',
+                inventoryTurnover: '',
+                partsDescription: ''
+            };
+        });
+
+        this.sparePartsDataStore = this.sparePartsDataStore.concat(blankRows);
+
+        const newData = this.sparePartsDataStore;
+
+        hotInstance.updateSettings({
+            data: newData
+        });
+    },
 
         updateData() {
             const userStore = useUserStore();
@@ -538,6 +578,7 @@ export default SparePartsComponent;
 .button-container {
     display: flex;
     justify-content: flex-end;
+    gap: 10px;
 }
 
 .legend {
