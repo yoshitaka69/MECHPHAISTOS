@@ -1,11 +1,11 @@
 <template>
   <div>
-    <DataTable :value="displayedTroubleHistories" :rows="10" paginator :stripedRows="true" tableStyle="width: 100%">
+    <DataTable :value="displayedTaskPlan" :rows="10" paginator :stripedRows="true" class="task-table">
       <Column field="date" header="Date" />
       <Column field="pmType" header="PM Type" />
-      <Column field="failureContent" header="Failure Content" />
-      <Column field="failureType" header="Failure Type" />
-      <Column field="repairCost" header="Repair Cost" />
+      <Column field="pMContent" header="Prevent Maintenance Content" />
+      <Column field="maintenanceCategory" header="Maintenance Category" />
+      <Column field="laborCost" header="Maintenance Cost" :body="formatCost" />
     </DataTable>
   </div>
 </template>
@@ -23,83 +23,138 @@ export default {
     Column,
   },
   setup() {
-    const troubleHistories = ref([]);
+    const taskPlan = ref([]);
     const userStore = useUserStore();
     const companyCode = computed(() => userStore.companyCode);
 
-    const fetchTroubleHistories = async () => {
+    const fetchPM02TaskPlan = async () => {
       try {
-        console.log('Fetching trouble histories with companyCode:', companyCode.value);
-        const response = await axios.get('http://127.0.0.1:8000/api/reliability/troubleHistoryByCompany/', {
+        console.log('Fetching PM02 task plan with companyCode:', companyCode.value);
+
+        // PPM02のAPIエンドポイントからデータを取得
+        const response = await axios.get('http://127.0.0.1:8000/api/task/taskListPPM02ByCompany/', {
           params: {
             companyCode: companyCode.value,
           },
         });
-        console.log('Response data:', response.data);
 
-        const today = new Date();
-        const oneYearAgo = new Date(today);
-        oneYearAgo.setFullYear(today.getFullYear() - 1);
-        const oneYearFromNow = new Date(today);
-        oneYearFromNow.setFullYear(today.getFullYear() + 1);
+        console.log('Response data PM02:', response.data);
 
-        // companyCode に対応する troubleHistory を抽出し、日付をフィルタリング
-        const companyData = response.data.find(item => item.companyCode === companyCode.value);
-        if (companyData && companyData.troubleHistory) {
-          troubleHistories.value = companyData.troubleHistory.filter(item => {
-            const itemDate = new Date(item.date);
-            return itemDate >= oneYearAgo && itemDate <= oneYearFromNow;
-          }).map(item => ({
-            date: item.date,
-            pmType: item.pmType,
-            failureContent: item.failureContent,
-            failureType: item.failureType,
-            repairCost: item.repairCost,
-          }));
+        if (!response.data || !Array.isArray(response.data)) {
+          console.error('Unexpected response format:', response.data);
+          return;
         }
-        console.log('Filtered TroubleHistories:', troubleHistories.value);
+
+        // companyCode に対応する taskListPPM02 を抽出
+        const companyData = response.data.find(item => item.companyCode === companyCode.value);
+        if (!companyData || !Array.isArray(companyData.taskListPPM02)) {
+          console.error('No taskListPPM02 found for companyCode:', companyCode.value);
+          return;
+        }
+
+        // データを整形してPM02としてテーブルに追加
+        const pm02Data = companyData.taskListPPM02.map(item => ({
+          date: item.nextEventDate,
+          pmType: 'PM02',
+          pMContent: item.pM02Content,
+          maintenanceCategory: item.maintenanceCategory,
+          laborCost: parseFloat(item.laborCostOfPPM02).toFixed(2),
+        }));
+
+        taskPlan.value.push(...pm02Data);
+
+        console.log('Processed PM02TaskPlan:', taskPlan.value);
       } catch (error) {
-        console.error('Failed to fetch trouble histories:', error);
+        console.error('Failed to fetch PM02 task plan:', error);
       }
     };
 
-    const displayedTroubleHistories = computed(() => {
-      const filledTroubleHistories = [...troubleHistories.value];
-      while (filledTroubleHistories.length < 10) {
-        filledTroubleHistories.push({ date: '', pmType: '', failureContent: '', failureType: '', repairCost: '' });
+    const fetchPM03TaskPlan = async () => {
+      try {
+        console.log('Fetching PM03 task plan with companyCode:', companyCode.value);
+
+        // PPM03のAPIエンドポイントからデータを取得
+        const response = await axios.get('http://127.0.0.1:8000/api/task/taskListPPM03ByCompany/', {
+          params: {
+            companyCode: companyCode.value,
+          },
+        });
+
+        console.log('Response data PM03:', response.data);
+
+        if (!response.data || !Array.isArray(response.data)) {
+          console.error('Unexpected response format:', response.data);
+          return;
+        }
+
+        // companyCode に対応する taskListPPM03 を抽出
+        const companyData = response.data.find(item => item.companyCode === companyCode.value);
+        if (!companyData || !Array.isArray(companyData.taskListPPM03)) {
+          console.error('No taskListPPM03 found for companyCode:', companyCode.value);
+          return;
+        }
+
+        // データを整形してPM03としてテーブルに追加
+        const pm03Data = companyData.taskListPPM03.map(item => ({
+          date: item.nextEventDate,
+          pmType: 'PM03',
+          pMContent: item.pM03Content,
+          maintenanceCategory: item.maintenanceCategory,
+          laborCost: parseFloat(item.laborCostOfPPM03).toFixed(2),
+        }));
+
+        taskPlan.value.push(...pm03Data);
+
+        console.log('Processed PM03TaskPlan:', taskPlan.value);
+      } catch (error) {
+        console.error('Failed to fetch PM03 task plan:', error);
       }
-      return filledTroubleHistories;
+    };
+
+    const formatCost = (rowData) => {
+      return parseFloat(rowData.laborCost).toFixed(2);
+    };
+
+    const displayedTaskPlan = computed(() => {
+      const filledTaskPlan = [...taskPlan.value];
+      while (filledTaskPlan.length < 10) {
+        filledTaskPlan.push({ date: '', pmType: '', pMContent: '', maintenanceCategory: '', laborCost: '' });
+      }
+      return filledTaskPlan;
     });
 
-    onMounted(fetchTroubleHistories);
+    onMounted(async () => {
+      await fetchPM02TaskPlan();
+      await fetchPM03TaskPlan();
+      // データを日付順にソート
+      taskPlan.value.sort((a, b) => new Date(a.date) - new Date(b.date));
+      console.log('Final sorted task plan:', taskPlan.value);
+    });
 
     return {
-      troubleHistories,
-      displayedTroubleHistories,
+      taskPlan,
+      formatCost,
+      displayedTaskPlan,
     };
   },
 };
 </script>
 
 <style>
-/* Table header customization */
-.p-datatable .p-datatable-thead > tr > th {
-  background-color: #2d3a4f; /* Change header background color */
-  color: white;              /* Change header text color */
-  font-weight: bold;         /* Make header text bold */
+.task-table .p-datatable-thead > tr > th {
+  background-color: #ffe5b4; /* 薄い橙色 */
+  color: #333; /* テキストカラーをダークに */
 }
 
-/* Zebra striping for table rows */
-.p-datatable .p-datatable-tbody > tr:nth-child(odd) {
-  background-color: #f9f9f9;
+.task-table .p-datatable-tbody > tr:nth-child(odd) > td {
+  background-color: #ffffff; /* 奇数行は白色 */
 }
 
-.p-datatable .p-datatable-tbody > tr:nth-child(even) {
-  background-color: #ffffff;
+.task-table .p-datatable-tbody > tr:nth-child(even):not(:first-child) > td {
+  background-color: #d3d3d3; /* 偶数行から灰色 */
 }
 
-/* Hover effect for table rows */
-.p-datatable .p-datatable-tbody > tr:hover {
-  background-color: #f1f1f1;
+.task-table .p-datatable-tbody > tr:hover > td {
+  background-color: #f1f1f1; /* ホバー時の背景色 */
 }
 </style>

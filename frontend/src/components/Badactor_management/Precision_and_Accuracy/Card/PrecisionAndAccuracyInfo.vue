@@ -17,15 +17,15 @@ export default {
   data() {
     return {
       precision: 95.5, // サンプルデータ
-      accuracy: 98.3 // サンプルデータ
+      accuracy: 98.3, // サンプルデータ
     };
-  }
+  },
 };
 </script>
 
 <style scoped>
 .card-header {
-  background-color: #f8f9fa;
+  background-color: #ffecb3; /* 薄い橙色に変更 */
   padding: 1rem;
   border-bottom: 1px solid #dee2e6;
 }

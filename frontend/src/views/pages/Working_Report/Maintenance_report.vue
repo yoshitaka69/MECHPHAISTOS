@@ -22,13 +22,13 @@
 	},
 	data() {
 	  return {
-		activeIndex: parseInt(localStorage.getItem('activeTabIndex')) || 0
+		activeIndex: parseInt(localStorage.getItem('maintenanceReportTabIndex')) || 0 // キー名を変更
 	  };
 	},
 	methods: {
 	  onTabChange(event) {
 		this.activeIndex = event.index;
-		localStorage.setItem('activeTabIndex', this.activeIndex);
+		localStorage.setItem('maintenanceReportTabIndex', this.activeIndex); // キー名を変更
 	  }
 	}
   };

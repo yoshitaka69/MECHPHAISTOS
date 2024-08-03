@@ -1,7 +1,6 @@
-<!-- components/PM02TaskTable.vue -->
 <template>
   <div>
-    <DataTable :value="displayedTaskPlan" :rows="10" paginator :stripedRows="true">
+    <DataTable :value="displayedTaskPlan" :rows="10" paginator :stripedRows="true" class="task-table">
       <Column field="date" header="Date" />
       <Column field="pmType" header="PM Type" />
       <Column field="pMContent" header="Prevent Maintenance Content" />
@@ -142,15 +141,20 @@ export default {
 </script>
 
 <style>
-.p-datatable .p-datatable-tbody > tr:nth-child(odd) {
-  background-color: #f9f9f9;
+.task-table .p-datatable-thead > tr > th {
+  background-color: #ffe5b4; /* 薄い橙色 */
+  color: #333; /* テキストカラーをダークに */
 }
 
-.p-datatable .p-datatable-tbody > tr:nth-child(even) {
-  background-color: #ffffff;
+.task-table .p-datatable-tbody > tr:nth-child(odd) > td {
+  background-color: #ffffff; /* 奇数行は白色 */
 }
 
-.p-datatable .p-datatable-tbody > tr:hover {
-  background-color: #f1f1f1;
+.task-table .p-datatable-tbody > tr:nth-child(even):not(:first-child) > td {
+  background-color: #d3d3d3; /* 偶数行から灰色 */
+}
+
+.task-table .p-datatable-tbody > tr:hover > td {
+  background-color: #f1f1f1; /* ホバー時の背景色 */
 }
 </style>

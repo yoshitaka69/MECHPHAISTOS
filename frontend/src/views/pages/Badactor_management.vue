@@ -59,7 +59,7 @@ export default {
   },
   data() {
     return {
-      activeIndex: parseInt(localStorage.getItem('activeTabIndex')) || 0,
+      activeIndex: parseInt(localStorage.getItem('precisionAndAccuracyTabIndex')) || 0,
       sampleDataX: [],
       sampleDataY: [],
     };
@@ -70,7 +70,7 @@ export default {
   methods: {
     onTabChange(event) {
       this.activeIndex = event.index;
-      localStorage.setItem('activeTabIndex', this.activeIndex);
+      localStorage.setItem('precisionAndAccuracyTabIndex', this.activeIndex);
     },
     generateSampleData() {
       this.sampleDataX = Array.from({ length: 100 }, () => Math.random() * 2 - 1);
@@ -108,15 +108,12 @@ export default {
 .table-container {
   display: flex;
   justify-content: space-between;
+  gap: 1rem; /* 間にスペースを追加 */
 }
 
 .table-container > * {
   flex: 1;
-  margin-right: 1rem;
-}
-
-.table-container > *:last-child {
-  margin-right: 0;
+  min-width: 0; /* 幅が親要素に収まるように設定 */
 }
 
 .fta-container {

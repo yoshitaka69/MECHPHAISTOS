@@ -1,81 +1,79 @@
 <template>
   <div class="table-container">
-    <div class="header-container">
-      <div class="flex justify-between items-center">
-        <Button type="button" label="Toggle View" @click="toggleView" />
-      </div>
-      <DataTable
-        v-if="viewMode === 'list'"
-        v-model:filters="filters"
-        :value="sortedItems"
-        :loading="loading"
-        paginator
-        showGridlines
-        :rows="serverOptions.rowsPerPage"
-        :total-records="serverItemsLength"
-        :lazy="true"
-        :resizable-columns="true"
-        :global-filter-fields="['name', 'uploaded_at', 'uploaded_by']"
-        filter-display="menu"
-        @page="onPage"
-        @sort="onSort"
-        @filter="onFilter"
-        :rows-per-page-options="[5, 10, 20, 50]"
-        class="p-datatable-custom"
-        :sort-field="sortField"
-        :sort-order="sortOrder"
-        :row-class="rowClass"
-        style="width: 100%;"
-      >
-        <template #header>
-          <div class="flex justify-between items-center"></div>
+    <div class="header-container flex justify-end items-center">
+      <Button type="button" label="Toggle View" @click="toggleView" class="right-aligned-button" />
+    </div>
+    <DataTable
+      v-if="viewMode === 'list'"
+      v-model:filters="filters"
+      :value="sortedItems"
+      :loading="loading"
+      paginator
+      showGridlines
+      :rows="serverOptions.rowsPerPage"
+      :total-records="serverItemsLength"
+      :lazy="true"
+      :resizable-columns="true"
+      :global-filter-fields="['name', 'uploaded_at', 'uploaded_by']"
+      filter-display="menu"
+      @page="onPage"
+      @sort="onSort"
+      @filter="onFilter"
+      :rows-per-page-options="[5, 10, 20, 50]"
+      class="p-datatable-custom"
+      :sort-field="sortField"
+      :sort-order="sortOrder"
+      :row-class="rowClass"
+      style="width: 100%;"
+    >
+      <template #header>
+        <div class="flex justify-between items-center"></div>
+      </template>
+      <Column field="file" header="ファイル" sortable filter filterMatchMode="contains">
+        <template #body="slotProps">
+          <a :href="`/api/cad_files/${slotProps.data.file}`" download>{{ slotProps.data.file }}</a>
         </template>
-        <Column field="file" header="ファイル" sortable filter filterMatchMode="contains">
-          <template #body="slotProps">
-            <a :href="`/api/cad_files/${slotProps.data.file}`" download>{{ slotProps.data.file }}</a>
-          </template>
-        </Column>
-        <Column field="name" header="ファイル名" sortable filter filterMatchMode="contains">
-          <template #filter="{ filterModel }">
-            <InputText v-model="filterModel.value" type="text" placeholder="Search by File Name" />
-          </template>
-        </Column>
-        <Column field="uploaded_at" header="登録日" sortable filter filterMatchMode="contains">
-          <template #body="slotProps">
-            {{ new Date(slotProps.data.uploaded_at).toLocaleDateString() }}
-          </template>
-        </Column>
-        <Column field="uploaded_by" header="登録者" sortable filter filterMatchMode="contains">
-          <template #filter="{ filterModel }">
-            <InputText v-model="filterModel.value" type="text" placeholder="Search by Uploader" />
-          </template>
-        </Column>
-        <Column header="操作">
-          <template #body="slotProps">
-            <div>
-              <i class="pi pi-pencil" @click="editItem(slotProps.data)" style="margin-right: 10px; cursor: pointer;"></i>
-              <i class="pi pi-trash" @click="deleteItem(slotProps.data)" style="cursor: pointer;"></i>
-            </div>
-          </template>
-        </Column>
-      </DataTable>
-      <div v-else class="card-view">
-        <div class="grid -mt-3 -ml-3 -mr-3">
-          <div v-for="file in sortedItems" :key="file.id" class="col-12 md:col-6 lg:col-4 xl:col-2 border-bottom-1 surface-border md:border-bottom-none">
-            <div class="p-2">
-              <div class="p-card">
-                <div class="p-card-header">
-                  <h4>{{ file.name }}</h4>
-                </div>
-                <div class="p-card-body">
-                  <p><strong>ファイル:</strong> <a :href="`/api/cad_files/${file.file}`" download>{{ file.file }}</a></p>
-                  <p><strong>登録日:</strong> {{ new Date(file.uploaded_at).toLocaleDateString() }}</p>
-                  <p><strong>登録者:</strong> {{ file.uploaded_by }}</p>
-                </div>
-                <div class="p-card-footer">
-                  <Button icon="pi pi-pencil" class="p-button-text" @click="editItem(file)" />
-                  <Button icon="pi pi-trash" class="p-button-text" @click="deleteItem(file)" />
-                </div>
+      </Column>
+      <Column field="name" header="ファイル名" sortable filter filterMatchMode="contains">
+        <template #filter="{ filterModel }">
+          <InputText v-model="filterModel.value" type="text" placeholder="Search by File Name" />
+        </template>
+      </Column>
+      <Column field="uploaded_at" header="登録日" sortable filter filterMatchMode="contains">
+        <template #body="slotProps">
+          {{ new Date(slotProps.data.uploaded_at).toLocaleDateString() }}
+        </template>
+      </Column>
+      <Column field="uploaded_by" header="登録者" sortable filter filterMatchMode="contains">
+        <template #filter="{ filterModel }">
+          <InputText v-model="filterModel.value" type="text" placeholder="Search by Uploader" />
+        </template>
+      </Column>
+      <Column header="操作">
+        <template #body="slotProps">
+          <div>
+            <i class="pi pi-pencil" @click="editItem(slotProps.data)" style="margin-right: 10px; cursor: pointer;"></i>
+            <i class="pi pi-trash" @click="deleteItem(slotProps.data)" style="cursor: pointer;"></i>
+          </div>
+        </template>
+      </Column>
+    </DataTable>
+    <div v-else class="card-view">
+      <div class="grid -mt-3 -ml-3 -mr-3">
+        <div v-for="file in sortedItems" :key="file.id" class="col-12 md:col-6 lg:col-4 xl:col-2 border-bottom-1 surface-border md:border-bottom-none">
+          <div class="p-2">
+            <div class="p-card">
+              <div class="p-card-header">
+                <h4>{{ file.name }}</h4>
+              </div>
+              <div class="p-card-body">
+                <p><strong>ファイル:</strong> <a :href="`/api/cad_files/${file.file}`" download>{{ file.file }}</a></p>
+                <p><strong>登録日:</strong> {{ new Date(file.uploaded_at).toLocaleDateString() }}</p>
+                <p><strong>登録者:</strong> {{ file.uploaded_by }}</p>
+              </div>
+              <div class="p-card-footer">
+                <Button icon="pi pi-pencil" class="p-button-text" @click="editItem(file)" />
+                <Button icon="pi pi-trash" class="p-button-text" @click="deleteItem(file)" />
               </div>
             </div>
           </div>
@@ -247,6 +245,9 @@ const updateVisible = (value) => {
 .header-container {
   flex: 0 1 auto;
   width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px;
 }
 
 .p-datatable-custom .p-datatable-thead > tr > th {
@@ -258,15 +259,32 @@ const updateVisible = (value) => {
   left: 10px;
 }
 
-.even-row {
-  background-color: #f7f7f7;
+.p-datatable-custom .p-datatable-tbody > tr:nth-child(odd) > td {
+  background-color: #ffffff; /* 奇数行は白色 */
 }
 
-.odd-row {
-  background-color: #ffffff;
+.p-datatable-custom .p-datatable-tbody > tr:nth-child(even) > td {
+  background-color: #d3d3d3; /* 偶数行は明るい灰色 */
+}
+
+.p-datatable-custom .p-datatable-tbody > tr > td {
+  border-right: 1px solid black;
+}
+
+.p-datatable-custom .p-datatable-tbody > tr > td:last-child {
+  border-right: none;
+}
+
+.p-datatable-custom .p-datatable-thead > tr > th {
+  border-right: 1px solid black;
+}
+
+.p-datatable-custom .p-datatable-thead > tr > th:last-child {
+  border-right: none;
 }
 
 .card-view .p-card {
   margin-bottom: 2rem;
+  background-color: #e0f7e4; /* 薄い緑の背景色 */
 }
 </style>

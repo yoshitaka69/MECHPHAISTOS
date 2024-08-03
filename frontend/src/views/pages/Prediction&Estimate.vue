@@ -7,6 +7,7 @@
             <div class="accordion">
               <div class="accordion-item">
                 <button class="accordion-header" @click="toggleAccordion(0)">
+                  <span class="accordion-icon">{{ isActive(0) ? '▶' : '▼' }}</span>
                   Bathtub Curve and Explanation
                 </button>
                 <div class="accordion-content" :class="{ active: isActive(0) }">
@@ -62,14 +63,14 @@ export default {
   },
   data() {
     return {
-      activeIndex: parseInt(localStorage.getItem('activeTabIndex')) || 0,
+      activeIndex: parseInt(localStorage.getItem('breakdownPredictionTabIndex')) || 0, // キー名を変更
       activeAccordionIndex: null,
     };
   },
   methods: {
     onTabChange(event) {
       this.activeIndex = event.index;
-      localStorage.setItem('activeTabIndex', this.activeIndex);
+      localStorage.setItem('breakdownPredictionTabIndex', this.activeIndex); // キー名を変更
     },
     toggleAccordion(index) {
       this.activeAccordionIndex = this.activeAccordionIndex === index ? null : index;
@@ -98,6 +99,13 @@ export default {
   text-align: left;
   cursor: pointer;
   outline: none;
+  display: flex;
+  align-items: center;
+}
+
+.accordion-icon {
+  margin-right: 10px;
+  font-size: 1.2rem;
 }
 
 .accordion-content {

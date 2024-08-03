@@ -2,19 +2,22 @@
   <div>
     <h2>PM Trouble History and Event History</h2>
     <div class="table-container">
-      <EventHistoryTable @update-timeline="updateTimelineFromEventHistory" />
+      <div class="table-wrapper">
+        <EventHistoryTable @update-timeline="updateTimelineFromEventHistory" />
+      </div>
       <i class="pi pi-arrow-right-arrow-left red-icon"></i>
-      <PMTroubleHistoryTable @update-timeline="updateTimelineFromPMTrouble" />
+      <div class="table-wrapper">
+        <PMTroubleHistoryTable @update-timeline="updateTimelineFromPMTrouble" />
+      </div>
     </div>
     <div ref="timeline" class="timeline" style="height: 400px; margin-top: 20px;"></div>
   </div>
 </template>
 
-
 <script setup>
 import { ref, onMounted } from 'vue';
-import PMTroubleHistoryTable from './PMTroubleHistoryTable.vue';
-import EventHistoryTable from './EventHistoryTable.vue';
+import PMTroubleHistoryTable from '@/components/Badactor_management/Trouble_History/PMTroubleHistoryTable.vue';
+import EventHistoryTable from '@/components/Badactor_management/Trouble_History/EventHistoryTable.vue';
 import { Timeline } from 'vis-timeline/standalone';
 import 'vis-timeline/styles/vis-timeline-graph2d.css';
 
@@ -95,13 +98,18 @@ h2 {
 .table-container {
   display: flex;
   justify-content: center;
+  align-items: center;
   gap: 20px; /* テーブル間の間隔を設定 */
   margin-top: 20px; /* 上部の余白を設定 */
+}
+.table-wrapper {
+  flex: 1;
+  min-width: 300px;
+  max-width: 100%; /* コンテナの幅を制限 */
 }
 .timeline {
   background-color: #f0f0f0; /* タイムラインの背景色を薄い灰色に設定 */
 }
-
 
 .red-icon {
   color: red;
@@ -109,10 +117,4 @@ h2 {
   font-weight: bold; /* 太字にする */
   margin: 0 10px;
 }
-.table-container {
-  display: flex;
-  align-items: center;
-}
-
-
 </style>
