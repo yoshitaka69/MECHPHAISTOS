@@ -1,627 +1,376 @@
 <template>
   <div>
-      <div class="block-category-title">Product Pages</div>
-      <div header="With Galleria, Tabs and Single Column Reviews">
-          <section class="surface-50 font-medium py-3 text-center text-xs sm:text-base text-900"><strong>15%</strong> off on your first order.</section>
-          <div class="surface-overlay px-4 md:px-6 lg:px-8 flex align-items-stretch relative" style="min-height: 80px">
-              <a
-                  v-ripple
-                  class="cursor-pointer flex align-items-center lg:hidden text-700 mr-3 sm:mr-5 p-ripple"
-                  v-styleclass="{
-                      selector: '#nav-1',
-                      enterClass: 'hidden',
-                      leaveToClass: 'hidden',
-                      hideOnOutsideClick: 'true'
-                  }"
-              >
-                  <i class="pi pi-bars text-4xl"></i>
-              </a>
-              <div class="flex align-items-center justify-content-center">
-                  <img src="" alt="Image" class="lg:mr-6 h-2rem sm:h-3rem" />
+    <div class="block-category-title">Form Layout</div>
+
+    <div class="surface-ground px-4 py-8 md:px-6 lg:px-8">
+      <div class="p-fluid flex flex-column lg:flex-row">
+        <ul
+          class="list-none m-0 p-0 flex flex-row lg:flex-column justify-content-evenly md:justify-content-between lg:justify-content-start mb-5 lg:pr-8 lg:mb-0"
+        >
+          <li>
+            <a
+              @click="selectTab('criticalEquipment')"
+              :class="[
+                'flex align-items-center cursor-pointer p-3 border-round',
+                selectedTab === 'criticalEquipment' ? 'text-primary' : 'text-800',
+                'hover:surface-hover transition-duration-150 transition-colors'
+              ]"
+            >
+              <i class="pi pi-database md:mr-2"></i>
+              <span class="font-medium hidden md:block">Critical Equipment</span>
+            </a>
+          </li>
+          <li>
+            <a
+              @click="selectTab('evaluateEquipment')"
+              :class="[
+                'flex align-items-center cursor-pointer p-3 border-round',
+                selectedTab === 'evaluateEquipment' ? 'text-primary' : 'text-800',
+                'hover:surface-hover transition-duration-150 transition-colors'
+              ]"
+            >
+              <i class="pi pi-chart-line md:mr-2"></i>
+              <span class="font-medium hidden md:block">Evaluate Equipment</span>
+            </a>
+          </li>
+          <li>
+            <a
+              @click="selectTab('taskList')"
+              :class="[
+                'flex align-items-center cursor-pointer p-3 border-round',
+                selectedTab === 'taskList' ? 'text-primary' : 'text-800',
+                'hover:surface-hover transition-duration-150 transition-colors'
+              ]"
+            >
+              <i class="pi pi-list md:mr-2"></i>
+              <span class="font-medium hidden md:block">Task List</span>
+            </a>
+          </li>
+          <li>
+            <a
+              @click="selectTab('partsList')"
+              :class="[
+                'flex align-items-center cursor-pointer p-3 border-round',
+                selectedTab === 'partsList' ? 'text-primary' : 'text-800',
+                'hover:surface-hover transition-duration-150 transition-colors'
+              ]"
+            >
+              <i class="pi pi-box md:mr-2"></i>
+              <span class="font-medium hidden md:block">Parts List</span>
+            </a>
+          </li>
+          <li>
+            <a
+              @click="selectTab('workingRecord')"
+              :class="[
+                'flex align-items-center cursor-pointer p-3 border-round',
+                selectedTab === 'workingRecord' ? 'text-primary' : 'text-800',
+                'hover:surface-hover transition-duration-150 transition-colors'
+              ]"
+            >
+              <i class="pi pi-book md:mr-2"></i>
+              <span class="font-medium hidden md:block">Working Record</span>
+            </a>
+          </li>
+        </ul>
+        <div class="surface-card p-5 shadow-2 border-round flex-auto">
+          <!-- Critical Equipment Page -->
+          <div v-if="selectedTab === 'criticalEquipment'">
+            <div class="text-900 font-semibold text-lg mt-3">
+              Critical Equipment
+            </div>
+            <Divider />
+            <div class="flex gap-5 flex-column-reverse md:flex-row">
+              <div class="flex flex-column align-items-center flex-or">
+                <span class="font-medium text-900 mb-2">Equipment Picture</span>
+                <img src="" class="h-10rem w-10rem" />
+                <Button
+                  type="button"
+                  icon="pi pi-pencil"
+                  class="p-button-rounded -mt-4"
+                ></Button>
               </div>
-              <div id="nav-1" class="surface-overlay hidden lg:flex absolute lg:static left-0 top-100 z-1 shadow-2 lg:shadow-none w-full lg:w-auto py-3 lg:py-0">
-                  <ul class="list-none p-0 m-0 flex flex-column lg:flex-row">
-                      <li class="flex flex-column lg:flex-row">
-                          <a
-                              v-ripple
-                              class="inline-flex align-items-center cursor-pointer border-right-2 lg:border-right-none lg:border-bottom-2 border-transparent hover:border-primary py-3 lg:py-0 px-6 lg:px-3 text-700 select-none text-xl lg:text-base font-medium lg:font-base w-full lg:w-auto p-ripple"
-                              v-styleclass="{
-                                  selector: '@next',
-                                  enterClass: 'hidden',
-                                  leaveToClass: 'hidden',
-                                  hideOnOutsideClick: 'true'
-                              }"
-                          >
-                              <span>Women</span>
-                          </a>
-                          <div class="surface-overlay shadow-none lg:shadow-2 hidden lg:absolute w-full left-0 top-100 pl-8 pr-6 lg:px-6 py-0 lg:py-6">
-                              <div class="flex flex-column lg:flex-row lg:justify-content-between">
-                                  <a
-                                      v-styleclass="{
-                                          selector: '@next',
-                                          enterClass: 'hidden',
-                                          leaveToClass: 'hidden'
-                                      }"
-                                      class="font-medium text-lg cursor-pointer block lg:hidden mb-3 select-none"
-                                      >Clothing</a
-                                  >
-                                  <ul class="list-none py-0 pr-0 lg:pl-0 pl-5 m-0 text-700 hidden lg:block">
-                                      <li class="font-bold mb-5 text-xl text-900 hidden lg:block">Clothing</li>
-                                      <li class="mb-3 cursor-pointer hover:text-900">Dresses</li>
-                                      <li class="mb-3 cursor-pointer hover:text-900">Jeans</li>
-                                      <li class="mb-3 cursor-pointer hover:text-900">Pants</li>
-                                      <li class="mb-3 cursor-pointer hover:text-900">Skirts</li>
-                                      <li class="mb-3 cursor-pointer hover:text-900">Sweaters</li>
-                                      <li class="mb-3 cursor-pointer hover:text-900">Blouses</li>
-                                  </ul>
-                                  <a
-                                      v-styleclass="{
-                                          selector: '@next',
-                                          enterClass: 'hidden',
-                                          leaveToClass: 'hidden'
-                                      }"
-                                      class="font-medium text-lg cursor-pointer block lg:hidden mb-3 select-none"
-                                      >Shoes</a
-                                  >
-                                  <ul class="list-none py-0 pr-0 lg:pl-0 pl-5 m-0 text-700 hidden lg:block">
-                                      <li class="font-bold mb-5 text-xl text-900 hidden lg:block">Shoes</li>
-                                      <li class="mb-3 cursor-pointer hover:text-900">Athletic</li>
-                                      <li class="mb-3 cursor-pointer hover:text-900">Boots</li>
-                                      <li class="mb-3 cursor-pointer hover:text-900">Sneakers</li>
-                                      <li class="mb-3 cursor-pointer hover:text-900">Flats</li>
-                                      <li class="mb-3 cursor-pointer hover:text-900">Outdoor</li>
-                                  </ul>
-                                  <a
-                                      v-styleclass="{
-                                          selector: '@next',
-                                          enterClass: 'hidden',
-                                          leaveToClass: 'hidden'
-                                      }"
-                                      class="font-medium text-lg cursor-pointer block lg:hidden mb-3 select-none"
-                                      >Accessories</a
-                                  >
-                                  <ul class="list-none py-0 pr-0 lg:pl-0 pl-5 m-0 text-700 hidden lg:block">
-                                      <li class="font-bold mb-5 text-xl text-900 hidden lg:block">Accessories</li>
-                                      <li class="mb-3 cursor-pointer hover:text-900">Handbags</li>
-                                      <li class="mb-3 cursor-pointer hover:text-900">Gloves</li>
-                                      <li class="mb-3 cursor-pointer hover:text-900">Belts</li>
-                                      <li class="mb-3 cursor-pointer hover:text-900">Hats</li>
-                                      <li class="mb-3 cursor-pointer hover:text-900">Earmuffs</li>
-                                  </ul>
-                                  <a
-                                      v-styleclass="{
-                                          selector: '@next',
-                                          enterClass: 'hidden',
-                                          leaveToClass: 'hidden'
-                                      }"
-                                      class="font-medium text-lg cursor-pointer block lg:hidden mb-3 select-none"
-                                      >Jewelry</a
-                                  >
-                                  <ul class="list-none py-0 pr-0 lg:pl-0 pl-5 m-0 text-700 hidden lg:block">
-                                      <li class="font-bold mb-5 text-xl text-900 hidden lg:block">Jewelry</li>
-                                      <li class="mb-3 cursor-pointer hover:text-900">Anklets</li>
-                                      <li class="mb-3 cursor-pointer hover:text-900">Bracelets</li>
-                                      <li class="mb-3 cursor-pointer hover:text-900">Earrings</li>
-                                      <li class="mb-3 cursor-pointer hover:text-900">Necklaces</li>
-                                      <li class="mb-3 cursor-pointer hover:text-900">Rings</li>
-                                      <li class="mb-3 cursor-pointer hover:text-900">Wedding</li>
-                                  </ul>
-                                  <a
-                                      v-styleclass="{
-                                          selector: '@next',
-                                          enterClass: 'hidden',
-                                          leaveToClass: 'hidden'
-                                      }"
-                                      class="font-medium text-lg cursor-pointer block lg:hidden mb-3 select-none"
-                                      >Brands</a
-                                  >
-                                  <ul class="list-none py-0 pr-0 lg:pl-0 pl-5 m-0 text-700 hidden lg:block">
-                                      <li class="font-bold mb-5 text-xl text-900 hidden lg:block">Brands</li>
-                                      <li class="mb-3 cursor-pointer hover:text-900">Hyper</li>
-                                      <li class="mb-3 cursor-pointer hover:text-900">Peak</li>
-                                      <li class="mb-3 cursor-pointer hover:text-900">Alfred</li>
-                                      <li class="mb-3 cursor-pointer hover:text-900">Bastion</li>
-                                      <li class="mb-3 cursor-pointer hover:text-900">Charot</li>
-                                      <li class="mb-3 cursor-pointer hover:text-900">Hodly</li>
-                                  </ul>
-                                  <ul class="list-none p-0 m-0 text-700">
-                                      <li class="mt-5 sm:mt-0 mb-5 flex flex-column align-items-center">
-                                          <img src="" alt="Image" style="border-radius: 12px" class="w-full lg:w-auto" />
-                                          <span class="inline-flex surface-0 text-900 px-3 py-2 border-round -mt-5 font-medium">New Products</span>
-                                      </li>
-                                      <li class="mb-5 flex flex-column align-items-center">
-                                          <img src="" alt="Image" style="border-radius: 12px" class="w-full lg:w-auto" />
-                                          <span class="inline-flex surface-0 text-900 px-3 py-2 border-round -mt-5 font-medium">Discounts</span>
-                                      </li>
-                                  </ul>
-                              </div>
-                          </div>
-                      </li>
-                      <li class="flex flex-column lg:flex-row">
-                          <a
-                              v-ripple
-                              class="inline-flex align-items-center cursor-pointer border-right-2 lg:border-right-none lg:border-bottom-2 border-transparent hover:border-primary py-3 lg:py-0 px-6 lg:px-3 text-700 select-none text-xl lg:text-base font-medium lg:font-base w-full lg:w-auto p-ripple"
-                              v-styleclass="{
-                                  selector: '@next',
-                                  enterClass: 'hidden',
-                                  leaveToClass: 'hidden',
-                                  hideOnOutsideClick: 'true'
-                              }"
-                          >
-                              <span>Men</span>
-                          </a>
-                          <div class="surface-overlay shadow-none lg:shadow-2 hidden lg:absolute w-full left-0 top-100 px-6 py-0 lg:py-6 h-10rem lg:h-30rem">
-                              <div class="border-2 border-dashed surface-border border-round h-full"></div>
-                          </div>
-                      </li>
-                      <li class="flex flex-column lg:flex-row">
-                          <a
-                              v-ripple
-                              class="inline-flex align-items-center cursor-pointer border-right-2 lg:border-right-none lg:border-bottom-2 border-transparent hover:border-primary py-3 lg:py-0 px-6 lg:px-3 text-700 select-none text-xl lg:text-base font-medium lg:font-base w-full lg:w-auto p-ripple"
-                              v-styleclass="{
-                                  selector: '@next',
-                                  enterClass: 'hidden',
-                                  leaveToClass: 'hidden',
-                                  hideOnOutsideClick: 'true'
-                              }"
-                          >
-                              <span>Kids</span>
-                          </a>
-                          <div class="surface-overlay shadow-none lg:shadow-2 hidden lg:absolute w-full left-0 top-100 px-6 py-0 lg:py-6 h-10rem lg:h-30rem">
-                              <div class="border-2 border-dashed surface-border border-round h-full"></div>
-                          </div>
-                      </li>
-                  </ul>
+              <div class="flex-auto p-fluid">
+                <div class="mb-4">
+                  <label for="plant" class="block font-medium text-900 mb-2">Plant</label>
+                  <InputText id="plant" v-model="plant" type="text" />
+                </div>
+                <div class="mb-4">
+                  <label for="equipment" class="block font-medium text-900 mb-2">Equipment</label>
+                  <InputText id="equipment" v-model="equipment" type="text" />
+                </div>
+                <div class="mb-4">
+                  <label for="machine" class="block font-medium text-900 mb-2">Machine</label>
+                  <InputText id="machine" v-model="machine" type="text" />
+                </div>
+                <div class="mb-4">
+                  <label for="levelSetValue" class="block font-medium text-900 mb-2">Level Set Value</label>
+                  <InputText id="levelSetValue" v-model="levelSetValue" type="text" />
+                </div>
+                <div class="mb-4">
+                  <label for="constructionPeriod" class="block font-medium text-900 mb-2">Construction Period</label>
+                  <InputText id="constructionPeriod" v-model="constructionPeriod" type="text" />
+                </div>
+                <div class="mb-4">
+                  <label for="partsDeliveryDate" class="block font-medium text-900 mb-2">Parts Delivery Date</label>
+                  <InputText id="partsDeliveryDate" v-model="partsDeliveryDate" type="text" />
+                </div>
+                <div class="mb-4">
+                  <label for="mttr" class="block font-medium text-900 mb-2">MTTR</label>
+                  <InputText id="mttr" v-model="mttr" type="text" />
+                </div>
+                <div class="mb-4">
+                  <label for="probabilityOfFailure" class="block font-medium text-900 mb-2">Probability of Failure</label>
+                  <InputText id="probabilityOfFailure" v-model="probabilityOfFailure" type="text" />
+                </div>
+                <div class="mb-4">
+                  <label for="countOfPM02" class="block font-medium text-900 mb-2">Count of PM02</label>
+                  <InputText id="countOfPM02" v-model="countOfPM02" type="text" />
+                </div>
+                <div class="mb-4">
+                  <label for="latestPM02" class="block font-medium text-900 mb-2">Latest PM02</label>
+                  <InputText id="latestPM02" v-model="latestPM02" type="text" />
+                </div>
+                <div class="mb-4">
+                  <label for="countOfPM03" class="block font-medium text-900 mb-2">Count of PM03</label>
+                  <InputText id="countOfPM03" v-model="countOfPM03" type="text" />
+                </div>
+                <div class="mb-4">
+                  <label for="latestPM03" class="block font-medium text-900 mb-2">Latest PM03</label>
+                  <InputText id="latestPM03" v-model="latestPM03" type="text" />
+                </div>
+                <div class="mb-4">
+                  <label for="countOfPM04" class="block font-medium text-900 mb-2">Count of PM04</label>
+                  <InputText id="countOfPM04" v-model="countOfPM04" type="text" />
+                </div>
+                <div class="mb-4">
+                  <label for="latestPM04" class="block font-medium text-900 mb-2">Latest PM04</label>
+                  <InputText id="latestPM04" v-model="latestPM04" type="text" />
+                </div>
+                <div class="mb-4">
+                  <label for="impactForProduction" class="block font-medium text-900 mb-2">Impact for Production</label>
+                  <InputText id="impactForProduction" v-model="impactForProduction" type="text" />
+                </div>
+                <div class="mb-4">
+                  <label for="assessment" class="block font-medium text-900 mb-2">Assessment</label>
+                  <InputText id="assessment" v-model="assessment" type="text" />
+                </div>
+                <div class="mb-4">
+                  <label for="typicalTaskName" class="block font-medium text-900 mb-2">Typical Task Name</label>
+                  <InputText id="typicalTaskName" v-model="typicalTaskName" type="text" />
+                </div>
+                <div class="mb-4">
+                  <label for="typicalTaskCost" class="block font-medium text-900 mb-2">Typical Task Cost</label>
+                  <InputText id="typicalTaskCost" v-model="typicalTaskCost" type="text" />
+                </div>
+                <div class="mb-4">
+                  <label for="typicalNextEventDate" class="block font-medium text-900 mb-2">Typical Next Event Date</label>
+                  <InputText id="typicalNextEventDate" v-model="typicalNextEventDate" type="text" />
+                </div>
+                <div class="mb-4">
+                  <label for="typicalSituation" class="block font-medium text-900 mb-2">Typical Situation</label>
+                  <InputText id="typicalSituation" v-model="typicalSituation" type="text" />
+                </div>
+                <div class="mb-4">
+                  <label for="bomCode" class="block font-medium text-900 mb-2">BOM Code</label>
+                  <InputText id="bomCode" v-model="bomCode" type="text" />
+                </div>
+                <div>
+                  <Button label="Update Details" class="w-auto"></Button>
+                </div>
               </div>
-              <div class="flex ml-auto">
-                  <ul class="list-none p-0 m-0 flex">
-                      <li class="flex">
-                          <a v-ripple class="text-900 font-medium inline-flex align-items-center cursor-pointer px-2 sm:px-3 hover:text-primary p-ripple">
-                              <i class="pi pi-search mr-2 lg:mr-3 text-xl sm:text-base"></i>
-                              <span class="hidden lg:inline">Search</span>
-                          </a>
-                      </li>
-                      <li class="flex">
-                          <a v-ripple class="text-900 font-medium inline-flex align-items-center cursor-pointer px-2 sm:px-3 hover:text-primary p-ripple">
-                              <i class="pi pi-heart mr-2 lg:mr-3 text-xl sm:text-base"></i>
-                              <span class="hidden lg:inline">Favorites</span>
-                          </a>
-                      </li>
-                      <li class="flex">
-                          <a v-ripple class="text-900 font-medium inline-flex align-items-center cursor-pointer px-2 sm:px-3 hover:text-primary p-ripple">
-                              <i class="pi pi-shopping-cart lg:mr-3 text-xl sm:text-base" v-badge></i>
-                              <span class="hidden lg:inline">Cart</span>
-                          </a>
-                      </li>
-                  </ul>
-              </div>
+            </div>
           </div>
 
-          <div class="surface-section px-4 md:px-6 lg:px-8">
-              <ul class="list-none py-3 px-0 m-0 border-y-1 surface-border flex flex-wrap align-items-center font-medium overflow-x-auto">
-                  <li class="lg:pr-3">
-                      <a class="cursor-pointer text-900 white-space-nowrap">Home</a>
-                  </li>
-                  <li class="lg:px-2">
-                      <span class="text-900">/</span>
-                  </li>
-                  <li class="lg:px-2">
-                      <a class="cursor-pointer text-900 white-space-nowrap">Women</a>
-                  </li>
-                  <li class="lg:px-2">
-                      <span class="text-900">/</span>
-                  </li>
-                  <li class="lg:px-2">
-                      <a class="cursor-pointer text-900 white-space-nowrap">Accessories</a>
-                  </li>
-                  <li class="lg:px-2">
-                      <span class="text-900">/</span>
-                  </li>
-                  <li class="lg:px-2">
-                      <a class="cursor-pointer text-500 white-space-nowrap">Shoes</a>
-                  </li>
-              </ul>
-
-              <div class="grid my-4">
-                  <div class="col-12 lg:col-6">
-                      <div class="flex">
-                          <div class="flex flex-column w-2 justify-content-between"></div>
-                          <div class="pl-3 w-10"></div>
-                      </div>
-                  </div>
-                  <div class="col-12 lg:col-6 py-3 lg:pl-6">
-                      <div class="flex align-items-center text-xl font-medium text-900 mb-4">Product Title Placeholder</div>
-                      <div class="flex align-items-center justify-content-between mb-5">
-                          <span class="text-900 font-medium text-3xl block">$120</span>
-                          <div class="flex align-items-center">
-                              <span class="mr-3">
-                                  <i class="pi pi-star-fill text-yellow-500 mr-1"></i>
-                                  <i class="pi pi-star-fill text-yellow-500 mr-1"></i>
-                                  <i class="pi pi-star-fill text-yellow-500 mr-1"></i>
-                                  <i class="pi pi-star-fill text-yellow-500 mr-1"></i>
-                                  <i class="pi pi-star text-700 mr-1"></i>
-                              </span>
-                              <span class="text-sm"><b class="text-900 mr-1">24</b> <span class="text-500"></span>reviews</span>
-                          </div>
-                      </div>
-
-                      <div class="font-bold text-900 mb-3">Color</div>
-                      <div class="flex align-items-center mb-5"></div>
-
-                      <div class="mb-3 flex align-items-center justify-content-between">
-                          <span class="font-bold text-900">Size</span>
-                          <a tabindex="0" class="cursor-pointer text-600 text-sm flex align-items-center">Size Guide <i class="ml-1 pi pi-angle-right"></i></a>
-                      </div>
-                      <div class="grid grid-nogutter align-items-center mb-5"></div>
-
-                      <div class="font-bold text-900 mb-3">Quantity</div>
-                      <div class="flex flex-column sm:flex-row sm:align-items-center sm:justify-content-between">
-                          <Button label="Add to Cart" class="flex-1 mr-5"></Button>
-                          <i
-                              class="pi text-2xl cursor-pointer"
-                              :class="{
-                                  'pi-heart text-600': !liked,
-                                  'pi-heart-fill text-orange-500': liked
-                              }"
-                              @click="liked = !liked"
-                          ></i>
-                      </div>
-                  </div>
-              </div>
+          <!-- Evaluate Equipment Page -->
+          <div v-if="selectedTab === 'evaluateEquipment'">
+            <div class="text-900 font-semibold text-lg mt-3">
+              Evaluate Equipment
+            </div>
+            <Divider />
+            <p>ここにアカウント情報を表示します。</p>
           </div>
 
-          <TabView>
-              <TabPanel header="Details">
-                  <div class="grid mt-4">
-                      <div class="col-12 lg:col-4">
-                          <div class="font-medium text-xl text-900 mb-3">Share your experience</div>
-                          <p class="text-600 p-0 mt-0 mb-3 line-height-3">Orci a scelerisque purus semper eget duis at tellus at. Ut diam quam nulla porttitor.</p>
-                          <Button label="Write a review" class="p-button-rounded"></Button>
-                      </div>
-                      <div class="col-12 lg:col-4 flex align-items-start justify-content-center py-5 lg:py-0">
-                          <div>
-                              <span class="text-5xl text-900 font-bold mr-2">190</span>
-                              <span class="text-5xl text-600">Reviews</span>
-                              <div class="mt-3 text-center">
-                                  <i class="pi pi-star-fill text-yellow-500 text-2xl mr-1"></i>
-                                  <i class="pi pi-star-fill text-yellow-500 text-2xl mr-1"></i>
-                                  <i class="pi pi-star-fill text-yellow-500 text-2xl mr-1"></i>
-                                  <i class="pi pi-star-fill text-yellow-500 text-2xl mr-1"></i>
-                                  <i class="pi pi-star-fill text-300 text-2xl"></i>
-                              </div>
-                          </div>
-                      </div>
-                      <div class="col-12 lg:col-4">
-                          <ul class="list-none p-0 m-0">
-                              <li class="flex align-items-center mb-2">
-                                  <span class="text-900 font-medium mr-1 w-1rem">5</span>
-                                  <i class="pi pi-star-fill text-yellow-500 mr-2"></i>
-                                  <div style="height: 7px" class="border-round overflow-hidden flex-auto surface-300">
-                                      <div class="h-full bg-yellow-500 w-9 border-round"></div>
-                                  </div>
-                                  <span class="text-500 font-medium ml-2">75%</span>
-                              </li>
-                              <li class="flex align-items-center mb-2">
-                                  <span class="text-900 font-medium mr-1 w-1rem">4</span>
-                                  <i class="pi pi-star-fill text-yellow-500 mr-2"></i>
-                                  <div style="height: 7px" class="border-round overflow-hidden flex-auto surface-300">
-                                      <div class="h-full bg-yellow-500 w-6 border-round"></div>
-                                  </div>
-                                  <span class="text-500 font-medium ml-2">50%</span>
-                              </li>
-                              <li class="flex align-items-center mb-2">
-                                  <span class="text-900 font-medium mr-1 w-1rem">3</span>
-                                  <i class="pi pi-star-fill text-yellow-500 mr-2"></i>
-                                  <div style="height: 7px" class="border-round overflow-hidden flex-auto surface-300">
-                                      <div class="h-full bg-yellow-500 w-2 border-round"></div>
-                                  </div>
-                                  <span class="text-500 font-medium ml-2">20%</span>
-                              </li>
-                              <li class="flex align-items-center mb-2">
-                                  <span class="text-900 font-medium mr-1 w-1rem">2</span>
-                                  <i class="pi pi-star-fill text-yellow-500 mr-2"></i>
-                                  <div style="height: 7px" class="border-round overflow-hidden flex-auto surface-300">
-                                      <div class="h-full bg-yellow-500 w-4 border-round"></div>
-                                  </div>
-                                  <span class="text-500 font-medium ml-2">40%</span>
-                              </li>
-                              <li class="flex align-items-center mb-2">
-                                  <span class="text-900 font-medium mr-1 w-1rem">1</span>
-                                  <i class="pi pi-star-fill text-yellow-500 mr-2"></i>
-                                  <div style="height: 7px" class="border-round overflow-hidden flex-auto surface-300">
-                                      <div class="h-full bg-yellow-500 w-3 border-round"></div>
-                                  </div>
-                                  <span class="text-500 font-medium ml-2">30%</span>
-                              </li>
-                          </ul>
-                      </div>
-                  </div>
-                  <div class="mt-5">
-                      <ul class="list-none m-0 p-0">
-                          <li class="py-5 border-top-1 surface-border">
-                              <div class="flex align-items-center justify-content-between mb-3">
-                                  <div class="flex align-items-center">
-                                      <img src="" class="w-3rem h-3rem flex-shrink-0 mr-3" />
-                                      <div class="flex flex-column">
-                                          <span class="text-900 font-medium mb-1">Robert Fox</span>
-                                          <span class="text-500 font-medium text-sm">February 3, 2022</span>
-                                      </div>
-                                  </div>
-                                  <div class="flex align-items-center">
-                                      <span class="mr-2">
-                                          <i class="pi pi-star-fill text-yellow-500 mr-1"></i>
-                                          <i class="pi pi-star-fill text-yellow-500 mr-1"></i>
-                                          <i class="pi pi-star-fill text-yellow-500 mr-1"></i>
-                                          <i class="pi pi-star-fill text-yellow-500 mr-1"></i>
-                                          <i class="pi pi-star-fill text-yellow-500"></i>
-                                      </span>
-                                      <span class="font-medium">5</span>
-                                  </div>
-                              </div>
-                              <p class="text-600 p-0 m-0 line-height-3">
-                                  Scelerisque varius morbi enim nunc. Arcu bibendum at varius vel pharetra vel turpis nunc eget. Elit ut aliquam purus sit amet luctus. Aliquam etiam erat velit scelerisque in.
-                              </p>
-                          </li>
-                          <li class="py-5 border-top-1 surface-border">
-                              <div class="flex align-items-center justify-content-between mb-3">
-                                  <div class="flex align-items-center">
-                                      <img src="" class="w-3rem h-3rem flex-shrink-0 mr-3" />
-                                      <div class="flex flex-column">
-                                          <span class="text-900 font-medium mb-1">Savannah Williams</span>
-                                          <span class="text-500 font-medium text-sm">February 4, 2022</span>
-                                      </div>
-                                  </div>
-                                  <div class="flex align-items-center">
-                                      <span class="mr-2">
-                                          <i class="pi pi-star-fill text-yellow-500 mr-1"></i>
-                                          <i class="pi pi-star-fill text-yellow-500 mr-1"></i>
-                                          <i class="pi pi-star-fill text-yellow-500 mr-1"></i>
-                                          <i class="pi pi-star-fill text-yellow-500 mr-1"></i>
-                                          <i class="pi pi-star-fill text-yellow-500"></i>
-                                      </span>
-                                      <span class="font-medium">5</span>
-                                  </div>
-                              </div>
-                              <p class="text-600 p-0 m-0 line-height-3">Orci porta non pulvinar neque laoreet suspendisse interdum consectetur. Vitae elementum curabitur vitae nunc sed velit dignissim sodales ut.</p>
-                          </li>
-                          <li class="py-5 border-top-1 surface-border">
-                              <div class="flex align-items-center justify-content-between mb-3">
-                                  <div class="flex align-items-center">
-                                      <img src="" class="w-3rem h-3rem flex-shrink-0 mr-3" />
-                                      <div class="flex flex-column">
-                                          <span class="text-900 font-medium mb-1">Kathryn Murphy</span>
-                                          <span class="text-500 font-medium text-sm">February 5, 2022</span>
-                                      </div>
-                                  </div>
-                                  <div class="flex align-items-center">
-                                      <span class="mr-2">
-                                          <i class="pi pi-star-fill text-yellow-500 mr-1"></i>
-                                          <i class="pi pi-star-fill text-yellow-500 mr-1"></i>
-                                          <i class="pi pi-star-fill text-yellow-500 mr-1"></i>
-                                          <i class="pi pi-star-fill text-yellow-500 mr-1"></i>
-                                          <i class="pi pi-star-fill text-yellow-500"></i>
-                                      </span>
-                                      <span class="font-medium">5</span>
-                                  </div>
-                              </div>
-                              <p class="text-600 p-0 m-0 line-height-3">Sollicitudin nibh sit amet commodo nulla facilisi nullam vehicula. Fringilla est ullamcorper eget nulla facilisi etiam dignissim diam quis.</p>
-                          </li>
-                      </ul>
-                  </div>
-              </TabPanel>
-              <TabPanel header="Reviews">
-                  <ul class="list-none p-0 m-0">
-                      <li class="pb-5 border-bottom-1 surface-border">
-                          <span>
-                              <i class="pi pi-star-fill text-yellow-500 mr-1"></i>
-                              <i class="pi pi-star-fill text-yellow-500 mr-1"></i>
-                              <i class="pi pi-star-fill text-yellow-500 mr-1"></i>
-                              <i class="pi pi-star-fill text-yellow-500 mr-1"></i>
-                              <i class="pi pi-star-fill text-gray-500"></i>
-                          </span>
-                          <div class="text-900 font-medium text-xl my-3">Absolute Perfection!</div>
-                          <p class="mx-0 mt-0 mb-3 text-700 line-height-3">
-                              Blandit libero volutpat sed cras ornare arcu dui vivamus. Arcu dictum varius duis at consectetur lorem donec massa. Imperdiet proin fermentum leo vel orci porta non. Porttitor rhoncus dolor purus non.
-                          </p>
-                          <span class="text-600 font-medium">Darlene Robertson, 2 days ago</span>
-                      </li>
-                      <li class="py-5 border-bottom-1 surface-border">
-                          <span>
-                              <i class="pi pi-star-fill text-yellow-500 mr-1"></i>
-                              <i class="pi pi-star-fill text-yellow-500 mr-1"></i>
-                              <i class="pi pi-star-fill text-yellow-500 mr-1"></i>
-                              <i class="pi pi-star-fill text-yellow-500 mr-1"></i>
-                              <i class="pi pi-star-fill text-yellow-500"></i>
-                          </span>
-                          <div class="text-900 font-medium text-xl my-3">Classy</div>
-                          <p class="mx-0 mt-0 mb-3 text-700 line-height-3">Venenatis cras sed felis eget. Proin nibh nisl condimentum id venenatis a condimentum.</p>
-                          <span class="text-600 font-medium">Kristin Watson, 2 days ago</span>
-                      </li>
-                  </ul>
-              </TabPanel>
-              <TabPanel header="Shipping and Returns">
-                  <p class="line-height-3 text-700 p-0 mx-0 mt-0 mb-4">
-                      Mattis aliquam faucibus purus in massa tempor nec feugiat nisl. Justo donec enim diam vulputate ut pharetra. Tempus egestas sed sed risus. Feugiat sed lectus vestibulum mattis. Tristique nulla aliquet enim tortor at auctor
-                      urna nunc. Habitant morbi tristique senectus et. Facilisi nullam vehicula ipsum.
-                  </p>
-
-                  <div class="grid">
-                      <div class="col-12 md:col-6">
-                          <span class="text-900 block font-medium mb-3">Shipping Costs</span>
-                          <ul class="py-0 pl-3 m-0 text-700 mb-3">
-                              <li class="mb-2">Japan - JPY 2,500.</li>
-                              <li class="mb-2">Europe – EUR 10</li>
-                              <li class="mb-2">Switzerland – CHF 10</li>
-                              <li class="mb-2">Canada – CAD 25</li>
-                              <li class="mb-2">USA – USD 20</li>
-                              <li class="mb-2">Australia – AUD 30</li>
-                              <li class="mb-2">United Kingdom – GBP 10</li>
-                          </ul>
-                      </div>
-                      <div class="col-12 md:col-6">
-                          <span class="text-900 block font-medium mb-3">Return Policy</span>
-                          <p class="line-height-3 text-700 p-0 m-0">Pharetra et ultrices neque ornare aenean euismod elementum nisi. Diam phasellus vestibulum lorem sed. Mattis molestie a iaculis at.</p>
-                      </div>
-                  </div>
-              </TabPanel>
-          </TabView>
-
-          <div class="grid -mr-3 -ml-3 py-8">
-              <span class="text-900 p-2 text-4xl font-medium w-full">You may also like</span>
-              <div class="col-12 md:col-6 lg:col-3 mb-3 lg:mb-0">
-                  <div class="p-2">
-                      <div class="relative">
-                          <img src="" class="w-full" />
-                          <button
-                              v-ripple
-                              class="p-link w-3rem h-3rem surface-0 hover:surface-200 border-circle shadow-2 inline-flex align-items-center justify-content-center absolute transition-colors transition-duration-300 p-ripple"
-                              style="top: 1rem; right: 1rem"
-                          >
-                              <i class="pi pi-heart text-2xl text-500"></i>
-                          </button>
-                      </div>
-                      <div class="flex align-items-center justify-content-between mt-3 mb-2">
-                          <span class="text-900 font-medium text-xl">Product Name</span>
-                          <span class="text-900 text-xl ml-3">$114</span>
-                      </div>
-                      <span class="text-600">Black</span>
-                  </div>
-              </div>
-              <div class="col-12 md:col-6 lg:col-3 mb-3 lg:mb-0">
-                  <div class="p-2">
-                      <div class="relative">
-                          <img src="" class="w-full" />
-                          <button
-                              v-ripple
-                              class="p-link w-3rem h-3rem surface-0 hover:surface-200 border-circle shadow-2 inline-flex align-items-center justify-content-center absolute transition-colors transition-duration-300 p-ripple"
-                              style="top: 1rem; right: 1rem"
-                          >
-                              <i class="pi pi-heart text-2xl text-500"></i>
-                          </button>
-                      </div>
-                      <div class="flex align-items-center justify-content-between mt-3 mb-2">
-                          <span class="text-900 font-medium text-xl">Product Name</span>
-                          <span class="text-900 text-xl ml-3">$124</span>
-                      </div>
-                      <span class="text-600">Beige</span>
-                  </div>
-              </div>
-              <div class="col-12 md:col-6 lg:col-3 mb-3 lg:mb-0">
-                  <div class="p-2">
-                      <div class="relative">
-                          <img src="" class="w-full" />
-                          <button
-                              v-ripple
-                              class="p-link w-3rem h-3rem surface-0 hover:surface-200 border-circle shadow-2 inline-flex align-items-center justify-content-center absolute transition-colors transition-duration-300 p-ripple"
-                              style="top: 1rem; right: 1rem"
-                          >
-                              <i class="pi pi-heart text-2xl text-500"></i>
-                          </button>
-                      </div>
-                      <div class="flex align-items-center justify-content-between mt-3 mb-2">
-                          <span class="text-900 font-medium text-xl">Product Name</span>
-                          <span class="text-900 text-xl ml-3">$142</span>
-                      </div>
-                      <span class="text-600">White</span>
-                  </div>
-              </div>
-              <div class="col-12 md:col-6 lg:col-3">
-                  <div class="p-2">
-                      <div class="relative">
-                          <img src="" class="w-full" />
-                          <button
-                              v-ripple
-                              class="p-link w-3rem h-3rem surface-0 hover:surface-200 border-circle shadow-2 inline-flex align-items-center justify-content-center absolute transition-colors transition-duration-300 p-ripple"
-                              style="top: 1rem; right: 1rem"
-                          >
-                              <i class="pi pi-heart text-2xl text-500"></i>
-                          </button>
-                      </div>
-                      <div class="flex align-items-center justify-content-between mt-3 mb-2">
-                          <span class="text-900 font-medium text-xl">Product Name</span>
-                          <span class="text-900 text-xl ml-3">$120</span>
-                      </div>
-                      <span class="text-600">Black</span>
-                  </div>
-              </div>
+          <!-- Task List Page -->
+          <div v-if="selectedTab === 'taskList'">
+            <div class="text-900 font-semibold text-lg mt-3">Task List</div>
+            <Divider />
+            <p>ここに外観設定を表示します。</p>
           </div>
+
+          <!-- Parts List Page -->
+          <div v-if="selectedTab === 'partsList'">
+            <div class="text-900 font-semibold text-lg mt-3">Parts List</div>
+            <Divider />
+            <p>ここにアクセシビリティ設定を表示します。</p>
+          </div>
+
+          <!-- Working Record Page -->
+          <div v-if="selectedTab === 'workingRecord'">
+            <div class="text-900 font-semibold text-lg mt-3">
+              Working Record
+            </div>
+            <Divider />
+            <p>ここに通知設定を表示します。</p>
+          </div>
+        </div>
       </div>
-
-      <div class="grid grid-nogutter surface-section px-4 py-4 md:px-6 lg:px-8 border-top-1 surface-border">
-          <div class="col-12 lg:col-6 lg:border-right-1 surface-border">
-              <img src="" class="w-9rem mx-auto lg:mx-0" alt="Peak logo" />
-              <span class="text-900 block mt-4 mr-3">Aliquam id diam maecenas ultricies. Faucibus pulvinar elementum integer enim neque volutpat ac tincidunt vitae.</span>
-              <span class="text-500 block mt-4">© 2022, Peak. Powered by PrimeBlocks.</span>
-          </div>
-          <div class="col-12 md:col-6 lg:col-3 mt-4 lg:mt-0 lg:pl-4 flex flex-column">
-              <span class="text-900 text-xl font-medium block">Company</span>
-              <ul class="list-none p-0">
-                  <li>
-                      <a tabindex="0" class="text-600 hover:text-900 transition-duration-150 cursor-pointer mt-3 block">About Peak</a>
-                  </li>
-                  <li>
-                      <a tabindex="0" class="text-600 hover:text-900 transition-duration-150 cursor-pointer mt-3 block">Factories</a>
-                  </li>
-                  <li>
-                      <a tabindex="0" class="text-600 hover:text-900 transition-duration-150 cursor-pointer mt-3 block">Careers</a>
-                  </li>
-                  <li>
-                      <a tabindex="0" class="text-600 hover:text-900 transition-duration-150 cursor-pointer mt-3 block">Environmental Initiatives</a>
-                  </li>
-              </ul>
-          </div>
-          <div class="col-12 lg:col-3 md:col-6 flex mt-4 lg:mt-0 lg:pl-4 flex-column">
-              <span class="text-900 text-xl font-medium block">Account</span>
-              <ul class="list-none p-0">
-                  <li>
-                      <a tabindex="0" class="text-600 hover:text-900 transition-duration-150 cursor-pointer mt-3 block">Manage Account</a>
-                  </li>
-                  <li>
-                      <a tabindex="0" class="text-600 hover:text-900 transition-duration-150 cursor-pointer mt-3 block">Saved Items</a>
-                  </li>
-                  <li>
-                      <a tabindex="0" class="text-600 hover:text-900 transition-duration-150 cursor-pointer mt-3 block">My Cart</a>
-                  </li>
-                  <li>
-                      <a tabindex="0" class="text-600 hover:text-900 transition-duration-150 cursor-pointer mt-3 block">Wishlist</a>
-                  </li>
-                  <li>
-                      <a tabindex="0" class="text-600 hover:text-900 transition-duration-150 cursor-pointer mt-3 block">Orders & Returns</a>
-                  </li>
-              </ul>
-          </div>
-      </div>
-
-      <div class="surface-900 py-6 lg:py-4 md:px-6 lg:px-8 flex flex-column lg:flex-row justify-content-between align-items-center">
-          <ul class="list-none p-0 mb-0 flex flex-column md:flex-row flex-order-1 lg:flex-order-0 mt-4 lg:mt-0">
-              <li class="mr-4 mt-3 lg:mt-0">
-                  <a tabindex="0" class="cursor-pointer text-0">Investor Relations</a>
-              </li>
-              <li class="mr-4 mt-3 lg:mt-0">
-                  <a tabindex="0" class="cursor-pointer text-0">Data Privacy</a>
-              </li>
-              <li class="mr-4 mt-3 lg:mt-0">
-                  <a tabindex="0" class="cursor-pointer text-0">Terms of Service</a>
-              </li>
-              <li class="mr-4 mt-3 lg:mt-0">
-                  <a tabindex="0" class="cursor-pointer text-0">Legal Information</a>
-              </li>
-          </ul>
-
-          <div class="flex align-items-center flex-order-0 lg:flex-order-1">
-              <a tabindex="0" class="cursor-pointer mr-3 lg:mt-0 block">
-                  <i class="pi pi-facebook surface-section p-1 text-sm border-circle text-900"></i>
-              </a>
-              <a tabindex="0" class="cursor-pointer mr-3 lg:mt-0 block">
-                  <i class="pi pi-twitter surface-section p-1 text-sm border-circle text-900"></i>
-              </a>
-              <a tabindex="0" class="cursor-pointer mr-3 lg:mt-0 block">
-                  <i class="pi pi-youtube surface-section p-1 text-sm border-circle text-900"></i>
-              </a>
-              <a tabindex="0" class="cursor-pointer lg:mt-0 block">
-                  <i class="pi pi-google surface-section p-1 text-sm border-circle text-900"></i>
-              </a>
-          </div>
-      </div>
+    </div>
   </div>
 </template>
+
+<script>
+import { ref } from "vue";
+import { useRoute } from "vue-router";
+import InputText from "primevue/inputtext";
+import Button from "primevue/button";
+import Divider from "primevue/divider";
+import axios from "axios";
+import { useUserStore } from "@/stores/userStore";
+
+export default {
+  components: {
+    Divider,
+    InputText,
+    Button,
+  },
+  setup() {
+    // タブの状態を管理するための変数
+    const selectedTab = ref("criticalEquipment");
+
+    // タブを選択する関数
+    const selectTab = (tabName) => {
+      selectedTab.value = tabName;
+    };
+
+    // フォームのフィールド
+    const plant = ref("no data");
+    const equipment = ref("no data");
+    const machine = ref("no data");
+    const levelSetValue = ref("no data");
+    const constructionPeriod = ref("no data");
+    const partsDeliveryDate = ref("no data");
+    const mttr = ref("no data");
+    const probabilityOfFailure = ref("no data");
+    const countOfPM02 = ref("no data");
+    const latestPM02 = ref("no data");
+    const countOfPM03 = ref("no data");
+    const latestPM03 = ref("no data");
+    const countOfPM04 = ref("no data");
+    const latestPM04 = ref("no data");
+    const impactForProduction = ref("no data");
+    const assessment = ref("no data");
+    const typicalTaskName = ref("no data");
+    const typicalTaskCost = ref("no data");
+    const typicalNextEventDate = ref("no data");
+    const typicalSituation = ref("no data");
+    const bomCode = ref("no data");
+
+    // Vue Routerで現在のルートを取得
+    const route = useRoute();
+
+    // データを取得する関数
+    const fetchCriticalEquipmentDetails = async () => {
+      try {
+        const ceListNo = route.params.ceListNo; // URLのパラメータからceListNoを取得
+        const userStore = useUserStore();
+        const companyCode = userStore.companyCode;
+
+        const url = `http://127.0.0.1:8000/api/junctionTable/masterDataTableByCompany/?companyCode=${companyCode}`;
+        console.log("Fetching critical equipment details from:", url);
+
+        const response = await axios.get(url);
+        console.log("API response:", response.data);
+
+        const equipmentData = response.data.find(
+          (equipment) => equipment.ceListNo.toString() === ceListNo
+        );
+
+        if (equipmentData) {
+          plant.value = equipmentData.plant || "no data";
+          equipment.value = equipmentData.equipment || "no data";
+          machine.value = equipmentData.machineName || "no data";
+          levelSetValue.value = equipmentData.levelSetValue || "no data";
+          constructionPeriod.value =
+            equipmentData.typicalConstPeriod || "no data";
+          partsDeliveryDate.value =
+            equipmentData.maxPartsDeliveryTimeInBom || "no data";
+          mttr.value = equipmentData.mttr || "no data";
+          probabilityOfFailure.value =
+            equipmentData.probabilityOfFailure || "no data";
+          countOfPM02.value = equipmentData.countOfPM02 || "no data";
+          latestPM02.value = equipmentData.latestPM02 || "no data";
+          countOfPM03.value = equipmentData.countOfPM03 || "no data";
+          latestPM03.value = equipmentData.latestPM03 || "no data";
+          countOfPM04.value = equipmentData.countOfPM04 || "no data";
+          latestPM04.value = equipmentData.latestPM04 || "no data";
+          impactForProduction.value =
+            equipmentData.impactForProduction || "no data";
+          assessment.value = equipmentData.assessment || "no data";
+          typicalTaskName.value = equipmentData.typicalTaskName || "no data";
+          typicalTaskCost.value = equipmentData.typicalTaskCost || "no data";
+          typicalNextEventDate.value =
+            equipmentData.typicalNextEventDate || "no data";
+          typicalSituation.value =
+            equipmentData.typicalSituation || "no data";
+          bomCode.value = equipmentData.bomCode || "no data";
+        } else {
+          console.error("Critical equipment not found.");
+        }
+      } catch (error) {
+        console.error("Error fetching critical equipment details:", error);
+      }
+    };
+
+    fetchCriticalEquipmentDetails(); // データを取得
+
+    return {
+      selectedTab,
+      selectTab,
+      plant,
+      equipment,
+      machine,
+      levelSetValue,
+      constructionPeriod,
+      partsDeliveryDate,
+      mttr,
+      probabilityOfFailure,
+      countOfPM02,
+      latestPM02,
+      countOfPM03,
+      latestPM03,
+      countOfPM04,
+      latestPM04,
+      impactForProduction,
+      assessment,
+      typicalTaskName,
+      typicalTaskCost,
+      typicalNextEventDate,
+      typicalSituation,
+      bomCode,
+    };
+  },
+};
+</script>
+
+<style scoped>
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.border-round {
+  border-radius: 4px;
+}
+
+.transition-duration-150 {
+  transition-duration: 150ms;
+}
+
+.transition-colors {
+  transition-property: color, background-color;
+}
+
+.hover\:surface-hover:hover {
+  background-color: var(--surface-hover);
+}
+</style>

@@ -30,8 +30,6 @@
                             </div>
                         </div>
                         <div class="spacer"></div>
-                        <br />
-                        <br />
                         <div class="near-miss-list-container card-light-yellow">
                             <Near_miss_list />
                             <div class="text-center">
@@ -184,7 +182,7 @@ h3 {
 }
 
 .spacer {
-    height: 50px; /* Adjust the height as needed */
+    height: 10px; /* Adjust the height as needed */
 }
 
 .near-miss-list-container {
