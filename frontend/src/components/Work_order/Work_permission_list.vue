@@ -28,7 +28,8 @@
               <i class="pi pi-search" />
               <InputText v-model="filters['global'].value" placeholder="Keyword Search" />
             </span>
-            <Button type="button" label="New Entry" @click="showNewEntryForm" />
+            <!-- ボタンのクリックイベントを変更 -->
+            <Button type="button" label="New Entry" @click="openNewEntryForm" />
           </div>
         </template>
         <Column field="workOrderNo" header="Work Order No" sortable filter filterMatchMode="contains">
@@ -54,15 +55,6 @@
         </Column>
       </DataTable>
     </div>
-
-    <WorkPermissionForm
-      :visible="isEditing || isAddingNew"
-      :statuses="statuses"
-      :entry="isEditing ? editingItem : newEntry"
-      @update:visible="updateVisible"
-      @submit="submitEntry"
-      @cancel="cancelEntry"
-    />
   </div>
 </template>
 
@@ -74,7 +66,7 @@ import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import Tag from 'primevue/tag';
 import Dropdown from 'primevue/dropdown';
-import WorkPermissionForm from '@/components/Work_order/Work_permission_form.vue';
+// import WorkPermissionForm from '@/components/Work_order/Work_permission_form.vue'; // インポートを削除
 
 const userStore = useUserStore(); // Piniaストアを使用
 
@@ -206,6 +198,12 @@ const getStatusLabel = (status) => {
 const updateVisible = (value) => {
   isAddingNew.value = isEditing.value = value;
 };
+
+// 新規追加関数
+const openNewEntryForm = () => {
+  window.open('/Work_permission_form', '_blank');
+};
+
 </script>
 
 <style>

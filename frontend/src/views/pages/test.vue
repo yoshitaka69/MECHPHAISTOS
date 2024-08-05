@@ -1,147 +1,185 @@
 <template>
-  <div class="base-content">
-    <section class="content">
-      <div class="card card-solid">
-        <TabView v-model:activeIndex="activeIndex" @tab-change="onTabChange">
-          <TabPanel header="Breakdown Prediction">
-            <div class="accordion">
-              <div class="accordion-item">
-                <button class="accordion-header" @click="toggleAccordion(0)">
-                  <span class="accordion-icon">{{ isActive(0) ? '▶' : '▼' }}</span>
-                  Bathtub Curve and Explanation
-                </button>
-                <div class="accordion-content" :class="{ active: isActive(0) }">
-                  <div class="content-wrapper">
-                    <div class="bathtub-curve-container">
-                      <BathtubCurve class="small-bathtub-curve" />
-                    </div>
-                    <div class="bathtub-curve-description">
-                      <p>
-                        The Bathtub Curve is used in reliability engineering to
-                        describe the life of a product. The curve consists of three
-                        parts: the decreasing failure rate (infant mortality),
-                        constant failure rate (useful life), and increasing failure
-                        rate (wear-out period). This graphical representation helps
-                        in understanding and predicting failures over time.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </TabPanel>
-          <TabPanel header="Cost Estimate">
-            <p class="line-height-3 m-0"></p>
-            <div id="appCost" style="display: flex;">
-              <div style="width: 50%;">
-                <RepairCostPredictionChart />
-              </div>
-              <div style="width: 50%;">
-                <AnnualCostPredictionChart />
-              </div>
-            </div>
-          </TabPanel>
-        </TabView>
-      </div>
-    </section>
+  <div id="SafeRateContainer" ref="plotArea" style="width: 100%; height: 100%;">
+    <span class="block text-500 font-medium mb-3">Safety factor rate</span>
+    <div class="graph-wrapper">
+      <div id="SafeRate" style="width: 100%; height: 100%;"></div>
+    </div>
   </div>
 </template>
 
 <script>
-//first tab
-import BathtubCurve from '@/components/Breakdown_prediction/BathtubCurve.vue';
-
-//second tab
-import RepairCostPredictionChart from '@/components/Cost_Prediction/RepairCostPredictionChart.vue';
-import AnnualCostPredictionChart from '@/components/Cost_Prediction/AnnualCostPredictionChart.vue';
+import * as d3 from 'd3';
+import axios from 'axios';
+import { useUserStore } from '@/stores/userStore';
 
 export default {
-  components: {
-    BathtubCurve,
-    RepairCostPredictionChart,
-    AnnualCostPredictionChart,
-  },
   data() {
     return {
-      activeIndex: parseInt(localStorage.getItem('breakdownPredictionTabIndex')) || 0, // キー名を変更
-      activeAccordionIndex: null,
+      values: {},
+      error: null,
+      resizeObserver: null // ResizeObserverを保存
     };
   },
+
+  mounted() {
+    const userStore = useUserStore();
+    const userCompanyCode = userStore.companyCode;
+
+    if (!userCompanyCode) {
+      console.error('Error: No company code found for the user.');
+      return;
+    }
+
+    const url = `http://127.0.0.1:8000/api/nearMiss/nearMissByCompany/?format=json&companyCode=${userCompanyCode}`;
+
+    axios
+      .get(url, {
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        withCredentials: true
+      })
+      .then((response) => {
+        console.log('Data fetched successfully:', response.data);
+        const nearMissData = response.data;
+        const allNearMisses = nearMissData.flatMap((companyData) => companyData.nearMissList);
+        const factorArray = allNearMisses.map((item) => item['factor']);
+
+        this.values = factorArray.reduce((accumulator, factor) => {
+          accumulator[factor] = (accumulator[factor] || 0) + 1;
+          return accumulator;
+        }, {});
+
+        console.log('Processed values:', this.values);
+
+        this.$nextTick(() => {
+          this.plotGraph(); // DOMの更新後に初期描画
+          // ResizeObserverの設定
+          this.resizeObserver = new ResizeObserver(entries => {
+            for (let entry of entries) {
+              this.plotGraph();
+            }
+          });
+          this.resizeObserver.observe(this.$refs.plotArea);
+        });
+      })
+      .catch((error) => {
+        console.error('Error fetching data:', error);
+      });
+  },
+
+  beforeDestroy() {
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect();
+    }
+  },
+
   methods: {
-    onTabChange(event) {
-      this.activeIndex = event.index;
-      localStorage.setItem('breakdownPredictionTabIndex', this.activeIndex); // キー名を変更
-    },
-    toggleAccordion(index) {
-      this.activeAccordionIndex = this.activeAccordionIndex === index ? null : index;
-    },
-    isActive(index) {
-      return this.activeAccordionIndex === index;
+    plotGraph() {
+      const data = Object.entries(this.values).map(([key, value]) => ({
+        label: key,
+        value: value
+      }));
+
+      console.log('Data for plotting:', data);
+
+      const width = this.$refs.plotArea.clientWidth;
+      const height = this.$refs.plotArea.clientHeight - 30; // Adjust for the title height
+      const radius = Math.min(width, height) / 2.5; // Smaller radius
+
+      // 既存のSVGを削除
+      d3.select("#SafeRate").selectAll('*').remove();
+
+      const svg = d3.select("#SafeRate")
+        .append('svg')
+        .attr('width', width)
+        .attr('height', height)
+        .append('g')
+        .attr('transform', `translate(${width / 2}, ${height / 2})`);
+
+      const color = d3.scaleOrdinal(d3.schemeCategory10);
+
+      const pie = d3.pie()
+        .value(d => d.value);
+
+      const arc = d3.arc()
+        .outerRadius(radius - 10)
+        .innerRadius(0);
+
+      const outerArc = d3.arc()
+        .outerRadius(radius * 1.2)
+        .innerRadius(radius * 1.2);
+
+      const g = svg.selectAll('.arc')
+        .data(pie(data))
+        .enter().append('g')
+        .attr('class', 'arc');
+
+      g.append('path')
+        .attr('d', arc)
+        .style('fill', d => color(d.data.label));
+
+      const text = g.append('text')
+        .attr('transform', d => `translate(${outerArc.centroid(d)})`)
+        .attr('dy', '-0.35em')
+        .attr('text-anchor', d => d.endAngle + d.startAngle / 2 > Math.PI ? 'end' : 'start');
+
+      text.append('tspan')
+        .attr('x', 0)
+        .text(d => d.data.label);
+
+      text.append('tspan')
+        .attr('x', 0)
+        .attr('dy', '1.2em')
+        .text(d => `${Math.round((d.data.value / d3.sum(data, d => d.value)) * 100)}%`);
+
+      g.append('polyline')
+        .attr('points', d => {
+          const pos = outerArc.centroid(d);
+          pos[0] = radius * 1.25 * (d.endAngle + d.startAngle / 2 > Math.PI ? -1 : 1);
+          return [arc.centroid(d), outerArc.centroid(d), pos];
+        });
     }
   }
 };
 </script>
 
-<style>
-.accordion {
+<style scoped>
+#SafeRateContainer {
   width: 100%;
+  height: 100%;
 }
 
-.accordion-item {
-  margin-bottom: 1rem;
-}
-
-.accordion-header {
+.graph-wrapper {
   width: 100%;
-  padding: 1rem;
-  background-color: #f1f1f1;
-  border: none;
-  text-align: left;
-  cursor: pointer;
-  outline: none;
-  display: flex;
-  align-items: center;
+  height: calc(100% - 30px); /* タイトルの高さを考慮 */
+  overflow: hidden; /* コンテンツがラッパーを超えないようにする */
 }
 
-.accordion-icon {
-  margin-right: 10px;
-  font-size: 1.2rem;
+.block.text-500.font-medium.mb-3 {
+  font-weight: bold; /* 太字に設定 */
+  font-size: 1.5em; /* 現在のフォントサイズの2倍 */
+  color: black; /* 文字色を黒に設定 */
 }
 
-.accordion-content {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.5s ease-out;
+#SafeRate {
+  width: 100%;
+  height: 100%;
 }
 
-.accordion-content.active {
-  max-height: 1000px; /* 十分な高さを設定 */
+.block {
+  display: block;
 }
 
-.content-wrapper {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  padding: 20px;
+.text-500 {
+  font-weight: 500;
 }
 
-.bathtub-curve-container {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.font-medium {
+  font-size: 1.25rem; /* Medium font size */
 }
 
-.small-bathtub-curve {
-  transform: scale(0.8); /* サイズを80%に縮小 */
-}
-
-.bathtub-curve-description {
-  flex: 1;
-  margin-left: 20px;
-  padding: 20px;
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
-  border-radius: 5px;
+.mb-3 {
+  margin-bottom: 1rem; /* Margin bottom */
 }
 </style>

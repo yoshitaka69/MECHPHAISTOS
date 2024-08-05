@@ -28,15 +28,16 @@ class MasterDataTableSerializer(serializers.ModelSerializer):
     equipment = create_slug_related_field('equipment', Equipment.objects.all())
     machineName = create_slug_related_field('machineName', Machine.objects.all())
 
-    typicalConstPeriod = serializers.IntegerField(required=False, allow_null=True)
+    typicalConstPeriod = create_slug_related_field('name', TypicalTaskList.objects.all())
     typicalTaskName = create_slug_related_field('typicalTaskName', TypicalTaskList.objects.all())
-    typicalTaskCost = serializers.DecimalField(max_digits=10, decimal_places=5, required=False, allow_null=True)
-    typicalNextEventDate = serializers.DateField(required=False, allow_null=True)
+    typicalTaskCost = create_slug_related_field('cost', TypicalTaskList.objects.all())
+    typicalNextEventDate = create_slug_related_field('nextEventDate', TypicalTaskList.objects.all())
     typicalSituation = create_slug_related_field('typicalSituation', TypicalTaskList.objects.all())
 
     bomCode = create_slug_related_field('bomCode', BomList.objects.all())
-    bomStock = serializers.CharField(required=False, allow_null=True)
-    maxPartsDeliveryTimeInBom = serializers.IntegerField(required=False, allow_null=True)
+    bomStock = create_slug_related_field('stock', BomList.objects.all())
+    maxPartsDeliveryTimeInBom = create_slug_related_field('maxDeliveryTime', BomList.objects.all())
+
 
     rcaOrReplace = serializers.BooleanField(required=False, allow_null=True)
     sparePartsOrAlternative = serializers.BooleanField(required=False, allow_null=True)

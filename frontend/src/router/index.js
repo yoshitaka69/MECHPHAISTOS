@@ -179,6 +179,11 @@ const router = createRouter({
 			component: () => import('@/components/Specsheet/Specsheet_form.vue')
 		},
 		{
+			path: '/Work_permission_form',
+			name:'Work_permission_form',
+			component: () => import('@/components/Work_order/Work_permission_form.vue')
+		},
+		{
 			path: '/celist_detail/:ceListNo',
 			name: 'CeListDetail',
 			component: () => import('@/components/Critical_equipment_list/CeListDetail.vue')

@@ -18,7 +18,7 @@ from .serializers import  (MasterDataTableSerializer, CompanyCodeMDTSerializer,
 from rest_framework import status, viewsets
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .models import MasterDataTable, CompanyCode, Plant, Equipment, Machine, TypicalTaskList
+from .models import MasterDataTable, CompanyCode, Plant, Equipment, Machine
 from .serializers import MasterDataTableSerializer
 from django.db import transaction
 
@@ -50,28 +50,31 @@ def master_data_table_by_company(request):
 
         try:
             with transaction.atomic():
-                company_code_obj, created = CompanyCode.objects.get_or_create(companyCode=company_code)
+                company_code_obj, _ = CompanyCode.objects.get_or_create(companyCode=company_code)
 
                 for data in master_data:
                     data['companyCode'] = company_code_obj
 
                     plant_name = data.pop('plant', None)
                     if plant_name:
-                        plant_obj, created = Plant.objects.get_or_create(plant=plant_name)
+                        plant_obj, _ = Plant.objects.get_or_create(plant=plant_name)
                         data['plant'] = plant_obj
 
                     equipment_name = data.pop('equipment', None)
                     if equipment_name:
-                        equipment_obj, created = Equipment.objects.get_or_create(equipment=equipment_name)
+                        equipment_obj, _ = Equipment.objects.get_or_create(equipment=equipment_name)
                         data['equipment'] = equipment_obj
 
                     machine_name = data.pop('machineName', None)
                     if machine_name:
-                        machine_obj, created = Machine.objects.get_or_create(machineName=machine_name)
+                        machine_obj, _ = Machine.objects.get_or_create(machineName=machine_name)
                         data['machineName'] = machine_obj
 
+                    # ここでは typicalConstPeriod の処理が無いことを確認
+                    # もし残っていたら削除してください
+
                     ce_list_no = data.pop('ceListNo')
-                    obj, created = MasterDataTable.objects.update_or_create(
+                    obj, _ = MasterDataTable.objects.update_or_create(
                         companyCode=company_code_obj,
                         ceListNo=ce_list_no,
                         defaults=data
@@ -80,6 +83,18 @@ def master_data_table_by_company(request):
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
+
+
+
+
+
+
+
+
+
 
 class CompanyCodeMDTViewSet(viewsets.ViewSet):
     def list(self, request):
