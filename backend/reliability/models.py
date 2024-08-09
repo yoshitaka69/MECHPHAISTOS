@@ -5,9 +5,79 @@ from django.utils import timezone
 
 
 
+# Reliability
+#-------------------------------------------------------------------------------------------------------------------------------------
+class Reliability(models.Model):
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='reliability_companyCode', null=True, blank=True)
+    ceListNo = models.ForeignKey(CeList, on_delete=models.CASCADE, related_name='reliability_ceListNo', null=True, blank=True)
+    equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='reliability_equipment', null=True, blank=True)
+    machineName = models.ForeignKey(Machine, on_delete=models.CASCADE, related_name='reliability_machine', null=True, blank=True)
+
+    mttr = models.IntegerField(verbose_name='MTTR', null=True, blank=True)  
+    mtbf = models.IntegerField(verbose_name='MTBF', null=True, blank=True)  
+    mttf = models.IntegerField(verbose_name='MTTF', null=True, blank=True)  
+    totalOperatingTime = models.FloatField(verbose_name='Total Operating Time', null=True, blank=True)  # 総稼働時間
+    failureCount = models.IntegerField(verbose_name='Failure Count', null=True, blank=True)  # 故障回数
+
+    # 追加するフィールド
+    failureType = models.IntegerField(
+        choices=[
+            (1, '機械的故障'),
+            (2, '電気的故障'),
+            (3, '両方')
+        ],
+        null=True, blank=True,
+        verbose_name='Failure Type'
+    )
+    failureMode = models.IntegerField(
+        choices=[
+            (1, 'PM03'),
+            (2, 'PM04')
+        ],
+        null=True, blank=True,
+        verbose_name='Failure Mode'
+    )
+    maintenanceMethod = models.IntegerField(
+        choices=[
+            (1, '検査'),
+            (2, '定期保全'),
+            (3, '部品交換'),
+            (4, 'オーバーホール')
+        ],
+        null=True, blank=True,
+        verbose_name='Maintenance Method'
+    )
+    maintenanceFrequency = models.IntegerField(null=True, blank=True, verbose_name='Maintenance Frequency')  # メンテナンス頻度
+    maintenanceImpact = models.FloatField(null=True, blank=True, verbose_name='Maintenance Impact')  # メンテナンスの影響
+    failureCause = models.IntegerField(
+        choices=[
+            (1, '過負荷'),
+            (2, '摩耗'),
+            (3, '環境要因')
+        ],
+        null=True, blank=True,
+        verbose_name='Failure Cause'
+    )
+    environmentCondition = models.FloatField(null=True, blank=True, verbose_name='Environmental Conditions')  # 環境条件（スケール）
+    operationalCondition = models.IntegerField(
+        choices=[
+            (0, '通常運転'),
+            (1, '過負荷'),
+            (2, '過熱')
+        ],
+        null=True, blank=True,
+        verbose_name='Operational Conditions'
+    )
+    componentCondition = models.FloatField(null=True, blank=True, verbose_name='Component Condition')  # 部品の摩耗度
+
+    class Meta:
+        ordering = ['-mttr']
+
+#-------------------------------------------------------------------------------------------------------------------------------------
 
 
-# 故障履歴モデル
+
+# 故障履歴モデル(PrecisionAndAccuracy)
 #-------------------------------------------------------------------------------------------------------------------------------------
 class TroubleHistory(models.Model):
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='troubleHistory_companyCode', null=True, blank=True)
@@ -27,11 +97,12 @@ class TroubleHistory(models.Model):
         ordering = ['-date']
 
 
-
 #-------------------------------------------------------------------------------------------------------------------------------------
 
 
 
+# 故障予測ポイントモデル(PrecisionAndAccuracy)
+#-------------------------------------------------------------------------------------------------------------------------------------
 class FailurePredictionPoint(models.Model):
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='failurePredictionPoint_companyCode', null=True, blank=True)
     ceListNo = models.CharField(verbose_name='ceListNo', max_length=100,blank=True,null=True)
@@ -45,36 +116,10 @@ class FailurePredictionPoint(models.Model):
         ordering = ['-date']
 
 
-
 #-------------------------------------------------------------------------------------------------------------------------------------
 
 
 
-# 故障データモデル
-class FailureData(models.Model):
-    # データが保存された日時
-    timestamp = models.DateTimeField(auto_now_add=True)
-    # 故障までの周期（単位: 日）
-    interval = models.IntegerField()
-
-    def __str__(self):
-        return f"{self.timestamp} - {self.interval}"
-
-
-# ワイブル分布のデータモデル
-class WeibullData(models.Model):
-    failure_time = models.FloatField()
-    created_at = models.DateTimeField(auto_now_add=True)
-
-
-
-class BayesianPrediction(models.Model):
-    time = models.IntegerField()
-    failure_count = models.IntegerField()
-    failure_type = models.CharField(max_length=100)
-    failure_cause = models.CharField(max_length=100)
-    maintenance_type = models.CharField(max_length=100)
-    maintenance_result = models.CharField(max_length=100)
 
 
 

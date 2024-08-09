@@ -1,6 +1,15 @@
 from django.contrib import admin
-from .models import TroubleHistory,FailurePredictionPoint
+from .models import Reliability,TroubleHistory,FailurePredictionPoint
 
+
+
+class ReliabilityAdmin(admin.ModelAdmin):
+    list_display = ('companyCode', 'ceListNo', 'equipment', 'machineName', 'mttr', 'mtbf', 'mttf', 'totalOperatingTime', 'failureCount')
+    search_fields = ('equipment__name', 'machineName__name')
+    list_filter = ('companyCode', 'ceListNo')
+    ordering = ('-mttr',)
+    save_on_top = True
+    list_per_page = 50
 
 
 
@@ -11,8 +20,6 @@ class FailurePredictionPointAdmin(admin.ModelAdmin):
     ordering = ('companyCode',)
     save_on_top = True
     list_per_page = 50
-
-
 
 
 class TroubleHistoryAdmin(admin.ModelAdmin):
@@ -27,8 +34,6 @@ class TroubleHistoryAdmin(admin.ModelAdmin):
 
 
 
-
-
-
+admin.site.register(Reliability, ReliabilityAdmin)
 admin.site.register(FailurePredictionPoint, FailurePredictionPointAdmin)
 admin.site.register(TroubleHistory, TroubleHistoryAdmin)

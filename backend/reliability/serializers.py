@@ -1,13 +1,37 @@
 from rest_framework import serializers
 from accounts.models import CompanyCode
 from ceList.models import Equipment,Machine 
-from .models import FailureData, WeibullData, TroubleHistory,FailurePredictionPoint
+from .models import TroubleHistory,FailurePredictionPoint,Reliability
+
+
+
+# Reliabilityモデル
+#------------------------------------------------------------------------------------------------------
+
+class ReliabilitySerializer(serializers.ModelSerializer):
+    companyCode = serializers.SlugRelatedField(
+        slug_field='companyCode',
+        queryset=CompanyCode.objects.all()
+    )
+    class Meta:
+        model = Reliability
+        fields = ['companyCode', 'ceListNo', 'equipment', 'machineName', 'mttr','mtbf','mttf','totalOperatingTime','failureCount' ]
+        
+class CompanyReliabilitySerializer(serializers.ModelSerializer):
+    reliability = ReliabilitySerializer(many=True, source='reliability_companyCode')
+
+    class Meta:
+        model = CompanyCode
+        fields = ['companyCode', 'reliability']
+
+#------------------------------------------------------------------------------------------------------
 
 
 
 
 
-#TroubleHistoryモデルのシリアライザー
+
+# 故障履歴モデル(PrecisionAndAccuracy)
 #------------------------------------------------------------------------------------------------------
 
 class TroubleHistorySerializer(serializers.ModelSerializer):
@@ -27,13 +51,14 @@ class CompanyTroubleHistorySerializer(serializers.ModelSerializer):
         model = CompanyCode
         fields = ['companyCode', 'troubleHistory']
 
-
-
-
-#故障予測ポイントモデルのシリアライザー
 #------------------------------------------------------------------------------------------------------
 
 
+
+
+
+# 故障予測ポイントモデル(PrecisionAndAccuracy)
+#------------------------------------------------------------------------------------------------------
 
 class FPPSerializer(serializers.ModelSerializer):
     companyCode = serializers.SlugRelatedField(
@@ -52,34 +77,7 @@ class CompanyFPPSerializer(serializers.ModelSerializer):
         model = CompanyCode
         fields = ['companyCode', 'failurePredictionPoint']
 
-
-
-
 #------------------------------------------------------------------------------------------------------
 
 
 
-
-
-# 故障データモデルのシリアライザー
-class FailureDataSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = FailureData
-        fields = '__all__'  # 全フィールドをシリアライズ
-
-
-
-#ワイブルデータのシリアライザー
-class WeibullDataSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = WeibullData
-        fields = ['failure_time']
-
-
-
-from .models import BayesianPrediction
-
-class BayesianPredictionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = BayesianPrediction
-        fields = '__all__'  # 全フィールドをシリアライズ

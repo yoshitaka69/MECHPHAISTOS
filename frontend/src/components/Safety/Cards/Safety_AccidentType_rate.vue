@@ -100,8 +100,8 @@ export default {
         .innerRadius(0);
 
       const outerArc = d3.arc()
-        .outerRadius(radius * 1.2)
-        .innerRadius(radius * 1.2);
+        .outerRadius(radius * 1.3)
+        .innerRadius(radius * 1.3);
 
       const g = svg.selectAll('.arc')
         .data(pie(data))
@@ -113,9 +113,14 @@ export default {
         .style('fill', d => color(d.data.label));
 
       const text = g.append('text')
-        .attr('transform', d => `translate(${outerArc.centroid(d)})`)
+        .attr('transform', d => {
+          const pos = outerArc.centroid(d);
+          pos[0] = radius * 1.35 * (d.endAngle + d.startAngle / 2 > Math.PI ? -1 : 1);
+          return `translate(${pos})`;
+        })
         .attr('dy', '-0.35em')
-        .attr('text-anchor', d => d.endAngle + d.startAngle / 2 > Math.PI ? 'end' : 'start');
+        .attr('text-anchor', d => d.endAngle + d.startAngle / 2 > Math.PI ? 'end' : 'start')
+        .style('font-size', '12px'); // フォントサイズを小さく設定
 
       text.append('tspan')
         .attr('x', 0)
@@ -129,9 +134,12 @@ export default {
       g.append('polyline')
         .attr('points', d => {
           const pos = outerArc.centroid(d);
-          pos[0] = radius * 1.25 * (d.endAngle + d.startAngle / 2 > Math.PI ? -1 : 1);
-          return [arc.centroid(d), outerArc.centroid(d), pos];
-        });
+          pos[0] = radius * 1.35 * (d.endAngle + d.startAngle / 2 > Math.PI ? -1 : 1);
+          return [arc.centroid(d), outerArc.centroid(d), pos]; // ラベルまで線をつなぐ
+        })
+        .style('fill', 'none') // 塗りつぶしをなしに設定
+        .style('stroke', 'black') // 線の色を黒に設定
+        .style('stroke-width', 1); // 線の太さを設定
     }
   }
 };

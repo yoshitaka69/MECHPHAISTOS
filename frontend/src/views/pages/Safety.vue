@@ -115,7 +115,7 @@
   <script>
   import Near_miss_list from '@/components/Safety/Near_miss/Near_miss_list.vue';
   import Safety_Factor_rate from '@/components/Safety/Cards/Safety_factor_rate';
-  import Safety_AccidentType_rate from '@/components/Safety/Safety_AccidentType_rate.vue';
+  import Safety_AccidentType_rate from '@/components/Safety/Cards/Safety_AccidentType_rate.vue';
   import Safety_correlation_diagram from '@/components/Safety/Safety_correlation_diagram.vue';
   import Safety_Measure_trend from '@/components/Safety/Safety_Measure_trend.vue';
   import NearMiss_form from '@/components/Safety/Near_miss/Near_miss_form.vue';

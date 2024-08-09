@@ -11,9 +11,7 @@ import router from './router'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 
-// vue3-easy-data-table
-import Vue3EasyDataTable from 'vue3-easy-data-table';
-import 'vue3-easy-data-table/dist/style.css';
+
 
 // registering functions that let you quickly register all modules at once
 import {
@@ -276,8 +274,6 @@ app.component('TriStateCheckbox', TriStateCheckbox);
 app.component('VirtualScroller', VirtualScroller);
 
 
-// vue3-easy-data-table
-app.component('EasyDataTable', Vue3EasyDataTable);
 
 
 // Handsontable
