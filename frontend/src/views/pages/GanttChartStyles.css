@@ -95,3 +95,14 @@ input[type='date']:focus {
 #bottom-calendar::-webkit-scrollbar-track {
   background-color: #f0f0f0;
 }
+
+
+/* 開始日と期限日の入力フィールドのスタイルを調整 */
+input[type="date"] {
+  width: 110px; /* 横幅を110pxに設定 */
+}
+
+/* ヘッダーの開始日と期限日のスタイルを調整 */
+.header-date {
+  width: 110px; /* 横幅を110pxに設定 */
+}
