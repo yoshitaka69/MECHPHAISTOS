@@ -1,294 +1,424 @@
 <template>
-  <div class="chart-container">
-    <h1>ワイブル分布のシミュレーション</h1>
-    <svg ref="chart" width="800" height="400"></svg>
-    <div v-if="parameters.isWearoutIncreasing">
-      <p>摩耗故障期は右肩上がりです: 定期整備が有効です。</p>
+  <div id="gantt" class="space-y-4">
+    <!-- 上部のガントチャート -->
+    <div class="gantt-chart-wrapper top-chart" :style="{ height: `${topChartHeight}px` }">
+      <div id="gantt-chart-container-1" class="overflow-auto w-full select-none bg-white">
+        <div id="top-header" class="top-0 flex z-20 sticky">
+          <div class="border-b border-black bg-green-100 flex sticky left-0 top-0" :style="{ minWidth: `${topTaskWidth + topExtraColumns.length * extraColumnWidth}px` }">
+            <div class="py-2 h-full px-2 border-r border-black text-sm" style="width: 100px">Plant</div>
+            <div class="py-2 h-full text-center border-r border-black text-sm" style="width: 90px">開始日</div>
+            <div class="py-2 h-full text-center border-r border-black text-sm" style="width: 90px">期限日</div>
+            <div v-for="column in topExtraColumns" :key="column.key" class="bg-green-100 text-center border-r border-black text-sm" :style="{ width: `${extraColumnWidth}px` }">
+              {{ column.label }}
+            </div>
+          </div>
+          <div class="flex" :style="{ width: `${topViewWidth}px` }">
+            <template v-for="month in calendars" :key="month.title">
+              <div class="border-b border-black bg-white" :style="{ minWidth: `${blockWidth * month.days}px` }">
+                <div class="border-b border-r border-black px-2 text-xs">{{ month.title }}</div>
+                <div class="flex">
+                  <div
+                    v-for="day in month.days"
+                    :key="day.date"
+                    class="border-r border-black text-xs text-center"
+                    :class="weekendColor(day.dayOfWeek)"
+                    :style="{ minWidth: `${blockWidth}px`, maxWidth: `${blockWidth}px` }"
+                  >
+                    {{ day.date }}
+                  </div>
+                </div>
+                <div class="flex">
+                  <div
+                    v-for="day in month.days"
+                    :key="day.date"
+                    class="border-r border-black text-xs text-center"
+                    :class="weekendColor(day.dayOfWeek)"
+                    :style="{ minWidth: `${blockWidth}px`, maxWidth: `${blockWidth}px` }"
+                  >
+                    {{ day.dayOfWeek }}
+                  </div>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+        <div id="top-contents" class="relative overflow-y-auto" :style="{ width: `${topViewWidth + topExtraColumns.length * extraColumnWidth}px` }">
+          <!-- 縦のグリッド線を表示 -->
+          <div
+            v-for="i in totalDays"
+            :key="i"
+            class="absolute bg-gray-200"
+            :style="{ left: `${i * blockWidth + topTaskWidth}px`, top: 0, height: `${topTaskRows.length * taskRowHeight}px`, width: '1px' }"
+          ></div>
+          <!-- 今日の日付を示す赤い帯 -->
+          <div
+            v-if="topTodayPosition >= 0"
+            class="absolute bg-red-100"
+            :style="{ width: `${blockWidth - 1}px`, left: `${topTodayPosition}px`, height: `${topTaskRows.length * taskRowHeight}px` }"
+          ></div>
+          <div v-for="task in topTaskRows" :key="task.id" class="task-row top-task-row flex">
+            <div class="bg-green-100 z-10 flex sticky left-0" :style="{ minWidth: `${topTaskWidth + topExtraColumns.length * extraColumnWidth}px` }">
+              <!-- 編集可能なタスク名フィールド -->
+              <input
+                class="py-2 h-full px-2 border-r border-black text-sm"
+                style="width: 100px"
+                v-model="task.name"
+                @change="updateTopTaskName(task)"
+              />
+              <!-- 編集可能な開始日フィールド -->
+              <input
+                class="py-2 h-full text-center border-r border-black text-sm"
+                style="width: 90px"
+                type="date"
+                v-model="task.startDate"
+                @change="updateTaskDates(task)"
+              />
+              <!-- 編集可能な期限日フィールド -->
+              <input
+                class="py-2 h-full text-center border-r border-black text-sm"
+                style="width: 90px"
+                type="date"
+                v-model="task.endDate"
+                @change="updateTaskDates(task)"
+              />
+              <div v-for="column in topExtraColumns" :key="column.key" class="bg-green-100 text-center border-r border-black text-sm" :style="{ width: `${extraColumnWidth}px` }">
+                <input
+                  class="py-2 h-full text-center"
+                  v-model="task[column.key]"
+                  @change="updateTopTaskAdditional(task, column.key)"
+                />
+              </div>
+            </div>
+            <div :style="task.style" class="h-10 flex py-2 will-change-transform cursor-pointer" @mousedown="onMouseDown_MoveStart($event, task, topTasks)">
+              <div class="w-2 bg-yellow-200 rounded-l-lg cursor-col-resize" @mousedown.stop="onMouseDown_ResizeStart($event, task, 'left', topTasks)"></div>
+              <div class="flex-1 bg-yellow-200 pointer-events-none"></div>
+              <div class="w-2 bg-yellow-200 rounded-r-lg cursor-col-resize" @mousedown.stop="onMouseDown_ResizeStart($event, task, 'right', topTasks)"></div>
+            </div>
+          </div>
+          <!-- タスク追加ボタン -->
+          <button class="mt-2 bg-green-200 hover:bg-green-300 text-sm py-1 px-4 rounded" @click="addTopTask">
+            + タスクを追加
+          </button>
+          <!-- 列追加ボタン -->
+          <button class="mt-2 ml-2 bg-green-300 hover:bg-green-400 text-sm py-1 px-4 rounded" @click="addTopTaskColumn">
+            + 列を追加
+          </button>
+        </div>
+      </div>
     </div>
-    <div v-else>
-      <p>摩耗故障期は右肩下がりです: 定期整備が不要かもしれません。</p>
-    </div>
-    <div class="parameters">
-      <p><strong>Company Code:</strong> {{ parameters.companyCode }}</p>
-      <p><strong>CE List No:</strong> {{ parameters.ceListNo }}</p>
-      <p><strong>MTTR:</strong> {{ parameters.mttr }} 日</p>
-      <p><strong>MTBF:</strong> {{ parameters.mtbf }} 日</p>
-      <p><strong>MTTF:</strong> {{ parameters.mttf }} 日</p>
-      <p><strong>Total Operating Time:</strong> {{ parameters.totalOperatingTime }} 時間</p>
-      <p><strong>Failure Count:</strong> {{ parameters.failureCount }}</p>
-      <p><strong>摩耗期バスタブ曲線の傾き:</strong> {{ parameters.slope.toFixed(2) }}</p>
+
+    <!-- 下部のガントチャート -->
+    <div class="gantt-chart-wrapper bottom-chart mt-4" :style="{ height: `${bottomChartHeight}px` }">
+      <div id="gantt-chart-container-2" class="overflow-auto w-full select-none bg-white">
+        <div id="bottom-header" class="top-0 flex z-20 sticky">
+          <div class="border-b border-black bg-blue-100 flex sticky left-0 top-0" :style="{ minWidth: `${bottomTaskWidth + bottomExtraColumns.length * extraColumnWidth}px` }">
+            <div class="py-2 h-full px-2 border-r border-black text-sm" style="width: 80px">タスク</div>
+            <div class="py-2 h-full text-center border-r border-black text-sm" style="width: 80px">サンプル</div>
+            <div class="py-2 h-full text-center border-r border-black text-sm" style="width: 80px">PM type</div>
+            <div class="py-2 h-full text-center border-r border-black text-sm" style="width: 80px">担当者</div>
+            <div class="py-2 h-full text-center border-r border-black text-sm" style="width: 80px">開始日</div>
+            <div class="py-2 h-full text-center border-r border-black text-sm" style="width: 80px">期限日</div>
+            <div v-for="column in bottomExtraColumns" :key="column.key" class="bg-blue-100 text-center border-r border-black text-sm" :style="{ width: `${extraColumnWidth}px` }">
+              {{ column.label }}
+            </div>
+          </div>
+          <div class="flex" :style="{ width: `${bottomViewWidth}px` }">
+            <template v-for="month in calendars" :key="month.title">
+              <div class="border-b border-black bg-white" :style="{ minWidth: `${blockWidth * month.days}px` }">
+                <div class="border-b border-r border-black px-2 text-xs">{{ month.title }}</div>
+                <div class="flex">
+                  <div
+                    v-for="day in month.days"
+                    :key="day.date"
+                    class="border-r border-black text-xs text-center"
+                    :class="weekendColor(day.dayOfWeek)"
+                    :style="{ minWidth: `${blockWidth}px`, maxWidth: `${blockWidth}px` }"
+                  >
+                    {{ day.date }}
+                  </div>
+                </div>
+                <div class="flex">
+                  <div
+                    v-for="day in month.days"
+                    :key="day.date"
+                    class="border-r border-black text-xs text-center"
+                    :class="weekendColor(day.dayOfWeek)"
+                    :style="{ minWidth: `${blockWidth}px`, maxWidth: `${blockWidth}px` }"
+                  >
+                    {{ day.dayOfWeek }}
+                  </div>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+        <div id="bottom-contents" class="relative overflow-y-auto" :style="{ width: `${bottomViewWidth + bottomExtraColumns.length * extraColumnWidth}px` }">
+          <!-- 縦のグリッド線を表示 -->
+          <div
+            v-for="i in totalDays"
+            :key="i"
+            class="absolute bg-gray-200"
+            :style="{ left: `${i * blockWidth + bottomTaskWidth}px`, top: 0, height: `${bottomTaskRows.length * taskRowHeight}px`, width: '1px' }"
+          ></div>
+          <!-- 今日の日付を示す赤い帯 -->
+          <div
+            v-if="bottomTodayPosition >= 0"
+            class="absolute bg-red-100"
+            :style="{ width: `${blockWidth - 1}px`, left: `${bottomTodayPosition}px`, height: `${bottomTaskRows.length * taskRowHeight}px` }"
+          ></div>
+          <div v-for="task in bottomTaskRows" :key="task.id" class="task-row bottom-task-row flex">
+            <div class="bg-blue-100 z-10 flex sticky left-0" :style="{ minWidth: `${bottomTaskWidth + bottomExtraColumns.length * extraColumnWidth}px` }">
+              <!-- 編集可能なタスク名フィールド -->
+              <input
+                class="py-2 h-full px-2 border-r border-black text-sm"
+                style="width: 80px"
+                v-model="task.name"
+                @change="updateTaskName(task)"
+              />
+              <!-- 編集可能なサンプルフィールド -->
+              <input
+                class="py-2 h-full text-center border-r border-black text-sm"
+                style="width: 80px"
+                v-model="task.sample"
+                @change="updateTaskSample(task)"
+              />
+              <!-- 編集可能なPM typeフィールド -->
+              <input
+                class="py-2 h-full text-center border-r border-black text-sm"
+                style="width: 80px"
+                v-model="task.pmType"
+                @change="updateTaskPmType(task)"
+              />
+              <!-- 編集可能な担当者フィールド -->
+              <input
+                class="py-2 h-full text-center border-r border-black text-sm"
+                style="width: 80px"
+                v-model="task.assignee"
+                @change="updateTaskAssignee(task)"
+              />
+              <!-- 編集可能な開始日フィールド -->
+              <input
+                class="py-2 h-full text-center border-r border-black text-sm"
+                style="width: 80px"
+                type="date"
+                v-model="task.startDate"
+                @change="updateTaskDates(task)"
+              />
+              <!-- 編集可能な期限日フィールド -->
+              <input
+                class="py-2 h-full text-center border-r border-black text-sm"
+                style="width: 80px"
+                type="date"
+                v-model="task.endDate"
+                @change="updateTaskDates(task)"
+              />
+              <div v-for="column in bottomExtraColumns" :key="column.key" class="bg-blue-100 text-center border-r border-black text-sm" :style="{ width: `${extraColumnWidth}px` }">
+                <input
+                  class="py-2 h-full text-center"
+                  v-model="task[column.key]"
+                  @change="updateBottomTaskAdditional(task, column.key)"
+                />
+              </div>
+            </div>
+            <div :style="task.style" class="h-10 flex py-2 will-change-transform cursor-pointer" @mousedown="onMouseDown_MoveStart($event, task, tasks)">
+              <div class="w-2 bg-yellow-200 rounded-l-lg cursor-col-resize" @mousedown.stop="onMouseDown_ResizeStart($event, task, 'left', tasks)"></div>
+              <div class="flex-1 bg-yellow-200 pointer-events-none"></div>
+              <div class="w-2 bg-yellow-200 rounded-r-lg cursor-col-resize" @mousedown.stop="onMouseDown_ResizeStart($event, task, 'right', tasks)"></div>
+            </div>
+          </div>
+          <!-- タスク追加ボタン -->
+          <button class="mt-2 bg-blue-200 hover:bg-blue-300 text-sm py-1 px-4 rounded" @click="addBottomTask">
+            + タスクを追加
+          </button>
+          <!-- 列追加ボタン -->
+          <button class="mt-2 ml-2 bg-blue-300 hover:bg-blue-400 text-sm py-1 px-4 rounded" @click="addBottomTaskColumn">
+            + 列を追加
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
-<script>
-import axios from 'axios';
-import * as d3 from 'd3';
-import { useUserStore } from '@/stores/userStore';  // Piniaのストアをインポート
+<script lang="ts" setup>
+import { onMounted, onUnmounted, computed, ref } from 'vue';
+import { useGanttChart } from './GanttChartPlugin.js';
+import dayjs from 'dayjs';  // dayjsをインポート
 
-export default {
-  setup() {
-    const userStore = useUserStore();
-    return { userStore };
-  },
-  data() {
-    return {
-      times: [],
-      pdf_initial: [],
-      pdf_random: [],
-      pdf_wearout: [],
-      bathtub_curve: [],
-      parameters: {
-        companyCode: '',
-        ceListNo: '',
-        mttr: 0,
-        mtbf: 0,
-        mttf: 0,
-        totalOperatingTime: 0,
-        failureCount: 0,
-        slope: 0,
-        isWearoutIncreasing: false,
-      },
-    };
-  },
-  mounted() {
-    this.fetchWeibullData();
-    this.fetchParameters();
-  },
-  methods: {
-    async fetchWeibullData() {
-      const companyCode = this.userStore.companyCode;  // PiniaからcompanyCodeを取得
-      if (!companyCode) {
-        console.error('Company code is required');
-        return;
-      }
+// useGanttChartから必要な関数やデータを取得
+const {
+  dragging,
+  leftResizing,
+  rightResizing,
+  blockWidth,
+  topTaskWidth,
+  bottomTaskWidth,
+  topViewWidth,
+  bottomViewWidth,
+  contentWidth,
+  totalDays,
+  startMonth,
+  endMonth,
+  calendars,
+  tasks,
+  topTasks,
+  calendar,
+  topTaskRows,
+  bottomTaskRows,
+  topTodayPosition,
+  bottomTodayPosition,
+  initView,
+  getDays,
+  serCalendar,
+  onMouseDown_MoveStart,
+  onMouseDown_ResizeStart,
+  updateTaskDates,
+  updateTopTaskName,
+  updateTaskName,
+  updateTaskPmType,
+  updateTaskAssignee,
+  makeTestData,
+  scrollbarOffset,
+  taskRowHeight,
+  weekendColor,
+  resetDragState, // 追加: ドラッグ状態のリセット関数
+  resetResizeState // 追加: リサイズ状態のリセット関数
+} = useGanttChart();
 
-      console.log('Sending request with companyCode:', companyCode);  // デバッグ用
+onMounted(() => {
+  initView();
+  makeTestData();
+});
 
-      try {
-        const response = await axios.get(`http://127.0.0.1:8000/api/reliability/reliabilityByCompany/weibull_distribution/`, {
-          params: { companyCode }  // クエリパラメータとしてcompanyCodeを送信
-        });
+onUnmounted(() => {
+  resetDragState(); // ドラッグ状態のリセット
+  resetResizeState(); // リサイズ状態のリセット
+});
 
-        console.log('API response:', response.data); // レスポンスデータのログ出力
+// コンポーネントの高さを計算
+const topChartHeight = computed(() => (topTaskRows.length + 1) * taskRowHeight);
+const bottomChartHeight = computed(() => (bottomTaskRows.length + 1) * taskRowHeight);
 
-        if (!response.data || response.data.length === 0) {
-          console.error('No data found for this company code');
-          return;
-        }
+// 追加のタスク列を保持
+const topExtraColumns = ref([]);
+const bottomExtraColumns = ref([]);
 
-        const data = response.data[0];  // 確実にデータが存在することを確認
-        if (!data.bathtub_curve) {
-          console.error('No valid bathtub_curve data');
-          console.log('Data received:', data);
-          return;
-        }
+// 追加の列の幅
+const extraColumnWidth = 100;
 
-        this.times = data.times || [];
-        this.pdf_initial = data.pdf_initial || [];
-        this.pdf_random = data.pdf_random || [];
-        this.pdf_wearout = data.pdf_wearout || [];
-        this.bathtub_curve = data.bathtub_curve || [];
+// 上部タスクを追加する関数
+function addTopTask() {
+  const today = dayjs().format("YYYY-MM-DD");
+  const newTask = {
+    id: topTasks.value.length + 1,
+    name: `new plant ${topTasks.value.length + 1}`,
+    startDate: today,
+    endDate: dayjs().add(2, "days").format("YYYY-MM-DD")
+  };
+  topExtraColumns.value.forEach(column => {
+    newTask[column.key] = '';
+  });
+  topTasks.value.push(newTask);
+  updateTaskDates(newTask);
+}
 
-        this.renderChart();
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    },
-    async fetchParameters() {
-      const companyCode = this.userStore.companyCode;  // PiniaからcompanyCodeを取得
-      if (!companyCode) {
-        console.error('Company code is required');
-        return;
-      }
+// 下部タスクを追加する関数
+function addBottomTask() {
+  const today = dayjs().format("YYYY-MM-DD");
+  const newTask = {
+    id: tasks.value.length + 1,
+    name: `new task ${tasks.value.length + 1}`,
+    sample: '',
+    pmType: 'PM-1',
+    assignee: '',
+    startDate: today,
+    endDate: dayjs().add(2, "days").format("YYYY-MM-DD")
+  };
+  bottomExtraColumns.value.forEach(column => {
+    newTask[column.key] = '';
+  });
+  tasks.value.push(newTask);
+  updateTaskDates(newTask);
+}
 
-      try {
-        const response = await axios.get(`http://127.0.0.1:8000/api/reliability/reliabilityByCompany/reliability_parameters/`, {
-          params: { companyCode }  // クエリパラメータとしてcompanyCodeを送信
-        });
+// 上部タスク列を追加する関数
+function addTopTaskColumn() {
+  const columnKey = `extra${topExtraColumns.value.length + 1}`;
+  topExtraColumns.value.push({ key: columnKey, label: `追加${topExtraColumns.value.length + 1}` });
 
-        console.log('Parameter API response:', response.data); // パラメータのレスポンスデータのログ出力
+  // 既存のタスクに新しい列を追加
+  topTasks.value.forEach(task => {
+    task[columnKey] = '';
+  });
+}
 
-        if (!response.data || response.data.length === 0) {
-          console.error('No parameter data found for this company code');
-          return;
-        }
+// 下部タスク列を追加する関数
+function addBottomTaskColumn() {
+  const columnKey = `extra${bottomExtraColumns.value.length + 1}`;
+  bottomExtraColumns.value.push({ key: columnKey, label: `追加${bottomExtraColumns.value.length + 1}` });
 
-        const data = response.data[0];  // 最初のパラメータセットを使用
-        this.parameters = {
-          companyCode: data.companyCode || '',
-          ceListNo: data.ceListNo || '',
-          mttr: data.mttr || 0,
-          mtbf: data.mtbf || 0,
-          mttf: data.mttf || 0,
-          totalOperatingTime: data.totalOperatingTime || 0,
-          failureCount: data.failureCount || 0,
-          slope: data.slope || 0,
-          isWearoutIncreasing: data.isWearoutIncreasing || false,
-        };
+  // 既存のタスクに新しい列を追加
+  tasks.value.forEach(task => {
+    task[columnKey] = '';
+  });
+}
 
-        console.log('Parameters:', this.parameters); // パラメータのログ出力
-      } catch (error) {
-        console.error('Error fetching parameters:', error);
-      }
-    },
-    renderChart() {
-      if (!this.bathtub_curve || this.bathtub_curve.length === 0) {
-        console.error('No bathtub_curve data to render');
-        return;
-      }
+// 上部タスクの追加プロパティを更新する関数
+function updateTopTaskAdditional(task, key) {
+  const taskToUpdate = topTasks.value.find(t => t.id === task.id);
+  if (taskToUpdate) {
+    taskToUpdate[key] = task[key];
+  }
+}
 
-      const svg = d3.select(this.$refs.chart);
-      svg.selectAll('*').remove(); // 以前のチャートをクリア
+// 下部タスクの追加プロパティを更新する関数
+function updateBottomTaskAdditional(task, key) {
+  const taskToUpdate = tasks.value.find(t => t.id === task.id);
+  if (taskToUpdate) {
+    taskToUpdate[key] = task[key];
+  }
+}
 
-      const margin = { top: 20, right: 100, bottom: 60, left: 80 };
-      const width = +svg.attr('width') - margin.left - margin.right;
-      const height = +svg.attr('height') - margin.top - margin.bottom;
-
-      // 時間軸を日数に変換（1日=24時間）
-      const x = d3.scaleLinear().domain([0, 125]).range([margin.left, width - margin.right]);
-      const y = d3.scaleLinear().domain([0, d3.max(this.bathtub_curve)]).range([height - margin.bottom, margin.top]);
-
-      const line = d3.line()
-        .x((d, i) => x(this.times[i] / 24))  // 時間を日数に変換
-        .y((d) => y(d));
-
-      // 領域の描画
-      svg.append('rect')
-        .attr('x', x(0))
-        .attr('y', y(d3.max(this.bathtub_curve)))
-        .attr('width', x(41.67) - x(0))  // 約1000時間を日数に変換
-        .attr('height', height - margin.bottom - y(d3.max(this.bathtub_curve)))
-        .attr('fill', 'lightblue')
-        .attr('opacity', 0.3);
-
-      svg.append('rect')
-        .attr('x', x(41.67))
-        .attr('y', y(d3.max(this.bathtub_curve)))
-        .attr('width', x(83.33) - x(41.67))  // 約2000時間を日数に変換
-        .attr('height', height - margin.bottom - y(d3.max(this.bathtub_curve)))
-        .attr('fill', 'lightgreen')
-        .attr('opacity', 0.3);
-
-      svg.append('rect')
-        .attr('x', x(83.33))
-        .attr('y', y(d3.max(this.bathtub_curve)))
-        .attr('width', x(125) - x(83.33))  // 約3000時間を日数に変換
-        .attr('height', height - margin.bottom - y(d3.max(this.bathtub_curve)))
-        .attr('fill', 'lightcoral')
-        .attr('opacity', 0.3);
-
-      // グラフを描画
-      svg.append('path')
-        .datum(this.bathtub_curve)
-        .attr('fill', 'none')
-        .attr('stroke', 'black')
-        .attr('stroke-width', 2)
-        .attr('d', line)
-        .attr('class', 'line-bathtub');
-
-      // X軸のラベル
-      svg.append('g')
-        .attr('transform', `translate(0,${height - margin.bottom})`)
-        .call(d3.axisBottom(x))
-        .append('text')
-        .attr('x', width / 2)
-        .attr('y', 50)
-        .attr('fill', 'black')
-        .attr('text-anchor', 'middle')
-        .style('font-size', '14px')
-        .text('日数');
-
-            // Y軸のラベル
-            svg.append('g')
-        .attr('transform', `translate(${margin.left},0)`)
-        .call(d3.axisLeft(y))
-        .append('text')
-        .attr('transform', 'rotate(-90)')
-        .attr('x', -height / 2)
-        .attr('y', -60)
-        .attr('dy', '0.71em')
-        .attr('fill', 'black')
-        .attr('text-anchor', 'middle')
-        .style('font-size', '14px')
-        .text('故障率');
-
-      // 領域の凡例
-      const legend = svg.append('g')
-        .attr('transform', `translate(${width + margin.right / 2},${margin.top})`);
-
-      legend.append('rect')
-        .attr('x', 0)
-        .attr('y', 0)
-        .attr('width', 10)
-        .attr('height', 10)
-        .attr('fill', 'lightblue')
-        .attr('opacity', 0.3);
-
-      legend.append('text')
-        .attr('x', 20)
-        .attr('y', 10)
-        .text('初期故障期');
-
-      legend.append('rect')
-        .attr('x', 0)
-        .attr('y', 20)
-        .attr('width', 10)
-        .attr('height', 10)
-        .attr('fill', 'lightgreen')
-        .attr('opacity', 0.3);
-
-      legend.append('text')
-        .attr('x', 20)
-        .attr('y', 30)
-        .text('偶発故障期');
-
-      legend.append('rect')
-        .attr('x', 0)
-        .attr('y', 40)
-        .attr('width', 10)
-        .attr('height', 10)
-        .attr('fill', 'lightcoral')
-        .attr('opacity', 0.3);
-
-      legend.append('text')
-        .attr('x', 20)
-        .attr('y', 50)
-        .text('磨耗故障期');
-
-      legend.append('rect')
-        .attr('x', 0)
-        .attr('y', 60)
-        .attr('width', 10)
-        .attr('height', 10)
-        .attr('fill', 'black');
-
-      legend.append('text')
-        .attr('x', 20)
-        .attr('y', 70)
-        .text('バスタブ曲線');
-    },
-  },
-};
 </script>
 
-<style>
-.chart-container {
-  background-color: white;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin: auto;
-  width: fit-content;
+<style scoped>
+.tables-container {
+  display: flex;
+  justify-content: space-between;
 }
 
-.parameters {
-  margin-top: 20px;
-  font-size: 14px;
-  text-align: left;
+#totalCostTable,
+#monthlyCostTable {
+  width: 48%;
 }
 
-.parameters p {
-  margin: 5px 0;
+.top-task-row,
+.bottom-task-row {
+  height: 40px; /* ガントチャートのタスク行の高さ */
+  border-bottom: 2px solid black; /* 黒い下線を追加 */
+}
+
+.cursor-col-resize {
+  cursor: col-resize; /* 列幅変更のカーソル */
+}
+
+.cursor-pointer {
+  cursor: pointer; /* ハンドカーソル */
+}
+
+.top-chart .gantt-chart-wrapper,
+.bottom-chart .gantt-chart-wrapper {
+  width: 100%;
+  /* ここに余白を追加 */
+}
+
+.bottom-chart {
+  margin-top: 16px; /* 上下のガントチャート間に16pxの余白を追加 */
+}
+
+button {
+  display: inline-block;
+  margin-top: 8px; /* ボタンの上部にマージンを追加 */
+  margin-right: 8px; /* ボタン間にマージンを追加 */
 }
 </style>

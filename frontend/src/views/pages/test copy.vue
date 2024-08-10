@@ -1,8 +1,8 @@
 <template>
   <div id="gantt" class="space-y-4">
     <!-- 上部のガントチャート -->
-    <div class="gantt-chart-wrapper top-chart">
-      <div id="gantt-chart-container-1" class="overflow-auto h-56 w-full select-none bg-white">
+    <div class="gantt-chart-wrapper top-chart" :style="{ height: `${topChartHeight}px` }">
+      <div id="gantt-chart-container-1" class="overflow-auto w-full select-none bg-white">
         <div id="top-header" class="top-0 flex z-20 sticky" :style="{ width: `${topViewWidth}px` }">
           <div class="border-b border-black bg-green-100 flex sticky left-0 top-0" :style="{ minWidth: `${topTaskWidth}px` }">
             <div class="py-2 h-full px-2 border-r border-black text-sm" style="width: 100px">Plant</div>
@@ -37,7 +37,7 @@
             </div>
           </template>
         </div>
-        <div id="top-contents" class="relative overflow-y-auto" :style="{ width: `${topViewWidth}px`, height: 'calc(100vh - 6rem)' }">
+        <div id="top-contents" class="relative overflow-y-auto" :style="{ width: `${topViewWidth}px` }">
           <!-- 縦のグリッド線を表示 -->
           <div
             v-for="i in totalDays"
@@ -83,13 +83,17 @@
               <div class="w-2 bg-yellow-200 rounded-r-lg cursor-col-resize" @mousedown.stop="onMouseDown_ResizeStart($event, task, 'right', topTasks)"></div>
             </div>
           </div>
+          <!-- タスク追加ボタン -->
+          <button class="mt-2 bg-green-200 hover:bg-green-300 text-sm py-1 px-4 rounded" @click="addTopTask">
+            + タスクを追加
+          </button>
         </div>
       </div>
     </div>
 
     <!-- 下部のガントチャート -->
-    <div class="gantt-chart-wrapper bottom-chart">
-      <div id="gantt-chart-container-2" class="overflow-auto h-56 w-full select-none bg-white">
+    <div class="gantt-chart-wrapper bottom-chart mt-4" :style="{ height: `${bottomChartHeight}px` }">
+      <div id="gantt-chart-container-2" class="overflow-auto w-full select-none bg-white">
         <div id="bottom-header" class="top-0 flex z-20 sticky" :style="{ width: `${bottomViewWidth}px` }">
           <div class="border-b border-black bg-blue-100 flex sticky left-0 top-0" :style="{ minWidth: `${bottomTaskWidth}px` }">
             <div class="py-2 h-full px-2 border-r border-black text-sm" style="width: 80px">タスク</div>
@@ -127,7 +131,7 @@
             </div>
           </template>
         </div>
-        <div id="bottom-contents" class="relative overflow-y-auto" :style="{ width: `${bottomViewWidth}px`, height: 'calc(100vh - 6rem)' }">
+        <div id="bottom-contents" class="relative overflow-y-auto" :style="{ width: `${bottomViewWidth}px` }">
           <!-- 縦のグリッド線を表示 -->
           <div
             v-for="i in totalDays"
@@ -194,124 +198,120 @@
               <div class="w-2 bg-yellow-200 rounded-r-lg cursor-col-resize" @mousedown.stop="onMouseDown_ResizeStart($event, task, 'right', tasks)"></div>
             </div>
           </div>
+          <!-- タスク追加ボタン -->
+          <button class="mt-2 bg-blue-200 hover:bg-blue-300 text-sm py-1 px-4 rounded" @click="addBottomTask">
+            + タスクを追加
+          </button>
         </div>
       </div>
     </div>
   </div>
 </template>
 
+<script lang="ts" setup>
+import { onMounted, onUnmounted, computed } from 'vue';
+import { useGanttChart } from './GanttChartPlugin.js';
+import dayjs from 'dayjs';  // dayjsをインポート
 
+// useGanttChartから必要な関数やデータを取得
+const {
+  dragging,
+  leftResizing,
+  rightResizing,
+  blockWidth,
+  topTaskWidth,
+  bottomTaskWidth,
+  topViewWidth,
+  bottomViewWidth,
+  contentWidth,
+  totalDays,
+  startMonth,
+  endMonth,
+  calendars,
+  tasks,
+  topTasks,
+  calendar,
+  topTaskRows,
+  bottomTaskRows,
+  topTodayPosition,
+  bottomTodayPosition,
+  initView,
+  getDays,
+  serCalendar,
+  onMouseDown_MoveStart,
+  onMouseDown_ResizeStart,
+  updateTaskDates,
+  updateTopTaskName,
+  updateTaskName,
+  updateTaskPmType,
+  updateTaskAssignee,
+  makeTestData,
+  scrollbarOffset,
+  taskRowHeight,
+  weekendColor,
+  resetDragState, // 追加: ドラッグ状態のリセット関数
+  resetResizeState // 追加: リサイズ状態のリセット関数
+} = useGanttChart();
 
+onMounted(() => {
+  initView();
+  makeTestData();
+});
 
+onUnmounted(() => {
+  resetDragState(); // ドラッグ状態のリセット
+  resetResizeState(); // リサイズ状態のリセット
+});
 
+// コンポーネントの高さを計算
+const topChartHeight = computed(() => (topTaskRows.length + 1) * taskRowHeight);
+const bottomChartHeight = computed(() => (bottomTaskRows.length + 1) * taskRowHeight);
 
-<script>
-import { onMounted, onUnmounted } from "vue";
-import { useGanttChart } from "./ganttChartPlugin.js";
+// 上部タスクを追加する関数
+function addTopTask() {
+  const today = dayjs().format("YYYY-MM-DD");
+  const newTask = {
+    id: topTasks.value.length + 1,
+    name: `new plant ${topTasks.value.length + 1}`,
+    startDate: today,
+    endDate: dayjs().add(2, "days").format("YYYY-MM-DD")
+  };
+  topTasks.value.push(newTask);
+  updateTaskDates(newTask);
+}
 
-export default {
-  name: "GanttChart",
-  setup() {
-    const {
-      dragging,
-      leftResizing,
-      rightResizing,
-      blockWidth,
-      topTaskWidth,
-      bottomTaskWidth,
-      topViewWidth,
-      bottomViewWidth,
-      contentWidth,
-      totalDays,
-      startMonth,
-      endMonth,
-      calendars,
-      tasks,
-      topTasks,
-      calendar,
-      topTaskRows,
-      bottomTaskRows,
-      topTodayPosition,
-      bottomTodayPosition,
-      initView,
-      getDays,
-      serCalendar,
-      onMouseDown_MoveStart,
-      onMouseDown_ResizeStart,
-      updateTaskDates,
-      updateTopTaskName,
-      updateTaskName,
-      updateTaskPmType,
-      updateTaskAssignee, // 担当者更新用関数をインポート
-      makeTestData, // makeTestData をインポート
-      scrollbarOffset,
-      taskRowHeight,
-      weekendColor,
-    } = useGanttChart();
+// 下部タスクを追加する関数
+function addBottomTask() {
+  const today = dayjs().format("YYYY-MM-DD");
+  const newTask = {
+    id: tasks.value.length + 1,
+    name: `new task ${tasks.value.length + 1}`,
+    sample: '',
+    pmType: 'PM-1',
+    assignee: '',
+    startDate: today,
+    endDate: dayjs().add(2, "days").format("YYYY-MM-DD")
+  };
+  tasks.value.push(newTask);
+  updateTaskDates(newTask);
+}
 
-    onMounted(() => {
-      initView();
-      makeTestData();
-    });
-
-    onUnmounted(() => {
-      resetDragState();
-      resetResizeState();
-    });
-
-    return {
-      dragging,
-      leftResizing,
-      rightResizing,
-      blockWidth,
-      topTaskWidth,
-      bottomTaskWidth,
-      topViewWidth,
-      bottomViewWidth,
-      contentWidth,
-      totalDays,
-      startMonth,
-      endMonth,
-      calendars,
-      tasks,
-      topTasks,
-      calendar,
-      topTaskRows,
-      bottomTaskRows,
-      topTodayPosition,
-      bottomTodayPosition,
-      onMouseDown_MoveStart,
-      onMouseDown_ResizeStart,
-      updateTaskDates,
-      updateTopTaskName,
-      updateTaskName,
-      updateTaskPmType,
-      updateTaskAssignee, // ここで使用する
-      scrollbarOffset,
-      taskRowHeight,
-      weekendColor,
-    };
-  },
-};
 </script>
 
-<style>
+<style scoped>
 .tables-container {
   display: flex;
   justify-content: space-between;
 }
+
 #totalCostTable,
 #monthlyCostTable {
   width: 48%;
 }
 
-.top-task-row {
-  height: 40px; /* 上部ガントチャートのタスク行の高さ */
-  border-bottom: 2px solid black; /* 黒い下線を追加 */
-}
-
+.top-task-row,
 .bottom-task-row {
-  height: 40px; /* 下部ガントチャートのタスク行の高さ */
+  height: 40px; /* ガントチャートのタスク行の高さ */
   border-bottom: 2px solid black; /* 黒い下線を追加 */
 }
 
@@ -323,11 +323,18 @@ export default {
   cursor: pointer; /* ハンドカーソル */
 }
 
-.top-chart .gantt-chart-wrapper {
-  width: 100%;
-}
-
+.top-chart .gantt-chart-wrapper,
 .bottom-chart .gantt-chart-wrapper {
   width: 100%;
+  /* ここに余白を追加 */
+}
+
+.bottom-chart {
+  margin-top: 16px; /* 上下のガントチャート間に16pxの余白を追加 */
+}
+
+button {
+  display: inline-block;
+  margin-top: 8px; /* ボタンの上部にマージンを追加 */
 }
 </style>
