@@ -1,120 +1,161 @@
 <template>
-    <div class="container">
-        <div class="header">
-            <h2>PlanOptimizationBenefit</h2>
-        </div>
-        <div class="content">
-            <div class="content-container">
-                <div class="input-group">
-                    <label for="initial-cost">Initial Repair Cost: </label>
-                    <input id="initial-cost" v-model="initialCost" type="number" />
-                </div>
-                <div class="input-group">
-                    <label for="updated-cost">Updated Repair Cost: </label>
-                    <input id="updated-cost" v-model="updatedCost" type="number" />
-                </div>
-                <div class="result-group">
-                    <p>
-                        Initial Repair Cost: <span>{{ initialCost }}</span>
-                    </p>
-                    <p>
-                        Updated Repair Cost: <span>{{ updatedCost }}</span>
-                    </p>
-                    <p>
-                        Benefit: <span>{{ benefit }}</span>
-                    </p>
-                </div>
-                <div>
-                    <RatingScale />
-                </div>
-            </div>
-        </div>
+  <div class="benefit-container">
+    <h2 class="benefit-title">Plan Optimization Benefit</h2>
+    <div class="stacked-bar-chart-wrapper" ref="stackedBarChart"></div>
+    <div class="text-left">
+      <p class="cost-text">Initial Repair Cost: <span>{{ initialCost }}</span></p>
+      <p class="cost-text">Updated Repair Cost: <span>{{ updatedCost }}</span></p>
     </div>
+  </div>
 </template>
 
 <script>
-import { ref, computed, onMounted, watch, onUnmounted } from 'vue';
-import RatingScale from './Rating_Scale.vue';
+import { ref, computed, onMounted } from 'vue';
+import * as d3 from 'd3';
 
 export default {
-    name: 'PlanOptimizationBenefit',
-    components: {
-        RatingScale
-    },
-    setup() {
-        const initialCost = ref(5000); // サンプルデータ
-        const updatedCost = ref(3000); // サンプルデータ
+  name: 'PlanOptimizationBenefit',
+  setup() {
+    const initialCost = ref(5000);
+    const updatedCost = ref(3000);
 
-        const benefit = computed(() => {
-            return initialCost.value - updatedCost.value;
-        });
+    const benefit = computed(() => {
+      return initialCost.value - updatedCost.value;
+    });
 
-        onMounted(() => {
-            console.log('PlanOptimizationBenefit Component Mounted');
-            console.log('Initial Cost:', initialCost.value);
-            console.log('Updated Cost:', updatedCost.value);
-            console.log('Benefit:', benefit.value);
-        });
+    const drawStackedBarChart = () => {
+      const data = [
+        { category: 'Before', initial: 4000, updated: 1000 },
+        { category: 'After', initial: 2000, updated: 1000 },
+      ];
 
-        onUnmounted(() => {
-            console.log('PlanOptimizationBenefit Component Unmounted');
-        });
+      const width = 300;
+      const height = 150;
+      const margin = { top: 20, right: 20, bottom: 30, left: 40 };
 
-        watch([initialCost, updatedCost], ([newInitialCost, newUpdatedCost]) => {
-            console.log('Initial Cost changed to:', newInitialCost);
-            console.log('Updated Cost changed to:', newUpdatedCost);
-            console.log('Benefit changed to:', benefit.value);
-        });
+      const svg = d3
+        .select('.stacked-bar-chart-wrapper')
+        .append('svg')
+        .attr('width', width + margin.left + margin.right)
+        .attr('height', height + margin.top + margin.bottom)
+        .append('g')
+        .attr('transform', `translate(${margin.left},${margin.top})`);
 
-        return {
-            initialCost,
-            updatedCost,
-            benefit
-        };
-    }
+      const x = d3
+        .scaleBand()
+        .domain(data.map((d) => d.category))
+        .range([0, width])
+        .padding(0.2);
+
+      const y = d3
+        .scaleLinear()
+        .domain([0, d3.max(data, (d) => d.initial + d.updated)])
+        .range([height, 0]);
+
+      const color = d3.scaleOrdinal().domain(['initial', 'updated']).range(['#007bff', '#28a745']);
+
+      svg
+        .append('g')
+        .selectAll('g')
+        .data(d3.stack().keys(['initial', 'updated'])(data))
+        .enter()
+        .append('g')
+        .attr('fill', (d) => color(d.key))
+        .selectAll('rect')
+        .data((d) => d)
+        .enter()
+        .append('rect')
+        .attr('x', (d) => x(d.data.category))
+        .attr('y', (d) => y(d[1]))
+        .attr('height', (d) => y(d[0]) - y(d[1]))
+        .attr('width', x.bandwidth());
+
+      // Add X Axis
+      svg
+        .append('g')
+        .attr('class', 'x-axis')
+        .attr('transform', `translate(0,${height})`)
+        .call(d3.axisBottom(x));
+
+      // Add Y Axis
+      svg.append('g').attr('class', 'y-axis').call(d3.axisLeft(y));
+
+      // Add Legend
+      svg
+        .append('text')
+        .attr('x', width - 80)
+        .attr('y', height + 30)
+        .attr('fill', '#007bff')
+        .text('Initial');
+
+      svg
+        .append('text')
+        .attr('x', width - 150)
+        .attr('y', height + 30)
+        .attr('fill', '#28a745')
+        .text('Updated');
+    };
+
+    onMounted(() => {
+      drawStackedBarChart();
+    });
+
+    return {
+      initialCost,
+      updatedCost,
+      benefit,
+    };
+  },
 };
 </script>
 
 <style scoped>
-.container {
-    width: 100%;
-    height: 100%;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    padding: 16px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
+.benefit-container {
+  width: 100%;
+  text-align: center;
+  padding: 20px;
+  box-sizing: border-box;
+  background-color: #f7faff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.header {
-    margin-bottom: 20px;
-    text-align: center;
+.benefit-container:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
 }
 
-.input-group {
-    margin-bottom: 20px;
+.benefit-title {
+  font-size: 2.2em;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #0056b3;
 }
 
-.input-group label {
-    font-weight: bold;
-    margin-right: 10px;
+.stacked-bar-chart-wrapper {
+  margin: 20px auto;
+  width: 100%;
+  max-width: 400px;
+  height: auto;
 }
 
-.input-group input {
-    width: 120px;
-    padding: 5px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
+.text-left {
+  text-align: left;
+  padding: 10px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.result-group p {
-    font-size: 1.1em;
-    margin: 10px 0;
+.cost-text {
+  font-size: 1.5em;
+  margin: 12px 0;
+  color: #333;
 }
 
-.result-group span {
-    font-weight: bold;
-    color: #007bff;
+.cost-text span {
+  font-weight: bold;
+  color: #007bff;
 }
 </style>

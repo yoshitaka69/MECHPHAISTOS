@@ -8,21 +8,30 @@ from .models import TroubleHistory,FailurePredictionPoint,Reliability
 # Reliabilityモデル
 #------------------------------------------------------------------------------------------------------
 
+from rest_framework import serializers
+from .models import Reliability, CompanyCode
+
 class ReliabilitySerializer(serializers.ModelSerializer):
     companyCode = serializers.SlugRelatedField(
         slug_field='companyCode',
         queryset=CompanyCode.objects.all()
     )
+    
     class Meta:
         model = Reliability
-        fields = ['companyCode', 'ceListNo', 'equipment', 'machineName', 'mttr','mtbf','mttf','totalOperatingTime','failureCount' ]
-        
+        fields = [
+            'companyCode', 'ceListNo', 'equipment', 'machineName',
+            'mttr', 'mtbf', 'mttf', 'totalOperatingTime', 'failureCount'
+        ]
+
 class CompanyReliabilitySerializer(serializers.ModelSerializer):
+    # related_name='reliability_companyCode'を正しく使用
     reliability = ReliabilitySerializer(many=True, source='reliability_companyCode')
 
     class Meta:
         model = CompanyCode
         fields = ['companyCode', 'reliability']
+
 
 #------------------------------------------------------------------------------------------------------
 

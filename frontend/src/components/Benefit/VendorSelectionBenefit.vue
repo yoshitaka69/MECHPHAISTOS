@@ -1,110 +1,133 @@
 <template>
-  <div class="container">
-    <div class="header">
-      <h2>VendorSelectionBenefit</h2>
-    </div>
-    <div class="content">
-      <div class="input-group">
-        <label for="vendor-selection-benefit">ベンダー選定による効果: </label>
-        <input id="vendor-selection-benefit" v-model="vendorSelectionBenefit" type="text" />
-      </div>
-      <div class="input-group">
-        <label for="cost-benefit">コストベネフィット: </label>
-        <input id="cost-benefit" v-model="costBenefit" type="text" />
-      </div>
-      <div class="result-group">
-        <p>ベンダー選定による効果: <span>{{ vendorSelectionBenefit }}</span></p>
-        <p>コストベネフィット: <span>{{ costBenefit }}</span></p>
-      </div>
+  <div class="benefit-container">
+    <h2 class="benefit-title">Vendor Selection Benefit</h2>
+    <div class="bar-chart-wrapper" ref="barChart"></div>
+    <div class="text-left">
+      <p class="cost-text">Vendor Selection Benefit: <span>{{ vendorSelectionBenefit }}</span></p>
+      <p class="cost-text">Cost Benefit: <span>{{ costBenefit }}</span></p>
     </div>
   </div>
 </template>
 
 <script>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import * as d3 from 'd3';
 
 export default {
   name: 'VendorSelectionBenefit',
   setup() {
-    const vendorSelectionBenefit = ref('Better quality and service'); // サンプルデータ
-    const costBenefit = ref('¥500,000'); // サンプルデータ
+    const vendorSelectionBenefit = ref('Better quality and service'); // Sample data
+    const costBenefit = ref('¥500,000'); // Sample data
+
+    const drawBarChart = () => {
+      const data = [
+        { label: 'Before', value: 80 },
+        { label: 'After', value: 120 },
+      ];
+
+      const width = 300;
+      const height = 150;
+      const margin = { top: 20, right: 20, bottom: 30, left: 40 };
+
+      const svg = d3
+        .select('.bar-chart-wrapper')
+        .append('svg')
+        .attr('width', width + margin.left + margin.right)
+        .attr('height', height + margin.top + margin.bottom)
+        .append('g')
+        .attr('transform', `translate(${margin.left},${margin.top})`);
+
+      const x = d3
+        .scaleBand()
+        .range([0, width])
+        .domain(data.map((d) => d.label))
+        .padding(0.1);
+
+      const y = d3
+        .scaleLinear()
+        .range([height, 0])
+        .domain([0, d3.max(data, (d) => d.value)]);
+
+      svg
+        .selectAll('.bar')
+        .data(data)
+        .enter()
+        .append('rect')
+        .attr('class', 'bar')
+        .attr('x', (d) => x(d.label))
+        .attr('width', x.bandwidth())
+        .attr('y', (d) => y(d.value))
+        .attr('height', (d) => height - y(d.value))
+        .attr('fill', '#007bff');
+
+      svg
+        .append('g')
+        .attr('class', 'x-axis')
+        .attr('transform', `translate(0,${height})`)
+        .call(d3.axisBottom(x));
+
+      svg.append('g').attr('class', 'y-axis').call(d3.axisLeft(y));
+    };
+
+    onMounted(() => {
+      drawBarChart();
+    });
 
     return {
       vendorSelectionBenefit,
-      costBenefit
+      costBenefit,
     };
-  }
-}
+  },
+};
 </script>
 
 <style scoped>
-.container {
+.benefit-container {
   width: 100%;
-  height: 100%;
-  background-color: #f9f9f9;
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-}
-
-.header {
-  margin-bottom: 20px;
   text-align: center;
+  padding: 20px;
+  box-sizing: border-box;
+  background-color: #f7faff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.header h2 {
-  font-size: 1.8em;
-  color: #333;
+.benefit-container:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
 }
 
-.input-group {
-  margin-bottom: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: start;
-}
-
-.input-group label {
+.benefit-title {
+  font-size: 2.2em;
   font-weight: bold;
-  margin-bottom: 5px;
-  color: #555;
+  margin-bottom: 20px;
+  color: #0056b3;
 }
 
-.input-group input {
+.bar-chart-wrapper {
+  margin: 20px auto;
   width: 100%;
   max-width: 400px;
+  height: auto;
+}
+
+.text-left {
+  text-align: left;
   padding: 10px;
-  border: 1px solid #ccc;
+  background-color: #ffffff;
   border-radius: 8px;
-  box-sizing: border-box;
-  transition: border-color 0.3s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.input-group input:focus {
-  border-color: #007bff;
-  outline: none;
-}
-
-.result-group p {
-  font-size: 1.2em;
-  margin: 10px 0;
+.cost-text {
+  font-size: 1.5em;
+  margin: 12px 0;
   color: #333;
 }
 
-.result-group span {
+.cost-text span {
   font-weight: bold;
   color: #007bff;
-}
-
-@media (min-width: 768px) {
-  .input-group {
-    flex-direction: row;
-    align-items: center;
-  }
-
-  .input-group label {
-    margin-right: 10px;
-  }
 }
 </style>

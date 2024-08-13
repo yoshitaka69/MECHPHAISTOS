@@ -10,20 +10,25 @@
   export default {
 	mounted() {
 	  this.createGradientRating();
+	  window.addEventListener('resize', this.resizeGradientRating);
+	},
+	beforeUnmount() {
+	  window.removeEventListener('resize', this.resizeGradientRating);
 	},
 	methods: {
 	  createGradientRating() {
-		const width = 600; // Smaller width
-		const height = 50;
+		const containerWidth = this.$refs.ratingContainer.offsetWidth;
+		const width = containerWidth - 40; // パディングを引く
+		const height = 40; // 高さを縮小
 		const sections = 20;
 		const sectionWidth = width / sections;
   
 		const svg = d3.select(this.$refs.ratingContainer)
 		  .append('svg')
-		  .attr('width', width + 40) // +40 for padding
-		  .attr('height', height + 60) // +60 for padding and labels
+		  .attr('width', width + 40) // パディングを含む
+		  .attr('height', height + 50) // パディングとラベルの高さを含む
 		  .append('g')
-		  .attr('transform', 'translate(20, 20)'); // translate by padding
+		  .attr('transform', 'translate(20, 20)'); // パディングで移動
   
 		// Create gradient
 		const gradient = svg.append('defs')
@@ -78,7 +83,7 @@
 		  .attr('x', d => d * sectionWidth)
 		  .attr('y', height + 15)
 		  .attr('text-anchor', 'middle')
-		  .attr('font-size', '12px')
+		  .attr('font-size', '10px') // フォントサイズを小さく
 		  .text(d => `${d * 5}%`); // 0% to 100%
   
 		// Adjust the last label to not overlap with the previous one
@@ -101,13 +106,13 @@
 		  .attr('x', d => d.position)
 		  .attr('y', -10) // Position above the bar
 		  .attr('text-anchor', 'middle')
-		  .attr('font-size', '12px')
+		  .attr('font-size', '10px') // フォントサイズを小さく
 		  .attr('font-weight', 'bold')
 		  .text(d => d.text);
   
 		// Draw draggable triangle
 		const triangle = svg.append('polygon')
-		  .attr('points', '0,0 -10,10 10,10')
+		  .attr('points', '0,0 -8,8 8,8') // トライアングルを小さく
 		  .attr('fill', 'black')
 		  .attr('transform', `translate(0, ${height + 20})`)
 		  .call(d3.drag().on('drag', dragged));
@@ -117,6 +122,12 @@
 		  triangle.attr('transform', `translate(${x}, ${height + 20})`);
 		  rect.attr('width', x).attr('fill', 'url(#gradient)');
 		}
+	  },
+	  resizeGradientRating() {
+		// Remove existing SVG
+		d3.select(this.$refs.ratingContainer).selectAll('*').remove();
+		// Recreate with new dimensions
+		this.createGradientRating();
 	  }
 	}
   };
@@ -131,13 +142,14 @@
 	padding: 10px;
 	border: 1px solid #ccc;
 	margin: 20px;
-	max-width: 650px; /* Slightly larger than the SVG width */
+	max-width: 100%;
   }
   
   .gradient-rating {
 	display: flex;
 	justify-content: center;
 	margin-top: 20px;
+	width: 100%; /* 親の幅にフィット */
   }
   </style>
   
