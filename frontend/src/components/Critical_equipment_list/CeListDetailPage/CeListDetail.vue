@@ -11,7 +11,8 @@
               :class="[
                 'flex align-items-center cursor-pointer p-3 border-round',
                 selectedTab === 'criticalEquipment' ? 'text-primary' : 'text-800',
-                'hover:surface-hover transition-duration-150 transition-colors'
+                'hover:surface-hover transition-duration-150 transition-colors',
+                'font-bold'
               ]"
             >
               <i class="pi pi-database md:mr-2"></i>
@@ -24,7 +25,8 @@
               :class="[
                 'flex align-items-center cursor-pointer p-3 border-round',
                 selectedTab === 'evaluateEquipment' ? 'text-primary' : 'text-800',
-                'hover:surface-hover transition-duration-150 transition-colors'
+                'hover:surface-hover transition-duration-150 transition-colors',
+                'font-bold'
               ]"
             >
               <i class="pi pi-chart-line md:mr-2"></i>
@@ -37,7 +39,8 @@
               :class="[
                 'flex align-items-center cursor-pointer p-3 border-round',
                 selectedTab === 'taskList' ? 'text-primary' : 'text-800',
-                'hover:surface-hover transition-duration-150 transition-colors'
+                'hover:surface-hover transition-duration-150 transition-colors',
+                'font-bold'
               ]"
             >
               <i class="pi pi-list md:mr-2"></i>
@@ -50,7 +53,8 @@
               :class="[
                 'flex align-items-center cursor-pointer p-3 border-round',
                 selectedTab === 'partsList' ? 'text-primary' : 'text-800',
-                'hover:surface-hover transition-duration-150 transition-colors'
+                'hover:surface-hover transition-duration-150 transition-colors',
+                'font-bold'
               ]"
             >
               <i class="pi pi-box md:mr-2"></i>
@@ -63,7 +67,8 @@
               :class="[
                 'flex align-items-center cursor-pointer p-3 border-round',
                 selectedTab === 'workingRecord' ? 'text-primary' : 'text-800',
-                'hover:surface-hover transition-duration-150 transition-colors'
+                'hover:surface-hover transition-duration-150 transition-colors',
+                'font-bold'
               ]"
             >
               <i class="pi pi-book md:mr-2"></i>
@@ -85,11 +90,11 @@
 
 <script>
 import { ref } from "vue";
-import CriticalEquipment from "@/components/Critical_equipment_list/CriticalEquipment.vue";
-import EvaluateEquipment from "@/components/Critical_equipment_list/EvaluateEquipment";
-import TaskList from "@/components/Critical_equipment_list/TaskList";
-import PartsList from "@/components/Critical_equipment_list/PartsList";
-import WorkingRecord from "@/components/Critical_equipment_list/WorkingRecord";
+import CriticalEquipment from "@/components/Critical_equipment_list/CeListDetailPage/CriticalEquipment.vue";
+import EvaluateEquipment from "@/components/Critical_equipment_list/CeListDetailPage/EvaluateEquipment";
+import TaskList from "@/components/Critical_equipment_list/CeListDetailPage/TaskList";
+import PartsList from "@/components/Critical_equipment_list/CeListDetailPage/PartsList";
+import WorkingRecord from "@/components/Critical_equipment_list/CeListDetailPage/WorkingRecord";
 
 export default {
   components: {
@@ -115,6 +120,15 @@ export default {
 </script>
 
 <style scoped>
+.surface-ground {
+  /* 背景色を薄い橙色に設定 */
+  background-color: #FFEDD5 !important;
+}
+
+.font-bold {
+  font-weight: bold;
+}
+
 .cursor-pointer {
   cursor: pointer;
 }

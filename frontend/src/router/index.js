@@ -186,7 +186,7 @@ const router = createRouter({
 		{
 			path: '/celist_detail/:ceListNo',
 			name: 'CeListDetail',
-			component: () => import('@/components/Critical_equipment_list/CeListDetail.vue')
+			component: () => import('@/components/Critical_equipment_list/CeListDetailPage/CeListDetail.vue')
 		},
 		{
 			path: '/spare_parts_detail/:partsNo',
