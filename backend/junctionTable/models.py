@@ -78,7 +78,7 @@ class MasterDataTable(models.Model):
     totalCost = models.CharField(verbose_name='totalCost', max_length=200, blank=True,null=True,)
 
     #Impact
-    levelSetValue = models.PositiveIntegerField(verbose_name='levelSetValue', null=True,blank=True,default=0)
+    levelSetValue = models.CharField(verbose_name='levelSetValue', max_length=200, null=True, blank=True)
     mttr = models.PositiveSmallIntegerField(verbose_name='mttr',blank=True,null=True,default=0)
     possibilityOfContinuousProduction = models.CharField(verbose_name='possibilityOfContinuousProduction', max_length=200,null=True,blank=True)
 

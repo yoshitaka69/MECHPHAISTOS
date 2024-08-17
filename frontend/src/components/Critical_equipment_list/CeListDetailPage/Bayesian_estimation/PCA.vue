@@ -1,69 +1,81 @@
 <template>
   <div class="main-container">
-    <h2>PCA プロット</h2>
-    <div class="pca-chart">
-      <svg ref="pcaChart"></svg>
+    <h2>PCA（主成分分析）の可視化</h2>
+    <div class="pca-scatter-plot">
+      <h3>主成分得点プロット</h3>
+      <svg ref="pcaScatterPlot"></svg>
+    </div>
+    <div class="pca-variance-plot">
+      <h3>寄与率（バープロット）</h3>
+      <svg ref="pcaVariancePlot"></svg>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
 import * as d3 from 'd3'
-import { PCA } from 'ml-pca' // 修正: 名前付きインポートを使用
+import axios from 'axios'
 
-// サンプルデータ
-const sampleData = [
-  [2.5, 2.4, 3.2],
-  [0.5, 0.7, 0.8],
-  [2.2, 2.9, 3.1],
-  [1.9, 2.2, 2.8],
-  [3.1, 3.0, 3.7],
-  [2.3, 2.7, 3.4],
-  [2, 1.6, 2.5],
-  [1, 1.1, 1.2],
-  [1.5, 1.6, 1.8],
-  [1.1, 0.9, 1.4]
-]
+const companyCode = '001-testChemical-001'  // 会社コードを指定
+const pcaScores = ref([])
+const explainedVariance = ref([])
+const features = ref([])
 
-// PCA の実行
-const pca = new PCA(sampleData)
-const scores = pca.predict(sampleData, { nComponents: 2 }).to2DArray()
+const pcaScatterPlot = ref<SVGSVGElement | null>(null)
+const pcaVariancePlot = ref<SVGSVGElement | null>(null)
 
-const pcaChart = ref<SVGSVGElement | null>(null)
+onMounted(async () => {
+  try {
+    // DjangoのAPIからPCA結果を取得
+    const response = await axios.get(`http://127.0.0.1:8000/api/reliability/reliabilityByCompany/pca/?companyCode=${companyCode}`)
+    pcaScores.value = response.data.pca_scores
+    explainedVariance.value = response.data.explained_variance
+    features.value = response.data.features
 
-onMounted(() => {
-  if (!pcaChart.value) return
+    nextTick(() => {
+      drawPCAScatterPlot()
+      drawPCAVariancePlot()
+    })
+  } catch (error) {
+    console.error('データの取得に失敗しました:', error)
+  }
+})
 
-  const svgEl = d3.select(pcaChart.value)
-  const containerWidth = 500
-  const containerHeight = 500
-  const margin = { top: 20, right: 20, bottom: 50, left: 50 }
+function drawPCAScatterPlot() {
+  const svgEl = d3.select(pcaScatterPlot.value)
+  const containerWidth = 600
+  const containerHeight = 400
+
+  const margin = { top: 20, right: 20, bottom: 50, left: 60 }
   const width = containerWidth - margin.left - margin.right
   const height = containerHeight - margin.top - margin.bottom
 
-  svgEl.attr('width', containerWidth).attr('height', containerHeight)
+  svgEl
+    .attr('width', containerWidth)
+    .attr('height', containerHeight)
+
+  const group = svgEl.append('g')
+    .attr('transform', `translate(${margin.left},${margin.top})`)
 
   const xScale = d3.scaleLinear()
-    .domain(d3.extent(scores, d => d[0]) as [number, number])
+    .domain(d3.extent(pcaScores.value, d => d.PC1)!)
     .range([0, width])
 
   const yScale = d3.scaleLinear()
-    .domain(d3.extent(scores, d => d[1]) as [number, number])
+    .domain(d3.extent(pcaScores.value, d => d.PC2)!)
     .range([height, 0])
 
-  const group = svgEl.append('g').attr('transform', `translate(${margin.left},${margin.top})`)
-
-  // 散布図の描画
+  // 散布図を描画
   group.selectAll('circle')
-    .data(scores)
+    .data(pcaScores.value)
     .join('circle')
-    .attr('cx', d => xScale(d[0]))
-    .attr('cy', d => yScale(d[1]))
+    .attr('cx', d => xScale(d.PC1))
+    .attr('cy', d => yScale(d.PC2))
     .attr('r', 5)
-    .attr('fill', '#1f77b4')
+    .style('fill', '#69b3a2')
 
-  // 軸の描画
+  // 軸を描画
   group.append('g')
     .attr('transform', `translate(0,${height})`)
     .call(d3.axisBottom(xScale))
@@ -71,35 +83,105 @@ onMounted(() => {
   group.append('g')
     .call(d3.axisLeft(yScale))
 
-  // 軸ラベルの追加
-  svgEl.append('text')
-    .attr('x', width / 2 + margin.left)
-    .attr('y', height + margin.top + margin.bottom - 10)
+  // 軸ラベルを追加
+  group.append('text')
+    .attr('x', width / 2)
+    .attr('y', height + margin.bottom)
     .style('text-anchor', 'middle')
     .style('font-size', '12px')
-    .text('PC1')
+    .text('主成分1 (PC1)')
 
-  svgEl.append('text')
+  group.append('text')
     .attr('x', -height / 2)
-    .attr('y', margin.left - 30)
+    .attr('y', -margin.left + 20)
     .attr('transform', 'rotate(-90)')
     .style('text-anchor', 'middle')
     .style('font-size', '12px')
-    .text('PC2')
-})
+    .text('主成分2 (PC2)')
+}
+
+function drawPCAVariancePlot() {
+  const svgEl = d3.select(pcaVariancePlot.value)
+  const containerWidth = 600
+  const containerHeight = 400
+
+  const margin = { top: 20, right: 20, bottom: 50, left: 60 }
+  const width = containerWidth - margin.left - margin.right
+  const height = containerHeight - margin.top - margin.bottom
+
+  svgEl
+    .attr('width', containerWidth)
+    .attr('height', containerHeight)
+
+  const group = svgEl.append('g')
+    .attr('transform', `translate(${margin.left},${margin.top})`)
+
+  const xScale = d3.scaleBand()
+    .domain(['PC1', 'PC2'])
+    .range([0, width])
+    .padding(0.1)
+
+  const yScale = d3.scaleLinear()
+    .domain([0, d3.max(explainedVariance.value)!])
+    .range([height, 0])
+
+  // バーグラフを描画
+  group.selectAll('rect')
+    .data(explainedVariance.value)
+    .join('rect')
+    .attr('x', (_, i) => xScale(`PC${i + 1}`)!)
+    .attr('y', d => yScale(d))
+    .attr('width', xScale.bandwidth())
+    .attr('height', d => height - yScale(d))
+    .attr('fill', '#69b3a2')
+
+  // 軸を描画
+  group.append('g')
+    .attr('transform', `translate(0,${height})`)
+    .call(d3.axisBottom(xScale))
+
+  group.append('g')
+    .call(d3.axisLeft(yScale))
+
+  // 軸ラベルを追加
+  group.append('text')
+    .attr('x', width / 2)
+    .attr('y', height + margin.bottom)
+    .style('text-anchor', 'middle')
+    .style('font-size', '12px')
+    .text('主成分')
+
+  group.append('text')
+    .attr('x', -height / 2)
+    .attr('y', -margin.left + 20)
+    .attr('transform', 'rotate(-90)')
+    .style('text-anchor', 'middle')
+    .style('font-size', '12px')
+    .text('寄与率')
+}
 </script>
 
 <style scoped>
 .main-container {
-  max-width: 600px;
+  max-width: 1200px;
   margin: auto;
   background-color: white;
   padding: 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.pca-chart {
-  width: 100%;
-  height: 500px;
+.pca-scatter-plot, .pca-variance-plot {
+  margin-top: 20px;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+h3 {
+  text-align: center;
+  font-size: 16px;
+  margin-bottom: 10px;
 }
 </style>

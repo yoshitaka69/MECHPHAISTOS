@@ -2,6 +2,7 @@ from django.db import models
 from accounts.models import CompanyCode
 from ceList.models import Equipment,Machine,CeList
 from django.utils import timezone
+from datetime import date
 
 
 
@@ -69,6 +70,9 @@ class Reliability(models.Model):
         verbose_name='Operational Conditions'
     )
     componentCondition = models.FloatField(null=True, blank=True, verbose_name='Component Condition')  # 部品の摩耗度
+
+        # 新規追加
+    record_date = models.DateField(verbose_name='Record Date', default=date.today)
 
     class Meta:
         ordering = ['-mttr']

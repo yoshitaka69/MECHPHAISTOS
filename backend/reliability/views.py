@@ -36,6 +36,10 @@ from scipy.stats import norm, weibull_min
 import numpy as np
 import datetime
 import pandas as pd
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.decomposition import PCA  # ここでPCAをインポート
+from sklearn.linear_model import LinearRegression
+import shap
 
 
 class CompanyCodeReliabilityViewSet(viewsets.ModelViewSet):
@@ -245,36 +249,318 @@ class CompanyCodeReliabilityViewSet(viewsets.ModelViewSet):
 
 
 
-
-
+    #相関行列のヒートマップ
     @action(detail=False, methods=['get'], url_path='correlation')
-    def correlation_matrix(self, request):
-        company_code = request.query_params.get('companyCode', None)
+    def get_heatmap_data(self, request):
+        print("Debug: get_heatmap_data called")
+        company_code = request.query_params.get('companyCode')
+
         if not company_code:
-            return Response({"error": "companyCode is required"}, status=400)
+            print("Error: companyCode parameter is missing")
+            return Response({"error": "companyCode parameter is required"}, status=400)
 
-        company = CompanyCode.objects.prefetch_related('reliability_companyCode').filter(companyCode=company_code).first()
+        reliabilities = Reliability.objects.filter(companyCode__companyCode=company_code)
+
+        if not reliabilities.exists():
+            print(f"Error: No data found for companyCode {company_code}")
+            return Response({"error": "No data found for the given companyCode"}, status=404)
+
+        try:
+            # データフレームを作成
+            data = []
+            for reliability in reliabilities:
+                data.append({
+                    "MTTR": reliability.mttr,
+                    "MTBF": reliability.mtbf,
+                    "MTTF": reliability.mttf,
+                    "failureCount": reliability.failureCount,
+                    "totalOperatingTime": reliability.totalOperatingTime,
+                    "failureType": reliability.failureType,
+                    "failureMode": reliability.failureMode,
+                    "maintenanceMethod": reliability.maintenanceMethod,
+                    "maintenanceFrequency": reliability.maintenanceFrequency,
+                    "maintenanceImpact": reliability.maintenanceImpact,
+                    "failureCause": reliability.failureCause,
+                    "environmentCondition": reliability.environmentCondition,
+                    "operationalCondition": reliability.operationalCondition,
+                    "componentCondition": reliability.componentCondition,
+                })
+
+            df = pd.DataFrame(data)
+            print("Debug: DataFrame created")
+            print(df)
+
+            # 相関行列を計算
+            correlation_matrix = df.corr()
+            print("Debug: Correlation matrix calculated")
+            print(correlation_matrix)
+
+            # NaNやInfinityを0に置き換え
+            correlation_matrix = correlation_matrix.replace([np.inf, -np.inf], np.nan).fillna(0)
+
+            # 小数点以下2桁までにフォーマット
+            correlation_matrix = correlation_matrix.round(2)
+            print("Debug: Correlation matrix after rounding")
+            print(correlation_matrix)
+
+            # JSON形式で返すために整形
+            heatmap_data = correlation_matrix.reset_index().melt(id_vars=['index'])
+            heatmap_data.columns = ['x', 'y', 'value']
+
+            return Response(heatmap_data.to_dict(orient='records'))
+
+        except Exception as e:
+            print(f"Error: {str(e)}")
+            return Response({"error": "An error occurred while processing the request."}, status=500)
+        
+
+
+
+
+
+    #ランダムフォレストによる特徴量の重要度
+    @action(detail=False, methods=['get'], url_path='feature_importance_details')
+    def get_feature_importance_details(self, request):
+        company_code = request.query_params.get('companyCode')
+
+        if not company_code:
+            return Response({"error": "companyCode parameter is required"}, status=400)
+
+        reliabilities = Reliability.objects.filter(companyCode__companyCode=company_code)
+
+        if not reliabilities.exists():
+            return Response({"error": "No data found for the given companyCode"}, status=404)
+
+        try:
+            # データフレームを作成
+            data = []
+            for reliability in reliabilities:
+                data.append({
+                    "MTTR": reliability.mttr,
+                    "MTBF": reliability.mtbf,
+                    "MTTF": reliability.mttf,
+                    "failureCount": reliability.failureCount,
+                    "totalOperatingTime": reliability.totalOperatingTime,
+                    "failureType": reliability.failureType,
+                    "failureMode": reliability.failureMode,
+                    "maintenanceMethod": reliability.maintenanceMethod,
+                    "maintenanceFrequency": reliability.maintenanceFrequency,
+                    "maintenanceImpact": reliability.maintenanceImpact,
+                    "failureCause": reliability.failureCause,
+                    "environmentCondition": reliability.environmentCondition,
+                    "operationalCondition": reliability.operationalCondition,
+                    "componentCondition": reliability.componentCondition,
+                })
+
+            df = pd.DataFrame(data)
+
+            # 特徴量と目的変数の分割
+            X = df.drop(columns=['failureCount'])  # 例として `failureCount` を目的変数とする
+            y = df['failureCount']
+
+            # ランダムフォレストモデルの訓練
+            model = RandomForestRegressor(n_estimators=100, random_state=42)
+            model.fit(X, y)
+
+            # 特徴量重要度の抽出
+            importance = model.feature_importances_
+            features = X.columns
+
+            # トレーニングデータと評価結果の例を取得
+            training_data = X.head(10).to_dict(orient='records')  # トレーニングデータの一部を返す
+            predictions = model.predict(X.head(10)).tolist()  # 一部の予測結果を返す
+
+            # 結果をJSON形式に整形して返す
+            feature_importance = [{"feature": f, "importance": round(imp, 2)} for f, imp in zip(features, importance)]
+            response_data = {
+                "training_data": training_data,
+                "predictions": predictions,
+                "feature_importance": feature_importance
+            }
+
+            return Response(response_data)
+
+        except Exception as e:
+            return Response({"error": f"An error occurred: {str(e)}"}, status=500)
+        
+
+    
+    #特徴料重要度と回帰分析
+    @action(detail=False, methods=['get'], url_path='regression_analysis')
+    def get_regression_analysis(self, request):
+        company_code = request.query_params.get('companyCode')
+
+        if not company_code:
+            return Response({"error": "companyCode parameter is required"}, status=400)
+
+        reliabilities = Reliability.objects.filter(companyCode__companyCode=company_code)
+
+        if not reliabilities.exists():
+            return Response({"error": "No data found for the given companyCode"}, status=404)
+
+        try:
+            # データフレームを作成
+            data = []
+            for reliability in reliabilities:
+                data.append({
+                    "MTTR": reliability.mttr,
+                    "MTBF": reliability.mtbf,
+                    "MTTF": reliability.mttf,
+                    "failureCount": reliability.failureCount,
+                    "totalOperatingTime": reliability.totalOperatingTime,
+                    "failureType": reliability.failureType,
+                    "failureMode": reliability.failureMode,
+                    "maintenanceMethod": reliability.maintenanceMethod,
+                    "maintenanceFrequency": reliability.maintenanceFrequency,
+                    "maintenanceImpact": reliability.maintenanceImpact,
+                    "failureCause": reliability.failureCause,
+                    "environmentCondition": reliability.environmentCondition,
+                    "operationalCondition": reliability.operationalCondition,
+                    "componentCondition": reliability.componentCondition,
+                    "failureTime": reliability.failureCount  # 例として故障回数を故障時間に使用
+                })
+
+            df = pd.DataFrame(data)
+
+            features = df.columns.drop('failureTime')
+            regression_results = {}
+
+            for feature in features:
+                X = df[[feature]].fillna(0)
+                y = df['failureTime'].fillna(0)
+
+                model = LinearRegression()
+                model.fit(X, y)
+
+                slope = model.coef_[0]
+                intercept = model.intercept_
+
+                # 信頼区間の計算
+                y_pred = model.predict(X)
+                n = len(X)
+                mean_x = np.mean(X[feature])
+                t_value = 1.96  # 95%の信頼区間
+                se = np.sqrt(np.sum((y - y_pred) ** 2) / (n - 2))
+                se_line = se * np.sqrt(1 / n + (X[feature] - mean_x) ** 2 / np.sum((X[feature] - mean_x) ** 2))
+
+                lower_bound = y_pred - t_value * se_line
+                upper_bound = y_pred + t_value * se_line
+
+                # NaNや無限大の値をゼロに置き換える
+                lower_bound = np.nan_to_num(lower_bound, nan=0.0, posinf=0.0, neginf=0.0)
+                upper_bound = np.nan_to_num(upper_bound, nan=0.0, posinf=0.0, neginf=0.0)
+
+                regression_results[feature] = {
+                    "slope": round(slope, 2),
+                    "intercept": round(intercept, 2),
+                    "points": [[x, round(slope * x + intercept, 2)] for x in X[feature]],
+                    "confidence_interval": {
+                        "lower": lower_bound.tolist(),
+                        "upper": upper_bound.tolist()
+                    }
+                }
+
+            return Response(regression_results)
+
+        except Exception as e:
+            return Response({"error": f"An error occurred: {str(e)}"}, status=500)
+        
+
+
+
+
+    
+    @action(detail=False, methods=['get'], url_path='shap_values')
+    def get_shap_values(self, request):
+        company_code = request.query_params.get('companyCode')
+
+        if not company_code:
+            return Response({"error": "companyCode parameter is required"}, status=400)
+
+        reliabilities = Reliability.objects.filter(companyCode__companyCode=company_code)
+
+        if not reliabilities.exists():
+            return Response({"error": "No data found for the given companyCode"}, status=404)
+
+        try:
+            # データフレームを作成
+            data = []
+            for reliability in reliabilities:
+                data.append({
+                    "MTTR": reliability.mttr,
+                    "MTBF": reliability.mtbf,
+                    "MTTF": reliability.mttf,
+                    "failureCount": reliability.failureCount,
+                    "totalOperatingTime": reliability.totalOperatingTime,
+                    "failureType": reliability.failureType,
+                    "failureMode": reliability.failureMode,
+                    "maintenanceMethod": reliability.maintenanceMethod,
+                    "maintenanceFrequency": reliability.maintenanceFrequency,
+                    "maintenanceImpact": reliability.maintenanceImpact,
+                    "failureCause": reliability.failureCause,
+                    "environmentCondition": reliability.environmentCondition,
+                    "operationalCondition": reliability.operationalCondition,
+                    "componentCondition": reliability.componentCondition,
+                })
+
+            df = pd.DataFrame(data)
+            features = df.columns
+            X = df.fillna(0)
+
+            # ランダムフォレストモデルをトレーニング
+            model = RandomForestRegressor()
+            model.fit(X, X["failureCount"])  # 例として故障回数をターゲットとする
+
+            # SHAP値の計算
+            explainer = shap.TreeExplainer(model)
+            shap_values = explainer.shap_values(X)
+
+            shap_data = []
+            for i in range(len(shap_values)):
+                shap_data.append({feature: shap_values[i][j] for j, feature in enumerate(features)})
+
+            return Response({"shap_values": shap_data, "features": features.tolist()})
+
+        except Exception as e:
+            return Response({"error": f"An error occurred: {str(e)}"}, status=500)
+        
+
+
+    #PCAの実行
+    @action(detail=False, methods=['get'], url_path='pca')
+    def perform_pca(self, request):
+        company_code = request.query_params.get('companyCode')
+        company = CompanyCode.objects.filter(companyCode=company_code).first()
+        
         if not company:
-            return Response({"error": "Company code not found"}, status=404)
+            return Response({"error": "Company code not found."}, status=404)
 
-        reliability_data = company.reliability_companyCode.all().values('mttr', 'mtbf', 'mttf', 'totalOperatingTime', 'failureCount')
-        reliability_list = list(reliability_data)
-        if not reliability_list:
-            return Response({"error": "No reliability data found"}, status=404)
+        queryset = Reliability.objects.filter(companyCode=company)
+        data = queryset.values(
+            'mttr', 'mtbf', 'mttf', 'failureCount', 'totalOperatingTime', 
+            'failureType', 'failureMode', 'maintenanceMethod', 'maintenanceFrequency', 
+            'maintenanceImpact', 'failureCause', 'environmentCondition', 
+            'operationalCondition', 'componentCondition'
+        )
 
-        # データフレームに変換
-        df = pd.DataFrame(reliability_list)
-        df = df[['mttr', 'mtbf', 'mttf', 'totalOperatingTime', 'failureCount']]
+        # データフレームを作成
+        df = pd.DataFrame(list(data))
 
-        # 無限大やNaNを処理
-        df.replace([np.inf, -np.inf], np.nan, inplace=True)
-        df.fillna(0, inplace=True)
+        # PCAの実行
+        pca = PCA(n_components=2)  # 2つの主成分を取得
+        pca_result = pca.fit_transform(df.fillna(0))  # null値を0に変換
 
-        # 相関行列の計算
-        correlation_matrix = df.corr().to_dict()
+        # 主成分得点を取得
+        pca_scores = pd.DataFrame(pca_result, columns=['PC1', 'PC2'])
 
-        return Response(correlation_matrix)
+        # 寄与率を取得
+        explained_variance = pca.explained_variance_ratio_
 
+        return Response({
+            'pca_scores': pca_scores.to_dict(orient='records'),
+            'explained_variance': explained_variance.tolist(),
+            'features': df.columns.tolist()
+        })
 
 
 #------------------------------------------------------------------------------------------------------------------------

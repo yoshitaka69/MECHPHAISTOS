@@ -1,156 +1,181 @@
 <template>
   <div class="main-container">
-    <h2>特徴量重要度の評価（ランダムフォレスト）</h2>
-    <div class="importance-chart">
-      <svg ref="importanceChart"></svg>
+    <h2>SHAP値の可視化</h2>
+    <div class="summary-bar-plot">
+      <h3>Summary Plot (Bar Graph)</h3>
+      <svg ref="summaryBarPlot"></svg>
+    </div>
+    <div class="contribution-plot">
+      <h3>特徴量の貢献度 vs 目的変数</h3>
+      <svg ref="contributionPlot"></svg>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
 import * as d3 from 'd3'
-// ml5はブラウザ上での動作を想定しているため、npmパッケージが動作しない場合はCDNを利用する
-// import ml5 from 'ml5'  // ローカルでの利用が可能な場合
-import 'https://cdn.jsdelivr.net/npm/ml5@0.6.0/dist/ml5.min.js'
+import axios from 'axios'
 
-// サンプルデータ（単純化）
-const data = [
-  { failureTime: 5, MTTR: 1, MTBF: 0.7, MTRF: 0.4 },
-  { failureTime: 7, MTTR: 0.7, MTBF: 1, MTRF: 0.5 },
-  { failureTime: 6, MTTR: 0.4, MTBF: 0.5, MTRF: 1 },
-  { failureTime: 8, MTTR: 0.8, MTBF: 0.6, MTRF: 0.3 },
-  { failureTime: 9, MTTR: 0.2, MTBF: 0.2, MTRF: 0.7 }
-]
+const companyCode = '001-testChemical-001'  // 会社コードを指定
+const shapValues = ref({})
+const features = ref([])
 
-// 特徴量とターゲット変数の分離
-const features = ['MTTR', 'MTBF', 'MTRF']
+const summaryBarPlot = ref<SVGSVGElement | null>(null)
+const contributionPlot = ref<SVGSVGElement | null>(null)
 
-// 各データポイントの特徴量とターゲット変数を抽出
-const featureData = data.map(d => features.map(f => d[f]))
-const targetData = data.map(d => d.failureTime)
-
-const importanceChart = ref<SVGSVGElement | null>(null)
-
-onMounted(() => {
+onMounted(async () => {
   try {
-    // 特徴量データとターゲットデータの形状を確認
-    console.log("Feature Data Shape: ", featureData.length, featureData[0].length)
-    console.log("Target Data Length: ", targetData.length)
-    console.log("Feature Data Content: ", featureData)
-    console.log("Target Data Content: ", targetData)
+    // DjangoのAPIからSHAP値を取得
+    const response = await axios.get(`http://127.0.0.1:8000/api/reliability/reliabilityByCompany/shap_values/?companyCode=${companyCode}`)
+    shapValues.value = response.data.shap_values
+    features.value = response.data.features
 
-    // ランダムフォレストの代わりに、単純なニューラルネットワークを使用
-    const options = {
-      inputs: features.length,
-      outputs: 1,
-      task: 'regression',
-      debug: true
-    }
-
-    const nn = ml5.neuralNetwork(options)
-
-    // データの追加
-    featureData.forEach((features, i) => {
-      nn.addData(features, [targetData[i]])
-    })
-
-    // データを正規化
-    nn.normalizeData()
-
-    // モデルのトレーニング
-    nn.train({ epochs: 100 }, () => {
-      // 訓練完了後に特徴量重要度を推定
-      nn.predict(featureData, (err, results) => {
-        if (err) {
-          console.error(err)
-          return
-        }
-        // ダミーでの重要度の計算例（実際には実装が必要）
-        const importances = features.map(() => Math.random())
-
-        console.log("Importances: ", importances)
-
-        if (!importanceChart.value) return
-
-        const svgEl = d3.select(importanceChart.value)
-        const containerWidth = 800
-        const containerHeight = 400
-
-        const margin = { top: 20, right: 20, bottom: 50, left: 60 }
-        const width = containerWidth - margin.left - margin.right
-        const height = containerHeight - margin.top - margin.bottom
-
-        svgEl
-          .attr('width', containerWidth)
-          .attr('height', containerHeight)
-
-        const xScale = d3.scaleBand()
-          .domain(features)
-          .range([0, width])
-          .padding(0.1)
-
-        const yScale = d3.scaleLinear()
-          .domain([0, d3.max(importances) as number])
-          .range([height, 0])
-
-        const group = svgEl.append('g')
-          .attr('transform', `translate(${margin.left},${margin.top})`)
-
-        // 棒グラフを描画
-        group.selectAll('rect')
-          .data(importances)
-          .join('rect')
-          .attr('x', (_, i) => xScale(features[i])!)
-          .attr('y', d => yScale(d))
-          .attr('width', xScale.bandwidth())
-          .attr('height', d => height - yScale(d))
-          .attr('fill', '#69b3a2')
-
-        // 軸を描画
-        group.append('g')
-          .attr('transform', `translate(0,${height})`)
-          .call(d3.axisBottom(xScale))
-          .selectAll('text')
-          .attr('transform', 'rotate(-45)')
-          .style('text-anchor', 'end')
-
-        group.append('g')
-          .call(d3.axisLeft(yScale))
-
-        // 軸ラベルを追加
-        svgEl.append('text')
-          .attr('x', width / 2 + margin.left)
-          .attr('y', height + margin.top + margin.bottom - 10)
-          .style('text-anchor', 'middle')
-          .style('font-size', '12px')
-          .text('Features')
-
-        svgEl.append('text')
-          .attr('x', -height / 2)
-          .attr('y', margin.left - 50)
-          .attr('transform', 'rotate(-90)')
-          .style('text-anchor', 'middle')
-          .style('font-size', '12px')
-          .text('Importance')
-      })
+    nextTick(() => {
+      drawSummaryBarPlot()
+      drawContributionPlot()
     })
   } catch (error) {
-    console.error("Error in RandomForestRegression:", error)
+    console.error('データの取得に失敗しました:', error)
   }
 })
+
+function drawSummaryBarPlot() {
+  const svgEl = d3.select(summaryBarPlot.value)
+  const containerWidth = 600
+  const containerHeight = 400
+
+  const margin = { top: 20, right: 20, bottom: 50, left: 80 }
+  const width = containerWidth - margin.left - margin.right
+  const height = containerHeight - margin.top - margin.bottom
+
+  svgEl
+    .attr('width', containerWidth)
+    .attr('height', containerHeight)
+
+  const group = svgEl.append('g')
+    .attr('transform', `translate(${margin.left},${margin.top})`)
+
+  // SHAP値の絶対値の平均を計算
+  const avgShapValues = features.value.map(feature => ({
+    feature,
+    value: d3.mean(shapValues.value.map(v => Math.abs(v[feature])))
+  }))
+
+  const yScale = d3.scaleBand()
+    .domain(avgShapValues.map(d => d.feature))
+    .range([height, 0])
+    .padding(0.1)
+
+  const xScale = d3.scaleLinear()
+    .domain([0, d3.max(avgShapValues, d => d.value)!])
+    .range([0, width])
+
+  // バーグラフを描画
+  group.selectAll('rect')
+    .data(avgShapValues)
+    .join('rect')
+    .attr('x', 0)
+    .attr('y', d => yScale(d.feature)!)
+    .attr('width', d => xScale(d.value))
+    .attr('height', yScale.bandwidth())
+    .attr('fill', '#69b3a2')
+
+  // 軸を描画
+  group.append('g')
+    .attr('transform', `translate(0,${height})`)
+    .call(d3.axisBottom(xScale))
+
+  group.append('g')
+    .call(d3.axisLeft(yScale))
+
+  // 軸ラベルを追加
+  group.append('text')
+    .attr('x', width / 2)
+    .attr('y', height + margin.bottom)
+    .style('text-anchor', 'middle')
+    .style('font-size', '12px')
+    .text('SHAP値 (平均絶対値)')
+
+  group.append('text')
+    .attr('x', -height / 2)
+    .attr('y', -margin.left + 20)
+    .attr('transform', 'rotate(-90)')
+    .style('text-anchor', 'middle')
+    .style('font-size', '12px')
+    .text('特徴量')
+}
+
+function drawContributionPlot() {
+  const svgEl = d3.select(contributionPlot.value)
+  const containerWidth = 600
+  const containerHeight = 400
+
+  const margin = { top: 20, right: 20, bottom: 50, left: 80 }
+  const width = containerWidth - margin.left - margin.right
+  const height = containerHeight - margin.top - margin.bottom
+
+  svgEl
+    .attr('width', containerWidth)
+    .attr('height', containerHeight)
+
+  const group = svgEl.append('g')
+    .attr('transform', `translate(${margin.left},${margin.top})`)
+
+  const xScale = d3.scaleLinear()
+    .domain([d3.min(Object.values(shapValues.value).flat())!, d3.max(Object.values(shapValues.value).flat())!])
+    .range([0, width])
+
+  const yScale = d3.scaleLinear()
+    .domain([0, 1])  // 目的変数の範囲を適宜設定
+    .range([height, 0])
+
+  group.selectAll('circle')
+    .data(features.value)
+    .join('circle')
+    .attr('cx', feature => d3.mean(shapValues.value.map(v => xScale(v[feature])))!)
+    .attr('cy', feature => yScale(feature)!)
+    .attr('r', 5)
+    .style('fill', 'blue')
+
+  group.append('g')
+    .attr('transform', `translate(0,${height})`)
+    .call(d3.axisBottom(xScale))
+
+  group.append('g')
+    .call(d3.axisLeft(yScale))
+
+  group.append('text')
+    .attr('x', width / 2)
+    .attr('y', height + margin.bottom)
+    .style('text-anchor', 'middle')
+    .style('font-size', '12px')
+    .text('SHAP値')
+
+  group.append('text')
+    .attr('x', -height / 2)
+    .attr('y', -margin.left + 20)
+    .attr('transform', 'rotate(-90)')
+    .style('text-anchor', 'middle')
+    .style('font-size', '12px')
+    .text('目的変数')
+}
 </script>
 
 <style scoped>
 .main-container {
-  max-width: 900px;
+  max-width: 1200px;
   margin: auto;
   background-color: white;
   padding: 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.importance-chart {
+.summary-bar-plot, .contribution-plot {
+  margin-bottom: 40px;
+}
+
+svg {
   width: 100%;
   height: 400px;
 }

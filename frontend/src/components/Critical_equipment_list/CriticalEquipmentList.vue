@@ -765,6 +765,9 @@ const CriticalEquipmentList = defineComponent({
     },
 
 
+
+    
+
     saveData() {
   const userStore = useUserStore();
   const userCompanyCode = userStore.companyCode;
@@ -781,43 +784,32 @@ const CriticalEquipmentList = defineComponent({
       companyCode: userCompanyCode,
       MasterDataTable: dataToSave.map((row) => {
           return {
-              companyCode: userCompanyCode,
-              ceListNo: row[0],
               plant: row[1],
               equipment: row[2],
               machineName: row[3],
               levelSetValue: row[4],
-              // typicalConstPeriod: row[5],  // コメントアウト済み
-              // maxPartsDeliveryTimeInBom: row[6],
-              mttr: row[7],
-              probabilityOfFailure: row[8],
-              countOfPM02: row[9],
-              latestPM02: row[10],
-              countOfPM03: row[11],
-              latestPM03: row[12],
-              countOfPM04: row[13],
-              latestPM04: row[14],
-              impactForProduction: row[15],
-              assessment: row[16],
-              // コメントアウトされたフィールド
-              // typicalTaskName: row[17] ? row[17].toString() : null,
-              // typicalTaskCost: row[18],
-              // typicalNextEventDate: row[19],
-              // typicalSituation: row[20],
-              // bomCode: row[21],
-              // bomStock: row[22],
-              rcaOrReplace: row[23],
-              sparePartsOrAlternative: row[24],
-              coveredFromTask: row[25],
-              twoways: row[26],
-              ceDescription: row[27],
+              mttr: row[5],
+              probabilityOfFailure: row[6],
+              countOfPM02: row[7],
+              latestPM02: row[8],
+              countOfPM03: row[9],
+              latestPM03: row[10],
+              countOfPM04: row[11],
+              latestPM04: row[12],
+              impactForProduction: row[13],
+              assessment: row[14],
+              rcaOrReplace: row[15],
+              sparePartsOrAlternative: row[16],
+              coveredFromTask: row[17],
+              twoways: row[18],
+              ceDescription: row[19],
           };
       }),
   };
 
   console.log("送信するデータ:", formattedData);
 
-  const url = `http://127.0.0.1:8000/api/junctionTable/masterDataTableByCompany/`;
+  const url = `http://127.0.0.1:8000/api/junctionTable/masterDataTable/`;
 
   axios
       .post(url, formattedData, {
@@ -836,6 +828,11 @@ const CriticalEquipmentList = defineComponent({
           }
       });
 },
+
+
+
+
+
 
 
     // データをRiskMatrixにemitする
