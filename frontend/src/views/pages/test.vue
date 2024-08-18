@@ -1,187 +1,107 @@
 <template>
-  <div class="main-container">
-    <h2>PCA（主成分分析）の可視化</h2>
-    <div class="pca-scatter-plot">
-      <h3>主成分得点プロット</h3>
-      <svg ref="pcaScatterPlot"></svg>
-    </div>
-    <div class="pca-variance-plot">
-      <h3>寄与率（バープロット）</h3>
-      <svg ref="pcaVariancePlot"></svg>
-    </div>
+  <div id="app">
+      <hot-table ref="hotTableComponent" :settings="hotSettings"></hot-table><br />
+      <button @click="saveData">保存</button>
   </div>
 </template>
 
-<script lang="ts" setup>
-import { ref, onMounted, nextTick } from 'vue'
-import * as d3 from 'd3'
-import axios from 'axios'
+<script>
+import axios from 'axios';
+import Handsontable from 'handsontable';
+import { defineComponent } from 'vue';
+import { HotTable } from '@handsontable/vue3';
+import { registerAllModules } from 'handsontable/registry';
+import 'handsontable/dist/handsontable.full.css';
 
-const companyCode = '001-testChemical-001'  // 会社コードを指定
-const pcaScores = ref([])
-const explainedVariance = ref([])
-const features = ref([])
+registerAllModules();
 
-const pcaScatterPlot = ref<SVGSVGElement | null>(null)
-const pcaVariancePlot = ref<SVGSVGElement | null>(null)
+export default defineComponent({
+  components: {
+      HotTable
+  },
+  data() {
+      return {
+          hotSettings: {
+              data: [], // 初期データを空配列に設定
+              colHeaders: ['TestNo', 'Name', 'Price', 'Quantity'], // TestNoを一番左に配置
+              columns: [
+                  { data: 'testNo', readOnly: true }, // TestNo列を読み取り専用に設定
+                  { data: 'name' }, // 名前列
+                  { data: 'price', type: 'numeric', numericFormat: { pattern: '0,0.00' } }, // 数値列 (Price)
+                  { data: 'quantity', type: 'numeric' } // 数値列 (Quantity)
+              ],
+              rowHeaders: true,
+              minSpareRows: 1,
+              contextMenu: true
+          }
+      };
+  },
+  mounted() {
+      this.fetchData(); // コンポーネントがマウントされたときにデータを取得
+  },
+  methods: {
+      fetchData() {
+          axios
+              .get('http://127.0.0.1:8000/api/products/')
+              .then((response) => {
+                  console.log('Fetched data:', response.data); // データ取得のログ
+                  this.hotSettings.data = response.data; // 取得したデータをテーブルに設定
+                  this.$refs.hotTableComponent.hotInstance.loadData(this.hotSettings.data); // テーブルにデータをロード
+              })
+              .catch((error) => {
+                  console.error('Error fetching data:', error);
+              });
+      },
 
-onMounted(async () => {
-  try {
-    // DjangoのAPIからPCA結果を取得
-    const response = await axios.get(`http://127.0.0.1:8000/api/reliability/reliabilityByCompany/pca/?companyCode=${companyCode}`)
-    pcaScores.value = response.data.pca_scores
-    explainedVariance.value = response.data.explained_variance
-    features.value = response.data.features
+      saveData() {
+    const hotInstance = this.$refs.hotTableComponent.hotInstance;
+    const dataToSave = hotInstance.getData().filter(row => row[1] || row[2] || row[3]);
 
-    nextTick(() => {
-      drawPCAScatterPlot()
-      drawPCAVariancePlot()
-    })
-  } catch (error) {
-    console.error('データの取得に失敗しました:', error)
+    const formattedData = dataToSave.map(row => {
+        const postData = {
+            name: row[1],
+            price: parseFloat(row[2]),
+            quantity: parseInt(row[3])
+        };
+        if (row[0] !== null && row[0] !== undefined) {
+            postData.testNo = row[0];
+        }
+        return postData;
+    });
+
+    axios
+        .post('http://127.0.0.1:8000/api/products/', formattedData)
+        .then(response => {
+            console.log('Successfully processed data:', response.data);
+            this.fetchData();  // テーブルを再度読み込み、削除が反映された最新の状態を取得
+        })
+        .catch(error => {
+            if (error.response) {
+                console.error('Server responded with status code:', error.response.status);
+                console.error('Response data:', error.response.data);
+            } else if (error.request) {
+                console.error('No response received:', error.request);
+            } else {
+                console.error('Error in setting up the request:', error.message);
+            }
+        });
+}
+
   }
-})
-
-function drawPCAScatterPlot() {
-  const svgEl = d3.select(pcaScatterPlot.value)
-  const containerWidth = 600
-  const containerHeight = 400
-
-  const margin = { top: 20, right: 20, bottom: 50, left: 60 }
-  const width = containerWidth - margin.left - margin.right
-  const height = containerHeight - margin.top - margin.bottom
-
-  svgEl
-    .attr('width', containerWidth)
-    .attr('height', containerHeight)
-
-  const group = svgEl.append('g')
-    .attr('transform', `translate(${margin.left},${margin.top})`)
-
-  const xScale = d3.scaleLinear()
-    .domain(d3.extent(pcaScores.value, d => d.PC1)!)
-    .range([0, width])
-
-  const yScale = d3.scaleLinear()
-    .domain(d3.extent(pcaScores.value, d => d.PC2)!)
-    .range([height, 0])
-
-  // 散布図を描画
-  group.selectAll('circle')
-    .data(pcaScores.value)
-    .join('circle')
-    .attr('cx', d => xScale(d.PC1))
-    .attr('cy', d => yScale(d.PC2))
-    .attr('r', 5)
-    .style('fill', '#69b3a2')
-
-  // 軸を描画
-  group.append('g')
-    .attr('transform', `translate(0,${height})`)
-    .call(d3.axisBottom(xScale))
-
-  group.append('g')
-    .call(d3.axisLeft(yScale))
-
-  // 軸ラベルを追加
-  group.append('text')
-    .attr('x', width / 2)
-    .attr('y', height + margin.bottom)
-    .style('text-anchor', 'middle')
-    .style('font-size', '12px')
-    .text('主成分1 (PC1)')
-
-  group.append('text')
-    .attr('x', -height / 2)
-    .attr('y', -margin.left + 20)
-    .attr('transform', 'rotate(-90)')
-    .style('text-anchor', 'middle')
-    .style('font-size', '12px')
-    .text('主成分2 (PC2)')
-}
-
-function drawPCAVariancePlot() {
-  const svgEl = d3.select(pcaVariancePlot.value)
-  const containerWidth = 600
-  const containerHeight = 400
-
-  const margin = { top: 20, right: 20, bottom: 50, left: 60 }
-  const width = containerWidth - margin.left - margin.right
-  const height = containerHeight - margin.top - margin.bottom
-
-  svgEl
-    .attr('width', containerWidth)
-    .attr('height', containerHeight)
-
-  const group = svgEl.append('g')
-    .attr('transform', `translate(${margin.left},${margin.top})`)
-
-  const xScale = d3.scaleBand()
-    .domain(['PC1', 'PC2'])
-    .range([0, width])
-    .padding(0.1)
-
-  const yScale = d3.scaleLinear()
-    .domain([0, d3.max(explainedVariance.value)!])
-    .range([height, 0])
-
-  // バーグラフを描画
-  group.selectAll('rect')
-    .data(explainedVariance.value)
-    .join('rect')
-    .attr('x', (_, i) => xScale(`PC${i + 1}`)!)
-    .attr('y', d => yScale(d))
-    .attr('width', xScale.bandwidth())
-    .attr('height', d => height - yScale(d))
-    .attr('fill', '#69b3a2')
-
-  // 軸を描画
-  group.append('g')
-    .attr('transform', `translate(0,${height})`)
-    .call(d3.axisBottom(xScale))
-
-  group.append('g')
-    .call(d3.axisLeft(yScale))
-
-  // 軸ラベルを追加
-  group.append('text')
-    .attr('x', width / 2)
-    .attr('y', height + margin.bottom)
-    .style('text-anchor', 'middle')
-    .style('font-size', '12px')
-    .text('主成分')
-
-  group.append('text')
-    .attr('x', -height / 2)
-    .attr('y', -margin.left + 20)
-    .attr('transform', 'rotate(-90)')
-    .style('text-anchor', 'middle')
-    .style('font-size', '12px')
-    .text('寄与率')
-}
+});
 </script>
 
 <style scoped>
-.main-container {
-  max-width: 1200px;
-  margin: auto;
-  background-color: white;
-  padding: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.pca-scatter-plot, .pca-variance-plot {
+button {
   margin-top: 20px;
+  padding: 10px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  cursor: pointer;
 }
 
-h2 {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-h3 {
-  text-align: center;
-  font-size: 16px;
-  margin-bottom: 10px;
+button:hover {
+  background-color: #45a049;
 }
 </style>

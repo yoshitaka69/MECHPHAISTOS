@@ -24,6 +24,7 @@ urlpatterns = [
     path("api/", include('workOrder.urls')),
     path("api/", include('reliability.urls')),
     path("api/", include('workingReport.urls')),
+    path("api/", include('test_app.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if 'audio_recognition' not in disabled_apps:

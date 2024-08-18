@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'benefit',
     'reliability',
     'workingReport',
+    'test_app',
 ]
 
 # INSTALLED_APPSから無効にするアプリを除外
@@ -144,29 +145,3 @@ CHANNEL_LAYERS = {
     },
 }
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-        },
-    },
-    'root': {
-        'handlers': ['console'],
-        'level': 'DEBUG',
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        'junctionTable.views': {  # ロギングを行っているモジュール名に置き換えてください
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-    }
-}

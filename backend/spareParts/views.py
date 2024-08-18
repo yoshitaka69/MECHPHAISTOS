@@ -24,14 +24,55 @@ from rest_framework.response import Response
 from django.core.files.storage import default_storage
 from .models import SpareParts, CompanyCode
 from .serializers import SparePartsSerializer, CompanyCodeSPSerializer
+from rest_framework.decorators import action
 
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from PIL import Image
 import io
 
+
+
 class SparePartsViewSet(viewsets.ModelViewSet):
     queryset = SpareParts.objects.all()
     serializer_class = SparePartsSerializer
+
+    @action(detail=False, methods=['post'], url_path='bulk-update')
+    def bulk_update(self, request):
+        spare_parts_list = request.data.get('sparePartsList', [])
+
+        created_items = []
+        updated_items = []
+
+        for item_data in spare_parts_list:
+            parts_no = item_data.get('partsNo')
+            company_code = item_data.get('companyCode')
+
+            spare_part = SpareParts.objects.filter(partsNo=parts_no, companyCode=company_code).first()
+
+            if spare_part:
+                serializer = SparePartsSerializer(spare_part, data=item_data, partial=True)
+                if serializer.is_valid():
+                    serializer.save()
+                    updated_items.append(serializer.data)
+                else:
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                serializer = SparePartsSerializer(data=item_data)
+                if serializer.is_valid():
+                    serializer.save()
+                    created_items.append(serializer.data)
+                else:
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({
+            'created': created_items,
+            'updated': updated_items
+        }, status=status.HTTP_200_OK)
+    
+
+
+
+
 
 class CompanyCodeSPViewSet(viewsets.ModelViewSet):
     serializer_class = CompanyCodeSPSerializer

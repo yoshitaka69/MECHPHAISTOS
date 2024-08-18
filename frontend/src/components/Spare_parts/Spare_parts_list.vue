@@ -486,84 +486,58 @@ const SparePartsComponent = defineComponent({
         });
     },
 
-        updateData() {
-            const userStore = useUserStore();
-            const userCompanyCode = userStore.companyCode;
+    updateData() {
+    const userStore = useUserStore();
+    const userCompanyCode = userStore.companyCode;
 
-            if (!userCompanyCode) {
-                console.error('Error: No company code found for the user.');
-                return;
-            }
+    if (!userCompanyCode) {
+        console.error('Error: No company code found for the user.');
+        return;
+    }
 
-            const tableData = this.$refs.hotTableComponent.hotInstance.getData();
-            let sparePartsList = [];
+    const tableData = this.$refs.hotTableComponent.hotInstance.getData();
+    let formData = new FormData();
 
-            tableData.forEach((row) => {
-                let image = row[0]; // 画像
-                let partsNo = row[1]; // partsナンバー
-                let bomCode = row[2]; // BOMコード
-                let partsName = row[3]; // パーツネーム
-                let category = row[4]; // カテゴリー
-                let partsModel = row[5]; // 型式
-                let serialNumber = row[6]; // シリアルナンバー
-                let taskCode = row[7]; // タスクコード
-                let partsCost = row[8]; // パーツコスト
-                let numberOf = row[9]; // 個数
-                let unit = row[10]; // カテゴリー
-                let location = row[11]; // 型式
-                let partsDeliveryTime = row[12]; // シリアルナンバー
-                let orderAlert = row[13]; // タスクコード
-                let orderSituation = row[14] === true; // パーツコスト
-                let classification = row[15]; // 区分
-                let inventoryTurnover = row[16]; // 在庫回転率
-                let partsDescription = row[17]; // 詳細
+    const sparePartsList = tableData.map((row, index) => {
+        let partsNo = row[1]; // partsナンバーを取得
 
-                // orderSituationを除外した全フィールドが空欄またはnullであるかを確認
-                const isRowEmpty = [image, partsNo, bomCode, partsName, category, partsModel, serialNumber, taskCode, partsCost, numberOf, unit, location, partsDeliveryTime, orderAlert, classification, inventoryTurnover, partsDescription].every(
-                    (field) => field === null || field === ''
-                );
+        // 他のフィールドの処理...
 
-                if (!isRowEmpty) {
-                    sparePartsList.push({
-                        companyCode: userCompanyCode,
-                        image: image,
-                        partsNo: partsNo,
-                        bomCode: bomCode,
-                        partsName: partsName,
-                        category: category,
-                        partsModel: partsModel,
-                        serialNumber: serialNumber,
-                        taskCode: taskCode,
-                        partsCost: partsCost,
-                        numberOf: numberOf,
-                        unit: unit,
-                        location: location,
-                        partsDeliveryTime: partsDeliveryTime,
-                        orderAlert: orderAlert,
-                        orderSituation: orderSituation,
-                        classification: classification,
-                        inventoryTurnover: inventoryTurnover,
-                        partsDescription: partsDescription
-                    });
-                }
-            });
+        return {
+            partsNo: partsNo,  // partsNoを識別子として使用
+            companyCode: userCompanyCode,
+            // 他のフィールドをここに追加
+        };
+    });
 
-            let postData = {
-                sparePartsList: sparePartsList
-            };
-            console.log('postData', postData);
+    // フォームデータに追加
+    formData.append('sparePartsList', JSON.stringify(sparePartsList));
 
-            const backendUrl = `http://127.0.0.1:8000/api/spareParts/sparePartsByCompany/?format=json`;
-            axios
-                .post(backendUrl, postData)
-                .then((response) => {
-                    console.log('Data posted successfully', response.data);
-                })
-                .catch((error) => {
-                    console.error('Error in posting data', error);
-                    console.error('Response data:', error.response.data);
-                });
+    // 画像がある場合にはその処理を行う
+    sparePartsList.forEach((part, index) => {
+        if (part.image) {
+            formData.append(`sparePartsList[${index}][image]`, part.image);
         }
+    });
+
+    const backendUrl = `http://127.0.0.1:8000/api/spareParts/spareParts/bulk-update/?format=json`;
+    axios
+        .post(backendUrl, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        })
+        .then((response) => {
+            console.log('Data posted successfully', response.data);
+        })
+        .catch((error) => {
+            console.error('Error in posting data', error);
+            console.error('Response data:', error.response.data);
+        });
+}
+
+
+
     },
 
     components: {
