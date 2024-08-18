@@ -16,118 +16,121 @@ from django.conf import settings
 
 
 
-from accounts.models import CompanyCode,CompanyName,Plant
-from ceList.models import Equipment,CeList,Machine
+from django.db import models
+from django.db.models import Max
+from accounts.models import CompanyCode, CompanyName, Plant
+from ceList.models import Equipment, CeList, Machine
 from spareParts.models import BomList
-from taskList.models import TaskListPPM02,TaskListPPM03,TaskListAPM04,TaskListPPM05,TypicalTaskList,TaskList
-
+from taskList.models import TaskListPPM02, TaskListPPM03, TaskListAPM04, TaskListPPM05, TypicalTaskList, TaskList
 
 class MasterDataTable(models.Model):
 
-    #accountsから取得
-    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='masterDataTable_companyCode',null=True, blank=True)
-    companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='masterDataTable_companyName', null=True, blank=True)
-    plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='masterDataTable_plant',null=True, blank=True)
+    # accountsから取得
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='masterDataTable_companyCode', null=True, blank=True)
+    companyName = models.CharField(verbose_name='companyName', max_length=200, blank=True, null=True)
+    plant = models.CharField(verbose_name='plant', max_length=200, blank=True, null=True)
 
-    #Celist
-    ceListNo = models.ForeignKey(CeList, on_delete=models.CASCADE, related_name='masterDataTable_ceListNo',null=True, blank=True)
-    equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='masterDataTable_equipment',null=True, blank=True)
-    machineName = models.ForeignKey(Machine, on_delete=models.CASCADE, related_name='masterDataTable_machineName',null=True, blank=True)
+    # Celist
+    ceListNo = models.CharField(verbose_name='ceListNo', max_length=200, blank=True, null=True, unique=True)
+    equipment = models.CharField(verbose_name='equipment', max_length=200, blank=True, null=True)
+    machineName = models.CharField(verbose_name='machineName', max_length=200, blank=True, null=True)
 
-    #TaskList
-    taskPM02 = models.ForeignKey(TaskListPPM02, on_delete=models.CASCADE, related_name='masterDataTable_taskPM02',null=True, blank=True)
-    countOfPM02 = models.ForeignKey(TaskListPPM02, on_delete=models.CASCADE, related_name='masterDataTable_countOfPM02',null=True, blank=True)
-    latestPM02 = models.ForeignKey(TaskListPPM02, on_delete=models.CASCADE, related_name='masterDataTable_latestPM02',null=True, blank=True)
-    laborCostOfPM02 = models.ForeignKey(TaskListPPM02, on_delete=models.CASCADE, related_name='masterDataTable_laborCostOfPM02',null=True, blank=True)
+    # TaskList
+    taskPM02 = models.CharField(verbose_name='taskPM02', max_length=200, blank=True, null=True)
+    countOfPM02 = models.IntegerField(verbose_name='countOfPM02', blank=True, null=True, default=0)
+    latestPM02 = models.DateField(verbose_name='latestPM02', blank=True, null=True)
+    laborCostOfPM02 = models.DecimalField(verbose_name='laborCostOfPM02', max_digits=10, decimal_places=2, blank=True, null=True, default=0.00)
 
-    taskPM03 = models.ForeignKey(TaskListPPM03, on_delete=models.CASCADE, related_name='masterDataTable_taskPM03',null=True, blank=True)
-    countOfPM03 = models.ForeignKey(TaskListPPM03, on_delete=models.CASCADE, related_name='masterDataTable_countOfPM03',null=True, blank=True)
-    latestPM03 = models.ForeignKey(TaskListPPM03, on_delete=models.CASCADE, related_name='masterDataTable_latestPM03',null=True, blank=True)
-    laborCostOfPM03 = models.ForeignKey(TaskListPPM03, on_delete=models.CASCADE, related_name='masterDataTable_laborCostOfPM03',null=True, blank=True)
+    taskPM03 = models.CharField(verbose_name='taskPM03', max_length=200, blank=True, null=True)
+    countOfPM03 = models.IntegerField(verbose_name='countOfPM03', blank=True, null=True, default=0)
+    latestPM03 = models.DateField(verbose_name='latestPM03', blank=True, null=True)
+    laborCostOfPM03 = models.DecimalField(verbose_name='laborCostOfPM03', max_digits=10, decimal_places=2, blank=True, null=True, default=0.00)
 
-    taskPM04 = models.ForeignKey(TaskListAPM04, on_delete=models.CASCADE, related_name='masterDataTable_taskPM04',null=True, blank=True)
-    countOfPM04 = models.ForeignKey(TaskListAPM04, on_delete=models.CASCADE, related_name='masterDataTable_countOfPM04',null=True, blank=True)
-    latestPM04 = models.ForeignKey(TaskListAPM04, on_delete=models.CASCADE, related_name='masterDataTable_latestPM04',null=True, blank=True)
-    laborCostOfPM04 = models.ForeignKey(TaskListAPM04, on_delete=models.CASCADE, related_name='masterDataTable_laborCostOfPM04',null=True, blank=True)
+    taskPM04 = models.CharField(verbose_name='taskPM04', max_length=200, blank=True, null=True)
+    countOfPM04 = models.IntegerField(verbose_name='countOfPM04', blank=True, null=True, default=0)
+    latestPM04 = models.DateField(verbose_name='latestPM04', blank=True, null=True)
+    laborCostOfPM04 = models.DecimalField(verbose_name='laborCostOfPM04', max_digits=10, decimal_places=2, blank=True, null=True, default=0.00)
 
-    taskPM05 = models.ForeignKey(TaskListPPM05, on_delete=models.CASCADE, related_name='masterDataTable_taskPM05',null=True, blank=True)
-    countOfPM05 = models.ForeignKey(TaskListPPM05, on_delete=models.CASCADE, related_name='masterDataTable_countOfPM05',null=True, blank=True)
-    latestPM05 = models.ForeignKey(TaskListPPM05, on_delete=models.CASCADE, related_name='masterDataTable_latestPM05',null=True, blank=True)
-    laborCostOfPM05 = models.ForeignKey(TaskListPPM05, on_delete=models.CASCADE, related_name='masterDataTable_laborCostOfPM05',null=True, blank=True)
+    taskPM05 = models.CharField(verbose_name='taskPM05', max_length=200, blank=True, null=True)
+    countOfPM05 = models.IntegerField(verbose_name='countOfPM05', blank=True, null=True, default=0)
+    latestPM05 = models.DateField(verbose_name='latestPM05', blank=True, null=True)
+    laborCostOfPM05 = models.DecimalField(verbose_name='laborCostOfPM05', max_digits=10, decimal_places=2, blank=True, null=True, default=0.00)
 
-    
+    # TypicalTaskList
+    typicalTaskName = models.CharField(verbose_name='typicalTaskName', max_length=200, blank=True, null=True)
+    typicalConstPeriod = models.CharField(verbose_name='typicalConstPeriod', max_length=200, blank=True, null=True)
+    typicalTaskCost = models.DecimalField(verbose_name='typicalTaskCost', max_digits=10, decimal_places=2, blank=True, null=True, default=0.00)
+    typicalNextEventDate = models.DateField(verbose_name='typicalNextEventDate', blank=True, null=True)
+    typicalSituation = models.CharField(verbose_name='typicalSituation', max_length=200, blank=True, null=True)
+    multiTask = models.BooleanField(verbose_name='multiTask', default=False, blank=True)
 
+    # BomList
+    bomCode = models.CharField(verbose_name='bomCode', max_length=200, blank=True, null=True)
+    bomCost = models.DecimalField(verbose_name='bomCost', max_digits=10, decimal_places=2, blank=True, null=True, default=0.00)
+    bomStock = models.CharField(verbose_name='bomStock', max_length=200, blank=True, null=True)
+    maxPartsDeliveryTimeInBom = models.IntegerField(verbose_name='maxPartsDeliveryTimeInBom', blank=True, null=True, default=0)
 
-    #TypicalTaskList
-    typicalTaskName = models.ForeignKey(TypicalTaskList, on_delete=models.CASCADE, related_name='masterDataTable_typicalTaskName',null=True, blank=True)
-    typicalConstPeriod = models.ForeignKey(TypicalTaskList, on_delete=models.CASCADE, related_name='masterDataTable_typicalConstPeriod',null=True, blank=True)
-    typicalTaskCost = models.ForeignKey(TypicalTaskList, on_delete=models.CASCADE, related_name='masterDataTable_typicalTaskCost',null=True, blank=True)
-    typicalNextEventDate = models.ForeignKey(TypicalTaskList, on_delete=models.CASCADE, related_name='masterDataTable_typicalNextEventDate',null=True, blank=True)
-    typicalSituation = models.ForeignKey(TypicalTaskList, on_delete=models.CASCADE, related_name='masterDataTable_typicalSituation',null=True, blank=True)
-    multiTask = models.ForeignKey(TypicalTaskList, on_delete=models.CASCADE, related_name='masterDataTable_multiTask',null=True, blank=True)
+    # 将来的にcalかここで計算させる。
+    totalCost = models.DecimalField(verbose_name='totalCost', max_digits=10, decimal_places=2, blank=True, null=True, default=0.00)
 
-
-
-    #BomList
-    bomCode = models.ForeignKey(BomList, on_delete=models.CASCADE, related_name='masterDataTable_bomList', null=True, blank=True)
-    bomCost = models.DecimalField(verbose_name='bomCost',max_digits=5,decimal_places=2,blank=True,null=True,default=0.00)
-    bomStock = models.CharField(verbose_name='bomStock', max_length=200, blank=True,null=True,)
-    maxPartsDeliveryTimeInBom = models.ForeignKey(BomList, on_delete=models.CASCADE, related_name='masterDataTable_maxPartsDeliveryTimeInBom', null=True, blank=True)
-
-    #将来的にcalかここで計算させる。
-    totalCost = models.CharField(verbose_name='totalCost', max_length=200, blank=True,null=True,)
-
-    #Impact
+    # Impact
     levelSetValue = models.CharField(verbose_name='levelSetValue', max_length=200, null=True, blank=True)
-    mttr = models.PositiveSmallIntegerField(verbose_name='mttr',blank=True,null=True,default=0)
-    possibilityOfContinuousProduction = models.CharField(verbose_name='possibilityOfContinuousProduction', max_length=200,null=True,blank=True)
+    mttr = models.PositiveSmallIntegerField(verbose_name='mttr', blank=True, null=True, default=0)
+    possibilityOfContinuousProduction = models.CharField(verbose_name='possibilityOfContinuousProduction', max_length=200, null=True, blank=True)
 
     # Critical Equipment Level
-    impactForProduction = models.CharField(verbose_name='impactForProduction', max_length=200, blank=True,null=True,)
-    probabilityOfFailure = models.CharField(verbose_name='probabilityOfFailure', max_length=200, blank=True,null=True,)
-    assessment = models.CharField(verbose_name='assessment', max_length=20, blank=True,null=True,)
+    impactForProduction = models.CharField(verbose_name='impactForProduction', max_length=200, blank=True, null=True)
+    probabilityOfFailure = models.CharField(verbose_name='probabilityOfFailure', max_length=200, blank=True, null=True)
+    assessment = models.CharField(verbose_name='assessment', max_length=20, blank=True, null=True)
 
-    #Status of measures
+    # Status of measures
     rcaOrReplace = models.BooleanField(verbose_name='rcaOrReplace', default=False, null=True, blank=True)
     sparePartsOrAlternative = models.BooleanField(verbose_name='sparePartsOrAlternative', default=False, null=True, blank=True)
     coveredFromTask = models.BooleanField(verbose_name='coveredFromTask', default=False, null=True, blank=True)
     twoways = models.BooleanField(verbose_name='twoways', default=False, null=True, blank=True)
     ceDescription = models.TextField(verbose_name='ceDescription', blank=True, null=True, max_length=1000)
 
-
-    #period of task
-    thisYear10ago = models.BooleanField(verbose_name='thisYear10ago',default=False)
-    thisYear9ago = models.BooleanField(verbose_name='thisYear9ago',default=False)
-    thisYear8ago = models.BooleanField(verbose_name='thisYear8ago',default=False)
-    thisYear7ago = models.BooleanField(verbose_name='thisYear7ago',default=False)
-    thisYear6ago = models.BooleanField(verbose_name='thisYear6ago',default=False)
-    thisYear5ago = models.BooleanField(verbose_name='thisYear5ago',default=False)
-    thisYear4ago = models.BooleanField(verbose_name='thisYear4ago',default=False)
-    thisYear3ago = models.BooleanField(verbose_name='thisYear3ago',default=False)
-    thisYear2ago = models.BooleanField(verbose_name='thisYear2ago',default=False)
-    thisYear1ago = models.BooleanField(verbose_name='thisYear1ago',default=False)
-    thisYear = models.BooleanField(verbose_name='thisYear',default=False)
-    thisYear1later = models.BooleanField(verbose_name='thisYear1later',default=False)
-    thisYear2later = models.BooleanField(verbose_name='thisYear2later',default=False)
-    thisYear3later = models.BooleanField(verbose_name='thisYear3later',default=False)
-    thisYear4later = models.BooleanField(verbose_name='thisYear4later',default=False)
-    thisYear5later = models.BooleanField(verbose_name='thisYear5later',default=False)
-    thisYear6later = models.BooleanField(verbose_name='thisYear6later',default=False)
-    thisYear7later = models.BooleanField(verbose_name='thisYear7later',default=False)
-    thisYear8later = models.BooleanField(verbose_name='thisYear8later',default=False)
-    thisYear9later = models.BooleanField(verbose_name='thisYear9later',default=False)
-    thisYear10later = models.BooleanField(verbose_name='thisYear10later',default=False)
-
+    # period of task
+    thisYear10ago = models.BooleanField(verbose_name='thisYear10ago', default=False)
+    thisYear9ago = models.BooleanField(verbose_name='thisYear9ago', default=False)
+    thisYear8ago = models.BooleanField(verbose_name='thisYear8ago', default=False)
+    thisYear7ago = models.BooleanField(verbose_name='thisYear7ago', default=False)
+    thisYear6ago = models.BooleanField(verbose_name='thisYear6ago', default=False)
+    thisYear5ago = models.BooleanField(verbose_name='thisYear5ago', default=False)
+    thisYear4ago = models.BooleanField(verbose_name='thisYear4ago', default=False)
+    thisYear3ago = models.BooleanField(verbose_name='thisYear3ago', default=False)
+    thisYear2ago = models.BooleanField(verbose_name='thisYear2ago', default=False)
+    thisYear1ago = models.BooleanField(verbose_name='thisYear1ago', default=False)
+    thisYear = models.BooleanField(verbose_name='thisYear', default=False)
+    thisYear1later = models.BooleanField(verbose_name='thisYear1later', default=False)
+    thisYear2later = models.BooleanField(verbose_name='thisYear2later', default=False)
+    thisYear3later = models.BooleanField(verbose_name='thisYear3later', default=False)
+    thisYear4later = models.BooleanField(verbose_name='thisYear4later', default=False)
+    thisYear5later = models.BooleanField(verbose_name='thisYear5later', default=False)
+    thisYear6later = models.BooleanField(verbose_name='thisYear6later', default=False)
+    thisYear7later = models.BooleanField(verbose_name='thisYear7later', default=False)
+    thisYear8later = models.BooleanField(verbose_name='thisYear8later', default=False)
+    thisYear9later = models.BooleanField(verbose_name='thisYear9later', default=False)
+    thisYear10later = models.BooleanField(verbose_name='thisYear10later', default=False)
 
     class Meta:
         verbose_name = 'Master Data Table'
         verbose_name_plural = 'Master Data Table'
-        ordering = ('ceListNo',) #モデルのクエリセットを取得した際にどのような順番でフィールドを並べ変えるかを決める。
-        unique_together = ('companyCode', 'ceListNo') #companyCodeとceListNoの組み合わせがユニークであることを示す。
-    
+        ordering = ('ceListNo',)  # モデルのクエリセットを取得した際にどのような順番でフィールドを並べ変えるかを決める。
+        unique_together = ('companyCode', 'ceListNo')  # companyCodeとceListNoの組み合わせがユニークであることを示す。
+
+    def save(self, *args, **kwargs):
+        if not self.ceListNo:  # ceListNoが指定されていない場合、自動生成
+            max_ce_list_no = MasterDataTable.objects.aggregate(Max('ceListNo'))['ceListNo__max']
+            if max_ce_list_no:
+                self.ceListNo = str(int(max_ce_list_no) + 1).zfill(5)  # 5桁のゼロ埋めで次の番号を設定
+            else:
+                self.ceListNo = '00001'  # 最初のレコードの場合、'00001'から開始
+        super(MasterDataTable, self).save(*args, **kwargs)
 
     def __str__(self):
         return str('Master Data Table')
+
 
 
 

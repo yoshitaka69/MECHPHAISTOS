@@ -16,131 +16,100 @@ from .serializers import  (MasterDataTableSerializer, CompanyCodeMDTSerializer,
 #-------------------------------------------------------------------------------------------------------------------
 
 from rest_framework import status, viewsets
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .models import MasterDataTable, CompanyCode, Plant, Equipment, Machine, CeList
+from .models import MasterDataTable, CompanyCode, Plant, Equipment, Machine
 from .serializers import MasterDataTableSerializer
-import logging
+from django.db import transaction
 
-logger = logging.getLogger(__name__)
+from rest_framework import viewsets, status
+from rest_framework.response import Response
+from .models import MasterDataTable, CompanyCode
+from .serializers import MasterDataTableSerializer
+from django.db.models import Max
 
 class MasterDataTableViewSet(viewsets.ModelViewSet):
     queryset = MasterDataTable.objects.all()
     serializer_class = MasterDataTableSerializer
 
     def create(self, request, *args, **kwargs):
-        data_list = request.data.get('MasterDataTable', [])
-        logger.info(f"Received data: {data_list}")
+        data = request.data
+        sent_ce_list_nos = [item.get('ceListNo') for item in data if item.get('ceListNo') is not None]
 
-        for data in data_list:
-            company_code_str = request.data.get('companyCode')
-            logger.debug(f"Processing companyCode: {company_code_str}")
-            company_code, _ = CompanyCode.objects.get_or_create(companyCode=company_code_str)
+        # 現在のデータベースに存在するceListNoを取得
+        existing_ce_list_nos = list(MasterDataTable.objects.values_list('ceListNo', flat=True))
 
-            # Plantインスタンスを取得または作成
-            plant_value = data.get('plant')
-            plant_instance = None
-            if plant_value:
-                plant_instance, _ = Plant.objects.get_or_create(plant=plant_value, companyCode=company_code)
-                logger.debug(f"Plant instance: {plant_instance}")
+        # 削除する必要があるceListNoを特定
+        ce_list_nos_to_delete = set(existing_ce_list_nos) - set(sent_ce_list_nos)
 
-            # Equipmentインスタンスを取得または作成
-            equipment_value = data.get('equipment')
-            equipment_instance = None
-            if equipment_value:
-                equipment_instance, _ = Equipment.objects.get_or_create(equipment=equipment_value, companyCode=company_code, plant=plant_instance)
-                logger.debug(f"Equipment instance: {equipment_instance}")
+        # 削除処理
+        if ce_list_nos_to_delete:
+            MasterDataTable.objects.filter(ceListNo__in=ce_list_nos_to_delete).delete()
 
-            # Machineインスタンスを取得または作成
-            machine_name_value = data.get('machineName')
-            machine_instance = None
-            if machine_name_value:
-                machine_instance, _ = Machine.objects.get_or_create(machineName=machine_name_value, companyCode=company_code)
-                logger.debug(f"Machine instance: {machine_instance}")
+        # 新規作成または更新の処理
+        created_items = []
+        for item in data:
+            company_code_str = item.get('companyCode')
 
-            # CeList インスタンスを取得または作成
-            ce_list_instance = CeList.objects.create(
-                companyCode=company_code,
-                plant=plant_instance,
-                equipment=equipment_instance,
-                machineName=machine_instance
-            )
+            # companyCodeが文字列として渡された場合、それに対応するオブジェクトを取得
+            try:
+                company_code_obj = CompanyCode.objects.get(companyCode=company_code_str)
+                item['companyCode'] = company_code_obj.id  # IDに変換
+            except CompanyCode.DoesNotExist:
+                return Response(
+                    {"error": f"CompanyCode '{company_code_str}' does not exist."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
 
-            # データを保存
-            master_data = MasterDataTable.objects.create(
-                companyCode=company_code,
-                ceListNo=ce_list_instance,
-                plant=plant_instance,
-                equipment=equipment_instance,
-                machineName=machine_instance,
-                levelSetValue=data.get('levelSetValue'),
-                mttr=data.get('mttr'),
-                probabilityOfFailure=data.get('probabilityOfFailure'),
-                countOfPM02=data.get('countOfPM02'),
-                latestPM02=data.get('latestPM02'),
-                countOfPM03=data.get('countOfPM03'),
-                latestPM03=data.get('latestPM03'),
-                countOfPM04=data.get('countOfPM04'),
-                latestPM04=data.get('latestPM04'),
-                impactForProduction=data.get('impactForProduction'),
-                assessment=data.get('assessment'),
-                rcaOrReplace=data.get('rcaOrReplace'),
-                sparePartsOrAlternative=data.get('sparePartsOrAlternative'),
-                coveredFromTask=data.get('coveredFromTask'),
-                twoways=data.get('twoways'),
-                ceDescription=data.get('ceDescription'),
-            )
-            logger.info(f"Data saved: {master_data}")
+            ce_list_no = item.get('ceListNo')
 
-        return Response({"status": "success"}, status=201)
+            if ce_list_no is not None:
+                # ceListNoが存在する場合、既存のレコードを更新する
+                existing_item = MasterDataTable.objects.filter(ceListNo=ce_list_no).first()
+                if existing_item:
+                    serializer = self.get_serializer(existing_item, data=item, partial=True)
+                    serializer.is_valid(raise_exception=True)
+                    serializer.save()
+                    created_items.append(serializer.data)
+                    continue  # 更新処理をした場合は次のアイテムに進む
 
-    def update(self, request, *args, **kwargs):
-        master_data_table = self.get_object()
-        logger.info(f"Updating MasterDataTable with ID: {master_data_table.id}")
+            # ceListNoがnullまたは新規作成の場合
+            if ce_list_no is None:
+                # 最大のceListNoを取得し、そこから次の番号を割り当てる
+                max_ce_list_no = MasterDataTable.objects.aggregate(Max('ceListNo'))['ceListNo__max'] or "00000"
+                max_ce_list_no = int(max_ce_list_no)  # 整数に変換
+                item['ceListNo'] = str(max_ce_list_no + 1).zfill(5)  # 整数を文字列に変換してゼロ埋め
 
-        # companyCodeのみ処理
-        company_code_str = request.data.pop('companyCode')
-        company_code, _ = CompanyCode.objects.get_or_create(companyCode=company_code_str)
-        master_data_table.companyCode = company_code
-        
-        # 他のフィールドも更新
-        master_data_table.plant = request.data.get('plant', master_data_table.plant)
-        master_data_table.equipment = request.data.get('equipment', master_data_table.equipment)
-        master_data_table.machineName = request.data.get('machineName', master_data_table.machineName)
-        master_data_table.levelSetValue = request.data.get('levelSetValue', master_data_table.levelSetValue)
-        master_data_table.mttr = request.data.get('mttr', master_data_table.mttr)
-        master_data_table.probabilityOfFailure = request.data.get('probabilityOfFailure', master_data_table.probabilityOfFailure)
-        master_data_table.countOfPM02 = request.data.get('countOfPM02', master_data_table.countOfPM02)
-        master_data_table.latestPM02 = request.data.get('latestPM02', master_data_table.latestPM02)
-        master_data_table.countOfPM03 = request.data.get('countOfPM03', master_data_table.countOfPM03)
-        master_data_table.latestPM03 = request.data.get('latestPM03', master_data_table.latestPM03)
-        master_data_table.countOfPM04 = request.data.get('countOfPM04', master_data_table.countOfPM04)
-        master_data_table.latestPM04 = request.data.get('latestPM04', master_data_table.latestPM04)
-        master_data_table.impactForProduction = request.data.get('impactForProduction', master_data_table.impactForProduction)
-        master_data_table.assessment = request.data.get('assessment', master_data_table.assessment)
-        master_data_table.rcaOrReplace = request.data.get('rcaOrReplace', master_data_table.rcaOrReplace)
-        master_data_table.sparePartsOrAlternative = request.data.get('sparePartsOrAlternative', master_data_table.sparePartsOrAlternative)
-        master_data_table.coveredFromTask = request.data.get('coveredFromTask', master_data_table.coveredFromTask)
-        master_data_table.twoways = request.data.get('twoways', master_data_table.twoways)
-        master_data_table.ceDescription = request.data.get('ceDescription', master_data_table.ceDescription)
+            serializer = self.get_serializer(data=item)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            created_items.append(serializer.data)
 
-        master_data_table.save()
-        logger.info(f"MasterDataTable updated: {master_data_table}")
-        serializer = self.get_serializer(master_data_table)
-        return Response(serializer.data)
+        return Response(created_items, status=status.HTTP_201_CREATED)
 
     def destroy(self, request, *args, **kwargs):
-        master_data_table = self.get_object()
-        logger.info(f"Deleting MasterDataTable with ID: {master_data_table.id}")
-        master_data_table.delete()
-        return Response(status=204)
+        ce_list_no = request.data.get('ceListNo')
+        if ce_list_no:
+            try:
+                # ceListNoに基づいて既存の製品を取得し、削除を試みる
+                master_data = MasterDataTable.objects.get(ceListNo=ce_list_no)
+                self.perform_destroy(master_data)
+                print("Delete request received with ceListNo:", ce_list_no)
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            except MasterDataTable.DoesNotExist:
+                return Response({"error": "Master Data Table with ceListNo not found."}, status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response({"error": "ceListNo not provided."}, status=status.HTTP_400_BAD_REQUEST)
 
 
+    def perform_create(self, serializer):
+        serializer.save()
 
+    def perform_update(self, serializer):
+        serializer.save()
 
-
-
-
-
+    def perform_destroy(self, instance):
+        instance.delete()
 
 
 

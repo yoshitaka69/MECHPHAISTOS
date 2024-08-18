@@ -24,12 +24,6 @@ class MasterDataTableSerializer(serializers.ModelSerializer):
 
 
 
-
-
-
-
-
-
 class CompanyCodeMDTSerializer(serializers.ModelSerializer):
     MasterDataTable = MasterDataTableSerializer(many=True, read_only=True, source='masterDataTable_companyCode')
 

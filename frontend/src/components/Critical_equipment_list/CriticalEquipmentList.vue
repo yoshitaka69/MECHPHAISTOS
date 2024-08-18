@@ -686,41 +686,46 @@ const CriticalEquipmentList = defineComponent({
       });
     },
 
-    // Axiosを使用してデータを取得
-    getDataAxios() {
+        // Axiosを使用してデータを取得
+  getDataAxios() {
       const userStore = useUserStore();
       const userCompanyCode = userStore.companyCode;
 
       if (!userCompanyCode) {
-        console.error("Error: No company code found for the user.");
-        return;
+          console.error("Error: No company code found for the user.");
+          return;
       }
 
       const url = `http://127.0.0.1:8000/api/junctionTable/masterDataTableByCompany/?format=json&companyCode=${userCompanyCode}`;
 
       axios
-        .get(url, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        })
-        .then((response) => {
-          console.log("Raw response data:", response.data); // デバッグ用
-          const masterDataTable = response.data;
-          console.log("Fetched masterDataTable:", masterDataTable);
+          .get(url, {
+              headers: {
+                  "Content-Type": "application/json",
+              },
+              withCredentials: true,
+          })
+          .then((response) => {
+              console.log("Raw response data:", response.data); // デバッグ用
+              const masterDataTable = response.data;
+              console.log("Fetched masterDataTable:", masterDataTable);
 
-          this.dataStore = masterDataTable; // データストアに保存
+              this.dataStore = masterDataTable; // データストアに保存
 
-          const blankRows = Array.from({ length: 10 }, () => ({}));
-          const newData = masterDataTable.concat(blankRows);
+              // もしデータが10行未満の場合、ダミーデータを追加
+              if (masterDataTable.length < 10) {
+                  const blankRows = Array.from({ length: 10 - masterDataTable.length }, () => ({}));
+                  const newData = masterDataTable.concat(blankRows);
+                  this.$refs.hotTableComponent.hotInstance.loadData(newData);
+              } else {
+                  this.$refs.hotTableComponent.hotInstance.loadData(masterDataTable);
+              }
+          })
+          .catch((error) => {
+              console.error("Error fetching data:", error);
+          });
+  },
 
-          this.$refs.hotTableComponent.hotInstance.loadData(newData);
-        })
-        .catch((error) => {
-          console.error("Error fetching data:", error);
-        });
-    },
 
     addRows() {
       const hotInstance = this.$refs.hotTableComponent.hotInstance;
@@ -769,65 +774,90 @@ const CriticalEquipmentList = defineComponent({
     
 
     saveData() {
-  const userStore = useUserStore();
-  const userCompanyCode = userStore.companyCode;
+    try {
+        const userStore = useUserStore();
+        const userCompanyCode = userStore.companyCode;
 
-  if (!userCompanyCode) {
-      console.error("Error: No company code found for the user.");
-      return;
-  }
+        if (!userCompanyCode) {
+            console.error("Error: No company code found for the user.");
+            return;
+        }
 
-  const hotInstance = this.$refs.hotTableComponent.hotInstance;
-  const dataToSave = hotInstance.getData();
+        const hotInstance = this.$refs.hotTableComponent.hotInstance;
+        const dataToSave = hotInstance.getData();
 
-  const formattedData = {
-      companyCode: userCompanyCode,
-      MasterDataTable: dataToSave.map((row) => {
-          return {
-              plant: row[1],
-              equipment: row[2],
-              machineName: row[3],
-              levelSetValue: row[4],
-              mttr: row[5],
-              probabilityOfFailure: row[6],
-              countOfPM02: row[7],
-              latestPM02: row[8],
-              countOfPM03: row[9],
-              latestPM03: row[10],
-              countOfPM04: row[11],
-              latestPM04: row[12],
-              impactForProduction: row[13],
-              assessment: row[14],
-              rcaOrReplace: row[15],
-              sparePartsOrAlternative: row[16],
-              coveredFromTask: row[17],
-              twoways: row[18],
-              ceDescription: row[19],
-          };
-      }),
-  };
+        const formattedData = dataToSave.map((row) => {
+            const formattedRow = {
+                companyCode: userCompanyCode,
+                ceListNo: row[0],
+                plant: row[1],
+                equipment: row[2],
+                machineName: row[3],
+                levelSetValue: row[4],
+                typicalConstPeriod: row[5],
+                maxPartsDeliveryTimeInBom: row[6],
+                mttr: row[7],
+                possibilityOfContinuousProduction: row[8],
+                countOfPM02: row[9],
+                latestPM02: row[10] || null,
+                countOfPM03: row[11] || null,
+                latestPM03: row[12] || null,
+                countOfPM04: row[13] || null,
+                latestPM04: row[14] || null,
+                impactForProduction: row[15],
+                probabilityOfFailure: row[16],
+                assessment: row[17],
+                typicalTaskName: row[18],
+                typicalTaskCost: row[19],
+                typicalConstPeriod: row[20],
+                typicalNextEventDate: row[21] || null, // 空欄の場合はnullを送信
+                typicalSituation: row[22] || '', // 空欄の場合は空文字を送信
+                bomCode: row[23],
+                bomStock: row[24],
+                rcaOrReplace: row[25],
+                sparePartsOrAlternative: row[26],
+                coveredFromTask: row[27],
+                twoways: row[28],
+            };
 
-  console.log("送信するデータ:", formattedData);
+            return formattedRow;
+        });
 
-  const url = `http://127.0.0.1:8000/api/junctionTable/masterDataTable/`;
+        console.log("送信するデータ:", JSON.stringify(formattedData, null, 2));
 
-  axios
-      .post(url, formattedData, {
-          headers: {
-              "Content-Type": "application/json",
-          },
-          withCredentials: true,
-      })
-      .then((response) => {
-          console.log("Data saved successfully:", response.data);
-      })
-      .catch((error) => {
-          console.error("Error saving data:", error);
-          if (error.response) {
-              console.error("Error response data:", error.response.data);
-          }
-      });
+        const url = `http://127.0.0.1:8000/api/junctionTable/masterDataTable/`;
+
+        axios
+            .post(url, formattedData, {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                withCredentials: true,
+            })
+            .then((response) => {
+                console.log("Data saved successfully:", response.data);
+            })
+            .catch((error) => {
+                console.error("Error saving data:", error);
+
+                if (error.response) {
+                    console.error("Error response status:", error.response.status);
+                    console.error("Error response headers:", error.response.headers);
+                    console.error("Error response data:", error.response.data);
+                } else if (error.request) {
+                    console.error("Error request data:", error.request);
+                } else {
+                    console.error("Error message:", error.message);
+                }
+
+                console.error("Error config:", error.config);
+            });
+    } catch (err) {
+        console.error("An error occurred in saveData:", err);
+    }
 },
+
+
 
 
 
