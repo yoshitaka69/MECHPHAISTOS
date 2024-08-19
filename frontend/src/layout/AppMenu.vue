@@ -13,6 +13,8 @@ const model = ref([
             { label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/' },
             { label: 'Maintenance Optimization', icon: 'pi pi-fw pi-home', to: '/Maintenance_optimization' },
             { label: 'Input Form', icon: 'pi pi-fw pi-home', to: '/input_form' },
+            { label: 'Daily Report', icon: 'pi pi-fw pi-home', to: '/daily_report' },
+            { label: 'Hand Over', icon: 'pi pi-fw pi-home', to: '/hand_over_document' },
             ],
     },
     {

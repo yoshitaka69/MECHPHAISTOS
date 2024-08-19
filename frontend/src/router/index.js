@@ -28,10 +28,20 @@ const router = createRouter({
 					name:'News',
 					component: () => import('../views/pages/News.vue')
 				},
-		    		{
+				{
 					path: '/input_form',
 					name:'Input_form',
 					component: () => import('../views/pages/Input_form.vue')
+				},
+				{
+					path: '/daily_report',
+					name:'Daily_report',
+					component: () => import('../views/pages/Daily_report.vue')
+				},
+				{
+					path: '/hand_over_document',
+					name:'Hand_over_document',
+					component: () => import('../views/pages/Hand_over_document.vue')
 				},
 				{
 					path: '/critical_equipment_list',
