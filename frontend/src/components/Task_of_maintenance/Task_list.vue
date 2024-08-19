@@ -1,533 +1,459 @@
 <template>
-    <div id="TaskList">
+  <div id="TaskList">
       <div class="legend">
-        <div class="legend-item">
-          <div class="color-box" style="background-color: #f0a0a0"></div>
-          <span>Form input format is incorrect</span>
-        </div>
-        <div class="legend-item">
-          <div class="color-box" style="background-color: #f0f0f0"></div>
-          <span>Input not allowed. Value is automatically filled.</span>
-        </div>
+          <div class="legend-item">
+              <div class="color-box" style="background-color: #f0a0a0"></div>
+              <span>Form input format is incorrect</span>
+          </div>
+          <div class="legend-item">
+              <div class="color-box" style="background-color: #f0f0f0"></div>
+              <span>Input not allowed. Value is automatically filled.</span>
+          </div>
       </div>
-      <hot-table ref="hotTableComponent" :settings="hotSettings"></hot-table
-      ><br />
+      <hot-table ref="hotTableComponent" :settings="hotSettings"></hot-table><br />
       <div class="button-container">
-        <input type="number" v-model="rowsToAdd" placeholder="Number of rows" />
-        <Button label="Add Rows" severity="primary" @click="addRows" />
-        <Button
-          label="Update Data"
-          severity="secondary"
-          raised
-          class="updateData"
-          @click="updateData"
-        />
+          <input type="number" v-model="rowsToAdd" placeholder="Number of rows" />
+          <Button label="Add Rows" severity="primary" @click="addRows" />
+          <Button label="Save Data" severity="secondary" raised class="saveData" @click="saveData" />
       </div>
-    </div>
-  </template>
-  
-  <script>
-  import Handsontable from "handsontable"; //独自のレンダラーを使用するときに使う。
-  import { defineComponent } from "vue";
-  import { HotTable } from "@handsontable/vue3";
-  import { registerAllModules } from "handsontable/registry";
-  import "handsontable/dist/handsontable.full.css";
-  import axios from "axios";
-  import { useUserStore } from "@/stores/userStore"; // Piniaストアをインポート
-  import Button from "primevue/button"; // PrimeVueのボタンコンポーネントをインポート
-  
-  // register Handsontable's modules
-  registerAllModules();
-  
-  const TaskListComponent = defineComponent({
-    data() {
+  </div>
+</template>
+
+<script>
+import Handsontable from 'handsontable'; //独自のレンダラーを使用するときに使う。
+import { defineComponent } from 'vue';
+import { HotTable } from '@handsontable/vue3';
+import { registerAllModules } from 'handsontable/registry';
+import 'handsontable/dist/handsontable.full.css';
+import axios from 'axios';
+import { useUserStore } from '@/stores/userStore'; // Piniaストアをインポート
+import Button from 'primevue/button'; // PrimeVueのボタンコンポーネントをインポート
+
+// register Handsontable's modules
+registerAllModules();
+
+const TaskListComponent = defineComponent({
+  data() {
       return {
-        hotSettings: {
-          data: [
-            [
-              "PlantA",
-              "Dryer",
-              "blower",
-              "2018-10-20",
-              "Change bearing",
-              "5000",
-              "5",
-              "true",
-              "BomCode-1",
-              "58090",
-              "111222",
-              "",
-              "遅延",
-              "true",
-              "",
-              "",
-              "",
-              "",
-              "",
-              "",
-              "",
-              "",
-              "",
-              "true",
-            ], //1
-            [
-              "PlantA",
-              "Dryer",
-              "blower",
-              "2018-10-20",
-              "Change bearing",
-              "5000",
-              "5",
-              "true",
-              "BomCode-1",
-              "58090",
-              "111222",
-              "",
-              "遅延",
-              "true",
-              "",
-              "",
-              "",
-              "",
-              "",
-              "",
-              "",
-              "",
-              "true",
-            ], //2
-            [
-              "PlantA",
-              "Dryer",
-              "blower",
-              "2018-10-20",
-              "Change bearing",
-              "5000",
-              "5",
-              "true",
-              "BomCode-1",
-              "58090",
-              "111222",
-              "",
-              "遅延",
-              "true",
-              "",
-              "",
-              "",
-              "",
-              "",
-              "",
-              "",
-              "",
-              "true",
-            ], //3
-            ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",], //4
-            ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",], //5
-            ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",], //6
-            ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",], //7
-            ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",], //8
-            ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",], //9
-            ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",], //10
-            ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",], //11
-            ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",], //12
-            ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",], //13
-            ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",], //14
-            ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",], //15
-          ],
-          colHeaders: this.generateColHeaders(), // ヘッダーを生成するメソッドを使用 消すな‼
-  
-          columns: [
-            {
-              //taskListNo
-              data: "taskListNo",
-              type: "text",
-              readOnly: true,
-            },
-            {
-              //plant
-              data: "plant",
-              type: "text",
-            },
-            {
-              //Equipment
-              data: "equipment",
-              type: "text",
-            },
-            {
-              //MachineName
-              data: "machineName",
-              type: "text",
-            },
-            {
-              //Latest Date PM
-              data: "typicalLatestDate",
-              type: "date",
-              dateFormat: "YYYY-MM-DD",
-              correctFormat: false,
-              readOnly: true,
-            },
-            {
-              //TaskName
-              data: "typicalTaskName",
-              type: "text",
-            },
-            {
-              //TaskLaborCost
-              data: "typicalTaskCost",
-              type: "numeric",
-            },
-            {
-              //TaskConstructionCost
-              data: "typicalConstPeriod",
-              type: "numeric",
-            },
-            {
-              //MultiTasking
-              data: "multiTasking",
-              type: "checkbox",
-              className: "htCenter",
-            },
-            {
-              //BomCode
-              data: "bomCode",
-              type: "text",
-              readOnly: true,
-            },
-            {
-              //BomCost
-              data: "bomCodeCost",
-              type: "numeric",
-              readOnly: true,
-            },
-            {
-              //TotalCost
-              data: "totalCost",
-              type: "numeric",
-            },
-            {
-              //Next event date
-              data: "typicalNextEventDate",
-              type: "numeric",
-              readOnly: true,
-            },
-            {
-              //Situation
-              data: "typicalSituation",
-              type: "text",
-              readOnly: true,
-            },
-            {
-              //現時点からの10年先まで繰り返し（今）
-              data: "thisYear",
-              type: "checkbox",
-              className: "htCenter",
-            },
-            {
-              //現時点からの10年先まで繰り返し（1年後）
-              data: "thisYear1later",
-              type: "checkbox",
-              className: "htCenter",
-            },
-            {
-              //現時点からの10年先まで繰り返し（2年後）
-              data: "thisYear2later",
-              type: "checkbox",
-              className: "htCenter",
-            },
-            {
-              //現時点からの10年先まで繰り返し（3年後）
-              data: "thisYear3later",
-              type: "checkbox",
-              className: "htCenter",
-            },
-            {
-              //現時点からの10年先まで繰り返し（4年後）
-              data: "thisYear4later",
-              type: "checkbox",
-              className: "htCenter",
-            },
-            {
-              //現時点からの10年先まで繰り返し（5年後）
-              data: "thisYear5later",
-              type: "checkbox",
-              className: "htCenter",
-            },
-            {
-              //現時点からの10年先まで繰り返し（6年後）
-              data: "thisYear6later",
-              type: "checkbox",
-              className: "htCenter",
-            },
-            {
-              //現時点からの10年先まで繰り返し（7年後）
-              data: "thisYear7later",
-              type: "checkbox",
-              className: "htCenter",
-            },
-            {
-              //現時点からの10年先まで繰り返し（8年後）
-              data: "thisYear8later",
-              type: "checkbox",
-              className: "htCenter",
-            },
-            {
-              //現時点からの10年先まで繰り返し（9年後）
-              data: "thisYear9later",
-              type: "checkbox",
-              className: "htCenter",
-            },
-            {
-              //現時点からの10年先まで繰り返し（10年後）
-              data: "thisYear10later",
-              type: "checkbox",
-              className: "htCenter",
-            },
-          ],
-  
-          afterGetColHeader: (col, TH) => {
-            if (col === -1) {
-              // ヘッダー行の場合
-              return;
-            }
-            // 全ヘッダーセルにスタイルを設定
-            TH.style.backgroundColor = "#FFFFCC"; // 薄い黄色
-            TH.style.color = "black"; // テキスト色を黒に設定
-            TH.style.fontWeight = "bold"; // テキストを太字に設定
+          hotSettings: {
+              data: [
+                  ['PlantA', 'Dryer', 'blower', '2018-10-20', 'Change bearing', '5000', '5', 'true', 'BomCode-1', '58090', '111222', '', '遅延', 'true', '', '', '', '', '', '', '', '', 'true'], //1
+                  ['PlantA', 'Dryer', 'blower', '2018-10-20', 'Change bearing', '5000', '5', 'true', 'BomCode-1', '58090', '111222', '', '遅延', 'true', '', '', '', '', '', '', '', '', 'true'], //2
+                  ['PlantA', 'Dryer', 'blower', '2018-10-20', 'Change bearing', '5000', '5', 'true', 'BomCode-1', '58090', '111222', '', '遅延', 'true', '', '', '', '', '', '', '', '', 'true'], //3
+                  ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //4
+                  ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //5
+                  ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //6
+                  ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //7
+                  ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //8
+                  ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //9
+                  ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //10
+                  ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //11
+                  ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //12
+                  ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //13
+                  ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //14
+                  ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''] //15
+              ],
+              colHeaders: this.generateColHeaders(), // ヘッダーを生成するメソッドを使用 消すな‼
+
+              columns: [
+                  {
+                      //taskListNo
+                      data: 'taskListNo',
+                      type: 'text',
+                      readOnly: true
+                  },
+                  {
+                      //plant
+                      data: 'plant',
+                      type: 'text'
+                  },
+                  {
+                      //Equipment
+                      data: 'equipment',
+                      type: 'text'
+                  },
+                  {
+                      //MachineName
+                      data: 'machineName',
+                      type: 'text'
+                  },
+                  {
+                      //Latest Date PM
+                      data: 'typicalLatestDate',
+                      type: 'date',
+                      dateFormat: 'YYYY-MM-DD',
+                      correctFormat: false,
+                      readOnly: true
+                  },
+                  {
+                      //TaskName
+                      data: 'typicalTaskName',
+                      type: 'text'
+                  },
+                  {
+                      //TaskLaborCost
+                      data: 'typicalTaskCost',
+                      type: 'numeric'
+                  },
+                  {
+                      //TaskConstructionCost
+                      data: 'typicalConstPeriod',
+                      type: 'numeric'
+                  },
+                  {
+                      //MultiTasking
+                      data: 'multiTasking',
+                      type: 'checkbox',
+                      className: 'htCenter'
+                  },
+                  {
+                      //BomCode
+                      data: 'bomCode',
+                      type: 'text',
+                      readOnly: true
+                  },
+                  {
+                      //BomCost
+                      data: 'bomCodeCost',
+                      type: 'numeric',
+                      readOnly: true
+                  },
+                  {
+                      //TotalCost
+                      data: 'totalCost',
+                      type: 'numeric'
+                  },
+                  {
+                      //Next event date
+                      data: 'typicalNextEventDate',
+                      type: 'numeric',
+                      readOnly: true
+                  },
+                  {
+                      //Situation
+                      data: 'typicalSituation',
+                      type: 'text',
+                      readOnly: true
+                  },
+                  {
+                      //現時点からの10年先まで繰り返し（今）
+                      data: 'thisYear',
+                      type: 'checkbox',
+                      className: 'htCenter'
+                  },
+                  {
+                      //現時点からの10年先まで繰り返し（1年後）
+                      data: 'thisYear1later',
+                      type: 'checkbox',
+                      className: 'htCenter'
+                  },
+                  {
+                      //現時点からの10年先まで繰り返し（2年後）
+                      data: 'thisYear2later',
+                      type: 'checkbox',
+                      className: 'htCenter'
+                  },
+                  {
+                      //現時点からの10年先まで繰り返し（3年後）
+                      data: 'thisYear3later',
+                      type: 'checkbox',
+                      className: 'htCenter'
+                  },
+                  {
+                      //現時点からの10年先まで繰り返し（4年後）
+                      data: 'thisYear4later',
+                      type: 'checkbox',
+                      className: 'htCenter'
+                  },
+                  {
+                      //現時点からの10年先まで繰り返し（5年後）
+                      data: 'thisYear5later',
+                      type: 'checkbox',
+                      className: 'htCenter'
+                  },
+                  {
+                      //現時点からの10年先まで繰り返し（6年後）
+                      data: 'thisYear6later',
+                      type: 'checkbox',
+                      className: 'htCenter'
+                  },
+                  {
+                      //現時点からの10年先まで繰り返し（7年後）
+                      data: 'thisYear7later',
+                      type: 'checkbox',
+                      className: 'htCenter'
+                  },
+                  {
+                      //現時点からの10年先まで繰り返し（8年後）
+                      data: 'thisYear8later',
+                      type: 'checkbox',
+                      className: 'htCenter'
+                  },
+                  {
+                      //現時点からの10年先まで繰り返し（9年後）
+                      data: 'thisYear9later',
+                      type: 'checkbox',
+                      className: 'htCenter'
+                  },
+                  {
+                      //現時点からの10年先まで繰り返し（10年後）
+                      data: 'thisYear10later',
+                      type: 'checkbox',
+                      className: 'htCenter'
+                  }
+              ],
+
+              afterGetColHeader: (col, TH) => {
+                  if (col === -1) {
+                      // ヘッダー行の場合
+                      return;
+                  }
+                  // 全ヘッダーセルにスタイルを設定
+                  TH.style.backgroundColor = '#FFFFCC'; // 薄い黄色
+                  TH.style.color = 'black'; // テキスト色を黒に設定
+                  TH.style.fontWeight = 'bold'; // テキストを太字に設定
+              },
+              rowHeaders: true, // 行ヘッダーを有効化
+              width: '100%',
+              height: 'auto',
+              contextMenu: true, //コンテキストメニュー
+              autoWrapRow: true,
+              autoWrapCol: true,
+              fixedColumnsStart: 2, //カラム固定
+              fixedRowsTop: 2, //列固定
+              manualColumnFreeze: true, //コンテキストメニュー手動でコラム解除
+              manualColumnResize: true, //手動での列幅調整
+              manualRowResize: true, //列の手動高さ調整
+              filters: true,
+              dropdownMenu: true,
+              comments: true, //コメントの有り無し
+              fillHandle: {
+                  autoInsertRow: true
+              },
+              licenseKey: 'non-commercial-and-evaluation'
           },
-          rowHeaders: true, // 行ヘッダーを有効化
-          width: "100%",
-          height: "auto",
-          contextMenu: true, //コンテキストメニュー
-          autoWrapRow: true,
-          autoWrapCol: true,
-          fixedColumnsStart: 2, //カラム固定
-          fixedRowsTop: 2, //列固定
-          manualColumnFreeze: true, //コンテキストメニュー手動でコラム解除
-          manualColumnResize: true, //手動での列幅調整
-          manualRowResize: true, //列の手動高さ調整
-          filters: true,
-          dropdownMenu: true,
-          comments: true, //コメントの有り無し
-          fillHandle: {
-            autoInsertRow: true,
-          },
-          licenseKey: "non-commercial-and-evaluation",
-        },
-        rowsToAdd: 1, // 追加する行数のデフォルト値
-        dataStore: [], // データストア
+          rowsToAdd: 1, // 追加する行数のデフォルト値
+          dataStore: [] // データストア
       };
-    },
-  
-    created() {
+  },
+
+  created() {
       this.getDataAxios();
-    },
-  
-    methods: {
+  },
+
+  methods: {
       generateColHeaders() {
-        const currentYear = new Date().getFullYear();
-        const futureYears = Array.from(
-          { length: 11 },
-          (_, index) => (currentYear + index).toString()
-        );
-  
-        return [
-          "TaskListNo",
-          "Plant",
-          "Equipment",
-          "MachineName",
-          "LatestDate<br>PM",
-          "TaskName",
-          "TaskLabor<br>Cost",
-          "TaskConstruction<br>Period",
-          "Multi<br>Tasking",
-          "BomCode",
-          "BomCost",
-          "TotalCost",
-          "Next Even<br>date",
-          "Situation",
-          ...futureYears,
-        ];
+          const currentYear = new Date().getFullYear();
+          const futureYears = Array.from({ length: 11 }, (_, index) => (currentYear + index).toString());
+
+          return [
+              'TaskListNo',
+              'Plant',
+              'Equipment',
+              'MachineName',
+              'LatestDate<br>PM',
+              'TaskName',
+              'TaskLabor<br>Cost',
+              'TaskConstruction<br>Period',
+              'Multi<br>Tasking',
+              'BomCode',
+              'BomCost',
+              'TotalCost',
+              'Next Even<br>date',
+              'Situation',
+              ...futureYears
+          ];
       },
-  
+
       getDataAxios() {
-        const userStore = useUserStore();
-        const userCompanyCode = userStore.companyCode;
-  
-        if (!userCompanyCode) {
-          console.error("Error: No company code found for the user.");
-          return;
-        }
-  
-        const url = `http://127.0.0.1:8000/api/task/taskListByCompany/?format=json&companyCode=${userCompanyCode}`;
-  
-        axios
-          .get(url, {
-            headers: {
-              "Content-Type": "application/json",
-            },
-            withCredentials: true,
-          })
-          .then((response) => {
-            const taskListData = response.data.flatMap(
-              (companyData) => companyData.taskList
-            );
-            console.log("Fetched Task List Data:", taskListData);
-  
-            // データストアに保存
-            this.dataStore = taskListData;
-  
-            // 空行を追加
-            const blankRows = Array.from({ length: 20 }, () => ({}));
-            const newData = taskListData.concat(blankRows);
-  
-            // Handsontable設定の更新
-            this.$refs.hotTableComponent.hotInstance.updateSettings({
-              data: newData,
-              // ここで他の必要な設定を更新することも可能
-            });
-          })
-          .catch((error) => {
-            console.error("Error fetching data:", error);
-          });
+          const userStore = useUserStore();
+          const userCompanyCode = userStore.companyCode;
+
+          if (!userCompanyCode) {
+              console.error('Error: No company code found for the user.');
+              return;
+          }
+
+          const url = `http://127.0.0.1:8000/api/task/taskListByCompany/?format=json&companyCode=${userCompanyCode}`;
+
+          axios
+              .get(url, {
+                  headers: {
+                      'Content-Type': 'application/json'
+                  },
+                  withCredentials: true
+              })
+              .then((response) => {
+                  const taskListData = response.data.flatMap((companyData) => companyData.taskList);
+                  console.log('Fetched Task List Data:', taskListData);
+
+                  // データストアに保存
+                  this.dataStore = taskListData;
+
+                  // ダミーデータを追加する条件
+                  if (taskListData.length < 15) {
+                      const blankRows = Array.from({ length: 15 - taskListData.length }, () => ({}));
+                      this.dataStore = this.dataStore.concat(blankRows);
+                  }
+
+                  // Handsontable設定の更新
+                  this.$refs.hotTableComponent.hotInstance.updateSettings({
+                      data: this.dataStore
+                  });
+              })
+              .catch((error) => {
+                  console.error('Error fetching data:', error);
+              });
       },
-  
+
       addRows() {
-        const hotInstance = this.$refs.hotTableComponent.hotInstance;
-        const blankRows = Array.from({ length: this.rowsToAdd }, () => {
-          return {
-            taskListNo: "",
-            plant: "",
-            equipment: "",
-            machineName: "",
-            typicalLatestDate: "",
-            typicalTaskName: "",
-            typicalTaskCost: 0,
-            typicalConstPeriod: 0,
-            multiTasking: false,
-            bomCode: "",
-            bomCodeCost: 0,
-            totalCost: 0,
-            typicalNextEventDate: "",
-            typicalSituation: "",
-            thisYear: false,
-            thisYear1later: false,
-            thisYear2later: false,
-            thisYear3later: false,
-            thisYear4later: false,
-            thisYear5later: false,
-            thisYear6later: false,
-            thisYear7later: false,
-            thisYear8later: false,
-            thisYear9later: false,
-            thisYear10later: false,
-          };
-        });
-  
-        this.dataStore = this.dataStore.concat(blankRows);
-  
-        hotInstance.updateSettings({
-          data: this.dataStore,
-        });
-      },
-  
-      updateData() {
-        const userStore = useUserStore();
-        const userCompanyCode = userStore.companyCode;
-  
-        if (!userCompanyCode) {
-          console.error("Error: No company code found for the user.");
-          return;
-        }
-  
-        const hotInstance = this.$refs.hotTableComponent.hotInstance;
-        const rowCount = hotInstance.countRows();
-        let taskList = [];
-  
-        for (let i = 0; i < rowCount; i++) {
-          let rowData = hotInstance.getDataAtRow(i);
-          let taskListNo = i + 1; // 0-indexedから1-indexedに変更
-  
-          let taskListItem = {
-            companyCode: userCompanyCode,
-            taskListNo: taskListNo,
-            plant: rowData[1],
-            equipment: rowData[2],
-            machineName: rowData[3],
-            typicalLatestDatePM: rowData[4],
-            typicalTaskName: rowData[5],
-            typicalTaskCost: rowData[6],
-            typicalConstPeriod: rowData[7],
-            multiTasking: rowData[8],
-            bomCode: rowData[9],
-            bomCodeCost: rowData[10],
-            totalCost: rowData[11],
-            typicalNextEventDate: rowData[12],
-            typicalSituation: rowData[13],
-            thisYear: rowData[14],
-            thisYear1later: rowData[15],
-            thisYear2later: rowData[16],
-            thisYear3later: rowData[17],
-            thisYear4later: rowData[18],
-            thisYear5later: rowData[19],
-            thisYear6later: rowData[20],
-            thisYear7later: rowData[21],
-            thisYear8later: rowData[22],
-            thisYear9later: rowData[23],
-            thisYear10later: rowData[24],
-          };
-  
-          taskList.push(taskListItem);
-        }
-  
-        let postData = {
-          companyCode: userCompanyCode,
-          taskList: taskList,
-        };
-  
-        console.log("postData", postData);
-  
-        const backendUrl = `http://127.0.0.1:8000/api/task/taskListByCompany/?format=json&companyCode=${userCompanyCode}`;
-        axios
-          .post(backendUrl, postData)
-          .then((response) => {
-            console.log("Data posted successfully", response.data);
-          })
-          .catch((error) => {
-            console.error("Error in posting data", error);
+          const hotInstance = this.$refs.hotTableComponent.hotInstance;
+          const blankRows = Array.from({ length: this.rowsToAdd }, () => {
+              return {
+                  taskListNo: '',
+                  plant: '',
+                  equipment: '',
+                  machineName: '',
+                  typicalLatestDate: '',
+                  typicalTaskName: '',
+                  typicalTaskCost: 0,
+                  typicalConstPeriod: 0,
+                  multiTasking: false,
+                  bomCode: '',
+                  bomCodeCost: 0,
+                  totalCost: 0,
+                  typicalNextEventDate: '',
+                  typicalSituation: '',
+                  thisYear: false,
+                  thisYear1later: false,
+                  thisYear2later: false,
+                  thisYear3later: false,
+                  thisYear4later: false,
+                  thisYear5later: false,
+                  thisYear6later: false,
+                  thisYear7later: false,
+                  thisYear8later: false,
+                  thisYear9later: false,
+                  thisYear10later: false
+              };
+          });
+
+          this.dataStore = this.dataStore.concat(blankRows);
+
+          hotInstance.updateSettings({
+              data: this.dataStore
           });
       },
-    },
-    components: {
+
+      saveData() {
+          try {
+              const userStore = useUserStore();
+              const userCompanyCode = userStore.companyCode;
+
+              if (!userCompanyCode) {
+                  console.error('Error: No company code found for the user.');
+                  return;
+              }
+
+              const hotInstance = this.$refs.hotTableComponent.hotInstance;
+              const dataToSave = hotInstance.getData();
+
+              const formattedData = dataToSave.map((row, index) => {
+                  return {
+                      companyCode: userCompanyCode,
+                      taskListNo: row[0] || null,
+                      plant: row[1],
+                      equipment: row[2],
+                      machineName: row[3],
+                      typicalLatestDate: row[4],
+                      typicalTaskName: row[5],
+                      typicalTaskCost: row[6],
+                      typicalConstPeriod: row[7],
+                      multiTasking: row[8],
+                      bomCode: row[9],
+                      bomCost: row[10],
+                      totalCost: row[11],
+                      typicalNextEventDate: row[12],
+                      typicalSituation: row[13],
+                      thisYear: row[14] !== null ? row[14] : false,
+                      thisYear1later: row[15] !== null ? row[15] : false,
+                      thisYear2later: row[16] !== null ? row[16] : false,
+                      thisYear3later: row[17] !== null ? row[17] : false,
+                      thisYear4later: row[18] !== null ? row[18] : false,
+                      thisYear5later: row[19] !== null ? row[19] : false,
+                      thisYear6later: row[20] !== null ? row[20] : false,
+                      thisYear7later: row[21] !== null ? row[21] : false,
+                      thisYear8later: row[22] !== null ? row[22] : false,
+                      thisYear9later: row[23] !== null ? row[23] : false,
+                      thisYear10later: row[24] !== null ? row[24] : false
+                  };
+              });
+
+              console.log('送信するデータ:', JSON.stringify(formattedData, null, 2));
+
+              const url = `http://127.0.0.1:8000/api/task/taskList/`;
+
+              axios
+                  .post(url, formattedData, {
+                      headers: {
+                          'Content-Type': 'application/json'
+                      },
+                      withCredentials: true
+                  })
+                  .then((response) => {
+                      console.log('Data saved successfully:', response.data);
+                  })
+                  .catch((error) => {
+                      console.error('Error saving data:', error);
+
+                      if (error.response) {
+                          console.error('Error response status:', error.response.status);
+                          console.error('Error response headers:', error.response.headers);
+                          console.error('Error response data:', error.response.data);
+                      } else if (error.request) {
+                          console.error('Error request data:', error.request);
+                      } else {
+                          console.error('Error message:', error.message);
+                      }
+
+                      console.error('Error config:', error.config);
+                  });
+          } catch (err) {
+              console.error('An error occurred in saveData:', err);
+          }
+      }
+  },
+  components: {
       HotTable,
-      Button, // PrimeVueのButtonコンポーネントを追加
-    },
-  });
-  export default TaskListComponent;
-  </script>
-  
-  <style scoped>
-  .button-container {
-    display: flex;
-    gap: 10px;
-    margin-top: 10px;
+      Button // PrimeVueのButtonコンポーネントを追加
   }
-  
-  .legend {
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-  }
-  
-  .legend-item {
-    display: flex;
-    align-items: center;
-    margin-right: 15px;
-  }
-  
-  .color-box {
-    width: 20px;
-    height: 20px;
-    margin-right: 10px;
-    border: 1px solid #000;
-  }
-  </style>
-  
+});
+export default TaskListComponent;
+</script>
+
+<style scoped>
+.button-container {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.legend {
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  margin-right: 15px;
+}
+
+.color-box {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+  border: 1px solid #000;
+}
+</style>

@@ -32,43 +32,99 @@ import io
 
 
 
+
+
+
+
+from rest_framework import viewsets, status
+from rest_framework.response import Response
+from django.db.models import Max
+from .models import SpareParts, CompanyCode
+from .serializers import SparePartsSerializer
+
+
 class SparePartsViewSet(viewsets.ModelViewSet):
     queryset = SpareParts.objects.all()
     serializer_class = SparePartsSerializer
 
-    @action(detail=False, methods=['post'], url_path='bulk-update')
-    def bulk_update(self, request):
-        spare_parts_list = request.data.get('sparePartsList', [])
+    def create(self, request, *args, **kwargs):
+        data = request.data
+        sent_parts_nos = [item.get('partsNo') for item in data if item.get('partsNo') is not None]
 
+        # 現在のデータベースに存在するpartsNoを取得
+        existing_parts_nos = list(SpareParts.objects.values_list('partsNo', flat=True))
+
+        # 削除する必要があるpartsNoを特定
+        parts_nos_to_delete = set(existing_parts_nos) - set(sent_parts_nos)
+
+        # 削除処理
+        if parts_nos_to_delete:
+            SpareParts.objects.filter(partsNo__in=parts_nos_to_delete).delete()
+
+        # 新規作成または更新の処理
         created_items = []
-        updated_items = []
+        for item in data:
+            company_code_str = item.get('companyCode')
 
-        for item_data in spare_parts_list:
-            parts_no = item_data.get('partsNo')
-            company_code = item_data.get('companyCode')
+            # companyCodeが文字列として渡された場合、それに対応するオブジェクトを取得
+            try:
+                company_code_obj = CompanyCode.objects.get(companyCode=company_code_str)
+                item['companyCode'] = company_code_obj.id  # IDに変換
+            except CompanyCode.DoesNotExist:
+                return Response(
+                    {"error": f"CompanyCode '{company_code_str}' does not exist."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
 
-            spare_part = SpareParts.objects.filter(partsNo=parts_no, companyCode=company_code).first()
+            parts_no = item.get('partsNo')
 
-            if spare_part:
-                serializer = SparePartsSerializer(spare_part, data=item_data, partial=True)
-                if serializer.is_valid():
-                    serializer.save()
-                    updated_items.append(serializer.data)
-                else:
-                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-            else:
-                serializer = SparePartsSerializer(data=item_data)
-                if serializer.is_valid():
+            if parts_no is not None:
+                # partsNoが存在する場合、既存のレコードを更新する
+                existing_item = SpareParts.objects.filter(partsNo=parts_no).first()
+                if existing_item:
+                    serializer = self.get_serializer(existing_item, data=item, partial=True)
+                    serializer.is_valid(raise_exception=True)
                     serializer.save()
                     created_items.append(serializer.data)
-                else:
-                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                    continue  # 更新処理をした場合は次のアイテムに進む
 
-        return Response({
-            'created': created_items,
-            'updated': updated_items
-        }, status=status.HTTP_200_OK)
-    
+            # partsNoがnullまたは新規作成の場合
+            if parts_no is None:
+                # 最大のpartsNoを取得し、そこから次の番号を割り当てる
+                max_parts_no = SpareParts.objects.aggregate(Max('partsNo'))['partsNo__max'] or "00000"
+                max_parts_no = int(max_parts_no)  # 整数に変換
+                item['partsNo'] = str(max_parts_no + 1).zfill(5)  # 整数を文字列に変換してゼロ埋め
+
+            serializer = self.get_serializer(data=item)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            created_items.append(serializer.data)
+
+        return Response(created_items, status=status.HTTP_201_CREATED)
+
+    def destroy(self, request, *args, **kwargs):
+        parts_no = request.data.get('partsNo')
+        if parts_no:
+            try:
+                # partsNoに基づいて既存の部品を取得し、削除を試みる
+                spare_part = SpareParts.objects.get(partsNo=parts_no)
+                self.perform_destroy(spare_part)
+                print("Delete request received with partsNo:", parts_no)
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            except SpareParts.DoesNotExist:
+                return Response({"error": "Spare Part with partsNo not found."}, status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response({"error": "partsNo not provided."}, status=status.HTTP_400_BAD_REQUEST)
+
+    def perform_create(self, serializer):
+        serializer.save()
+
+    def perform_update(self, serializer):
+        serializer.save()
+
+    def perform_destroy(self, instance):
+        instance.delete()
+
 
 
 

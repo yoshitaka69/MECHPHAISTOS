@@ -357,65 +357,64 @@ class TypicalTaskList(models.Model):
 
 
 
+from django.db import models
+
 class TaskList(models.Model):
-    
-    #accounts
-    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='taskList_companyCode',null=True, blank=True)
+    # accounts
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='taskList_companyCode', null=True, blank=True)
 
-    #CeList
-    plant = models.ForeignKey(Plant, on_delete=models.CASCADE,related_name='taskList_plant', null=True, blank=True)
-    equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='taskList_equipment',null=True, blank=True)
-    machineName = models.ForeignKey(Machine, on_delete=models.CASCADE, related_name='taskList_equipment',null=True, blank=True)
+    # CeList
+    plant = models.CharField(max_length=100, null=True, blank=True)
+    equipment = models.CharField(max_length=100, null=True, blank=True)
+    machineName = models.CharField(max_length=100, null=True, blank=True)
 
-    #Typical Task 
-    taskListNo = models.CharField(verbose_name='taskListNo', max_length=100,blank=True,null=True)
+    # Typical Task
+    taskListNo = models.CharField(verbose_name='taskListNo', max_length=100, blank=True, null=True)
 
-    typicalLatestDate = models.ForeignKey(TypicalTaskList, on_delete=models.CASCADE, related_name='taskList_typicalLatestDate',null=True, blank=True)
-    typicalTaskName = models.ForeignKey(TypicalTaskList, on_delete=models.CASCADE, related_name='taskList_typicalTaskName',null=True, blank=True)
-    typicalTaskCost = models.ForeignKey(TypicalTaskList, on_delete=models.CASCADE, related_name='taskList_typicalTaskCost',null=True, blank=True)
-    typicalConstPeriod = models.ForeignKey(TypicalTaskList, on_delete=models.CASCADE, related_name='taskList_typicalConstPeriod',null=True, blank=True)
-    multiTasking = models.ForeignKey(TypicalTaskList, on_delete=models.CASCADE, related_name='taskList_multiTasking',null=True, blank=True)
-    typicalNextEventDate = models.ForeignKey(TypicalTaskList, on_delete=models.CASCADE, related_name='taskList_typicalNextEventDate',null=True, blank=True)
-    typicalSituation = models.ForeignKey(TypicalTaskList, on_delete=models.CASCADE, related_name='taskList_typicalSituation',null=True, blank=True)
+    typicalLatestDate = models.CharField(max_length=100, null=True, blank=True)
+    typicalTaskName = models.CharField(max_length=100, null=True, blank=True)
+    typicalTaskCost = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    typicalConstPeriod = models.CharField(max_length=100, null=True, blank=True)
+    multiTasking = models.CharField(max_length=100, null=True, blank=True)
+    typicalNextEventDate = models.CharField(max_length=100, null=True, blank=True)
+    typicalSituation = models.CharField(max_length=100, null=True, blank=True)
 
-    #bomCode
-    bomCode =  models.ForeignKey(BomList, on_delete=models.CASCADE, related_name='taskList_bomCode',null=True, blank=True)
-    bomCost = models.ForeignKey(BomList, on_delete=models.CASCADE, related_name='taskList_bomCost',null=True, blank=True)
+    # bomCode
+    bomCode = models.CharField(max_length=100, null=True, blank=True)
+    bomCost = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 
-    totalCost  = models.DecimalField(verbose_name='totalCost',max_digits=10,decimal_places=5,blank=True,null=True,default=0.00)
+    totalCost = models.DecimalField(verbose_name='totalCost', max_digits=10, decimal_places=5, blank=True, null=True, default=0.00)
 
-    #あとで下はmethodFieldに変更する。
-    thisYear = models.BooleanField(verbose_name='thisYear',default=False)
-    thisYear1later = models.BooleanField(verbose_name='thisYear1later',default=False)
-    thisYear2later = models.BooleanField(verbose_name='thisYear2later',default=False)
-    thisYear3later = models.BooleanField(verbose_name='thisYear3later',default=False)
-    thisYear4later = models.BooleanField(verbose_name='thisYear4later',default=False)
-    thisYear5later = models.BooleanField(verbose_name='thisYear5later',default=False)
-    thisYear6later = models.BooleanField(verbose_name='thisYear6later',default=False)
-    thisYear7later = models.BooleanField(verbose_name='thisYear7later',default=False)
-    thisYear8later = models.BooleanField(verbose_name='thisYear8later',default=False)
-    thisYear9later = models.BooleanField(verbose_name='thisYear9later',default=False)
-    thisYear10later = models.BooleanField(verbose_name='thisYear10later',default=False)
-
-
-    def save(self, *args, **kwargs):
-        if not self.taskListNo:
-            # 最新のtaskListNoを取得し、1を加算して新しいtaskListNoを生成
-            last_task = TaskList.objects.order_by('taskListNo').last()
-            if last_task:
-                self.taskListNo = f"{int(last_task.taskListNo) + 1:04d}"  # 例: '0005'
-            else:
-                self.taskListNo = '0001'
-        super().save(*args, **kwargs)
-
+    # This Year Fields
+    thisYear = models.BooleanField(verbose_name='thisYear', default=False)
+    thisYear1later = models.BooleanField(verbose_name='thisYear1later', default=False)
+    thisYear2later = models.BooleanField(verbose_name='thisYear2later', default=False)
+    thisYear3later = models.BooleanField(verbose_name='thisYear3later', default=False)
+    thisYear4later = models.BooleanField(verbose_name='thisYear4later', default=False)
+    thisYear5later = models.BooleanField(verbose_name='thisYear5later', default=False)
+    thisYear6later = models.BooleanField(verbose_name='thisYear6later', default=False)
+    thisYear7later = models.BooleanField(verbose_name='thisYear7later', default=False)
+    thisYear8later = models.BooleanField(verbose_name='thisYear8later', default=False)
+    thisYear9later = models.BooleanField(verbose_name='thisYear9later', default=False)
+    thisYear10later = models.BooleanField(verbose_name='thisYear10later', default=False)
 
     class Meta:
         verbose_name = 'Task List'
         verbose_name_plural = 'Task List'
-        ordering = ('companyCode',) 
-         
+        ordering = ('companyCode',)
+    
+    def save(self, *args, **kwargs):
+        if not self.taskListNo:  # taskListNoが指定されていない場合、自動生成
+            max_task_list_no = TaskList.objects.aggregate(Max('taskListNo'))['taskListNo__max']
+            if max_task_list_no:
+                self.taskListNo = str(int(max_task_list_no) + 1).zfill(5)  # 5桁のゼロ埋めで次の番号を設定
+            else:
+                self.taskListNo = '00001'  # 最初のレコードの場合、'00001'から開始
+        super(TaskList, self).save(*args, **kwargs)
 
     def __str__(self):
-        return str('Task List')
+        return str(self.taskListNo) if self.taskListNo else 'Task List'
+
+
 
 
