@@ -75,3 +75,17 @@ class ProductViewSet(viewsets.ModelViewSet):
     def perform_destroy(self, instance):
         # 削除時の追加処理が必要な場合はここで行う
         instance.delete()
+
+
+
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from .models import GanttTest
+from .serializers import GanttTestSerializer
+
+class GanttTestListView(APIView):
+    def get(self, request, *args, **kwargs):
+        tasks = GanttTest.objects.all()
+        serializer = GanttTestSerializer(tasks, many=True)
+        return Response(serializer.data)

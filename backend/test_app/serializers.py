@@ -21,3 +21,13 @@ class ProductSerializer(serializers.ModelSerializer):
         instance = super().update(instance, validated_data)
         print("Updated instance:", instance)  # 更新されたインスタンスをターミナルに出力
         return instance
+
+
+
+from rest_framework import serializers
+from .models import GanttTest
+
+class GanttTestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GanttTest
+        fields = ['id', 'name', 'start_date', 'end_date']

@@ -1,25 +1,24 @@
 <template>
-  <div class="home-contents">
-    <div class="header">
-      <img src="@/assets/MECHPHAISTOS cover.jpg" />
-      <h1 class="title">Welcome to MECHPHAISTOS</h1>
-    </div>
-    <div class="content-container">
-      <div class="side-container left-side">
-        <MiniCalendar :events="events" @update-events="updateEvents" />
+  <div class="background-container">
+    <div class="home-contents">
+      <div class="header">
+        <img src="@/assets/MECHPHAISTOS cover.jpg" />
+        <h1 class="title">Welcome to MECHPHAISTOS</h1>
       </div>
-      <div class="main-content">
-        <div class="section world-clock-section">
-          <WorldClock />
+      <div class="content-container">
+        <div class="side-container left-side">
+          <MiniCalendar :events="events" @update-events="updateEvents" />
         </div>
-        <div class="section mechphaistos-ai-section">
-          <Mechphaistos_Ai />
-        </div>
-        <div class="section news-and-sidebar">
-          <News_content />
-          <div class="side-container right-side">
-            <Weather />
-            <InformationBox message="これは管理人からのお知らせです。" />
+        <div class="main-content">
+          <div class="section world-clock-section">
+            <WorldClock />
+          </div>
+          <div class="section mechphaistos-ai-section">
+            <Mechphaistos_Ai />
+          </div>
+          <div class="section news-and-weather">
+            <News_content class="news-content" />
+            <Weather class="weather-content" />
           </div>
         </div>
       </div>
@@ -31,7 +30,6 @@
 import News_content from '@/components/News/News_content.vue';
 import WorldClock from '@/components/Clock/WorldClock.vue';
 import Weather from '@/components/Weather/Weather.vue';
-import InformationBox from '@/components/Information_box/Information_box.vue';
 import MainCalendar from '@/components/Calendar/MainCalendar.vue';
 import MiniCalendar from '@/components/Calendar/MiniCalendar.vue';
 import { INITIAL_EVENTS } from '@/components/Calendar/event-utils';
@@ -42,7 +40,6 @@ export default {
     News_content,
     WorldClock,
     Weather,
-    InformationBox,
     MainCalendar,
     MiniCalendar,
     Mechphaistos_Ai,
@@ -61,6 +58,14 @@ export default {
 </script>
 
 <style scoped>
+.background-container {
+  background-color: #f5f5f5; /* 背景色を追加 */
+  padding: 20px; /* コンテナ全体に余白を追加 */
+  border-radius: 10px; /* コンテナの角を丸める */
+  max-width: 1600px; /* 背景コンテナの最大幅を拡大 */
+  margin: 0 auto; /* コンテナを中央揃えに */
+}
+
 .home-contents {
   display: flex;
   flex-direction: column;
@@ -126,40 +131,27 @@ export default {
 
 .section {
   width: 100%;
-  max-width: 1000px; /* 各セクションの最大幅を広げる */
+  max-width: 1200px; /* 各セクションの最大幅を調整 */
 }
 
-.weather-info-container {
-  display: flex;
-  justify-content: space-between; /* 子要素を横並びに */
-  gap: 10px; /* 子要素間のスペース */
-}
-
-.weather-info-container > * {
-  flex: 1; /* 子要素が均等に幅を取る */
-}
-
-/* world-clock-section と weather-info-container の間隔を狭める */
-.world-clock-section {
-  margin-bottom: 0px; /* デフォルトの間隔より狭く設定 */
-}
-
-/* mechphaistos-ai-section の配置と幅を調整 */
 .mechphaistos-ai-section {
-  width: calc(100% - 240px); /* 左側のサイドバーの幅を考慮して右に移動 */
-  margin-top: 0px; /* セクション間のスペースを調整 */
-  margin-left: 240px; /* 左側のサイドバーの幅を考慮して右に移動 */
+  width: 100%;
+  max-width: 1200px;
+  margin-bottom: 20px;
 }
 
-/* news-and-sidebar の横並び配置 */
-.news-and-sidebar {
+.news-and-weather {
   display: flex;
-  gap: 20px; /* News_content とサイドバーの間のスペース */
+  gap: 20px; /* News_content と Weather の間のスペース */
+  align-items: flex-start; /* 上端を揃える */
+  width: 100%; /* 背景コンテナに合わせる */
 }
 
-.right-side {
-  display: flex;
-  flex-direction: column;
-  gap: 20px; /* コンポーネント間のスペース */
+.news-content {
+  flex: 2; /* News_content を Weather より大きくする */
+}
+
+.weather-content {
+  flex: 1; /* Weather の幅を調整 */
 }
 </style>
