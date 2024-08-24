@@ -490,6 +490,7 @@ const submitForm = () => {
 .safety-request-form {
   flex: 1;
   min-width: 300px;
+  max-width: 50%; /* 左側に配置 */
   padding: 16px;
   background-color: #fff;
   border: 1px solid #000;
@@ -567,7 +568,7 @@ const submitForm = () => {
 
 .grid-multiple {
   display: grid;
-  grid-template-columns: repeat(5, 1fr); /* 5列のグリッド */
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* 自動的に列を調整 */
   gap: 16px; /* グリッドアイテム間のスペース */
 }
 
@@ -804,4 +805,17 @@ body {
     display: none;
   }
 }
+
+@media screen and (max-width: 768px) {
+  .grid-multiple {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* 画面幅が狭くなった場合に折り返し */
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .grid-multiple {
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); /* さらに狭い場合に折り返し */
+  }
+}
+
 </style>

@@ -4,11 +4,15 @@ from accounts.models import CompanyCode
 
 
 
+
+
+
+#---------------------------------------------------------------------------------------------------------------
 class WorkOrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = WorkOrder
-        fields = ['companyCode','companyName','plant', 'equipment', 'workOrderNo','workOrderDesc','status']
+        fields = ['companyCode','plant', 'equipment', 'workOrderNo','workOrderDesc','status']
 
 class CompanyCodeWorkOrderSerializer(serializers.ModelSerializer):
     workOrderList = WorkOrderSerializer(many=True, read_only=True, source='workOrder_companyCode')
@@ -16,9 +20,28 @@ class CompanyCodeWorkOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = CompanyCode
         fields = ['companyCode', 'workOrderList']
+
+
+
+#---------------------------------------------------------------------------------------------------------------
         
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#---------------------------------------------------------------------------------------------------------------
 
 class WorkPermissionSerializer(serializers.ModelSerializer):
 

@@ -127,3 +127,7 @@ class CompanyPlantViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return CompanyCode.objects.prefetch_related('plant_companyCode').all()
+
+
+
+

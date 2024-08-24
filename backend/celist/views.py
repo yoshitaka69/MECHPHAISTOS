@@ -18,6 +18,9 @@ class CeListByCompanyViewSet(viewsets.ReadOnlyModelViewSet):
             return CompanyCode.objects.filter(companyCode=company_code).prefetch_related('ceList_companyCode')
         return CompanyCode.objects.all()
 
+
+
+
 @api_view(['POST'])
 def post_risk_matrix_possibility(request):
     print("Request data:", request.data)
