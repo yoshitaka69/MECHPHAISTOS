@@ -91,21 +91,65 @@ class CompanyCodeWorkOrderViewSet(viewsets.ModelViewSet):
 #--------------------------------------------------------------
 
 
-
-
-
-
-
-
-
-
-
-
-
+from rest_framework import viewsets, status
+from rest_framework.response import Response
+from .models import WorkPermission, CompanyCode
+from .serializers import WorkPermissionSerializer
 
 class WorkPermissionViewSet(viewsets.ModelViewSet):
     queryset = WorkPermission.objects.all()
     serializer_class = WorkPermissionSerializer
+
+    def create(self, request, *args, **kwargs):
+        data = request.data
+
+        # companyCodeが文字列として渡された場合、それに対応するオブジェクトを取得
+        company_code_str = data.get('companyCode')
+        if company_code_str:
+            try:
+                company_code_obj = CompanyCode.objects.get(companyCode=company_code_str)
+                data['companyCode'] = company_code_obj.id  # IDに変換
+            except CompanyCode.DoesNotExist:
+                return Response(
+                    {"error": f"CompanyCode '{company_code_str}' does not exist."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def perform_create(self, serializer):
+        serializer.save()
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        data = request.data
+
+        # companyCodeが文字列として渡された場合、それに対応するオブジェクトを取得
+        company_code_str = data.get('companyCode')
+        if company_code_str:
+            try:
+                company_code_obj = CompanyCode.objects.get(companyCode=company_code_str)
+                data['companyCode'] = company_code_obj.id  # IDに変換
+            except CompanyCode.DoesNotExist:
+                return Response(
+                    {"error": f"CompanyCode '{company_code_str}' does not exist."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+        serializer = self.get_serializer(instance, data=data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        return Response(serializer.data)
+
+    def perform_update(self, serializer):
+        serializer.save()
+
 
 class CompanyCodeWorkPermissionViewSet(viewsets.ModelViewSet):
     serializer_class = CompanyCodeWorkPermissionSerializer
@@ -117,6 +161,10 @@ class CompanyCodeWorkPermissionViewSet(viewsets.ModelViewSet):
         if company_code:
             queryset = queryset.filter(companyCode=company_code)
         return queryset
+
+
+
+#--------------------------------------------------------------
 
 
 

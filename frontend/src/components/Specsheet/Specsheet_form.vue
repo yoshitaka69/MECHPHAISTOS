@@ -1,238 +1,226 @@
 <template>
-	<div class="form-container">
-	  <h1 class="title">Maintenance working report</h1>
-	  <div class="pages">
-		<div v-for="(page, index) in pages" :key="index" class="page">
-		  <form @submit.prevent="submitForm">
-			<template v-if="index === 0">
-			  <div class="form-group">
-				<label for="taskName">Task Name:</label>
-				<InputText v-model="page.taskName" required />
-			  </div>
-			  <div class="form-group">
-				<label for="date">Date:</label>
-				<Calendar v-model="page.date" dateFormat="yy-mm-dd" required />
-			  </div>
-			  <div class="form-group">
-				<label for="equipment">Equipment:</label>
-				<InputText v-model="page.equipment" required />
-			  </div>
-			  <div class="form-group">
-				<label for="reporter">Reporter:</label>
-				<InputText v-model="page.reporter" required />
-			  </div>
-			  <div class="form-group">
-				<label for="pmType">PM Type:</label>
-				<InputText v-model="page.pmType" required />
-			  </div>
-			  <div class="form-group">
-				<label for="tag">Tag:</label>
-				<InputText v-model="page.tag" required />
-			  </div>
-			  <div class="form-group">
-				<label for="background">Background:</label>
-				<InputText v-model="page.background" required />
-			  </div>
-			  <div class="form-group">
-				<label for="cause">Cause:</label>
-				<InputText v-model="page.cause" required />
-			  </div>
-			  <div class="form-group">
-				<label for="maintenanceCategory">Maintenance Category:</label>
-				<InputText v-model="page.maintenanceCategory" required />
-			  </div>
-			</template>
-			<template v-else>
-			  <div class="image-notes-container">
-				<div v-for="n in 3" :key="n" class="image-notes-group">
-				  <div class="form-group-inline">
-					<div class="form-group">
-					  <label for="imageUpload">Upload Image:</label>
-					  <div class="image-box">
-						<div v-if="!page.images[n-1]" class="no-image">no image</div>
-						<img v-if="page.images[n-1]" :src="page.images[n-1]" alt="Uploaded Image" class="image-preview" />
-					  </div>
-					  <FileUpload mode="basic" @select="(e) => onFileChange(e, index, n)" />
-					</div>
-					<div class="form-group">
-					  <label for="additionalNotes">Additional Notes:</label>
-					  <Textarea v-model="page.additionalNotes[n-1]" rows="12" cols="50" autoResize />
-					</div>
-				  </div>
-				</div>
-			  </div>
-			</template>
-		  </form>
-		  <div class="page-number">Page {{ index + 1 }}</div>
-		</div>
-	  </div>
-	  <div class="buttons">
-		<Button label="Add Page" icon="pi pi-plus" @click="addPage" />
-		<Button label="Submit" icon="pi pi-check" @click="submitForm" />
-	  </div>
-	</div>
-  </template>
-  
-  <script setup>
-  import { ref } from 'vue';
-  import InputText from 'primevue/inputtext';
-  import Textarea from 'primevue/textarea';
-  import Calendar from 'primevue/calendar';
-  import FileUpload from 'primevue/fileupload';
-  import Button from 'primevue/button';
-  
-  const pages = ref([
-	{ taskName: '', date: '', equipment: '', reporter: '', pmType: '', tag: '', background: '', cause: '', maintenanceCategory: '' },
-	{ taskName: '', date: '', equipment: '', reporter: '', pmType: '', images: ['', '', ''], additionalNotes: ['', '', ''] },
-  ]);
-  
-  const addPage = () => {
-	pages.value.push({ taskName: '', date: '', equipment: '', reporter: '', pmType: '', images: ['', '', ''], additionalNotes: ['', '', ''] });
-  };
-  
-  const submitForm = () => {
-	console.log('Form submitted', pages.value);
-	// フォームの送信処理をここに追加
-  };
-  
-  const onFileChange = (event, index, imageIndex) => {
-	const file = event.files[0];
-	if (file) {
-	  const reader = new FileReader();
-	  reader.onload = (e) => {
-		pages.value[index].images[imageIndex-1] = e.target.result;
-	  };
-	  reader.readAsDataURL(file);
-	}
-  };
-  </script>
-  
-  <style>
-  .form-container {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	gap: 16px;
-	padding: 16px;
+  <div class="specification-form">
+    <div class="pages">
+      <!-- Page 1: Cover Page -->
+      <div class="page cover-page">
+        <div class="outer-box">
+          <div class="inner-box">
+            <div class="form-fields">
+              <input v-model="companyName" type="text" placeholder="会社名" />
+              <input v-model="title" type="text" placeholder="タイトル" />
+              <input v-model="date" type="date" placeholder="日付" />
+              <input v-model="revisionDate" type="date" placeholder="改定日" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Page 2: Content Page with Vertical Line and Aligned Forms -->
+      <div v-for="(page, index) in pages" :key="index" class="page content-page">
+        <div class="content-layout">
+          <div class="left-side">
+            <input v-model="page.leftInput" type="text" placeholder="左側の入力フォーム" />
+          </div>
+          <div class="vertical-line"></div>
+          <div class="right-side" @contextmenu.prevent="showContextMenu($event, index)">
+            <input v-model="page.rightInput" type="text" placeholder="右側の入力フォーム" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="buttons">
+      <button @click="addPage">ページを追加</button>
+      <button @click="generatePDF">PDF作成</button>
+    </div>
+
+    <!-- Context Menu -->
+    <ul v-if="isContextMenuVisible" :style="{ top: `${contextMenuY}px`, left: `${contextMenuX}px` }" class="context-menu">
+      <li @click="insertImage">画像を入力</li>
+      <li @click="addColumn">列の追加</li>
+    </ul>
+  </div>
+</template>
+
+<script>
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+
+export default {
+  data() {
+    return {
+      companyName: '',
+      title: '',
+      date: '',
+      revisionDate: '',
+      pages: [
+        {
+          leftInput: '',
+          rightInput: ''
+        }
+      ], // Initial page for page 2
+      isContextMenuVisible: false,
+      contextMenuX: 0,
+      contextMenuY: 0,
+      selectedPageIndex: null
+    };
+  },
+  methods: {
+    addPage() {
+      this.pages.push({ leftInput: '', rightInput: '' });
+    },
+    generatePDF() {
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pages = document.querySelectorAll('.page');
+      pages.forEach((page, index) => {
+        if (index > 0) {
+          pdf.addPage();
+        }
+        html2canvas(page).then((canvas) => {
+          const imgData = canvas.toDataURL('image/png');
+          pdf.addImage(imgData, 'PNG', 0, 0, 210, 297);
+          if (index === pages.length - 1) {
+            pdf.save('specification.pdf');
+          }
+        });
+      });
+    },
+    showContextMenu(event, index) {
+      this.contextMenuX = event.clientX;
+      this.contextMenuY = event.clientY;
+      this.isContextMenuVisible = true;
+      this.selectedPageIndex = index;
+      document.addEventListener('click', this.hideContextMenu);
+    },
+    hideContextMenu() {
+      this.isContextMenuVisible = false;
+      document.removeEventListener('click', this.hideContextMenu);
+    },
+    insertImage() {
+      alert('画像を入力');
+      this.hideContextMenu();
+    },
+    addColumn() {
+      alert('列の追加');
+      this.hideContextMenu();
+    }
   }
-  
-  .title {
-	font-size: 24px;
-	font-weight: bold;
-	margin-bottom: 16px;
-  }
-  
-  .pages {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 16px;
-	justify-content: center;
-  }
-  
-  .page {
-	width: 210mm; /* A4 width */
-	height: 297mm; /* A4 height */
-	border: 1px solid #000;
-	padding: 10mm; /* Reduce padding to increase usable area */
-	box-sizing: border-box;
-	background-color: #fff;
-	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-	margin-bottom: 16px;
-	position: relative;
-	display: flex;
-	flex-direction: column;
-	justify-content: space-between; /* Adjust to evenly space out */
-  }
-  
-  .form-group {
-	margin-bottom: 16px;
-  }
-  
-  .form-group-inline {
-	display: flex;
-	justify-content: space-between;
-	align-items: flex-start;
-	gap: 16px;
-  }
-  
-  .form-group label {
-	display: block;
-	margin-bottom: 8px;
-	font-weight: bold;
-  }
-  
-  .image-notes-container {
-	display: flex;
-	flex-direction: column;
-	justify-content: space-between;
-	height: 100%;
-  }
-  
-  .image-notes-group {
-	display: flex;
-	flex-direction: column;
-	justify-content: space-between;
-	flex-grow: 1;
-	height: calc((100% - 30px) / 3); /* Adjust height considering padding */
-  }
-  
-  .image-box {
-	width: 100%;
-	height: 250px; /* Increase height */
-	border: 1px solid #000;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	position: relative;
-  }
-  
-  .no-image {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	color: #000;
-  }
-  
-  .image-preview {
-	max-width: 100%;
-	max-height: 100%;
-	object-fit: contain; /* Adjust to contain image within box */
-  }
-  
-  .buttons {
-	display: flex;
-	gap: 16px;
-  }
-  
-  body {
-	background-color: #f5f5f5;
-	margin: 0;
-	padding: 0;
-	font-family: Arial, sans-serif;
-  }
-  
-  .page-number {
-	text-align: center;
-	font-size: 12px;
-	position: absolute;
-	bottom: 10px;
-	left: 0;
-	right: 0;
-  }
-  
-  @media print {
-	.form-container {
-	  flex-direction: column;
-	}
-	.page {
-	  box-shadow: none;
-	  border: none;
-	  page-break-after: always;
-	}
-	.buttons {
-	  display: none;
-	}
-  }
-  </style>
-  
+};
+</script>
+
+<style scoped>
+.specification-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.pages {
+  display: flex;
+  flex-direction: row;
+}
+
+.page {
+  width: 210mm; /* A4 width */
+  height: 297mm; /* A4 height */
+  margin: 10px;
+  border: 1px solid black;
+  box-sizing: border-box;
+  background-color: white; /* White background */
+  position: relative;
+}
+
+.cover-page .outer-box {
+  width: 100%;
+  height: 100%;
+  border: 3px solid black; /* Bold outer border */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cover-page .inner-box {
+  width: 80%;
+  height: 80%;
+  border: 1px solid black; /* Thin inner border */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.form-fields {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+input {
+  margin-top: 10px;
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+input::placeholder {
+  color: lightgray; /* Light gray placeholder text */
+}
+
+.content-page .content-layout {
+  display: flex;
+  height: calc(100% - 20px); /* Adjust height to align with the top edge */
+  padding-top: 10px; /* Adjust for alignment */
+  box-sizing: border-box;
+}
+
+.content-page .vertical-line {
+  width: 1px;
+  background-color: black;
+  position: absolute;
+  left: 25%; /* 1/4 from the left */
+  top: 10px; /* Align with the top padding */
+  bottom: 10px; /* Align with the bottom */
+}
+
+.left-side {
+  width: 25%; /* Align with the vertical line */
+  padding-left: 10px;
+}
+
+.right-side {
+  width: 75%; /* Fill the remaining space */
+  padding-right: 10px;
+}
+
+.left-side input, .right-side input {
+  width: 100%;
+  height: 100%;
+}
+
+.buttons {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+/* Context Menu Styles */
+.context-menu {
+  position: absolute;
+  list-style-type: none;
+  margin: 0;
+  padding: 5px;
+  background-color: white;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+}
+
+.context-menu li {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.context-menu li:hover {
+  background-color: #eee;
+}
+</style>

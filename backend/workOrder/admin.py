@@ -11,10 +11,20 @@ class WorkOrderAdmin(admin.ModelAdmin):
 
 
 class WorkPermissionAdmin(admin.ModelAdmin):
-    list_display = ('workOrderNo', 'taskName', 'constructionPeriod', 'plant', 'equipment', 'personInCharge', 'status')
-    search_fields = ('workOrderNo', 'taskName', 'plant', 'equipment', 'personInCharge')
-    list_filter = ('status', 'plant', 'equipment')
-    ordering = ('workOrderNo',)
+    list_display = (
+        'workOrderNo', 'companyCode', 'companyName', 'plant', 'equipment', 'taskName', 
+        'constructionPeriod', 'personInCharge', 'contractor', 'status', 'gasDetection', 
+        'oxygenDeficiency', 'valve1', 'valve2', 'valve3', 'valve4', 'valve5', 
+        'breaker1', 'breaker2', 'breaker3', 'breaker4', 'breaker5', 
+        'onSiteSafety', 'approver', 'createdAt', 'updatedAt'
+    )
+    search_fields = (
+        'workOrderNo__workOrderNo', 'companyCode__companyCode', 'companyName__companyName', 
+        'plant__plant', 'equipment', 'taskName', 'personInCharge', 'contractor', 'status', 
+        'approver'
+    )
+    list_filter = ('status', 'plant', 'equipment', 'gasDetection', 'oxygenDeficiency', 'onSiteSafety')
+    ordering = ('workOrderNo', 'createdAt')
     save_on_top = True #上部にもsaveボタンを配置
 
     list_per_page = 50 # １ページあたりに表示するオブジェクト数を指定

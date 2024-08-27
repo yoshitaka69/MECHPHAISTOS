@@ -4,14 +4,14 @@
       <BubbleComment
         imageSrc="/MECHPHAISTOS_AI/MECHPHISTOS_AI.webp"
         comment="This is a sample comment"
-        :bubbleTop="20" 
+        :bubbleTop="20"
       />
     </div>
   </div>
 </template>
 
 <script>
-import BubbleComment from './BubbleComment.vue';
+import BubbleComment from '@/components/Mechphaistos_Ai/BubbleComment.vue';
 
 export default {
   name: 'Mechphaistos_Ai',
@@ -24,12 +24,14 @@ export default {
 <style scoped>
 .mechphaistos-container {
   display: flex;
-  justify-content: flex-end; /* 子要素を右寄せに配置 */
-  margin-top: 5px; /* 上のマージンを調整 */
+  justify-content: flex-end;
+  margin-top: 5px;
+  width: 100%; /* 親要素に対して幅を100%にする */
 }
 
 #mechphaistos_ai {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   text-align: center;
+  width: 100%; /* 親要素に対して幅を100%にする */
 }
 </style>

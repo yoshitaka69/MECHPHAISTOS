@@ -44,10 +44,9 @@ class CompanyCodeWorkOrderSerializer(serializers.ModelSerializer):
 #---------------------------------------------------------------------------------------------------------------
 
 class WorkPermissionSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = WorkPermission
-        fields = ['companyCode','companyName','plant', 'equipment', 'workOrderNo', 'workPermissionNo', 'workPermissionDesc','status']
+        fields = '__all__'
 
 class CompanyCodeWorkPermissionSerializer(serializers.ModelSerializer):
     workOrderPermissionList = WorkPermissionSerializer(many=True, read_only=True, source='workOrderMission_companyCode')

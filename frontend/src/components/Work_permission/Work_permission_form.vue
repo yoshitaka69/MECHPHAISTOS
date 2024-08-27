@@ -2,451 +2,435 @@
   <div class="form-container">
     <div class="content">
       <div class="safety-request-form">
-        <!-- フォームのタイトルをSafety Request Formに変更 -->
         <h2 class="request-form-title">Safety Request Form</h2>
         <form>
-          <!-- フォームを左側に配置 -->
           <div class="form-group">
             <label for="constructionPeriod">Construction Period:</label>
-            <br /> <!-- 改行を追加 -->
+            <br />
             <textarea v-model="safetyRequest.constructionPeriod" class="resizable-textarea"></textarea>
           </div>
           <div class="form-group">
             <label for="plant">Plant:</label>
-            <br /> <!-- 改行を追加 -->
+            <br />
             <textarea v-model="safetyRequest.plant" class="resizable-textarea"></textarea>
           </div>
           <div class="form-group">
             <label for="equipment">Equipment:</label>
-            <br /> <!-- 改行を追加 -->
+            <br />
             <textarea v-model="safetyRequest.equipment" class="resizable-textarea"></textarea>
           </div>
           <div class="form-group">
             <label for="taskName">Task Name:</label>
-            <br /> <!-- 改行を追加 -->
+            <br />
             <textarea v-model="safetyRequest.taskName" class="resizable-textarea"></textarea>
           </div>
           <div class="form-group">
             <label for="personInCharge">Person in Charge:</label>
-            <br /> <!-- 改行を追加 -->
+            <br />
             <textarea v-model="safetyRequest.personInCharge" class="resizable-textarea"></textarea>
           </div>
           <div class="form-group contractor-label">
             <label for="contractor">Contractor:</label>
-            <br /> <!-- 改行を追加 -->
+            <br />
             <textarea v-model="safetyRequest.contractor" class="resizable-textarea"></textarea>
           </div>
           <div class="form-group">
             <label for="gasDetection">Gas Detection:</label>
-            <br /> <!-- 改行を追加 -->
             <InputSwitch v-model="safetyRequest.gasDetection" />
-            <span v-if="safetyRequest.gasDetection" class="checkmark">✔</span>
           </div>
           <div class="form-group">
             <label for="oxygenDeficiency">Oxygen Deficiency:</label>
-            <br /> <!-- 改行を追加 -->
             <InputSwitch v-model="safetyRequest.oxygenDeficiency" />
-            <span v-if="safetyRequest.oxygenDeficiency" class="checkmark">✔</span>
           </div>
+
           <!-- Valve 1-5 のスイッチを追加 -->
-          <div class="grid-multiple">
+          <div class="grid-two-columns">
             <div class="form-group grid-item-small">
-              <label for="valve1">Valve 1:</label>
-              <hr class="separator" />
-              <br /> <!-- 改行を追加 -->
-              <InputSwitch v-model="safetyRequest.valve1" />
-              <span v-if="safetyRequest.valve1" class="checkmark">✔</span>
+              <label for="valve1_input">Valve 1:</label>
+              <InputSwitch v-model="safetyRequest.valve1_input" />
             </div>
             <div class="form-group grid-item-small">
-              <label for="valve2">Valve 2:</label>
-              <hr class="separator" />
-              <br /> <!-- 改行を追加 -->
-              <InputSwitch v-model="safetyRequest.valve2" />
-              <span v-if="safetyRequest.valve2" class="checkmark">✔</span>
+              <label for="valve2_input">Valve 2:</label>
+              <InputSwitch v-model="safetyRequest.valve2_input" />
             </div>
             <div class="form-group grid-item-small">
-              <label for="valve3">Valve 3:</label>
-              <hr class="separator" />
-              <br /> <!-- 改行を追加 -->
-              <InputSwitch v-model="safetyRequest.valve3" />
-              <span v-if="safetyRequest.valve3" class="checkmark">✔</span>
+              <label for="valve3_input">Valve 3:</label>
+              <InputSwitch v-model="safetyRequest.valve3_input" />
             </div>
             <div class="form-group grid-item-small">
-              <label for="valve4">Valve 4:</label>
-              <hr class="separator" />
-              <br /> <!-- 改行を追加 -->
-              <InputSwitch v-model="safetyRequest.valve4" />
-              <span v-if="safetyRequest.valve4" class="checkmark">✔</span>
+              <label for="valve4_input">Valve 4:</label>
+              <InputSwitch v-model="safetyRequest.valve4_input" />
             </div>
             <div class="form-group grid-item-small">
-              <label for="valve5">Valve 5:</label>
-              <hr class="separator" />
-              <br /> <!-- 改行を追加 -->
-              <InputSwitch v-model="safetyRequest.valve5" />
-              <span v-if="safetyRequest.valve5" class="checkmark">✔</span>
+              <label for="valve5_input">Valve 5:</label>
+              <InputSwitch v-model="safetyRequest.valve5_input" />
             </div>
           </div>
 
           <!-- Breaker 1-5 のスイッチを追加 -->
-          <div class="grid-multiple">
+          <div class="grid-two-columns">
             <div class="form-group grid-item-small">
-              <label for="breaker1">Breaker 1:</label>
-              <hr class="separator" />
-              <br /> <!-- 改行を追加 -->
-              <InputSwitch v-model="safetyRequest.breaker1" />
-              <span v-if="safetyRequest.breaker1" class="checkmark">✔</span>
+              <label for="breaker1_input">Breaker 1:</label>
+              <InputSwitch v-model="safetyRequest.breaker1_input" />
             </div>
             <div class="form-group grid-item-small">
-              <label for="breaker2">Breaker 2:</label>
-              <hr class="separator" />
-              <br /> <!-- 改行を追加 -->
-              <InputSwitch v-model="safetyRequest.breaker2" />
-              <span v-if="safetyRequest.breaker2" class="checkmark">✔</span>
+              <label for="breaker2_input">Breaker 2:</label>
+              <InputSwitch v-model="safetyRequest.breaker2_input" />
             </div>
             <div class="form-group grid-item-small">
-              <label for="breaker3">Breaker 3:</label>
-              <hr class="separator" />
-              <br /> <!-- 改行を追加 -->
-              <InputSwitch v-model="safetyRequest.breaker3" />
-              <span v-if="safetyRequest.breaker3" class="checkmark">✔</span>
+              <label for="breaker3_input">Breaker 3:</label>
+              <InputSwitch v-model="safetyRequest.breaker3_input" />
             </div>
             <div class="form-group grid-item-small">
-              <label for="breaker4">Breaker 4:</label>
-              <hr class="separator" />
-              <br /> <!-- 改行を追加 -->
-              <InputSwitch v-model="safetyRequest.breaker4" />
-              <span v-if="safetyRequest.breaker4" class="checkmark">✔</span>
+              <label for="breaker4_input">Breaker 4:</label>
+              <InputSwitch v-model="safetyRequest.breaker4_input" />
             </div>
             <div class="form-group grid-item-small">
-              <label for="breaker5">Breaker 5:</label>
-              <hr class="separator" />
-              <br /> <!-- 改行を追加 -->
-              <InputSwitch v-model="safetyRequest.breaker5" />
-              <span v-if="safetyRequest.breaker5" class="checkmark">✔</span>
+              <label for="breaker5_input">Breaker 5:</label>
+              <InputSwitch v-model="safetyRequest.breaker5_input" />
             </div>
           </div>
         </form>
       </div>
-      <div class="pages">
-        <div v-for="(page, index) in pages" :key="index" class="page">
-          <form @submit.prevent="submitForm">
-            <!-- フォームのタイトルを追加 -->
-            <h1 class="confirmation-title">Safety Confirmation Certificate</h1>
-            <div class="title-space"></div> <!-- 大きなスペースを追加 -->
 
-            <!-- 右上に日付を追加 -->
-            <div class="date-display">{{ currentDate }}</div>
+      <div class="confirmation-page">
+        <h1 class="confirmation-title">Safety Confirmation Certificate</h1>
+        <div class="title-space"></div>
+        <div class="date-display">{{ currentDate }}</div>
 
-            <!-- 左側の入力内容を表示 -->
-            <div class="form-grid-smaller">
-              <div class="form-group grid-item-smaller">
-                <label>Construction Period:</label>
-                <hr class="separator" />
-                <p>{{ safetyRequest.constructionPeriod }}</p>
-              </div>
-              <div class="form-group grid-item-smaller">
-                <label>Plant:</label>
-                <hr class="separator" />
-                <p>{{ safetyRequest.plant }}</p>
-              </div>
-              <div class="form-group grid-item-smaller">
-                <label>Equipment:</label>
-                <hr class="separator" />
-                <p>{{ safetyRequest.equipment }}</p>
-              </div>
-              <div class="form-group grid-item-full">
-                <label>Task Name:</label>
-                <hr class="separator" />
-                <p>{{ safetyRequest.taskName }}</p>
-              </div>
-              <div class="form-group grid-item">
-                <label>Person in Charge:</label>
-                <hr class="separator" />
-                <p>{{ safetyRequest.personInCharge }}</p>
-              </div>
-              <div class="form-group grid-item contractor-label">
-                <label>Contractor:</label>
-                <hr class="separator" />
-                <p>{{ safetyRequest.contractor }}</p>
-              </div>
-            </div>
-
-            <!-- 指定された文を追加 -->
-            <div class="instructions bold-text">
-              <p class="instruction-text">At the start of work where there is a risk of fire, explosion, or chemical burns, personnel from relevant departments must be present.</p>
-              <p class="instruction-text">Ensure comprehensive communication with contractors regarding site conditions and share information thoroughly through KY, etc.</p>
-            </div>
-
-            <!-- 現場での安全化は必要か? の質問 -->
-            <div class="form-group question-full important-label question-separator">
-              <!-- スペースを追加 -->
-              <label>Is on-site safety necessary?</label>
-              <hr class="separator" />
-              <br /> <!-- 改行を追加 -->
-              <InputSwitch v-model="page.onSiteSafety" />
-              <span v-if="page.onSiteSafety" class="checkmark">✔</span>
-            </div>
-
-            <!-- 脱圧、液抜き、洗浄は実施済ですか? の質問 -->
-            <div class="question-separator"></div> <!-- 隙間を追加 -->
-            <div class="form-group question-full important-label">
-              <label>Have the depressurization, liquid removal, and cleaning been completed?</label>
-              <hr class="separator" />
-            </div>
-
-            <!-- Valve 1-5 のスイッチを表示 -->
-            <div class="grid-multiple">
-              <div :class="['form-group', 'grid-item-small', { 'bordered': safetyRequest.valve1 && !page.valve1 }]" :style="{ backgroundColor: safetyRequest.valve1 && !page.valve1 ? 'white' : '' }">
-                <label for="valve1">Valve 1:</label>
-                <hr class="separator" />
-                <br /> <!-- 改行を追加 -->
-                <InputSwitch v-model="page.valve1" />
-                <span v-if="page.valve1" class="checkmark">✔</span>
-              </div>
-              <div :class="['form-group', 'grid-item-small', { 'bordered': safetyRequest.valve2 && !page.valve2 }]" :style="{ backgroundColor: safetyRequest.valve2 && !page.valve2 ? 'white' : '' }">
-                <label for="valve2">Valve 2:</label>
-                <hr class="separator" />
-                <br /> <!-- 改行を追加 -->
-                <InputSwitch v-model="page.valve2" />
-                <span v-if="page.valve2" class="checkmark">✔</span>
-              </div>
-              <div :class="['form-group', 'grid-item-small', { 'bordered': safetyRequest.valve3 && !page.valve3 }]" :style="{ backgroundColor: safetyRequest.valve3 && !page.valve3 ? 'white' : '' }">
-                <label for="valve3">Valve 3:</label>
-                <hr class="separator" />
-                <br /> <!-- 改行を追加 -->
-                <InputSwitch v-model="page.valve3" />
-                <span v-if="page.valve3" class="checkmark">✔</span>
-              </div>
-              <div :class="['form-group', 'grid-item-small', { 'bordered': safetyRequest.valve4 && !page.valve4 }]" :style="{ backgroundColor: safetyRequest.valve4 && !page.valve4 ? 'white' : '' }">
-                <label for="valve4">Valve 4:</label>
-                <hr class="separator" />
-                <br /> <!-- 改行を追加 -->
-                <InputSwitch v-model="page.valve4" />
-                <span v-if="page.valve4" class="checkmark">✔</span>
-              </div>
-              <div :class="['form-group', 'grid-item-small', { 'bordered': safetyRequest.valve5 && !page.valve5 }]" :style="{ backgroundColor: safetyRequest.valve5 && !page.valve5 ? 'white' : '' }">
-                <label for="valve5">Valve 5:</label>
-                <hr class="separator" />
-                <br /> <!-- 改行を追加 -->
-                <InputSwitch v-model="page.valve5" />
-                <span v-if="page.valve5" class="checkmark">✔</span>
-              </div>
-            </div>
-
-            <!-- 動力の遮断を実施し、LOTOを実施済か？ の質問 -->
-            <div class="question-separator"></div> <!-- 隙間を追加 -->
-            <div class="form-group question-full important-label">
-              <label>Has power disconnection and LOTO been completed?</label>
-              <hr class="separator" />
-            </div>
-
-            <!-- Breaker 1-5 のスイッチを表示 -->
-            <div class="grid-multiple">
-              <div :class="['form-group', 'grid-item-small', { 'bordered': safetyRequest.breaker1 && !page.breaker1 }]" :style="{ backgroundColor: safetyRequest.breaker1 && !page.breaker1 ? 'white' : '' }">
-                <label for="breaker1">Breaker 1:</label>
-                <hr class="separator" />
-                <br /> <!-- 改行を追加 -->
-                <InputSwitch v-model="page.breaker1" />
-                <span v-if="page.breaker1" class="checkmark">✔</span>
-              </div>
-              <div :class="['form-group', 'grid-item-small', { 'bordered': safetyRequest.breaker2 && !page.breaker2 }]" :style="{ backgroundColor: safetyRequest.breaker2 && !page.breaker2 ? 'white' : '' }">
-                <label for="breaker2">Breaker 2:</label>
-                <hr class="separator" />
-                <br /> <!-- 改行を追加 -->
-                <InputSwitch v-model="page.breaker2" />
-                <span v-if="page.breaker2" class="checkmark">✔</span>
-              </div>
-              <div :class="['form-group', 'grid-item-small', { 'bordered': safetyRequest.breaker3 && !page.breaker3 }]" :style="{ backgroundColor: safetyRequest.breaker3 && !page.breaker3 ? 'white' : '' }">
-                <label for="breaker3">Breaker 3:</label>
-                <hr class="separator" />
-                <br /> <!-- 改行を追加 -->
-                <InputSwitch v-model="page.breaker3" />
-                <span v-if="page.breaker3" class="checkmark">✔</span>
-              </div>
-              <div :class="['form-group', 'grid-item-small', { 'bordered': safetyRequest.breaker4 && !page.breaker4 }]" :style="{ backgroundColor: safetyRequest.breaker4 && !page.breaker4 ? 'white' : '' }">
-                <label for="breaker4">Breaker 4:</label>
-                <hr class="separator" />
-                <br /> <!-- 改行を追加 -->
-                <InputSwitch v-model="page.breaker4" />
-                <span v-if="page.breaker4" class="checkmark">✔</span>
-              </div>
-              <div :class="['form-group', 'grid-item-small', { 'bordered': safetyRequest.breaker5 && !page.breaker5 }]" :style="{ backgroundColor: safetyRequest.breaker5 && !page.breaker5 ? 'white' : '' }">
-                <label for="breaker5">Breaker 5:</label>
-                <hr class="separator" />
-                <br /> <!-- 改行を追加 -->
-                <InputSwitch v-model="page.breaker5" />
-                <span v-if="page.breaker5" class="checkmark">✔</span>
-              </div>
-            </div>
-          </form>
-          <div class="page-number">Page {{ index + 1 }}</div>
+        <div class="form-grid-smaller">
+          <div class="form-group grid-item-smaller">
+            <label>Construction Period:</label>
+            <hr class="separator" />
+            <p>{{ safetyRequest.constructionPeriod }}</p>
+          </div>
+          <div class="form-group grid-item-smaller">
+            <label>Plant:</label>
+            <hr class="separator" />
+            <p>{{ safetyRequest.plant }}</p>
+          </div>
+          <div class="form-group grid-item-smaller">
+            <label>Equipment:</label>
+            <hr class="separator" />
+            <p>{{ safetyRequest.equipment }}</p>
+          </div>
+          <div class="form-group grid-item-full">
+            <label>Task Name:</label>
+            <hr class="separator" />
+            <p>{{ safetyRequest.taskName }}</p>
+          </div>
+          <div class="form-group grid-item">
+            <label>Person in Charge:</label>
+            <hr class="separator" />
+            <p>{{ safetyRequest.personInCharge }}</p>
+          </div>
+          <div class="form-group grid-item contractor-label">
+            <label>Contractor:</label>
+            <hr class="separator" />
+            <p>{{ safetyRequest.contractor }}</p>
+          </div>
         </div>
-        <div class="confirmation-page">
-          <!-- 2ページ目 -->
-          <h1 class="confirmation-title">Safety Confirmation Certificate</h1>
-          <div class="title-space"></div> <!-- 大きなスペースを追加 -->
-          <div class="confirmation-date-display">{{ currentDate }}</div>
-          <!-- 質問を上詰めに配置 -->
-          <div class="confirmation-form-group question-tight important-label">
-            <label>Is there any flammable gas in the vicinity?</label>
-            <hr class="separator-full" /> <!-- 下線を横一杯に広げる -->
-            <br /> <!-- 改行を追加 -->
-            <InputSwitch v-model="safetyRequest.gasDetection" />
-            <span v-if="safetyRequest.gasDetection" class="checkmark">✔</span>
-          </div>
-          <div class="question-separator"></div> <!-- 隙間を追加 -->
-          <div class="confirmation-form-group question-tight important-label">
-            <label>Is the oxygen concentration in the tank at an appropriate level and maintainable?</label>
-            <p class="guideline-text">Generally, an oxygen concentration of 21% is the guideline for work permits.</p>
-            <hr class="separator-full" /> <!-- 下線を横一杯に広げる -->
-            <br /> <!-- 改行を追加 -->
-            <InputSwitch v-model="safetyRequest.oxygenDeficiency" />
-            <span v-if="safetyRequest.oxygenDeficiency" class="checkmark">✔</span>
-          </div>
-          <!-- 作業者点検項目 -->
-          <div class="confirmation-inspection">
-            <p class="inspection-title large-font">Worker Inspection Items</p> <!-- フォントサイズを大きく -->
-            <div class="confirmation-form-group left-aligned">
-              <label>Has LOTO been implemented?</label>
-              <hr class="separator-full" /> <!-- 下線を横一杯に広げる -->
-              <br /> <!-- 改行を追加 -->
-              <InputSwitch v-model="workerInspection.lotoImplemented" />
-              <span v-if="workerInspection.lotoImplemented" class="checkmark">✔</span>
-            </div>
-            <div class="confirmation-form-group left-aligned">
-              <div class="question-separator"></div> <!-- スイッチボックスとの間にスペース -->
-              <label>Are protective gloves worn?</label>
-              <hr class="separator-full" /> <!-- 下線を横一杯に広げる -->
-              <br /> <!-- 改行を追加 -->
-              <InputSwitch v-model="workerInspection.protectiveGloves" />
-              <span v-if="workerInspection.protectiveGloves" class="checkmark">✔</span>
-            </div>
-            <div class="confirmation-form-group left-aligned">
-              <div class="question-separator"></div> <!-- スイッチボックスとの間にスペース -->
-              <label>Is there any combustible material in the vicinity?</label>
-              <hr class="separator-full" /> <!-- 下線を横一杯に広げる -->
-              <br /> <!-- 改行を追加 -->
-              <InputSwitch v-model="workerInspection.noCombustibles" />
-              <span v-if="workerInspection.noCombustibles" class="checkmark">✔</span>
-            </div>
-          </div>
-          <!-- KYボックス -->
-          <div class="ky-input-box">
-            <p class="ky-placeholder">KY Content Display Here</p> <!-- プレースホルダーを追加 -->
-          </div>
-          <!-- 確認者入力フォーム -->
-          <div class="confirmation-approver-box">
-            <div class="confirmation-approver confirmation-form-group">
-              <label for="approver">Approver:</label>
-              <hr class="separator-full" /> <!-- 下線を横一杯に広げる -->
-              <input type="text" v-model="safetyRequest.approver" placeholder="Enter name" class="approver-input" />
-            </div>
-          </div>
-          <div class="confirmation-page-number">Page 2</div>
+
+        <div class="instructions bold-text">
+          <p class="instruction-text">At the start of work where there is a risk of fire, explosion, or chemical burns, personnel from relevant departments must be present.</p>
+          <p class="instruction-text">Ensure comprehensive communication with contractors regarding site conditions and share information thoroughly through KY, etc.</p>
         </div>
+
+        <div class="form-group question-full important-label question-separator">
+          <label>Is on-site safety necessary?</label>
+          <hr class="separator" />
+          <br />
+          <InputSwitch v-model="workerInspection.onSiteSafety" />
+          <span v-if="workerInspection.onSiteSafety" class="checkmark">✔</span>
+        </div>
+
+        <div class="question-separator"></div>
+        <div class="form-group question-full important-label">
+          <label>Have the depressurization, liquid removal, and cleaning been completed?</label>
+          <hr class="separator" />
+        </div>
+
+        <!-- Valve 1-5 のスイッチを表示 -->
+        <div class="grid-five-columns">
+          <div 
+            class="form-group grid-item-small"
+            :class="{ 'highlighted': safetyRequest.valve1_input && !workerInspection.valve1_approval }"
+          >
+            <label for="valve1_approval">Valve 1:</label>
+            <hr class="separator" />
+            <br />
+            <InputSwitch v-model="workerInspection.valve1_approval" />
+            <span v-if="workerInspection.valve1_approval" class="checkmark">✔</span>
+          </div>
+          <div 
+            class="form-group grid-item-small"
+            :class="{ 'highlighted': safetyRequest.valve2_input && !workerInspection.valve2_approval }"
+          >
+            <label for="valve2_approval">Valve 2:</label>
+            <hr class="separator" />
+            <br />
+            <InputSwitch v-model="workerInspection.valve2_approval" />
+            <span v-if="workerInspection.valve2_approval" class="checkmark">✔</span>
+          </div>
+          <div 
+            class="form-group grid-item-small"
+            :class="{ 'highlighted': safetyRequest.valve3_input && !workerInspection.valve3_approval }"
+          >
+            <label for="valve3_approval">Valve 3:</label>
+            <hr class="separator" />
+            <br />
+            <InputSwitch v-model="workerInspection.valve3_approval" />
+            <span v-if="workerInspection.valve3_approval" class="checkmark">✔</span>
+          </div>
+          <div 
+            class="form-group grid-item-small"
+            :class="{ 'highlighted': safetyRequest.valve4_input && !workerInspection.valve4_approval }"
+          >
+            <label for="valve4_approval">Valve 4:</label>
+            <hr class="separator" />
+            <br />
+            <InputSwitch v-model="workerInspection.valve4_approval" />
+            <span v-if="workerInspection.valve4_approval" class="checkmark">✔</span>
+          </div>
+          <div 
+            class="form-group grid-item-small"
+            :class="{ 'highlighted': safetyRequest.valve5_input && !workerInspection.valve5_approval }"
+          >
+            <label for="valve5_approval">Valve 5:</label>
+            <hr class="separator" />
+            <br />
+            <InputSwitch v-model="workerInspection.valve5_approval" />
+            <span v-if="workerInspection.valve5_approval" class="checkmark">✔</span>
+          </div>
+        </div>
+
+        <div class="question-separator"></div>
+        <div class="form-group question-full important-label">
+          <label>Has power disconnection and LOTO been completed?</label>
+          <hr class="separator" />
+        </div>
+
+        <!-- Breaker 1-5 のスイッチを表示 -->
+        <div class="grid-five-columns">
+          <div 
+            class="form-group grid-item-small"
+            :class="{ 'highlighted': safetyRequest.breaker1_input && !workerInspection.breaker1_approval }"
+          >
+            <label for="breaker1_approval">Breaker 1:</label>
+            <hr class="separator" />
+            <br />
+            <InputSwitch v-model="workerInspection.breaker1_approval" />
+            <span v-if="workerInspection.breaker1_approval" class="checkmark">✔</span>
+          </div>
+          <div 
+            class="form-group grid-item-small"
+            :class="{ 'highlighted': safetyRequest.breaker2_input && !workerInspection.breaker2_approval }"
+          >
+            <label for="breaker2_approval">Breaker 2:</label>
+            <hr class="separator" />
+            <br />
+            <InputSwitch v-model="workerInspection.breaker2_approval" />
+            <span v-if="workerInspection.breaker2_approval" class="checkmark">✔</span>
+          </div>
+          <div 
+            class="form-group grid-item-small"
+            :class="{ 'highlighted': safetyRequest.breaker3_input && !workerInspection.breaker3_approval }"
+          >
+            <label for="breaker3_approval">Breaker 3:</label>
+            <hr class="separator" />
+            <br />
+            <InputSwitch v-model="workerInspection.breaker3_approval" />
+            <span v-if="workerInspection.breaker3_approval" class="checkmark">✔</span>
+          </div>
+          <div 
+            class="form-group grid-item-small"
+            :class="{ 'highlighted': safetyRequest.breaker4_input && !workerInspection.breaker4_approval }"
+          >
+            <label for="breaker4_approval">Breaker 4:</label>
+            <hr class="separator" />
+            <br />
+            <InputSwitch v-model="workerInspection.breaker4_approval" />
+            <span v-if="workerInspection.breaker4_approval" class="checkmark">✔</span>
+          </div>
+          <div 
+            class="form-group grid-item-small"
+            :class="{ 'highlighted': safetyRequest.breaker5_input && !workerInspection.breaker5_approval }"
+          >
+            <label for="breaker5_approval">Breaker 5:</label>
+            <hr class="separator" />
+            <br />
+            <InputSwitch v-model="workerInspection.breaker5_approval" />
+            <span v-if="workerInspection.breaker5_approval" class="checkmark">✔</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="confirmation-page">
+        <!-- 2ページ目 -->
+        <h1 class="confirmation-title">Safety Confirmation Certificate</h1>
+        <div class="title-space"></div>
+        <div class="confirmation-date-display">{{ currentDate }}</div>
+        <div class="confirmation-form-group question-tight important-label">
+          <label>Is there any flammable gas in the vicinity?</label>
+          <hr class="separator-full" />
+          <InputSwitch v-model="safetyRequest.gasDetection" />
+          <span v-if="safetyRequest.gasDetection" class="checkmark">✔</span>
+        </div>
+        <div class="question-separator"></div>
+        <div class="confirmation-form-group question-tight important-label">
+          <label>Is the oxygen concentration in the tank at an appropriate level and maintainable?</label>
+          <p class="guideline-text">Generally, an oxygen concentration of 21% is the guideline for work permits.</p>
+          <hr class="separator-full" />
+          <InputSwitch v-model="safetyRequest.oxygenDeficiency" />
+          <span v-if="safetyRequest.oxygenDeficiency" class="checkmark">✔</span>
+        </div>
+        <div class="confirmation-inspection">
+          <p class="inspection-title large-font">Worker Inspection Items</p>
+          <div class="confirmation-form-group left-aligned">
+            <label>Has LOTO been implemented?</label>
+            <hr class="separator-full" />
+            <InputSwitch v-model="workerInspection.lotoImplemented" />
+            <span v-if="workerInspection.lotoImplemented" class="checkmark">✔</span>
+          </div>
+          <div class="confirmation-form-group left-aligned">
+            <label>Are protective gloves worn?</label>
+            <hr class="separator-full" />
+            <InputSwitch v-model="workerInspection.protectiveGloves" />
+            <span v-if="workerInspection.protectiveGloves" class="checkmark">✔</span>
+          </div>
+          <div class="confirmation-form-group left-aligned">
+            <label>Is there any combustible material in the vicinity?</label>
+            <hr class="separator-full" />
+            <InputSwitch v-model="workerInspection.noCombustibles" />
+            <span v-if="workerInspection.noCombustibles" class="checkmark">✔</span>
+          </div>
+        </div>
+        <div class="ky-input-box">
+          <p class="ky-placeholder">KY Content Display Here</p>
+        </div>
+        <div class="confirmation-approver-box">
+          <div class="confirmation-approver confirmation-form-group">
+            <label for="approver">Approver:</label>
+            <hr class="separator-full" />
+            <input type="text" v-model="safetyRequest.approver" placeholder="Enter name" class="approver-input" />
+          </div>
+        </div>
+        <div class="confirmation-page-number">Page 2</div>
+        <Button label="Save" icon="pi pi-save" @click="submitForm" />
       </div>
     </div>
-
-    <!-- Modal -->
-    <Dialog header="Confirmation" v-model:visible="showConfirmation" :modal="true" :closable="false">
-      <p>未安全な項目がありますが、安全化を承認しますか？</p>
-      <div class="p-d-flex p-jc-end">
-        <Button label="いいえ" icon="pi pi-times" @click="cancelConfirmation" class="p-button-text" />
-        <Button label="はい" icon="pi pi-check" @click="confirmApproval" auto-focus />
-      </div>
-    </Dialog>
-    <Dialog header="Success" v-model:visible="showSuccess" :modal="true" :closable="false" :footer="null">
-      <p>安全化を承認しました</p>
-      <Button label="OK" icon="pi pi-check" @click="closeSuccess" auto-focus />
-    </Dialog>
   </div>
 </template>
 
+
+
+
+
 <script setup>
 import { ref } from 'vue';
+import axios from 'axios';
 import InputSwitch from 'primevue/inputswitch';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
+import { useUserStore } from "@/stores/userStore"; // Piniaストアをインポート
 
 // 安全要求情報のデータを管理するref
 const safetyRequest = ref({
-  valve1: false,
-  valve2: false,
-  valve3: false,
-  valve4: false,
-  valve5: false,
-  breaker1: false,
-  breaker2: false,
-  breaker3: false,
-  breaker4: false,
-  breaker5: false,
-  constructionPeriod: '',
-  plant: '',
-  equipment: '',
-  taskName: '',
-  personInCharge: '',
-  contractor: '',
-  gasDetection: false,
-  oxygenDeficiency: false,
-  onSiteSafety: false,
-  isolationCompleted: false,
-  approver: '', // 確認者の入力データ
-  ky: '', // KYの入力データ
+  valve1_input: false,  // Valve 1の入力状態の初期値
+  valve2_input: false,  // Valve 2の入力状態の初期値
+  valve3_input: false,  // Valve 3の入力状態の初期値
+  valve4_input: false,  // Valve 4の入力状態の初期値
+  valve5_input: false,  // Valve 5の入力状態の初期値
+  breaker1_input: false,  // Breaker 1の入力状態の初期値
+  breaker2_input: false,  // Breaker 2の入力状態の初期値
+  breaker3_input: false,  // Breaker 3の入力状態の初期値
+  breaker4_input: false,  // Breaker 4の入力状態の初期値
+  breaker5_input: false,  // Breaker 5の入力状態の初期値
+  constructionPeriod: '',  // 工事期間の初期値（空文字）
+  plant: '',  // プラントの初期値（空文字）
+  equipment: '',  // 設備の初期値（空文字）
+  taskName: '',  // 作業名の初期値（空文字）
+  personInCharge: '',  // 責任者の初期値（空文字）
+  contractor: '',  // 契約者の初期値（空文字）
+  gasDetection: false,  // ガス検知の初期値
+  oxygenDeficiency: false,  // 酸素欠乏の初期値
+  approver: '',  // 承認者の初期値（空文字）
+  companyCode: '',  // 会社コードの初期値（空文字）
 });
 
 // 作業者点検項目のデータを管理するref
 const workerInspection = ref({
-  lotoImplemented: false,
-  protectiveGloves: false,
-  noCombustibles: false,
+  valve1_approval: false,  // Valve 1の承認状態の初期値
+  valve2_approval: false,  // Valve 2の承認状態の初期値
+  valve3_approval: false,  // Valve 3の承認状態の初期値
+  valve4_approval: false,  // Valve 4の承認状態の初期値
+  valve5_approval: false,  // Valve 5の承認状態の初期値
+  breaker1_approval: false,  // Breaker 1の承認状態の初期値
+  breaker2_approval: false,  // Breaker 2の承認状態の初期値
+  breaker3_approval: false,  // Breaker 3の承認状態の初期値
+  breaker4_approval: false,  // Breaker 4の承認状態の初期値
+  breaker5_approval: false,  // Breaker 5の承認状態の初期値
+  lotoImplemented: false,  // LOTO実施の初期値
+  protectiveGloves: false,  // 保護手袋の着用状態の初期値
+  noCombustibles: false,  // 可燃物なしの状態の初期値
 });
-
-// 各ページごとの情報を管理するref
-const pages = ref([
-  {
-    valve1: false,
-    valve2: false,
-    valve3: false,
-    valve4: false,
-    valve5: false,
-    breaker1: false,
-    breaker2: false,
-    breaker3: false,
-    breaker4: false,
-    breaker5: false,
-    onSiteSafety: false,
-  },
-]);
 
 // モーダルの表示状態を管理するref
 const showConfirmation = ref(false);
 const showSuccess = ref(false);
 const currentDate = ref(new Date().toLocaleDateString());
 
+const userStore = useUserStore(); // Piniaのストアを使用
+
 // フォームの送信を処理する関数
-const handleSubmit = () => {
-  if (hasUnsafeItems()) {
-    showConfirmation.value = true;
-  } else {
-    showSuccess.value = true;
-  }
+const submitForm = () => {
+  // POSTするデータを整理して、不要なフィールドを排除
+  const postData = {
+    companyCode: safetyRequest.value.companyCode,
+    constructionPeriod: safetyRequest.value.constructionPeriod,
+    plant: safetyRequest.value.plant,
+    equipment: safetyRequest.value.equipment,
+    taskName: safetyRequest.value.taskName,
+    personInCharge: safetyRequest.value.personInCharge,
+    contractor: safetyRequest.value.contractor,
+    gasDetection: safetyRequest.value.gasDetection,
+    oxygenDeficiency: safetyRequest.value.oxygenDeficiency,
+    onSiteSafety: workerInspection.value.onSiteSafety,
+    approver: safetyRequest.value.approver,
+    valve1_input: safetyRequest.value.valve1_input,
+    valve2_input: safetyRequest.value.valve2_input,
+    valve3_input: safetyRequest.value.valve3_input,
+    valve4_input: safetyRequest.value.valve4_input,
+    valve5_input: safetyRequest.value.valve5_input,
+    valve1_approval: workerInspection.value.valve1_approval,
+    valve2_approval: workerInspection.value.valve2_approval,
+    valve3_approval: workerInspection.value.valve3_approval,
+    valve4_approval: workerInspection.value.valve4_approval,
+    valve5_approval: workerInspection.value.valve5_approval,
+    breaker1_input: safetyRequest.value.breaker1_input,
+    breaker2_input: safetyRequest.value.breaker2_input,
+    breaker3_input: safetyRequest.value.breaker3_input,
+    breaker4_input: safetyRequest.value.breaker4_input,
+    breaker5_input: safetyRequest.value.breaker5_input,
+    breaker1_approval: workerInspection.value.breaker1_approval,
+    breaker2_approval: workerInspection.value.breaker2_approval,
+    breaker3_approval: workerInspection.value.breaker3_approval,
+    breaker4_approval: workerInspection.value.breaker4_approval,
+    breaker5_approval: workerInspection.value.breaker5_approval,
+  };
+
+  console.log('Posting data:', postData);
+
+  axios.post('http://127.0.0.1:8000/api/workOrder/workPermission/', postData)
+    .then(response => {
+      showSuccess.value = true;
+      console.log('Form saved successfully', response.data);
+    })
+    .catch(error => {
+      console.error('Error saving form', error);
+    });
 };
 
-// 安全でない項目が存在するかをチェックする関数
-const hasUnsafeItems = () => {
-  return pages.value.some(page => (
-    (safetyRequest.value.valve1 && !page.valve1) ||
-    (safetyRequest.value.valve2 && !page.valve2) ||
-    (safetyRequest.value.valve3 && !page.valve3) ||
-    (safetyRequest.value.valve4 && !page.valve4) ||
-    (safetyRequest.value.valve5 && !page.valve5) ||
-    (safetyRequest.value.breaker1 && !page.breaker1) ||
-    (safetyRequest.value.breaker2 && !page.breaker2) ||
-    (safetyRequest.value.breaker3 && !page.breaker3) ||
-    (safetyRequest.value.breaker4 && !page.breaker4) ||
-    (safetyRequest.value.breaker5 && !page.breaker5)
-  ));
-};
 
 // 確認モーダルをキャンセルする関数
 const cancelConfirmation = () => {
@@ -462,15 +446,10 @@ const confirmApproval = () => {
 // 成功モーダルを閉じる関数
 const closeSuccess = () => {
   showSuccess.value = false;
-  // フォームの送信処理をここに追加
-};
-
-// フォームの送信を処理する関数
-const submitForm = () => {
-  console.log('Form submitted', pages.value);
-  // フォームの送信処理をここに追加
 };
 </script>
+
+
 
 <style>
 .form-container {
@@ -484,263 +463,119 @@ const submitForm = () => {
 .content {
   display: flex;
   gap: 16px;
-  max-width: 100%; /* 最大幅を設定 */
+  max-width: 100%;
 }
 
 .safety-request-form {
   flex: 1;
   min-width: 300px;
-  max-width: 50%; /* 左側に配置 */
+  max-width: 50%;
   padding: 16px;
   background-color: #fff;
   border: 1px solid #000;
-}
-
-.pages {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  justify-content: center;
-}
-
-.page {
-  width: 210mm; /* A4 width */
-  height: 297mm; /* A4 height */
-  border: 1px solid #000;
-  padding: 10mm; /* Reduce padding to increase usable area */
-  box-sizing: border-box;
-  background-color: #ff9999; /* Change background color to lighter red */
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  margin-bottom: 16px;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start; /* 上詰め配置 */
 }
 
 .confirmation-page {
   width: 210mm; /* A4 width */
   height: 297mm; /* A4 height */
   border: 1px solid #000;
-  padding: 10mm; /* Reduce padding to increase usable area */
+  padding: 10mm;
   box-sizing: border-box;
-  background-color: #ff9999; /* Change background color to lighter red */
+  background-color: #ff9999;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   margin-bottom: 16px;
   position: relative;
   display: flex;
   flex-direction: column;
-  align-items: flex-start; /* 左詰め */
-  justify-content: flex-start; /* 上詰め配置 */
 }
 
 .request-form-title {
   text-align: center;
-  font-size: 18px; /* Safety Request Formのサイズ */
+  font-size: 18px;
   font-weight: bold;
-  margin-bottom: 8px; /* スペースを小さく */
+  margin-bottom: 8px;
 }
 
 .confirmation-title {
-  text-align: center; /* 横方向にセンター */
-  font-size: 2em; /* h1サイズ */
+  text-align: center;
+  font-size: 2em;
   font-weight: bold;
   margin-bottom: 8px;
   width: 100%;
 }
 
 .title-space {
-  height: 50px; /* Safety Confirmation Certificateの下に大きなスペース */
+  height: 50px;
 }
 
 .form-grid-smaller {
   display: grid;
   grid-template-columns: repeat(3, 1fr); /* 3列のグリッド */
-  gap: 16px; /* グリッドアイテム間のスペース */
-  margin-bottom: 16px; /* ボックスと次の要素の間にスペース */
+  gap: 16px;
+  margin-bottom: 16px;
 }
 
-.form-grid {
+.grid-two-columns {
   display: grid;
   grid-template-columns: repeat(2, 1fr); /* 2列のグリッド */
-  gap: 16px; /* グリッドアイテム間のスペース */
+  gap: 16px;
+  width: 100%;
 }
 
-.grid-multiple {
+.grid-five-columns {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* 自動的に列を調整 */
-  gap: 16px; /* グリッドアイテム間のスペース */
-}
-
-.grid-item {
-  border: 1px solid #000; /* 黒の細い線で囲む */
-  padding: 8px;
-  border-radius: 4px;
-  min-height: 120px; /* 高さを拡大 */
-}
-
-.grid-item-smaller {
-  border: 1px solid #000; /* 黒の細い線で囲む */
-  padding: 8px;
-  border-radius: 4px;
-  text-align: center; /* 中央寄せ */
-  min-height: 80px; /* 高さを調整 */
+  grid-template-columns: repeat(5, 1fr); /* 5列のグリッド */
+  gap: 16px;
+  width: 100%;
 }
 
 .grid-item-small {
-  border: 1px solid #000; /* 黒の細い線で囲む */
+  border: 1px solid #000;
   padding: 8px;
   border-radius: 4px;
-  text-align: center; /* 中央寄せ */
-  min-height: 80px; /* 高さを調整 */
+  text-align: center;
+  min-height: 80px;
 }
 
-.grid-item-full {
-  grid-column: span 3; /* 3列にまたがる */
-  border: 1px solid #000; /* 黒の細い線で囲む */
-  padding: 8px;
-  border-radius: 4px;
-  text-align: center; /* 中央寄せ */
-  min-height: 80px; /* 高さを調整 */
+/* highlightedクラスを追加して、背景色を白に変更 */
+.highlighted {
+  background-color: white;
 }
 
 .form-group {
-  margin-bottom: 12px; /* 各質問間のスペースを増やす */
-}
-
-.confirmation-form-group {
-  margin-bottom: 12px; /* 各質問間のスペースを増やす */
-}
-
-.confirmation-approver-box {
-  border: 1px solid #000; /* 確認者の入力を囲む枠線 */
-  padding: 8px;
-  border-radius: 4px;
-  width: 30%; /* 横幅を調整 */
-  position: absolute; /* 絶対配置で右下に */
-  bottom: 40px; /* 下詰めのためにスペースを追加 */
-  right: 10px; /* 右詰め */
-}
-
-.approver-input {
-  width: 100%; /* 横幅を入力エリアに合わせる */
-}
-
-.ky-input-box {
-  border: 1px solid #000; /* KYボックスを囲む枠線 */
-  height: 150px; /* 高さをさらに大きく設定 */
-  width: 100%; /* 横幅をいっぱいに広げる */
-  margin-bottom: 16px; /* 下部のスペースを追加 */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.ky-placeholder {
-  font-size: 16px;
-  text-align: center;
-}
-
-.instructions {
-  margin-bottom: 24px; /* スペースを追加 */
-}
-
-.instruction-text {
-  text-decoration: underline; /* 下線を追加 */
-  margin-bottom: 8px; /* 各文の間に少しスペースを追加 */
-  font-weight: bold; /* 太字 */
+  margin-bottom: 12px;
 }
 
 .question-separator {
-  margin-bottom: 20px; /* スイッチボタンと質問の間のスペースを増やす */
+  margin-bottom: 20px;
 }
 
 .left-aligned {
-  text-align: left; /* 左詰め */
+  text-align: left;
 }
 
-.right-aligned {
-  text-align: right; /* 右詰め */
+.confirmation-approver-box {
+  border: 1px solid #000;
+  padding: 8px;
+  border-radius: 4px;
+  width: 30%;
+  position: absolute;
+  bottom: 40px;
+  right: 10px;
 }
 
-.form-group label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: bold;
-}
-
-.confirmation-form-group label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: bold;
-}
-
-.contractor-label label {
-  font-size: 16px;
-  font-weight: bold;
-}
-
-.important-label label {
-  font-size: 16px; /* フォントサイズを大きく */
-  font-weight: bold; /* 太字 */
-}
-
-.large-font {
-  font-size: 18px; /* Worker Inspection Itemsのフォントを大きく */
-}
-
-.guideline-text {
-  font-size: 14px;
-  margin-top: 4px;
-  margin-bottom: 4px;
-  font-style: italic;
-}
-
-.inspection-title {
-  font-size: 16px;
-  font-weight: bold;
-  margin-top: 16px;
-  margin-bottom: 8px;
-  text-align: left; /* 左詰め */
-}
-
-.inspection-item {
-  margin-bottom: 8px;
-}
-
-.confirmation-approver {
-  margin-top: 16px;
-}
-
-.question-full {
-  width: 100%; /* A4いっぱいに広げる */
-  margin-bottom: 4px; /* 隙間を小さく調整 */
-  font-weight: bold;
-}
-
-.question-tight {
+.approver-input {
   width: 100%;
-  margin-bottom: 4px; /* より小さく間隔を調整 */
-  font-weight: bold;
 }
 
-.checkmark {
-  margin-left: 8px;
-  color: green;
-  font-size: 20px; /* チェックマークを2回り大きく */
-}
-
-.resizable-textarea {
+.ky-input-box {
+  border: 1px solid #000;
+  height: 150px;
   width: 100%;
-  min-height: 40px;
-  resize: vertical; /* 垂直方向にリサイズ可能に設定 */
-}
-
-body {
-  background-color: #f5f5f5;
-  margin: 0;
-  padding: 0;
-  font-family: Arial, sans-serif;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .page-number {
@@ -750,23 +585,6 @@ body {
   bottom: 10px;
   left: 0;
   right: 0;
-}
-
-.confirmation-page-number {
-  text-align: center;
-  font-size: 12px;
-  position: absolute;
-  bottom: 10px;
-  left: 0;
-  right: 0;
-}
-
-.date-display {
-  text-align: right;
-  font-size: 12px;
-  position: absolute;
-  top: 10px;
-  right: 10px;
 }
 
 .confirmation-date-display {
@@ -780,23 +598,41 @@ body {
 .separator {
   border: none;
   border-bottom: 1px solid #000;
-  margin: 2px 0; /* 質問間のスペースをさらに減少 */
+  margin: 2px 0;
 }
 
 .separator-full {
   border: none;
   border-bottom: 1px solid #000;
-  width: calc(100% - 20mm); /* 下線をA4の横幅一杯に広げる（左右のパディング分を除く） */
-  margin: 2px 0; /* 質問間のスペースをさらに減少 */
+  width: calc(100% - 20mm); /* 下線をA4の横幅一杯に広げる */
+  margin: 2px 0;
+}
+
+.checkmark {
+  margin-left: 8px;
+  color: green;
+  font-size: 20px;
+}
+
+.resizable-textarea {
+  width: 100%;
+  min-height: 40px;
+  resize: vertical;
+}
+
+body {
+  background-color: #f5f5f5;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
 }
 
 @media print {
   .form-container {
     flex-direction: column;
   }
-  .page,
   .confirmation-page {
-    background-color: #ff9999; /* Ensure print background color is the same */
+    background-color: #ff9999;
     box-shadow: none;
     border: none;
     page-break-after: always;
@@ -807,15 +643,23 @@ body {
 }
 
 @media screen and (max-width: 768px) {
-  .grid-multiple {
+  .grid-two-columns {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* 画面幅が狭くなった場合に折り返し */
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .grid-five-columns {
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* 画面幅が狭くなった場合に折り返し */
   }
 }
 
 @media screen and (max-width: 480px) {
-  .grid-multiple {
+  .grid-two-columns {
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); /* さらに狭い場合に折り返し */
+  }
+  .grid-five-columns {
     grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); /* さらに狭い場合に折り返し */
   }
 }
-
 </style>

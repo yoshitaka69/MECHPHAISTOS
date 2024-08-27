@@ -56,18 +56,41 @@ class WorkOrder(models.Model):
 
 
 
+from django.utils import timezone
+
 class WorkPermission(models.Model):
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='workPermission_companyCode', null=True, blank=True)
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='workPermission_companyName', null=True, blank=True)
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='workPermission_plant', null=True, blank=True)
     equipment = models.CharField(max_length=100, null=True, blank=True)
+
     workOrderNo = models.ForeignKey(WorkOrder, on_delete=models.CASCADE, related_name='workPermission_workOrder', null=True, blank=True)
     status = models.CharField(max_length=100, null=True, blank=True)
     
     # 新しく追加するフィールド
     taskName = models.CharField(max_length=255, null=True, blank=True)
-    constructionPeriod = models.CharField(max_length=100, null=True, blank=True)  # 必要に応じてDateFieldやDateRangeFieldに変更可能
-    personInCharge = models.CharField(max_length=255, null=True, blank=True)  # 必要に応じてForeignKeyに変更可能
+    constructionPeriod = models.CharField(max_length=100, null=True, blank=True)
+    personInCharge = models.CharField(max_length=255, null=True, blank=True)
+
+    # SafetyRequest のフィールドを統合
+    contractor = models.CharField(max_length=100, null=True, blank=True)
+    gasDetection = models.BooleanField(default=False)
+    oxygenDeficiency = models.BooleanField(default=False)
+    valve1 = models.BooleanField(default=False)
+    valve2 = models.BooleanField(default=False)
+    valve3 = models.BooleanField(default=False)
+    valve4 = models.BooleanField(default=False)
+    valve5 = models.BooleanField(default=False)
+    breaker1 = models.BooleanField(default=False)
+    breaker2 = models.BooleanField(default=False)
+    breaker3 = models.BooleanField(default=False)
+    breaker4 = models.BooleanField(default=False)
+    breaker5 = models.BooleanField(default=False)
+    onSiteSafety = models.BooleanField(default=False)
+    approver = models.CharField(max_length=100, null=True, blank=True)
+    
+    createdAt = models.DateTimeField(default=timezone.now)
+    updatedAt = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name_plural = 'Work Permissions'

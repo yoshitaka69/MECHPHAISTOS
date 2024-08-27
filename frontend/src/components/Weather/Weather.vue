@@ -88,61 +88,73 @@ export default {
 
 <style>
 .weather-container {
-    width: 80%; /* 全体のコンテナサイズを小さく */
-    max-width: 400px; /* 最大幅を小さく */
+    width: 80%;
+    max-width: 400px;
     height: auto;
     border: 1px solid #ccc;
-    padding: 0.5rem; /* パディングを小さく */
+    padding: 0.5rem;
     box-shadow: 2px 2px 12px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
-    margin: 10px auto; /* マージンを小さくして中央寄せ */
+    margin: 10px auto;
     display: flex;
     align-items: center;
-    text-align: left; /* テキスト左寄せ */
-    background: linear-gradient(to top, #e0f7fa, #0277bd); /* 青色のグラデーション */
-    font-size: 0.8rem; /* 基本のフォントサイズを小さく */
+    text-align: left;
+    background: linear-gradient(to top, #e0f7fa, #0277bd);
+    font-size: 1rem; /* 基本のフォントサイズを1remに設定 */
 }
+
 .location {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-right: 0.5rem; /* マージンを小さく */
+    margin-right: 0.5rem;
+    font-size: 1.2rem; /* 少し大きめのフォントサイズ */
 }
+
 .weather-details {
     display: flex;
     flex-direction: column;
-    font-size: 0.7rem; /* フォントサイズを小さく */
+    font-size: 1rem; /* 基本のフォントサイズを1remに設定 */
 }
+
 .current-weather-label {
-    font-size: 1.5rem; /* 現在の天気ラベルのフォントサイズを小さく */
-    line-height: 1.2; /* 行間を狭く */
+    font-size: 1.4rem; /* 少し大きめのフォントサイズ */
+    line-height: 1.2;
 }
+
 .current-weather {
-    font-size: 2rem; /* 現在の天気のフォントサイズを大きく */
-    line-height: 1.2; /* 行間を狭く */
+    font-size: 1.6rem; /* さらに大きめのフォントサイズ */
+    line-height: 1.2;
 }
+
 img {
-    width: 6rem; /* アイコンのサイズを大きく */
+    width: 6rem;
     height: auto;
 }
+
 h1 {
-    font-size: 1.2rem; /* 場所のフォントサイズを小さく */
-    line-height: 0.5; /* 行間を狭く */
+    font-size: 1.5rem; /* 場所のフォントサイズを調整 */
+    line-height: 1.2;
 }
+
 h2 {
-    font-size: 2rem; /* 温度、湿度、風速のフォントサイズを大きく */
-    font-weight: bold; /* 温度、湿度、風速のフォントを太字に */
-    line-height: 0.5; /* 行間を狭く */
+    font-size: 1.2rem; /* 温度、湿度、風速のフォントサイズを調整 */
+    font-weight: bold;
+    line-height: 1.2;
 }
+
 h3 {
-    font-size: 0.7rem; /* 現在の天気ラベルのフォントサイズを小さく */
-    line-height: 0.5; /* 行間を狭く */
+    font-size: 1rem; /* 現在の天気ラベルのフォントサイズを調整 */
+    line-height: 1.2;
 }
+
 .heat-alert {
     font-weight: bold;
     margin-top: 0.5rem;
-    line-height: 0.5; /* 行間を狭く */
+    line-height: 1.2;
+    font-size: 1rem; /* 基本フォントサイズに設定 */
 }
+
 .alert-caution {
     color: blue;
 }
