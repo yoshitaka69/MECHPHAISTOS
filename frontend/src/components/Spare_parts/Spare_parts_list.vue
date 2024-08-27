@@ -514,6 +514,7 @@
         })
         .then((response) => {
             console.log("Data saved successfully:", response.data);
+            alert("データが正常に保存されました。"); // 保存成功時のアラート
         })
         .catch((error) => {
             console.error("Error saving data:", error);
@@ -529,6 +530,7 @@
             }
 
             console.error("Error config:", error.config);
+            alert("データの保存に失敗しました。エラーを確認してください。"); // 保存失敗時のアラート
         });
 },
 

@@ -1,38 +1,23 @@
 <template>
-    <div class="mechphaistos-container">
-      <div id="mechphaistos_ai">
-        <BubbleComment
-          imageSrc="/MECHPHAISTOS_AI/MECHPHISTOS_AI.webp"
-          comment="This is a sample comment"
-          :bubbleTop="20"
-        />
-      </div>
+    <div>
+        <div class="block-category-title">Alert</div>
+        <BlockViewer header="With Description" :code="block1" containerClass="surface-section p-3 md:p-6 lg:p-8">
+            <div class="flex align-items-start p-4 bg-green-100 border-round border-1 border-green-300">
+                <i class="pi pi-check-circle text-green-900 text-2xl mr-3"></i>
+                <div class="mr-3">
+                    <div class="text-green-900 font-medium text-xl mb-2 line-height-1">Success</div>
+                    <p class="m-0 p-0 text-green-700 line-height-3">Quis commodo odio aenean sed adipiscing diam. Bibendum enim facilisis gravida neque convallis a cras semper.</p>
+                </div>
+                <div class="ml-auto">
+                    <a
+                        v-ripple
+                        class="inline-flex align-items-center justify-content-center ml-auto border-circle hover:bg-green-50 no-underline cursor-pointer transition-colors transition-duration-150 p-ripple"
+                        style="width: 1.5rem; height: 1.5rem"
+                    >
+                        <i class="pi pi-times text-green-900"></i>
+                    </a>
+                </div>
+            </div>
+        </BlockViewer>
     </div>
-  </template>
-  
-  <script>
-  import BubbleComment from '@/components/Mechphaistos_Ai/BubbleComment.vue';
-  
-  export default {
-    name: 'Mechphaistos_Ai',
-    components: {
-      BubbleComment
-    }
-  };
-  </script>
-  
-  <style scoped>
-  .mechphaistos-container {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 5px;
-    width: 100%; /* 親要素に対して幅を100%にする */
-  }
-  
-  #mechphaistos_ai {
-    font-family: Avenir, Helvetica, Arial, sans-serif;
-    text-align: center;
-    width: 100%; /* 親要素に対して幅を100%にする */
-  }
-  </style>
-  
+</template>

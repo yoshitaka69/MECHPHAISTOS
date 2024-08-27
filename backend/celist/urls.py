@@ -1,6 +1,14 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import CeListViewSet, CeListByCompanyViewSet, post_risk_matrix_possibility, get_latest_risk_matrix_possibilities, post_risk_matrix_impact, get_latest_risk_matrix_impacts
+from .views import (
+    CeListViewSet,
+    CeListByCompanyViewSet,
+    post_risk_matrix_possibility,
+    get_latest_risk_matrix_possibilities,
+    post_risk_matrix_impact,
+    get_latest_risk_matrix_impacts,
+
+)
 
 router = DefaultRouter()
 router.register(r'ceList', CeListViewSet, basename='ceList')
@@ -13,6 +21,8 @@ urlpatterns = [
     path('ceList/risk_matrix_impact/', post_risk_matrix_impact, name='add_risk_matrix_impact'),
     path('ceList/risk_matrix_impact/<str:company_code>/<str:level_set_value>/', get_latest_risk_matrix_impacts, name='get_latest_risk_matrix_impacts'),
 ]
+
+
 
 
 #Django REST FrameworkのViewSetと単一の関数ベースビュー（FBV）を組み合わせるためには、URLルーティングを少し変更する必要があります。
