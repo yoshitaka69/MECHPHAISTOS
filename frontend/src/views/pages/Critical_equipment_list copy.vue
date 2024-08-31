@@ -11,7 +11,6 @@
               <CriticalEquipmentList
                 :riskTexts="riskTexts"
                 @data-emitted="handleDataEmitted"
-                @input-changed="handleInputChange"
                 ref="equipmentList"
               />
             </div>
@@ -112,17 +111,6 @@ export default {
     handleDataEmitted(data) {
       console.log('Data emitted from CriticalEquipmentList:', data);
       this.emittedData = data;
-    },
-    handleInputChange(data) {
-      console.log('Input changed in CriticalEquipmentList:', data);
-      this.emittedData = data;
-      // ここでモーダルにデータを渡す処理を実行できます
-      if (this.showImpactMatrixModal) {
-        this.$refs.impactMatrix.updateData(data);
-      }
-      if (this.showPossibilityMatrixModal) {
-        this.$refs.possibilityMatrix.updateData(data);
-      }
     },
     openImpactMatrixModal() {
       this.showImpactMatrixModal = true;

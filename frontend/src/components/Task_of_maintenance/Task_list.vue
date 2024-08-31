@@ -1,36 +1,40 @@
 <template>
-  <div id="TaskList">
-      <div class="legend">
-          <div class="legend-item">
-              <div class="color-box" style="background-color: #f0a0a0"></div>
-              <span>Form input format is incorrect</span>
-          </div>
-          <div class="legend-item">
-              <div class="color-box" style="background-color: #f0f0f0"></div>
-              <span>Input not allowed. Value is automatically filled.</span>
-          </div>
-      </div>
-      <hot-table ref="hotTableComponent" :settings="hotSettings"></hot-table><br />
-      <div class="button-container">
-          <input type="number" v-model="rowsToAdd" placeholder="Number of rows" />
-          <Button label="Add Rows" severity="primary" @click="addRows" />
-          <Button label="Save Data" severity="secondary" raised class="saveData" @click="saveData" />
-      </div>
-  </div>
-</template>
-
-<script>
-import Handsontable from 'handsontable'; //独自のレンダラーを使用するときに使う。
-import { defineComponent } from 'vue';
-import { HotTable } from '@handsontable/vue3';
-import { registerAllModules } from 'handsontable/registry';
-import 'handsontable/dist/handsontable.full.css';
-import axios from 'axios';
-import { useUserStore } from '@/stores/userStore'; // Piniaストアをインポート
-import Button from 'primevue/button'; // PrimeVueのボタンコンポーネントをインポート
-
-// register Handsontable's modules
-registerAllModules();
+    <div id="TaskList">
+        <!-- 成功時または失敗時のアラート表示 -->
+        <Save_Alert v-if="showAlert" :type="alertType" :message="alertMessage" :errorMessages="errorMessages" />
+  
+        <div class="legend">
+            <div class="legend-item">
+                <div class="color-box" style="background-color: #f0a0a0"></div>
+                <span>Form input format is incorrect</span>
+            </div>
+            <div class="legend-item">
+                <div class="color-box" style="background-color: #f0f0f0"></div>
+                <span>Input not allowed. Value is automatically filled.</span>
+            </div>
+        </div>
+        <hot-table ref="hotTableComponent" :settings="hotSettings"></hot-table><br />
+        <div class="button-container">
+            <input type="number" v-model="rowsToAdd" placeholder="Number of rows" />
+            <Button label="Add Rows" icon="pi pi-plus" class="p-button-primary blue-button" @click="addRows" />
+            <Button label="Save Data" icon="pi pi-save" class="p-button-primary blue-button ml-3" @click="saveData" />
+        </div>
+    </div>
+  </template>
+  
+  <script>
+  import Handsontable from 'handsontable';
+  import { defineComponent } from 'vue';
+  import { HotTable } from '@handsontable/vue3';
+  import { registerAllModules } from 'handsontable/registry';
+  import 'handsontable/dist/handsontable.full.css';
+  import axios from 'axios';
+  import { useUserStore } from '@/stores/userStore';
+  import Button from 'primevue/button';
+  import Save_Alert from '@/components/Alert/Save_Alert.vue';
+  
+  // register Handsontable's modules
+  registerAllModules();
 
 const TaskListComponent = defineComponent({
   data() {
@@ -233,7 +237,11 @@ const TaskListComponent = defineComponent({
               licenseKey: 'non-commercial-and-evaluation'
           },
           rowsToAdd: 1, // 追加する行数のデフォルト値
-          dataStore: [] // データストア
+          dataStore: [], // データストア
+          showAlert: false, // アラート表示用のフラグ
+          alertType: 'success', // 'success' か 'error' を指定
+          alertMessage: 'データが正常に保存されました。',
+          errorMessages: [] // エラーメッセージのリスト
       };
   },
 
@@ -402,6 +410,12 @@ const TaskListComponent = defineComponent({
                   })
                   .then((response) => {
                       console.log('Data saved successfully:', response.data);
+                      this.alertType = 'success';
+                      this.alertMessage = 'データが正常に保存されました。';
+                      this.showAlert = true;
+                      setTimeout(() => {
+                          this.showAlert = false;
+                      }, 3000); // 3秒後にアラートを非表示にする
                   })
                   .catch((error) => {
                       console.error('Error saving data:', error);
@@ -417,6 +431,13 @@ const TaskListComponent = defineComponent({
                       }
 
                       console.error('Error config:', error.config);
+                      this.alertType = 'error';
+                      this.alertMessage = 'データの保存に失敗しました。エラーを確認してください。';
+                      this.errorMessages = ["Quis commodo odio aenean sed adipiscing diam.", "Risus pretium quam vulputate dignissim suspendisse.", "Bibendum enim facilisis gravida neque convallis a cras semper."];
+                      this.showAlert = true;
+                      setTimeout(() => {
+                          this.showAlert = false;
+                      }, 5000); // 5秒後にアラートを非表示にする
                   });
           } catch (err) {
               console.error('An error occurred in saveData:', err);
@@ -425,11 +446,13 @@ const TaskListComponent = defineComponent({
   },
   components: {
       HotTable,
-      Button // PrimeVueのButtonコンポーネントを追加
+      Button,
+      Save_Alert // アラートコンポーネントをインポート
   }
 });
 export default TaskListComponent;
 </script>
+
 
 <style scoped>
 .button-container {
@@ -455,5 +478,11 @@ export default TaskListComponent;
   height: 20px;
   margin-right: 10px;
   border: 1px solid #000;
+}
+
+.blue-button {
+  background-color: #007bff;
+  border-color: #007bff;
+  color: white;
 }
 </style>

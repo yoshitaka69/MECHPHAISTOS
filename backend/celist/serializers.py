@@ -20,11 +20,31 @@ class CompanyCodeCeListSerializer(serializers.ModelSerializer):
         fields = ['companyCode', 'ceList']
 
 
+
+
+
+
+
+
+
+#-------------------------------------------------------------
+
+from rest_framework import serializers
+from .models import RiskMatrixPossibility
+
 class RiskMatrixPossibilitySerializer(serializers.ModelSerializer):
     class Meta:
         model = RiskMatrixPossibility
-        fields = ['companyCode', 'companyName', 'x', 'y', 'timestamp']
+        fields = ['companyCode', 'companyName', 'x', 'y', 'timestamp',]
 
+
+
+
+
+
+
+
+#-----------------------------------------------------------------
 
 class RiskMatrixImpactSerializer(serializers.ModelSerializer):
     class Meta:

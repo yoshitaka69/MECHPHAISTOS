@@ -1,6 +1,6 @@
 from rest_framework import status, viewsets
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, action
+from rest_framework.decorators import api_view
 from .models import CeList, RiskMatrixPossibility, CompanyCode, RiskMatrixImpact
 from .serializers import CeListSerializer, CompanyCodeCeListSerializer, RiskMatrixPossibilitySerializer, RiskMatrixImpactSerializer
 
@@ -21,45 +21,42 @@ class CeListByCompanyViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 
-#-------------------------------------------------------
-# Risk Matrix possibility
-
-
 @api_view(['POST'])
 def post_risk_matrix_possibility(request):
-    company_code_str = request.data.get('companyCode')
-    favorite_index = request.data.get('favoriteIndex', None)
+    print("Request data:", request.data)
     
+    company_code_str = request.data.get('companyCode')
     if not company_code_str:
         return Response({"error": "companyCode is required"}, status=status.HTTP_400_BAD_REQUEST)
     
-    try:
-        company_code = CompanyCode.objects.get(companyCode=company_code_str)
-    except CompanyCode.DoesNotExist:
-        return Response({"error": "Invalid companyCode"}, status=status.HTTP_400_BAD_REQUEST)
+    all_company_codes = CompanyCode.objects.all()
+    print("All CompanyCodes in the database:")
+    for code in all_company_codes:
+        print(f"id: {code.id}, companyCode: {code.companyCode}")
     
-    # favoriteIndex が設定されている場合、他のエントリーの favoriteIndex をリセット
-    if favorite_index is not None:
-        RiskMatrixPossibility.objects.filter(companyCode=company_code).update(favoriteIndex=None)
+    company_codes = CompanyCode.objects.filter(companyCode=company_code_str)
+    print("Matching CompanyCodes:", company_codes)
     
-    # 新しいデータを保存
+    if not company_codes.exists():
+        return Response({"error": "No matching companyCode found"}, status=status.HTTP_400_BAD_REQUEST)
+    if company_codes.count() > 1:
+        return Response({"error": "Multiple matching companyCodes found"}, status=status.HTTP_400_BAD_REQUEST)
+    
+    company_code = company_codes.first()
+    
     risk_matrix_possibility = RiskMatrixPossibility(
         companyCode=company_code,
         x=request.data.get('x'),
-        y=request.data.get('y'),
-        favoriteIndex=favorite_index
+        y=request.data.get('y')
     )
     risk_matrix_possibility.save()
 
-    # 最新10件のみ保持し、それ以上は削除
     coordinates = RiskMatrixPossibility.objects.filter(companyCode=company_code).order_by('-timestamp')[10:]
     for coordinate in coordinates:
         coordinate.delete()
 
     serializer = RiskMatrixPossibilitySerializer(risk_matrix_possibility)
     return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-
 
 @api_view(['GET'])
 def get_latest_risk_matrix_possibilities(request, company_code):
@@ -72,25 +69,6 @@ def get_latest_risk_matrix_possibilities(request, company_code):
     serializer = RiskMatrixPossibilitySerializer(latest_possibilities, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
-@api_view(['GET'])
-def get_favorite_risk_matrix_possibility(request, company_code):
-    try:
-        company_code_instance = CompanyCode.objects.get(companyCode=company_code)
-    except CompanyCode.DoesNotExist:
-        return Response({"error": "Invalid companyCode"}, status=status.HTTP_400_BAD_REQUEST)
-
-    try:
-        favorite_possibility = RiskMatrixPossibility.objects.get(companyCode=company_code_instance, favoriteIndex__isnull=False)
-        serializer = RiskMatrixPossibilitySerializer(favorite_possibility)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    except RiskMatrixPossibility.DoesNotExist:
-        return Response({"error": "No favorite found for the given companyCode"}, status=status.HTTP_404_NOT_FOUND)
-
-
-
-#-------------------------------------------------------
-# Risk Matrix Impact
-
 @api_view(['POST'])
 def post_risk_matrix_impact(request):
     company_code_str = request.data.get('companyCode')
@@ -98,6 +76,7 @@ def post_risk_matrix_impact(request):
     x_value = request.data.get('x')
     y_value = request.data.get('y')
     
+    # ログを出力
     print(f"Received POST request with data: companyCode={company_code_str}, levelSetValue={level_set_value}, x={x_value}, y={y_value}")
 
     if not company_code_str:
@@ -135,5 +114,3 @@ def get_latest_risk_matrix_impacts(request, company_code, level_set_value):
     latest_impacts = RiskMatrixImpact.objects.filter(companyCode=company_code_instance, levelSetValue=level_set_value).order_by('-timestamp')[:10]
     serializer = RiskMatrixImpactSerializer(latest_impacts, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
-
-#-------------------------------------------------------

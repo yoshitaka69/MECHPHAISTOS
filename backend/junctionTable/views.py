@@ -34,6 +34,15 @@ class MasterDataTableViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         data = request.data
+
+        # デバッグ用: 受信したデータを確認
+        print("Received data:", data)
+
+        # データがリストであることを確認
+        if not isinstance(data, list):
+            return Response({"error": "Expected a list but got a different type."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # 送信されたceListNoのリストを作成
         sent_ce_list_nos = [item.get('ceListNo') for item in data if item.get('ceListNo') is not None]
 
         # 現在のデータベースに存在するceListNoを取得
@@ -101,7 +110,6 @@ class MasterDataTableViewSet(viewsets.ModelViewSet):
         else:
             return Response({"error": "ceListNo not provided."}, status=status.HTTP_400_BAD_REQUEST)
 
-
     def perform_create(self, serializer):
         serializer.save()
 
@@ -110,6 +118,7 @@ class MasterDataTableViewSet(viewsets.ModelViewSet):
 
     def perform_destroy(self, instance):
         instance.delete()
+
 
 
 
