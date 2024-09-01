@@ -333,7 +333,7 @@ const onRowEditSave = (event) => {
 
 <style>
 .description-text {
-    font-size: 18px;
+    font-size: 16px;
     line-height: 1.5;
     margin-bottom: 20px;
     color: #333;

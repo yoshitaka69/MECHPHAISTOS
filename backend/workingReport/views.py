@@ -1,27 +1,47 @@
-from rest_framework import viewsets
-from .models import EquipmentSpecification,InspectionForm
-from .serializers import EquipmentSpecificationSerializer,InspectionFormSerializer
+from rest_framework import viewsets, status, generics
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework.parsers import MultiPartParser, FormParser
+from .models import InspectionForm, MaintenanceWorkingReport, Specsheets
+from .serializers import InspectionFormSerializer, MaintenanceWorkingReportSerializer, SpecsheetsSerializer
 
 import pytesseract
 from pdf2image import convert_from_path
 import pandas as pd
 
-
-
-
-
-class EquipmentSpecificationViewSet(viewsets.ModelViewSet):
-    queryset = EquipmentSpecification.objects.all()
-    serializer_class = EquipmentSpecificationSerializer
-
-
-
-
-
 # Tesseractのインストールパスを指定
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+
+
+
+
+#--------------------------------------------------------------
+
+class MaintenanceWorkingReportViewSet(viewsets.ModelViewSet):
+    queryset = MaintenanceWorkingReport.objects.all()
+    serializer_class = MaintenanceWorkingReportSerializer
+    parser_classes = (MultiPartParser, FormParser)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+
+
+#--------------------------------------------------------------
+
+
+class SpecsheetsCreateView(generics.CreateAPIView):
+    queryset = Specsheets.objects.all()
+    serializer_class = SpecsheetsSerializer
+
+
+
+#--------------------------------------------------------------
+
+
 
 class InspectionFormViewSet(viewsets.ModelViewSet):
     queryset = InspectionForm.objects.all()

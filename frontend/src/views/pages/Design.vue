@@ -4,7 +4,7 @@
       <div class="card card-solid">
         <TabView v-model:activeIndex="activeIndex" @tab-change="onTabChange">
           <TabPanel header="Drawing ledger">
-            <p class="line-height-3 m-0"></p>
+            <p class="line-height-3 m-0 description-text">This table displays management information related to CAD design drawings.</p>
 
             <CAD_Drawing_ledger />
 
@@ -37,6 +37,10 @@ export default {
 </script>
 
 <style>
+.description-text {
+  font-size: 1.2rem; /* フォントサイズを一回り大きく設定 */
+}
+
 .row {
   display: flex;
   flex-wrap: wrap;

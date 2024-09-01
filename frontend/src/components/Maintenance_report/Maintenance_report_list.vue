@@ -1,6 +1,6 @@
 <template>
-  <div class="table-container">
-    <div class="header-container">
+  <div class="unique-table-container">
+    <div class="unique-header-container">
       <DataTable
         v-model:filters="filters"
         :value="sortedItems"
@@ -17,7 +17,7 @@
         @sort="onSort"
         @filter="onFilter"
         :rows-per-page-options="[5, 10, 20, 50]"
-        class="p-datatable-custom"
+        class="unique-datatable"
         :sort-field="sortField"
         :sort-order="sortOrder"
         style="width: 100%;"
@@ -29,7 +29,12 @@
               <i class="pi pi-search" />
               <InputText v-model="filters['global'].value" placeholder="Keyword Search" />
             </span>
-            <Button type="button" label="New Entry" @click="openNewEntry" />
+            <Button
+              type="button"
+              label="Create Maintenance Report"
+              @click="openNewEntry"
+              class="unique-button-right"
+            />
           </div>
         </template>
         <!-- カラム定義 -->
@@ -69,7 +74,7 @@
       </DataTable>
     </div>
 
-    <div class="edit-item" v-if="isEditing">
+    <div class="unique-edit-item" v-if="isEditing">
       <h3>Edit Item</h3>
       <label v-for="(value, key) in editingItem" :key="key">
         {{ key }}: <input type="text" v-model="editingItem[key]" />
@@ -193,29 +198,33 @@ const clearFilter = () => {
 </script>
 
 <style>
-.table-container {
+.unique-table-container {
   width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
 }
 
-.header-container {
+.unique-header-container {
   flex: 0 1 auto;
   width: 100%;
 }
 
-.p-datatable-custom .p-datatable-thead > tr > th {
-  background-color: #2d3a4f;
-  color: white;
+.unique-datatable .p-datatable-thead > tr > th {
+  background-color: #90ee90; /* 薄い緑色 */
+  color: black; /* 黒色 */
+}
+
+.unique-button-right {
+  margin-left: auto;
 }
 
 /* CSSで交互に背景色を設定 */
-.p-datatable-custom .p-datatable-tbody > tr:nth-child(odd) {
+.unique-datatable .p-datatable-tbody > tr:nth-child(odd) {
   background-color: #ffffff !important; /* 白色 */
 }
 
-.p-datatable-custom .p-datatable-tbody > tr:nth-child(even) {
+.unique-datatable .p-datatable-tbody > tr:nth-child(even) {
   background-color: #d3d3d3 !important; /* 薄い灰色 */
 }
 
