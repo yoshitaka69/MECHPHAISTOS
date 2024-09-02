@@ -59,11 +59,6 @@ const router = createRouter({
 					component: () => import('../views/pages/Safety.vue')
 				},
 				{
-					path: '/prediction&estimate',
-					name:'Prediction&Estimate',
-					component: () => import('../views/pages/Prediction&Estimate.vue')
-				},
-				{
 					path: '/badactor_management',
 					name:'Badactor_management',
 					component: () => import('../views/pages/Badactor_management.vue')

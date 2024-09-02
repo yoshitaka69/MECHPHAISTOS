@@ -9,7 +9,9 @@
             </div>
             <div class="component-container">
               <PrecisionAndAccuracy />
-              <CeList />
+              <button @click="openCeListWindow" class="ce-list-button">
+                Show CeList
+              </button>
             </div>
             <div class="table-container">
               <TroubleHistoryTable />
@@ -35,6 +37,11 @@
 </template>
 
 <script>
+import { createApp } from 'vue';
+import PrimeVue from 'primevue/config';
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
+
 import PrecisionAndAccuracy from '@/components/Badactor_management/Precision_and_Accuracy/PrecisionAndAccuracy.vue';
 import TroubleHistoryTable from '@/components/Badactor_management/Precision_and_Accuracy/TroubleHistoryTable.vue';
 import PreventMaintenanceTable from '@/components/Badactor_management/Precision_and_Accuracy/PreventMaintenanceTable.vue';
@@ -62,6 +69,7 @@ export default {
       activeIndex: parseInt(localStorage.getItem('activeTabIndex')) || 0,
       sampleDataX: [],
       sampleDataY: [],
+      ceListWindow: null,
     };
   },
   mounted() {
@@ -76,6 +84,42 @@ export default {
       this.sampleDataX = Array.from({ length: 100 }, () => Math.random() * 2 - 1);
       this.sampleDataY = Array.from({ length: 100 }, () => Math.random() * 2 - 1);
     },
+    openCeListWindow() {
+  if (!this.ceListWindow || this.ceListWindow.closed) {
+    this.ceListWindow = window.open(
+      '',
+      'CeListWindow',
+      'width=600,height=400,scrollbars=no,resizable=yes'
+    );
+    this.ceListWindow.document.write('<div id="ceList"></div>');
+    this.ceListWindow.document.close();
+
+    // 既存のスタイルシートを新しいウィンドウにコピー
+    const stylesheets = Array.from(document.styleSheets);
+    stylesheets.forEach((stylesheet) => {
+      if (stylesheet.href) {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = stylesheet.href;
+        this.ceListWindow.document.head.appendChild(link);
+      } else {
+        const style = document.createElement('style');
+        style.textContent = Array.from(stylesheet.cssRules)
+          .map(rule => rule.cssText)
+          .join('\n');
+        this.ceListWindow.document.head.appendChild(style);
+      }
+    });
+
+    const ceListApp = createApp(CeList);
+    ceListApp.use(PrimeVue);
+    ceListApp.component('DataTable', DataTable);
+    ceListApp.component('Column', Column);
+    ceListApp.mount(this.ceListWindow.document.getElementById('ceList'));
+  } else {
+    this.ceListWindow.focus();
+  }
+},
   },
 };
 </script>
@@ -84,25 +128,24 @@ export default {
 .component-container {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 1rem; /* 下に少し余白を追加 */
+  align-items: flex-start; /* 子要素を上に揃える */
+  margin-bottom: 1rem;
 }
 
-.component-container > * {
-  flex: 1;
-  margin-right: 1rem;
+.ce-list-button {
+  padding: 0.5rem 1rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  height: auto; /* ボタンの高さを自動に設定 */
+  line-height: 1.5; /* ボタン内のテキストの行間を調整 */
+  align-self: flex-start; /* ボタン自身を上に揃える */
 }
 
-.component-container > *:last-child {
-  margin-right: 0;
-}
-
-.component-container > :first-child {
-  margin-right: 1rem;
-}
-
-.component-container > :last-child {
-  margin-right: 0;
-  margin-top: 1rem; /* CeListの上に余白を追加 */
+.ce-list-button:hover {
+  background-color: #0056b3;
 }
 
 .table-container {
@@ -126,7 +169,7 @@ export default {
 }
 
 .fta-container > * {
-  margin-bottom: 2rem; /* 間に余白を追加 */
+  margin-bottom: 2rem;
 }
 
 .fta-container > *:last-child {

@@ -22,7 +22,6 @@ const model = ref([
         items: [
             { label: 'Critical equipment list', icon: 'pi pi-fw pi-id-card', to: '/critical_equipment_list' },
             { label: 'Repairing cost', icon: 'pi pi-fw pi-check-square', to: '/repairing_cost' },
-            { label: 'Prediction&Estimate', icon: 'pi pi-fw pi-bookmark', to: '/Prediction&Estimate' },
             { label: 'Safety', icon: 'pi pi-fw pi-bookmark', to: '/Safety' },
             { label: 'Badactor management', icon: 'pi pi-fw pi-bookmark', to: '/badactor_management' },
             { label: 'Spare_parts', icon: 'pi pi-fw pi-exclamation-circle', to: '/spare_parts' },

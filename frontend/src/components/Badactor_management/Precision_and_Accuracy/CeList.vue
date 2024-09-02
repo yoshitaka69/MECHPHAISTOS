@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="ce-list-container">
     <DataTable
       :value="paginatedCeList"
       class="custom-header striped-rows bordered-table"
@@ -99,6 +99,10 @@ export default {
 </script>
 
 <style>
+.ce-list-container {
+  margin: 20px; /* ここでリスト全体にマージンを追加 */
+}
+
 .custom-header .p-datatable-thead > tr > th {
   background-color: #2d3a4f;
   color: white;
