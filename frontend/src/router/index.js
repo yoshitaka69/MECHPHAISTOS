@@ -204,6 +204,16 @@ const router = createRouter({
 			component: () => import('@/components/Spare_parts/Spare_parts_detail.vue')
 		},
 		{
+			path: '/repairing_cost_detail/:plantName',
+			name: 'RepairingCostDetail',
+			component: () => import('@/components/Repairing_cost/Repairing_cost_detail/RepairingCostDetail.vue'), // 動的インポート
+		},
+		{
+			path: '/task_list_detail/:taskListNo',
+			name: 'TaskListDetail',
+			component: () => import('@/components/Task_of_maintenance/Detail_task_list/TaskListDetailPage.vue')
+		},
+		{
 			path: '/how_to_use/critical_equipment_list',
 			name:'how_to_use_critical_equipment_list',
 			component: () => import('@/components/How_to_use/How_to_use_critical_equipment_list.vue')

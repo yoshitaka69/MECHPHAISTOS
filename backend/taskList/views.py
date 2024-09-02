@@ -1,5 +1,6 @@
 from rest_framework import viewsets
 
+from rest_framework.pagination import PageNumberPagination
 from accounts.models import CompanyCode
 from .models import TaskListPPM02,TaskListAPM02,TaskListPPM03,TaskListAPM03,TaskListAPM04,TaskListPPM05,TaskListAPM05,TypicalTaskList,TaskList
 from .serializers import (TaskListPPM02Serializer,CompanyTaskListPPM02Serializer,
@@ -131,6 +132,8 @@ class CompanyCodeTypicalTaskListViewSet(viewsets.ModelViewSet):
 
 #-------------------------------------------------------------
 
+
+
 #TaskList
 from rest_framework import viewsets, status
 from rest_framework.response import Response
@@ -224,6 +227,9 @@ class TaskListViewSet(viewsets.ModelViewSet):
 
     def perform_destroy(self, instance):
         instance.delete()
+
+
+
 
 
 

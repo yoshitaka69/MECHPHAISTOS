@@ -1,352 +1,561 @@
 <template>
-	<div class="specification-form">
-	  <div class="left-side">
-		<!-- Form Explanation Page -->
-		<div class="explanation-page">
-		  <h2>フォームの説明</h2>
-		  <p>このフォームは仕様書を作成するためのものです。以下の手順で使用してください。</p>
-		  <ol>
-			<li>会社名、タイトル、日付、改定日を入力します。</li>
-			<li>右側のページで詳細情報を入力します。</li>
-			<li>必要に応じて新しいページを追加してください。</li>
-			<li>完了後、PDFとして保存できます。</li>
-		  </ol>
-		</div>
-	  </div>
-  
-	  <div class="right-side">
-		<div class="pages">
-		  <!-- 横並びのレイアウトにするためのコンテナ -->
-		  <div class="page-container">
-			<!-- Page 1: Cover Page -->
-			<div class="page cover-page">
-			  <div class="outer-box">
-				<div class="inner-box">
-				  <div class="form-fields">
-					<input v-model="companyName" type="text" placeholder="会社名" />
-					<input v-model="title" type="text" placeholder="タイトル" />
-					<input v-model="date" type="date" placeholder="日付" />
-					<input v-model="revisionDate" type="date" placeholder="改定日" />
-				  </div>
-				</div>
-			  </div>
-			</div>
-  
-			<!-- Page 2 and beyond: Content Pages -->
-			<div v-for="(page, index) in pages" :key="'page-'+index" class="page content-page">
-			  <div class="content-layout">
-				<div class="left-side-content">
-				  <input v-model="page.leftInput" type="text" placeholder="左側の入力フォーム" />
-				</div>
-				<div class="right-side-content" @contextmenu.prevent="showContextMenu($event, index)">
-				  <input v-model="page.rightInput" type="text" placeholder="右側の入力フォーム" />
-				</div>
-			  </div>
-			</div>
-		  </div>
-		</div>
-  
-		<div class="buttons">
-		  <Button @click="addPage" class="blue-button">ページを追加</Button>
-		  <Button @click="generatePDF" class="blue-button">PDF保存</Button>
-		  <Button @click="savePDF" class="blue-button">保存</Button>
-		</div>
-	  </div>
-  
-	  <!-- Context Menu -->
-	  <ul v-if="isContextMenuVisible" :style="{ top: `${contextMenuY}px`, left: `${contextMenuX}px` }" class="context-menu">
-		<li @click="insertImage">画像を入力</li>
-		<li @click="addColumn">列の追加</li>
-	  </ul>
-	</div>
-  </template>
-  
+    <div id="TaskList">
+        <!-- 成功時または失敗時のアラート表示 -->
+        <Save_Alert v-if="showAlert" :type="alertType" :message="alertMessage" :errorMessages="errorMessages" />
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="color-box" style="background-color: #f0a0a0"></div>
+                <span>Form input format is incorrect</span>
+            </div>
+            <div class="legend-item">
+                <div class="color-box" style="background-color: #f0f0f0"></div>
+                <span>Input not allowed. Value is automatically filled.</span>
+            </div>
+        </div>
+        <hot-table ref="hotTableComponent" :settings="hotSettings"></hot-table><br />
+        <div class="button-container">
+            <input type="number" v-model="rowsToAdd" placeholder="Number of rows" />
+            <Button label="Add Rows" icon="pi pi-plus" class="p-button-primary blue-button" @click="addRows" />
+            <Button label="Save Data" icon="pi pi-save" class="p-button-primary blue-button ml-3" @click="saveData" />
+        </div>
+        <div class="pagination-container">
+            <Button label="Previous" class="p-button-secondary" @click="prevPage" :disabled="currentPage === 1" />
+            <span>Page {{ currentPage }} of {{ totalPages }}</span>
+            <Button label="Next" class="p-button-secondary" @click="nextPage" :disabled="currentPage === totalPages" />
+        </div>
+    </div>
+</template>
+
+<script>
+import Handsontable from 'handsontable';
+import { defineComponent } from 'vue';
+import { HotTable } from '@handsontable/vue3';
+import { registerAllModules } from 'handsontable/registry';
+import 'handsontable/dist/handsontable.full.css';
+import axios from 'axios';
+import { useUserStore } from '@/stores/userStore';
+import Button from 'primevue/button';
+import Save_Alert from '@/components/Alert/Save_Alert.vue';
+
+// register Handsontable's modules
+registerAllModules();
+
+const TaskListComponent = defineComponent({
+    data() {
+        return {
+            hotSettings: {
+                data: [
+                    ['PlantA', 'Dryer', 'blower', '2018-10-20', 'Change bearing', '5000', '5', 'true', 'BomCode-1', '58090', '111222', '', '遅延', 'true', '', '', '', '', '', '', '', '', 'true'], //1
+                    ['PlantA', 'Dryer', 'blower', '2018-10-20', 'Change bearing', '5000', '5', 'true', 'BomCode-1', '58090', '111222', '', '遅延', 'true', '', '', '', '', '', '', '', '', 'true'], //2
+                    ['PlantA', 'Dryer', 'blower', '2018-10-20', 'Change bearing', '5000', '5', 'true', 'BomCode-1', '58090', '111222', '', '遅延', 'true', '', '', '', '', '', '', '', '', 'true'], //3
+                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //4
+                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //5
+                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //6
+                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //7
+                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //8
+                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //9
+                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //10
+                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //11
+                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //12
+                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //13
+                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //14
+                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''] //15
+                ],
+                colHeaders: this.generateColHeaders(),
+
+                columns: [
+                    {
+                        data: 'taskListNo',
+                        type: 'text',
+                        readOnly: true,
+                        renderer: this.taskListNoRenderer // 修正したカスタムレンダラーを使用
+                    },
+                    {
+                        //plant
+                        data: 'plant',
+                        type: 'text'
+                    },
+                    {
+                        //Equipment
+                        data: 'equipment',
+                        type: 'text'
+                    },
+                    {
+                        //MachineName
+                        data: 'machineName',
+                        type: 'text'
+                    },
+                    {
+                        //Latest Date PM
+                        data: 'typicalLatestDate',
+                        type: 'date',
+                        dateFormat: 'YYYY-MM-DD',
+                        correctFormat: false,
+                        readOnly: true
+                    },
+                    {
+                        //TaskName
+                        data: 'typicalTaskName',
+                        type: 'text'
+                    },
+                    {
+                        //TaskLaborCost
+                        data: 'typicalTaskCost',
+                        type: 'numeric'
+                    },
+                    {
+                        //TaskConstructionCost
+                        data: 'typicalConstPeriod',
+                        type: 'numeric'
+                    },
+                    {
+                        //MultiTasking
+                        data: 'multiTasking',
+                        type: 'checkbox',
+                        className: 'htCenter'
+                    },
+                    {
+                        //BomCode
+                        data: 'bomCode',
+                        type: 'text',
+                        readOnly: true
+                    },
+                    {
+                        //BomCost
+                        data: 'bomCodeCost',
+                        type: 'numeric',
+                        readOnly: true
+                    },
+                    {
+                        //TotalCost
+                        data: 'totalCost',
+                        type: 'numeric'
+                    },
+                    {
+                        //Next event date
+                        data: 'typicalNextEventDate',
+                        type: 'numeric',
+                        readOnly: true
+                    },
+                    {
+                        //Situation
+                        data: 'typicalSituation',
+                        type: 'text',
+                        readOnly: true
+                    },
+                    {
+                        //現時点からの10年先まで繰り返し（今）
+                        data: 'thisYear',
+                        type: 'checkbox',
+                        className: 'htCenter'
+                    },
+                    {
+                        //現時点からの10年先まで繰り返し（1年後）
+                        data: 'thisYear1later',
+                        type: 'checkbox',
+                        className: 'htCenter'
+                    },
+                    {
+                        //現時点からの10年先まで繰り返し（2年後）
+                        data: 'thisYear2later',
+                        type: 'checkbox',
+                        className: 'htCenter'
+                    },
+                    {
+                        //現時点からの10年先まで繰り返し（3年後）
+                        data: 'thisYear3later',
+                        type: 'checkbox',
+                        className: 'htCenter'
+                    },
+                    {
+                        //現時点からの10年先まで繰り返し（4年後）
+                        data: 'thisYear4later',
+                        type: 'checkbox',
+                        className: 'htCenter'
+                    },
+                    {
+                        //現時点からの10年先まで繰り返し（5年後）
+                        data: 'thisYear5later',
+                        type: 'checkbox',
+                        className: 'htCenter'
+                    },
+                    {
+                        //現時点からの10年先まで繰り返し（6年後）
+                        data: 'thisYear6later',
+                        type: 'checkbox',
+                        className: 'htCenter'
+                    },
+                    {
+                        //現時点からの10年先まで繰り返し（7年後）
+                        data: 'thisYear7later',
+                        type: 'checkbox',
+                        className: 'htCenter'
+                    },
+                    {
+                        //現時点からの10年先まで繰り返し（8年後）
+                        data: 'thisYear8later',
+                        type: 'checkbox',
+                        className: 'htCenter'
+                    },
+                    {
+                        //現時点からの10年先まで繰り返し（9年後）
+                        data: 'thisYear9later',
+                        type: 'checkbox',
+                        className: 'htCenter'
+                    },
+                    {
+                        //現時点からの10年先まで繰り返し（10年後）
+                        data: 'thisYear10later',
+                        type: 'checkbox',
+                        className: 'htCenter'
+                    }
+                ],
+
+                afterGetColHeader: (col, TH) => {
+                    if (col === -1) {
+                        return;
+                    }
+                    TH.style.backgroundColor = '#FFFFCC';
+                    TH.style.color = 'black';
+                    TH.style.fontWeight = 'bold';
+                },
+                rowHeaders: true,
+                width: '100%',
+                height: 'auto',
+                contextMenu: true,
+                autoWrapRow: true,
+                autoWrapCol: true,
+                fixedColumnsStart: 2,
+                fixedRowsTop: 2,
+                manualColumnFreeze: true,
+                manualColumnResize: true,
+                manualRowResize: true,
+                filters: true,
+                dropdownMenu: true,
+                comments: true,
+                fillHandle: {
+                    autoInsertRow: true
+                },
+                licenseKey: 'non-commercial-and-evaluation'
+            },
+            rowsToAdd: 1,
+            dataStore: [],
+            showAlert: false,
+            alertType: 'success',
+            alertMessage: 'データが正常に保存されました。',
+            errorMessages: [],
+            currentPage: 1,
+            totalPages: 1,
+        };
+    },
+
+    created() {
+        this.getDataAxios(this.currentPage);
+    },
+
+    methods: {
+        generateColHeaders() {
+            const currentYear = new Date().getFullYear();
+            const futureYears = Array.from({ length: 11 }, (_, index) => (currentYear + index).toString());
+
+            return [
+                'TaskListNo',
+                'Plant',
+                'Equipment',
+                'MachineName',
+                'LatestDate<br>PM',
+                'TaskName',
+                'TaskLabor<br>Cost',
+                'TaskConstruction<br>Period',
+                'Multi<br>Tasking',
+                'BomCode',
+                'BomCost',
+                'TotalCost',
+                'Next Even<br>date',
+                'Situation',
+                ...futureYears
+            ];
+        },
+
+        taskListNoRenderer(instance, td, row, col, prop, value, cellProperties) {
+            Handsontable.renderers.TextRenderer.apply(this, arguments);
+            if (value) {
+                const link = document.createElement('a');
+                link.href = `/task_list_detail/${value}`; // ルーティングに対応するURLを生成
+                link.target = '_blank';
+                link.textContent = value;
+                link.style.color = 'blue';
+                td.innerHTML = '';
+                td.appendChild(link);
+            }
+        },
 
 
 
 
-  <script lang="ts" setup>
-  import { ref, reactive } from 'vue';
-  import jsPDF from 'jspdf';
-  import html2canvas from 'html2canvas';
-  import Button from 'primevue/button';
-  import axios from 'axios'; // Axiosをインポート
-  
-  const companyName = ref('');
-  const title = ref('');
-  const date = ref('');
-  const revisionDate = ref('');
-  const pages = reactive([{ leftInput: '', rightInput: '' }]);
-  const isContextMenuVisible = ref(false);
-  const contextMenuX = ref(0);
-  const contextMenuY = ref(0);
-  const selectedPageIndex = ref(null);
-  
-  const addPage = () => {
-	pages.push({ leftInput: '', rightInput: '' });
-  };
-  
-  const generatePDF = async () => {
-	const pdf = new jsPDF('p', 'mm', 'a4');
-	const pages = document.querySelectorAll('.page');
-  
-	for (let i = 0; i < pages.length; i++) {
-	  if (i > 0) {
-		pdf.addPage();
-	  }
-	  const canvas = await html2canvas(pages[i]);
-	  const imgData = canvas.toDataURL('image/png');
-	  pdf.addImage(imgData, 'PNG', 0, 0, 210, 297);
-	}
-	pdf.save('specification.pdf');
-  };
-  
 
 
 
-  const savePDF = async () => {
-  const pdf = new jsPDF('p', 'mm', 'a4');
-  const pages = document.querySelectorAll('.page');
 
-  for (let i = 0; i < pages.length; i++) {
-    if (i > 0) {
-      pdf.addPage();
+
+
+
+        getDataAxios(page = 1) {
+    const userStore = useUserStore();
+    const userCompanyCode = userStore.companyCode;
+
+    if (!userCompanyCode) {
+        console.error('Error: No company code found for the user.');
+        return;
     }
-    const canvas = await html2canvas(pages[i]);
-    const imgData = canvas.toDataURL('image/png');
-    pdf.addImage(imgData, 'PNG', 0, 0, 210, 297);
-  }
 
-  // PDFをBlob形式で取得
-  const pdfBlob = pdf.output('blob');
+    const url = `http://127.0.0.1:8000/api/task/taskListByCompany/?format=json&companyCode=${userCompanyCode}&page=${page}`;
 
-  // FormDataオブジェクトを作成してBlobを追加
-  const formData = new FormData();
-  formData.append('pdf_file', pdfBlob, 'specification.pdf');
-  formData.append('title', title.value);
+    axios
+        .get(url, {
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            withCredentials: true
+        })
+        .then((response) => {
+            console.log('Full API Response:', response.data); // レスポンス全体をログに出力
 
-  try {
-    // DjangoサーバーにPOSTリクエストを送信
-    const response = await axios.post('http://127.0.0.1:8000/api/workingReport/specsheets/', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    });
-    console.log('PDF保存成功:', response.data);
-  } catch (error) {
-    console.error('PDF保存失敗:', error);
-    if (error.response) {
-      console.error('Server responded with:', error.response.status, error.response.data);
+            if (Array.isArray(response.data.results) && response.data.results.length > 0) {
+                const companyData = response.data.results[0];
+                console.log('companyData:', companyData);
+
+                if (companyData && companyData.taskList) {
+                    const taskListData = companyData.taskList;
+                    console.log('Fetched Task List Data:', taskListData);
+
+                    // 空の行を追加するのは、10件未満の場合のみ
+                    this.dataStore = taskListData;
+
+                    if (taskListData.length < 10) {
+                        const blankRows = Array.from({ length: 10 - taskListData.length }, () => ({}));
+                        this.dataStore = this.dataStore.concat(blankRows);
+                    }
+
+                    this.$refs.hotTableComponent.hotInstance.updateSettings({
+                        data: this.dataStore
+                    });
+
+                    // ページ数の設定
+                    this.totalPages = Math.ceil(response.data.count / 10);
+                    this.currentPage = page;
+                } else {
+                    console.error('No taskList data found in the response for companyData:', companyData);
+                }
+            } else {
+                console.error('Response data is not in the expected format or is empty:', response.data);
+            }
+        })
+        .catch((error) => {
+            console.error('Error fetching data:', error);
+        });
+},
+
+
+
+
+
+
+        addRows() {
+            const hotInstance = this.$refs.hotTableComponent.hotInstance;
+            const blankRows = Array.from({ length: this.rowsToAdd }, () => {
+                return {
+                    taskListNo: '',
+                    plant: '',
+                    equipment: '',
+                    machineName: '',
+                    typicalLatestDate: '',
+                    typicalTaskName: '',
+                    typicalTaskCost: 0,
+                    typicalConstPeriod: 0,
+                    multiTasking: false,
+                    bomCode: '',
+                    bomCodeCost: 0,
+                    totalCost: 0,
+                    typicalNextEventDate: '',
+                    typicalSituation: '',
+                    thisYear: false,
+                    thisYear1later: false,
+                    thisYear2later: false,
+                    thisYear3later: false,
+                    thisYear4later: false,
+                    thisYear5later: false,
+                    thisYear6later: false,
+                    thisYear7later: false,
+                    thisYear8later: false,
+                    thisYear9later: false,
+                    thisYear10later: false
+                };
+            });
+
+            this.dataStore = this.dataStore.concat(blankRows);
+
+            hotInstance.updateSettings({
+                data: this.dataStore
+            });
+        },
+
+        saveData() {
+            try {
+                const userStore = useUserStore();
+                const userCompanyCode = userStore.companyCode;
+
+                if (!userCompanyCode) {
+                    console.error('Error: No company code found for the user.');
+                    return;
+                }
+
+                const hotInstance = this.$refs.hotTableComponent.hotInstance;
+                const dataToSave = hotInstance.getData();
+
+                const formattedData = dataToSave.map((row, index) => {
+                    return {
+                        companyCode: userCompanyCode,
+                        taskListNo: row[0] || null,
+                        plant: row[1],
+                        equipment: row[2],
+                        machineName: row[3],
+                        typicalLatestDate: row[4],
+                        typicalTaskName: row[5],
+                        typicalTaskCost: row[6],
+                        typicalConstPeriod: row[7],
+                        multiTasking: row[8],
+                        bomCode: row[9],
+                        bomCost: row[10],
+                        totalCost: row[11],
+                        typicalNextEventDate: row[12],
+                        typicalSituation: row[13],
+                        thisYear: row[14] !== null ? row[14] : false,
+                        thisYear1later: row[15] !== null ? row[15] : false,
+                        thisYear2later: row[16] !== null ? row[16] : false,
+                        thisYear3later: row[17] !== null ? row[17] : false,
+                        thisYear4later: row[18] !== null ? row[18] : false,
+                        thisYear5later: row[19] !== null ? row[19] : false,
+                        thisYear6later: row[20] !== null ? row[20] : false,
+                        thisYear7later: row[21] !== null ? row[21] : false,
+                        thisYear8later: row[22] !== null ? row[22] : false,
+                        thisYear9later: row[23] !== null ? row[23] : false,
+                        thisYear10later: row[24] !== null ? row[24] : false
+                    };
+                });
+
+                console.log('送信するデータ:', JSON.stringify(formattedData, null, 2));
+
+                const url = `http://127.0.0.1:8000/api/task/taskList/`;
+
+                axios
+                    .post(url, formattedData, {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        withCredentials: true
+                    })
+                    .then((response) => {
+                        console.log('Data saved successfully:', response.data);
+                        this.alertType = 'success';
+                        this.alertMessage = 'データが正常に保存されました。';
+                        this.showAlert = true;
+                        setTimeout(() => {
+                            this.showAlert = false;
+                        }, 3000);
+                    })
+                    .catch((error) => {
+                        console.error('Error saving data:', error);
+
+                        if (error.response) {
+                            console.error('Error response status:', error.response.status);
+                            console.error('Error response headers:', error.response.headers);
+                            console.error('Error response data:', error.response.data);
+                        } else if (error.request) {
+                            console.error('Error request data:', error.request);
+                        } else {
+                            console.error('Error message:', error.message);
+                        }
+
+                        console.error('Error config:', error.config);
+                        this.alertType = 'error';
+                        this.alertMessage = 'データの保存に失敗しました。エラーを確認してください。';
+                        this.errorMessages = ['Quis commodo odio aenean sed adipiscing diam.', 'Risus pretium quam vulputate dignissim suspendisse.', 'Bibendum enim facilisis gravida neque convallis a cras semper。'];
+                        this.showAlert = true;
+                        setTimeout(() => {
+                            this.showAlert = false;
+                        }, 5000);
+                    });
+            } catch (err) {
+                console.error('An error occurred in saveData:', err);
+            }
+        },
+
+        nextPage() {
+            if (this.currentPage < this.totalPages) {
+                this.currentPage++;
+                this.getDataAxios(this.currentPage);
+            }
+        },
+
+        prevPage() {
+            if (this.currentPage > 1) {
+                this.currentPage--;
+                this.getDataAxios(this.currentPage);
+            }
+        }
+    },
+    components: {
+        HotTable,
+        Button,
+        Save_Alert
     }
-  }
-};
+});
+export default TaskListComponent;
+</script>
 
-  
+<style scoped>
+.button-container {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
 
+.legend {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
 
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin-right: 15px;
+}
 
+.color-box {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    border: 1px solid #000;
+}
 
+.blue-button {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: white;
+}
 
+.pagination-container {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
 
-  const showContextMenu = (event, index) => {
-	contextMenuX.value = event.clientX;
-	contextMenuY.value = event.clientY;
-	isContextMenuVisible.value = true;
-	selectedPageIndex.value = index;
-	document.addEventListener('click', hideContextMenu);
-  };
-  
-
-
-
-  const hideContextMenu = () => {
-	isContextMenuVisible.value = false;
-	document.removeEventListener('click', hideContextMenu);
-  };
-  
-
-
-
-  const insertImage = () => {
-	alert('画像を入力');
-	hideContextMenu();
-  };
-  
-
-
-
-  const addColumn = () => {
-	alert('列の追加');
-	hideContextMenu();
-  };
-  </script>
-  
-
-
-
-
-  <style scoped>
-  .specification-form {
-	display: flex;
-	flex-direction: row;
-	align-items: flex-start;
-	margin: 20px;
-	justify-content: space-between;
-	overflow-x: hidden;
-  }
-  
-  .left-side {
-	width: 15%;
-	margin-right: 20px;
-	flex-shrink: 0;
-  }
-  
-  .right-side {
-	width: 85%;
-	display: flex;
-	flex-direction: column;
-  }
-  
-  .pages {
-	display: flex;
-	flex-direction: column;
-	gap: 10px;
-  }
-  
-  .page-container {
-	display: flex;
-	gap: 10px;
-	max-width: 100%;
-	overflow-x: auto; /* 横スクロールを可能にする */
-  }
-  
-  .page {
-	flex: 0 0 auto;
-	width: 210mm;
-	height: 297mm;
-	border: 1px solid black;
-	box-sizing: border-box;
-	background-color: white;
-  }
-  
-  .cover-page .outer-box {
-	width: 90%; /* サイズを縮小 */
-	height: 90%; /* サイズを縮小 */
-	border: 3px solid black;
-	margin: 50px auto 0 auto; /* 上部に50pxのマージンを追加 */
-	display: flex;
-	align-items: center;
-	justify-content: center;
-  }
-  
-  .cover-page .inner-box {
-	width: 85%; /* サイズを縮小 */
-	height: 85%; /* サイズを縮小 */
-	border: 1px solid black;
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-  }
-  
-  .form-fields {
-	display: flex;
-	flex-direction: column;
-	align-items: flex-start;
-  }
-  
-  input {
-	margin-top: 10px;
-	width: 100%;
-	padding: 10px;
-	font-size: 16px;
-	box-sizing: border-box;
-  }
-  
-  input::placeholder {
-	color: lightgray;
-  }
-  
-  .content-page .content-layout {
-	display: flex;
-	height: calc(100% - 20px);
-	padding-top: 10px;
-	box-sizing: border-box;
-  }
-  
-  .left-side-content {
-	width: 50%;
-	padding-left: 10px;
-  }
-  
-  .right-side-content {
-	width: 50%;
-	padding-right: 10px;
-  }
-  
-  .left-side-content input, .right-side-content input {
-	width: 100%;
-	height: 100%;
-  }
-  
-  .buttons {
-	margin-top: 20px;
-	display: flex;
-	gap: 10px;
-  }
-  
-  .blue-button {
-	background-color: blue;
-	color: white;
-	border: none;
-	padding: 10px 20px;
-	cursor: pointer;
-  }
-  
-  .blue-button:hover {
-	background-color: darkblue;
-  }
-  
-  /* Context Menu Styles */
-  .context-menu {
-	position: absolute;
-	list-style-type: none;
-	margin: 0;
-	padding: 5px;
-	background-color: white;
-	border: 1px solid #ccc;
-	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-	z-index: 1000;
-  }
-  
-  .context-menu li {
-	padding: 8px 12px;
-	cursor: pointer;
-  }
-  
-  .context-menu li:hover {
-	background-color: #eee;
-  }
-  
-  .explanation-page {
-	padding: 20px;
-	background-color: #f9f9f9;
-	border: 1px solid black;
-	box-sizing: border-box;
-	word-wrap: break-word;
-	height: 100%;
-	overflow: hidden;
-  }
-  
-  .explanation-page h2 {
-	margin-top: 0;
-  }
-  
-  .explanation-page p {
-	margin-bottom: 10px;
-  }
-  
-  .explanation-page ol {
-	padding-left: 20px;
-  }
-  </style>
-  
+.pagination-container span {
+    font-weight: bold;
+}
+</style>

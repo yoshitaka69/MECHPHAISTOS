@@ -1,13 +1,17 @@
 # views.py
 
-from rest_framework import status
-from django.shortcuts import get_object_or_404
-from rest_framework import viewsets
-from rest_framework.decorators import api_view
+from rest_framework import status, viewsets
+from rest_framework.decorators import api_view, action
 from rest_framework.response import Response
 from django.core.files.storage import default_storage
-from .models import SpareParts, BomList, SparePartsManagement
-from accounts.models import CompanyCode
+from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.shortcuts import get_object_or_404
+from django.db.models import Max
+from PIL import Image
+import io
+from rest_framework.pagination import PageNumberPagination
+
+from .models import SpareParts, BomList, SparePartsManagement, CompanyCode
 from .serializers import (
     SparePartsSerializer, CompanyCodeSPSerializer, 
     BomListSerializer, CompanyBomListSerializer, 
@@ -16,36 +20,12 @@ from .serializers import (
 
 
 
+
 # SparePartsのViewSet
-#------------------------------------------------------------------------------------------------------------------
-from rest_framework import viewsets
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from django.core.files.storage import default_storage
-from .models import SpareParts, CompanyCode
-from .serializers import SparePartsSerializer, CompanyCodeSPSerializer
-from rest_framework.decorators import action
-
-from django.core.files.uploadedfile import InMemoryUploadedFile
-from PIL import Image
-import io
-
-
-
-
-
-
-
-from rest_framework import viewsets, status
-from rest_framework.response import Response
-from django.db.models import Max
-from .models import SpareParts, CompanyCode
-from .serializers import SparePartsSerializer
-
-
 class SparePartsViewSet(viewsets.ModelViewSet):
     queryset = SpareParts.objects.all()
     serializer_class = SparePartsSerializer
+
 
     def create(self, request, *args, **kwargs):
         data = request.data
@@ -126,10 +106,6 @@ class SparePartsViewSet(viewsets.ModelViewSet):
         instance.delete()
 
 
-
-
-
-
 class CompanyCodeSPViewSet(viewsets.ModelViewSet):
     serializer_class = CompanyCodeSPSerializer
 
@@ -138,6 +114,7 @@ class CompanyCodeSPViewSet(viewsets.ModelViewSet):
         if company_code is not None:
             return CompanyCode.objects.filter(companyCode=company_code).prefetch_related('spareParts_companyCode')
         return CompanyCode.objects.all()
+
 
 @api_view(['POST'])
 def upload_image(request):
@@ -164,21 +141,12 @@ def upload_image(request):
     
     return Response({'error': 'Invalid request'}, status=400)
 
-#------------------------------------------------------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
 
 # BomListのViewSet
 class BomListViewSet(viewsets.ModelViewSet):
     queryset = BomList.objects.all()
     serializer_class = BomListSerializer
+
 
 # CompanyCodeに関連するBomListのViewSet
 class CompanyBomListViewSet(viewsets.ModelViewSet):
@@ -194,11 +162,11 @@ class CompanyBomListViewSet(viewsets.ModelViewSet):
         return queryset
 
 
-
 # SparePartsManagementのViewSet
 class SparePartsManagementViewSet(viewsets.ModelViewSet):
     queryset = SparePartsManagement.objects.all()
     serializer_class = SparePartsManagementSerializer
+
 
 # CompanyCodeに関連するSparePartsManagementのViewSet
 class CompanySparePartsManagementViewSet(viewsets.ModelViewSet):

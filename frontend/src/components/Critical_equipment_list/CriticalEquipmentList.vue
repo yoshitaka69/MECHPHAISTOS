@@ -13,19 +13,12 @@
                 <span>Input not allowed. Value is automatically filled.</span>
             </div>
         </div>
-        <hot-table ref="hotTableComponent" :settings="hotSettings" :data="currentPageData"></hot-table><br />
+        <hot-table ref="hotTableComponent" :settings="hotSettings" :data="dataStore"></hot-table><br />
         <div class="button-container">
             <input type="number" v-model="rowsToAdd" placeholder="Number of rows" />
             <Button label="Add Rows" icon="pi pi-plus" class="p-button-primary blue-button" @click="addRows" />
             <Button label="Save" icon="pi pi-save" class="p-button-primary blue-button ml-3" @click="saveData" />
             <Button label="Refresh" icon="pi pi-refresh" class="p-button-primary blue-button ml-3" @click="refreshData" />
-        </div>
-
-        <!-- ページネーションコントロール -->
-        <div class="pagination-container">
-            <Button label="Previous" :disabled="currentPage === 1" @click="previousPage" />
-            <span>Page {{ currentPage }} of {{ totalPages }}</span>
-            <Button label="Next" :disabled="currentPage === totalPages" @click="nextPage" />
         </div>
     </div>
 </template>
@@ -95,7 +88,6 @@ function customRendererForProbability(instance, td, row, col, prop, value, cellP
         }
     }
 }
-
 
 function customRendererForReadOnlyCells(instance, td, row, col, prop, value, cellProperties) {
   Handsontable.renderers.TextRenderer.apply(this, arguments);
@@ -481,10 +473,6 @@ const CriticalEquipmentList = defineComponent({
           },
           rowsToAdd: 1, // 追加する行数のデフォルト値
           dataStore: [], // フルデータストア
-          currentPageData: [], // 現在のページに表示するデータ
-          currentPage: 1, // 現在のページ
-          pageSize: 30, // 1ページあたりの行数
-          totalPages: 1, // 総ページ数
           showAlert: false, // アラート表示用のフラグ
           alertType: 'success', // 'success' か 'error' を指定
           alertMessage: 'データが正常に保存されました。',
@@ -532,9 +520,7 @@ const CriticalEquipmentList = defineComponent({
               .then((response) => {
                   const masterDataTable = response.data;
                   this.dataStore = masterDataTable;
-
-                  this.totalPages = Math.ceil(masterDataTable.length / this.pageSize); // ページ数を計算
-                  this.updateCurrentPageData(); // 初期ページデータを設定
+                  this.$refs.hotTableComponent.hotInstance.loadData(this.dataStore); // データを Handsontable にロード
               })
               .catch((error) => {
                   console.error('Error fetching data:', error);
@@ -578,7 +564,7 @@ const CriticalEquipmentList = defineComponent({
 
           this.dataStore = this.dataStore.concat(blankRows);
 
-          this.updateCurrentPageData(); // ページデータを更新
+          hotInstance.loadData(this.dataStore); // Handsontable に現在のページデータをロード
       },
 
       saveData() {
@@ -716,36 +702,6 @@ const CriticalEquipmentList = defineComponent({
       refreshData() {
           console.log('Refreshing data...');
           this.$emit('refresh-requested');
-      },
-
-      updateCurrentPageData() {
-          const startIndex = (this.currentPage - 1) * this.pageSize;
-          const endIndex = startIndex + this.pageSize;
-          this.currentPageData = this.dataStore.slice(startIndex, endIndex);
-
-          this.$refs.hotTableComponent.hotInstance.loadData(this.currentPageData); // Handsontableに現在のページデータをロード
-      },
-
-      goToPage(page) {
-          if (page < 1 || page > this.totalPages) {
-              return;
-          }
-          this.currentPage = page;
-          this.updateCurrentPageData();
-      },
-
-      nextPage() {
-          if (this.currentPage < this.totalPages) {
-              this.currentPage++;
-              this.updateCurrentPageData();
-          }
-      },
-
-      previousPage() {
-          if (this.currentPage > 1) {
-              this.currentPage--;
-              this.updateCurrentPageData();
-          }
       }
   },
 
@@ -789,12 +745,5 @@ export default CriticalEquipmentList;
   background-color: #007bff;
   border-color: #007bff;
   color: white;
-}
-
-.pagination-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 10px;
 }
 </style>

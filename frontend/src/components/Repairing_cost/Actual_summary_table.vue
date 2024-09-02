@@ -8,12 +8,27 @@
 import { defineComponent } from 'vue';
 import { HotTable } from '@handsontable/vue3';
 import { registerAllModules } from 'handsontable/registry';
+import Handsontable from 'handsontable'; // Handsontableをインポート
 import 'handsontable/dist/handsontable.full.css';
 import axios from "axios";
 import { useUserStore } from '@/stores/userStore'; // Piniaストアをインポート
 
 // register Handsontable's modules
 registerAllModules();
+
+// plant列のカスタムレンダラー
+function plantLinkRenderer(instance, td, row, col, prop, value, cellProperties) {
+    Handsontable.renderers.TextRenderer.apply(this, arguments); // 基本のテキストレンダラーを適用
+    if (value) {
+        const link = document.createElement('a');
+        link.href = `/repairing_cost_detail/${value}`; // RepairingCostDetail.vueを表示するURLを生成
+        link.target = '_blank'; // 新しいタブで開く
+        link.textContent = value; // テキストをリンクに設定
+        link.style.color = 'blue'; // リンクの色を青に設定
+        td.innerHTML = ''; // 既存の内容をクリア
+        td.appendChild(link); // リンクをセルに追加
+    }
+}
 
 const TableComponent = defineComponent({
   data() {
@@ -23,8 +38,9 @@ const TableComponent = defineComponent({
           ['', '', "", "", "", "", "", "", "", "", "", "", ""],
         ],
         colHeaders: ['Plant', 'Year', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Commitment', 'Total'],
+        rowHeaders: true,
         columns: [
-          { data: "plant", readOnly: true },
+          { data: "plant", readOnly: true, renderer: plantLinkRenderer }, // plant列にカスタムレンダラーを追加
           { data: "year", readOnly: true },
           { data: "jan", readOnly: true },
           { data: "feb", readOnly: true },
@@ -43,20 +59,28 @@ const TableComponent = defineComponent({
         ],
         width: '100%',
         height: 'auto',
-        contextMenu: true, // コンテキストメニュー
+        contextMenu: true,
         autoWrapRow: true,
         autoWrapCol: true,
-        fixedRowsTop: 2, // 列固定
-        manualColumnFreeze: true, // コンテキストメニュー手動でコラム解除
-        manualColumnResize: true, // 手動での列幅調整
-        manualRowResize: true, // 列の手動高さ調整
+        fixedRowsTop: 2,
+        manualColumnFreeze: true,
+        manualColumnResize: true,
+        manualRowResize: true,
         filters: true,
         dropdownMenu: true,
-        comments: true, // コメントの有り無し
+        comments: true,
         fillHandle: {
           autoInsertRow: true
         },
-        licenseKey: 'non-commercial-and-evaluation'
+        licenseKey: 'non-commercial-and-evaluation',
+        afterGetColHeader: (col, TH) => {
+          if (col === -1) {
+            return;
+          }
+          TH.style.backgroundColor = '#add8e6'; // 薄い青色
+          TH.style.color = 'black';
+          TH.style.fontWeight = 'bold';
+        },
       }
     };
   },
