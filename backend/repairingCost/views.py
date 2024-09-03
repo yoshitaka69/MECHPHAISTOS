@@ -12,7 +12,6 @@ from django.views.decorators.csrf import csrf_exempt
 
 
 
-<<<<<<< HEAD
 from .models import PlannedPM02,ActualPM02,PlannedPM03,ActualPM03,ActualPM04,PlannedPM05,ActualPM05
 from accounts.models import CompanyCode,Plant
 from .serializers import PlannedPM02Serializer,CompanyCodePPM02Serializer,ActualPM02Serializer,CompanyCodeAPM02Serializer,PlannedPM03Serializer,CompanyCodePPM03Serializer,ActualPM03Serializer,CompanyCodeAPM03Serializer,ActualPM04Serializer,CompanyCodeAPM04Serializer,PlannedPM05Serializer,CompanyCodePPM05Serializer,ActualPM05Serializer,CompanyCodeAPM05Serializer
@@ -110,28 +109,9 @@ class CompanyCodeAPM04ViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(companyCode=company_code)
         return queryset
 
-=======
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        company_code = self.request.query_params.get('companyCode', None)
-        if company_code is not None:
-            queryset = queryset.filter(companyCode__code=company_code)
-        return queryset
-
-    def list(self, request):
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-    
-    def retrieve(self, request, pk=None):
-        pm02 = get_object_or_404(self.get_queryset(), pk=pk)
-        serializer = self.get_serializer(pm02)
-        return Response(serializer.data)
->>>>>>> 3c1fa7114a4f2ba2fa60465adf06054576761a2c
 
     
 
-<<<<<<< HEAD
 class PlannedPM05ViewSet(viewsets.ModelViewSet):
     queryset = PlannedPM05.objects.all()
     serializer_class = PlannedPM05Serializer
@@ -166,67 +146,3 @@ class CompanyCodeAPM05ViewSet(viewsets.ModelViewSet):
 
 
 
-=======
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        company_code = self.request.query_params.get('companyCode', None)
-        if company_code is not None:
-            queryset = queryset.filter(companyCode__code=company_code)
-        return queryset
-
-    def list(self, request):
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-    
-    def retrieve(self, request, pk=None):
-        pm02 = get_object_or_404(self.get_queryset(), pk=pk)
-        serializer = self.get_serializer(pm02)
-        return Response(serializer.data)
-
-
-
-class Pm04ViewSet(viewsets.ModelViewSet):
-    queryset = Pm04.objects.all()
-    serializer_class = Pm04Serializer
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        company_code = self.request.query_params.get('companyCode', None)
-        if company_code is not None:
-            queryset = queryset.filter(companyCode__code=company_code)
-        return queryset
-
-    def list(self, request):
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-    
-    def retrieve(self, request, pk=None):
-        pm02 = get_object_or_404(self.get_queryset(), pk=pk)
-        serializer = self.get_serializer(pm02)
-        return Response(serializer.data)
-
-
-
-class Pm05ViewSet(viewsets.ModelViewSet):
-    queryset = Pm05.objects.all()
-    serializer_class = Pm05Serializer
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        company_code = self.request.query_params.get('companyCode', None)
-        if company_code is not None:
-            queryset = queryset.filter(companyCode__code=company_code)
-        return queryset
-
-    def list(self, request):
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-    
-    def retrieve(self, request, pk=None):
-        pm02 = get_object_or_404(self.get_queryset(), pk=pk)
-        serializer = self.get_serializer(pm02)
-        return Response(serializer.data)
->>>>>>> 3c1fa7114a4f2ba2fa60465adf06054576761a2c

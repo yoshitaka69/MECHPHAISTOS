@@ -7,103 +7,11 @@ import App from './App.vue'
 import router from './router'
 
 
-
-
-
-//axios
+// axios
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 
-//vue3-easy-data-table
-import Vue3EasyDataTable from 'vue3-easy-data-table';
-import 'vue3-easy-data-table/dist/style.css';
 
-<<<<<<< HEAD
-/*handsontable
-the base module
-import Handsontable from 'handsontable/base';
- cell type modules
-import {
-  AutocompleteCellType,
-  CheckboxCellType,
-  DateCellType,
-  DropdownCellType,
-  HandsontableCellType,
-  NumericCellType,
-  PasswordCellType,
-  TextCellType,
-  TimeCellType,
-} from 'handsontable/cellTypes';
- renderer modules
-import {
-  baseRenderer,
-  autocompleteRenderer,
-  checkboxRenderer,
-  htmlRenderer,
- numericRenderer,
-  passwordRenderer,
-  textRenderer,
-} from 'handsontable/renderers';
- editor modules
-import {
-  AutocompleteEditor,
-  BaseEditor,
-  CheckboxEditor,
-  DateEditor,
-  DropdownEditor,
-  HandsontableEditor,
-  NumericEditor,
-  PasswordEditor,
-  SelectEditor,
-  TextEditor,
-} from 'handsontable/editors';
-// validator modules
-import {
-  autocompleteValidator,
-  dateValidator,
-  numericValidator,
-  timeValidator,
-} from 'handsontable/validators';
-// plugin modules
-import {
-  AutoColumnSize,
-  AutoRowSize,
-  Autofill,
-  BasePlugin,
-  BindRowsWithHeaders,
-  CollapsibleColumns,
-  ColumnSorting,
-  ColumnSummary,
-  Comments,
-  ContextMenu,
-  CopyPaste,
-  CustomBorders,
-  DragToScroll,
-  DropdownMenu,
-  ExportFile,
-  Filters,
-  Formulas,
-  HiddenColumns,
-  HiddenRows,
-  ManualColumnFreeze,
-  ManualColumnMove,
-  ManualColumnResize,
-  ManualRowMove,
-  ManualRowResize,
-  MergeCells,
-  MultiColumnSorting,
-  MultipleSelectionHandles,
-  NestedHeaders,
-  NestedRows,
-  PersistentState,
-  Search,
-  TouchScroll,
-  TrimRows,
-  UndoRedo,
-} from 'handsontable/plugins';
-*/
-=======
->>>>>>> yoshitaka69-20240509
 
 // registering functions that let you quickly register all modules at once
 import {
@@ -113,9 +21,11 @@ import {
     registerAllValidators,
     registerAllPlugins,
     registerAllModules,
-  } from 'handsontable/registry'
+} from 'handsontable/registry'
 
-//primeVue
+
+
+// primeVue
 import PrimeVue from 'primevue/config';
 import 'primevue/resources/themes/aura-light-green/theme.css'
 import AutoComplete from 'primevue/autocomplete';
@@ -143,7 +53,8 @@ import ColumnGroup from 'primevue/columngroup';
 import ConfirmDialog from 'primevue/confirmdialog';
 import ConfirmPopup from 'primevue/confirmpopup';
 import ConfirmationService from 'primevue/confirmationservice';
-//import ContextMenu from 'primevue/contextmenu';
+import ContextMenu from 'primevue/contextmenu';
+
 import DataTable from 'primevue/datatable';
 import DataView from 'primevue/dataview';
 import DataViewLayoutOptions from 'primevue/dataviewlayoutoptions';
@@ -222,34 +133,43 @@ import TriStateCheckbox from 'primevue/tristatecheckbox';
 import VirtualScroller from 'primevue/virtualscroller';
 import 'primeicons/primeicons.css'
 
-<<<<<<< HEAD
-// PrimeVue のコアスタイル
-import 'primevue/resources/primevue.min.css';
-// テーマのスタイル
-import 'primevue/resources/themes/aura-light-green/theme.css'
-// PrimeIcons のスタイル
-import 'primeicons/primeicons.css';
+import { FilterMatchMode, FilterOperator } from 'primevue/api'
+
+//konva
+import VueKonva from 'vue-konva'
+
+//fontawesome
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
+
+library.add(faPen, faTrash);
 
 
-
-const app = createApp(App);
-=======
 const app = createApp(App)
 
+
+
 // Pinia ストアを作成して登録
->>>>>>> yoshitaka69-20240509
 const pinia = createPinia();
 app.use(pinia);
 
 app.use(router);
 app.use(VueAxios, axios);
 
+//konva
+app.use(VueKonva)
+
+//fontawesome
+app.component('font-awesome-icon', FontAwesomeIcon);
+
+
+
 
 app.use(PrimeVue, { ripple: true });
 app.use(ToastService);
 app.use(DialogService);
 app.use(ConfirmationService);
-
 
 app.directive('tooltip', Tooltip);
 app.directive('badge', BadgeDirective);
@@ -279,8 +199,9 @@ app.component('Column', Column);
 app.component('ColumnGroup', ColumnGroup);
 app.component('ConfirmDialog', ConfirmDialog);
 app.component('ConfirmPopup', ConfirmPopup);
-//app.component('ContextMenu', ContextMenu);
+app.component('ContextMenu', ContextMenu);
 app.component('DataTable', DataTable);
+
 app.component('DataView', DataView);
 app.component('DataViewLayoutOptions', DataViewLayoutOptions);
 app.component('DeferredContent', DeferredContent);
@@ -352,20 +273,17 @@ app.component('TreeTable', TreeTable);
 app.component('TriStateCheckbox', TriStateCheckbox);
 app.component('VirtualScroller', VirtualScroller);
 
-//vue3-easy-data-table
-app.component('EasyDataTable', Vue3EasyDataTable);
 
-//Handsontable
+
+
+// Handsontable
 // register all cell types at once
 registerAllCellTypes();
 // register all renderers at once
 registerAllRenderers();
 // register all editors at once
-registerAllEditors();
-// register all validators at once
 registerAllValidators();
 // register all plugins at once
-registerAllPlugins();
 // or, register all of Handsontable's modules at once
 registerAllModules();
 
