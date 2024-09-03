@@ -1,561 +1,151 @@
 <template>
-    <div id="TaskList">
-        <!-- 成功時または失敗時のアラート表示 -->
-        <Save_Alert v-if="showAlert" :type="alertType" :message="alertMessage" :errorMessages="errorMessages" />
-
-        <div class="legend">
-            <div class="legend-item">
-                <div class="color-box" style="background-color: #f0a0a0"></div>
-                <span>Form input format is incorrect</span>
+    <div>
+      <div class="block-category-title">Content Sections</div>
+      <div class="surface-section px-4 py-8 md:px-6 lg:px-8">
+        <div
+          class="py-4 text-center md:text-left border-round bg-cover h-20rem lg:h-30rem flex flex-column justify-content-end mb-5"
+          :style="{ backgroundImage: `url(${criticalEquipmentHeader})` }"
+        >
+          <div class="grid">
+            <div class="col lg:col-offset-2 px-5">
+              <div class="text-5xl font-bold text-black">
+                Create Your Own PrimeBlock with Built-in Dark Mode
+              </div>
+              <p class="line-height-3 text-black text-lg text-center md:text-left mt-3">
+                Published May 16, 2022 by Jessica Doe
+              </p>
             </div>
-            <div class="legend-item">
-                <div class="color-box" style="background-color: #f0f0f0"></div>
-                <span>Input not allowed. Value is automatically filled.</span>
+          </div>
+        </div>
+        <div class="grid">
+          <div class="col-12 lg:col-2">
+            <div class="flex flex-row lg:flex-column lg:border-right-1 surface-border gap-5 mb-4 lg:px-5">
+              <div class="text-900 flex flex-row align-items-center justify-content-end">
+                <span class="font-semibold mr-3">71</span>
+                <i class="pi pi-bookmark"></i>
+              </div>
+              <div class="text-900 flex flex-row align-items-center justify-content-end">
+                <span class="font-semibold mr-3">298</span>
+                <i class="pi pi-heart"></i>
+              </div>
+              <div class="text-900 flex flex-row align-items-center justify-content-end">
+                <span class="font-semibold mr-3">34</span>
+                <i class="pi pi-comments"></i>
+              </div>
             </div>
+          </div>
+          <div class="col-12 lg:col lg:px-5">
+            <div class="flex flex-wrap align-items-center justify-content-between mb-5 gap-5">
+              <div class="flex flex-row">
+                <span class="text-900 surface-100 inline-flex font-semibold py-2 px-3 mr-2 border-round">New</span>
+                <span class="text-900 surface-100 inline-flex font-semibold py-2 px-3 mr-2 border-round">Technology</span>
+                <span class="text-900 surface-100 inline-flex font-semibold py-2 px-3 border-round">Education</span>
+              </div>
+              <div class="flex align-items-center gap-4">
+                <i class="pi pi-twitter cursor-pointer"></i>
+                <i class="pi pi-facebook cursor-pointer"></i>
+                <i class="pi pi-link cursor-pointer"></i>
+              </div>
+            </div>
+            <div class="line-height-3 text-xl text-900 mb-5">
+              Metus aliquam eleifend mi in nulla posuere. In vitae turpis massa sed elementum tempus egestas sed.
+              Dui ut ornare lectus sit. Massa ultricies mi quis hendrerit.
+            </div>
+            <div class="line-height-3 text-lg text-900 mb-4">
+              This page will show you how to use the critical equipment list. First, go to the critical equipment page...
+            </div>
+            <blockquote class="surface-50 line-height-3 text-xl text-800 mb-4 py-3 px-3 border-round mx-0">
+              “In short, GPU.js is a JavaScript acceleration library that can be used for general-purpose computations on GPUs using JavaScript. It supports browsers, Node.js and TypeScript.”
+            </blockquote>
+            <div class="line-height-3 text-lg text-900 mb-4">
+              Convallis tellus id interdum velit laoreet id donec ultrices. Lacus sed viverra tellus in hac habitasse platea dictumst...
+            </div>
+            <ul class="text-lg mb-5 mt-0 mr-0 ml-3 p-0 text-900 font-light">
+              <li class="mb-3">Nunc sed velit dignissim sodales ut.</li>
+              <li class="mb-3">Lorem mollis aliquam ut porttitor.</li>
+              <li>Urna nec tincidunt praesent semper feugiat nibh sed。</li>
+            </ul>
+            <div class="text-center mb-5">
+              <img src="" alt="Related content image" class="w-full border-round mb-2" />
+              <span class="block text-600 line-height-3">Id porta nibh venenatis cras sed felis eget velit。</span>
+            </div>
+            <div class="text-3xl text-800 mb-4">Massa vitae tortor condimentum lacinia</div>
+            <div class="line-height-3 text-lg text-900 mb-5">
+              Lacus viverra vitae congue eu consequat ac felis donec et。 A lacus vestibulum sed arcu non...
+            </div>
+            <div class="flex flex-wrap justify-content-between align-items-center gap-3 bg-primary text-primary-700 p-3 border-round">
+              <span class="font-medium text-2xl">Content Section Title</span>
+              <div class="flex align-items-center cursor-pointer">
+                <span class="font-bold mr-3">View Post Statistics</span>
+                <i class="pi pi-arrow-right"></i>
+              </div>
+            </div>
+          </div>
+  
+          <div class="col-12 lg:col-3 lg:border-left-1 surface-border">
+            <div class="p-3">
+              <div class="flex border-bottom-1 surface-border pb-4 mb-5">
+                <img :src="authorImage" alt="Author image" class="mr-3 h-5rem w-5rem" />
+                <div class="flex flex-column align-items-start">
+                  <span class="text-lg text-900 font-medium mb-1">Jessica Doe</span>
+                  <span class="text-600 font-medium mb-2">1.7K Followers</span>
+                  <Button label="Follow" class="p-button-rounded p-button-primary"></Button>
+                </div>
+              </div>
+              <span class="text-900 font-medium text-xl block mb-5">Other Posts</span>
+              <div class="flex pb-4">
+                <img src="" alt="Post thumbnail" class="mr-3 h-5rem w-5rem" />
+                <div class="flex flex-column align-items-start">
+                  <span class="text-lg text-900 font-medium mb-1">Post Title</span>
+                  <span class="text-600 mb-2">Metus aliquam eleifend mi in nulla posuere。</span>
+                </div>
+              </div>
+              <div class="flex pb-4">
+                <img src="" alt="Post thumbnail" class="mr-3 h-5rem w-5rem" />
+                <div class="flex flex-column align-items-start">
+                  <span class="text-lg text-900 font-medium mb-1">Post Title</span>
+                  <span class="text-600 mb-2">Metus aliquam eleifend mi in nulla posuere。</span>
+                </div>
+              </div>
+              <div class="flex pb-4">
+                <img src="" alt="Post thumbnail" class="mr-3 h-5rem w-5rem" />
+                <div class="flex flex-column align-items-start">
+                  <span class="text-lg text-900 font-medium mb-1">Post Title</span>
+                  <span class="text-600 mb-2">Metus aliquam eleifend mi in nulla posuere。</span>
+                </div>
+              </div>
+              <div class="flex flex-column gap-3">
+                <div
+                  class="w-full h-full p-5 border-round"
+                  :style="{ backgroundImage: `linear-gradient(180deg, rgba(0, 0, 0, 0.4) 0%、#000000 100%)、url('/images/blocks/content/content-8.png')` }"
+                >
+                  <span class="text-white font-medium mb-3">Post Title</span>
+                  <span class="text-white-alpha-70 block line-height-3">Metus aliquam eleifend mi innulla posuere。</span>
+                </div>
+                <div
+                  class="w-full h-full p-5 border-round"
+                  :style="{ backgroundImage: `linear-gradient(180deg, rgba(0, 0, 0, 0.4) 0%、#000000 100%)、url('/images/blocks/content/content-9.png')` }"
+                >
+                  <span class="text-white font-medium mb-3">Post Title</span>
+                  <span class="text-white-alpha-70 block line-height-3">Metus aliquam eleifend mi innulla posuere。</span>
+                </div>
+                <div
+                  class="w-full h-full p-5 border-round"
+                  :style="{ backgroundImage: `linear-gradient(180deg, rgba(0, 0, 0, 0.4) 0%、#000000 100%)、url('/images/blocks/content/content-10.png')` }"
+                >
+                  <span class="text-white font-medium mb-3">Post Title</span>
+                  <span class="text-white-alpha-70 block line-height-3">Metus aliquam eleifend mi in nulla posuere。</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <hot-table ref="hotTableComponent" :settings="hotSettings"></hot-table><br />
-        <div class="button-container">
-            <input type="number" v-model="rowsToAdd" placeholder="Number of rows" />
-            <Button label="Add Rows" icon="pi pi-plus" class="p-button-primary blue-button" @click="addRows" />
-            <Button label="Save Data" icon="pi pi-save" class="p-button-primary blue-button ml-3" @click="saveData" />
-        </div>
-        <div class="pagination-container">
-            <Button label="Previous" class="p-button-secondary" @click="prevPage" :disabled="currentPage === 1" />
-            <span>Page {{ currentPage }} of {{ totalPages }}</span>
-            <Button label="Next" class="p-button-secondary" @click="nextPage" :disabled="currentPage === totalPages" />
-        </div>
+      </div>
     </div>
-</template>
-
-<script>
-import Handsontable from 'handsontable';
-import { defineComponent } from 'vue';
-import { HotTable } from '@handsontable/vue3';
-import { registerAllModules } from 'handsontable/registry';
-import 'handsontable/dist/handsontable.full.css';
-import axios from 'axios';
-import { useUserStore } from '@/stores/userStore';
-import Button from 'primevue/button';
-import Save_Alert from '@/components/Alert/Save_Alert.vue';
-
-// register Handsontable's modules
-registerAllModules();
-
-const TaskListComponent = defineComponent({
-    data() {
-        return {
-            hotSettings: {
-                data: [
-                    ['PlantA', 'Dryer', 'blower', '2018-10-20', 'Change bearing', '5000', '5', 'true', 'BomCode-1', '58090', '111222', '', '遅延', 'true', '', '', '', '', '', '', '', '', 'true'], //1
-                    ['PlantA', 'Dryer', 'blower', '2018-10-20', 'Change bearing', '5000', '5', 'true', 'BomCode-1', '58090', '111222', '', '遅延', 'true', '', '', '', '', '', '', '', '', 'true'], //2
-                    ['PlantA', 'Dryer', 'blower', '2018-10-20', 'Change bearing', '5000', '5', 'true', 'BomCode-1', '58090', '111222', '', '遅延', 'true', '', '', '', '', '', '', '', '', 'true'], //3
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //4
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //5
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //6
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //7
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //8
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //9
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //10
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //11
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //12
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //13
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //14
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''] //15
-                ],
-                colHeaders: this.generateColHeaders(),
-
-                columns: [
-                    {
-                        data: 'taskListNo',
-                        type: 'text',
-                        readOnly: true,
-                        renderer: this.taskListNoRenderer // 修正したカスタムレンダラーを使用
-                    },
-                    {
-                        //plant
-                        data: 'plant',
-                        type: 'text'
-                    },
-                    {
-                        //Equipment
-                        data: 'equipment',
-                        type: 'text'
-                    },
-                    {
-                        //MachineName
-                        data: 'machineName',
-                        type: 'text'
-                    },
-                    {
-                        //Latest Date PM
-                        data: 'typicalLatestDate',
-                        type: 'date',
-                        dateFormat: 'YYYY-MM-DD',
-                        correctFormat: false,
-                        readOnly: true
-                    },
-                    {
-                        //TaskName
-                        data: 'typicalTaskName',
-                        type: 'text'
-                    },
-                    {
-                        //TaskLaborCost
-                        data: 'typicalTaskCost',
-                        type: 'numeric'
-                    },
-                    {
-                        //TaskConstructionCost
-                        data: 'typicalConstPeriod',
-                        type: 'numeric'
-                    },
-                    {
-                        //MultiTasking
-                        data: 'multiTasking',
-                        type: 'checkbox',
-                        className: 'htCenter'
-                    },
-                    {
-                        //BomCode
-                        data: 'bomCode',
-                        type: 'text',
-                        readOnly: true
-                    },
-                    {
-                        //BomCost
-                        data: 'bomCodeCost',
-                        type: 'numeric',
-                        readOnly: true
-                    },
-                    {
-                        //TotalCost
-                        data: 'totalCost',
-                        type: 'numeric'
-                    },
-                    {
-                        //Next event date
-                        data: 'typicalNextEventDate',
-                        type: 'numeric',
-                        readOnly: true
-                    },
-                    {
-                        //Situation
-                        data: 'typicalSituation',
-                        type: 'text',
-                        readOnly: true
-                    },
-                    {
-                        //現時点からの10年先まで繰り返し（今）
-                        data: 'thisYear',
-                        type: 'checkbox',
-                        className: 'htCenter'
-                    },
-                    {
-                        //現時点からの10年先まで繰り返し（1年後）
-                        data: 'thisYear1later',
-                        type: 'checkbox',
-                        className: 'htCenter'
-                    },
-                    {
-                        //現時点からの10年先まで繰り返し（2年後）
-                        data: 'thisYear2later',
-                        type: 'checkbox',
-                        className: 'htCenter'
-                    },
-                    {
-                        //現時点からの10年先まで繰り返し（3年後）
-                        data: 'thisYear3later',
-                        type: 'checkbox',
-                        className: 'htCenter'
-                    },
-                    {
-                        //現時点からの10年先まで繰り返し（4年後）
-                        data: 'thisYear4later',
-                        type: 'checkbox',
-                        className: 'htCenter'
-                    },
-                    {
-                        //現時点からの10年先まで繰り返し（5年後）
-                        data: 'thisYear5later',
-                        type: 'checkbox',
-                        className: 'htCenter'
-                    },
-                    {
-                        //現時点からの10年先まで繰り返し（6年後）
-                        data: 'thisYear6later',
-                        type: 'checkbox',
-                        className: 'htCenter'
-                    },
-                    {
-                        //現時点からの10年先まで繰り返し（7年後）
-                        data: 'thisYear7later',
-                        type: 'checkbox',
-                        className: 'htCenter'
-                    },
-                    {
-                        //現時点からの10年先まで繰り返し（8年後）
-                        data: 'thisYear8later',
-                        type: 'checkbox',
-                        className: 'htCenter'
-                    },
-                    {
-                        //現時点からの10年先まで繰り返し（9年後）
-                        data: 'thisYear9later',
-                        type: 'checkbox',
-                        className: 'htCenter'
-                    },
-                    {
-                        //現時点からの10年先まで繰り返し（10年後）
-                        data: 'thisYear10later',
-                        type: 'checkbox',
-                        className: 'htCenter'
-                    }
-                ],
-
-                afterGetColHeader: (col, TH) => {
-                    if (col === -1) {
-                        return;
-                    }
-                    TH.style.backgroundColor = '#FFFFCC';
-                    TH.style.color = 'black';
-                    TH.style.fontWeight = 'bold';
-                },
-                rowHeaders: true,
-                width: '100%',
-                height: 'auto',
-                contextMenu: true,
-                autoWrapRow: true,
-                autoWrapCol: true,
-                fixedColumnsStart: 2,
-                fixedRowsTop: 2,
-                manualColumnFreeze: true,
-                manualColumnResize: true,
-                manualRowResize: true,
-                filters: true,
-                dropdownMenu: true,
-                comments: true,
-                fillHandle: {
-                    autoInsertRow: true
-                },
-                licenseKey: 'non-commercial-and-evaluation'
-            },
-            rowsToAdd: 1,
-            dataStore: [],
-            showAlert: false,
-            alertType: 'success',
-            alertMessage: 'データが正常に保存されました。',
-            errorMessages: [],
-            currentPage: 1,
-            totalPages: 1,
-        };
-    },
-
-    created() {
-        this.getDataAxios(this.currentPage);
-    },
-
-    methods: {
-        generateColHeaders() {
-            const currentYear = new Date().getFullYear();
-            const futureYears = Array.from({ length: 11 }, (_, index) => (currentYear + index).toString());
-
-            return [
-                'TaskListNo',
-                'Plant',
-                'Equipment',
-                'MachineName',
-                'LatestDate<br>PM',
-                'TaskName',
-                'TaskLabor<br>Cost',
-                'TaskConstruction<br>Period',
-                'Multi<br>Tasking',
-                'BomCode',
-                'BomCost',
-                'TotalCost',
-                'Next Even<br>date',
-                'Situation',
-                ...futureYears
-            ];
-        },
-
-        taskListNoRenderer(instance, td, row, col, prop, value, cellProperties) {
-            Handsontable.renderers.TextRenderer.apply(this, arguments);
-            if (value) {
-                const link = document.createElement('a');
-                link.href = `/task_list_detail/${value}`; // ルーティングに対応するURLを生成
-                link.target = '_blank';
-                link.textContent = value;
-                link.style.color = 'blue';
-                td.innerHTML = '';
-                td.appendChild(link);
-            }
-        },
-
-
-
-
-
-
-
-
-
-
-
-        getDataAxios(page = 1) {
-    const userStore = useUserStore();
-    const userCompanyCode = userStore.companyCode;
-
-    if (!userCompanyCode) {
-        console.error('Error: No company code found for the user.');
-        return;
-    }
-
-    const url = `http://127.0.0.1:8000/api/task/taskListByCompany/?format=json&companyCode=${userCompanyCode}&page=${page}`;
-
-    axios
-        .get(url, {
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            withCredentials: true
-        })
-        .then((response) => {
-            console.log('Full API Response:', response.data); // レスポンス全体をログに出力
-
-            if (Array.isArray(response.data.results) && response.data.results.length > 0) {
-                const companyData = response.data.results[0];
-                console.log('companyData:', companyData);
-
-                if (companyData && companyData.taskList) {
-                    const taskListData = companyData.taskList;
-                    console.log('Fetched Task List Data:', taskListData);
-
-                    // 空の行を追加するのは、10件未満の場合のみ
-                    this.dataStore = taskListData;
-
-                    if (taskListData.length < 10) {
-                        const blankRows = Array.from({ length: 10 - taskListData.length }, () => ({}));
-                        this.dataStore = this.dataStore.concat(blankRows);
-                    }
-
-                    this.$refs.hotTableComponent.hotInstance.updateSettings({
-                        data: this.dataStore
-                    });
-
-                    // ページ数の設定
-                    this.totalPages = Math.ceil(response.data.count / 10);
-                    this.currentPage = page;
-                } else {
-                    console.error('No taskList data found in the response for companyData:', companyData);
-                }
-            } else {
-                console.error('Response data is not in the expected format or is empty:', response.data);
-            }
-        })
-        .catch((error) => {
-            console.error('Error fetching data:', error);
-        });
-},
-
-
-
-
-
-
-        addRows() {
-            const hotInstance = this.$refs.hotTableComponent.hotInstance;
-            const blankRows = Array.from({ length: this.rowsToAdd }, () => {
-                return {
-                    taskListNo: '',
-                    plant: '',
-                    equipment: '',
-                    machineName: '',
-                    typicalLatestDate: '',
-                    typicalTaskName: '',
-                    typicalTaskCost: 0,
-                    typicalConstPeriod: 0,
-                    multiTasking: false,
-                    bomCode: '',
-                    bomCodeCost: 0,
-                    totalCost: 0,
-                    typicalNextEventDate: '',
-                    typicalSituation: '',
-                    thisYear: false,
-                    thisYear1later: false,
-                    thisYear2later: false,
-                    thisYear3later: false,
-                    thisYear4later: false,
-                    thisYear5later: false,
-                    thisYear6later: false,
-                    thisYear7later: false,
-                    thisYear8later: false,
-                    thisYear9later: false,
-                    thisYear10later: false
-                };
-            });
-
-            this.dataStore = this.dataStore.concat(blankRows);
-
-            hotInstance.updateSettings({
-                data: this.dataStore
-            });
-        },
-
-        saveData() {
-            try {
-                const userStore = useUserStore();
-                const userCompanyCode = userStore.companyCode;
-
-                if (!userCompanyCode) {
-                    console.error('Error: No company code found for the user.');
-                    return;
-                }
-
-                const hotInstance = this.$refs.hotTableComponent.hotInstance;
-                const dataToSave = hotInstance.getData();
-
-                const formattedData = dataToSave.map((row, index) => {
-                    return {
-                        companyCode: userCompanyCode,
-                        taskListNo: row[0] || null,
-                        plant: row[1],
-                        equipment: row[2],
-                        machineName: row[3],
-                        typicalLatestDate: row[4],
-                        typicalTaskName: row[5],
-                        typicalTaskCost: row[6],
-                        typicalConstPeriod: row[7],
-                        multiTasking: row[8],
-                        bomCode: row[9],
-                        bomCost: row[10],
-                        totalCost: row[11],
-                        typicalNextEventDate: row[12],
-                        typicalSituation: row[13],
-                        thisYear: row[14] !== null ? row[14] : false,
-                        thisYear1later: row[15] !== null ? row[15] : false,
-                        thisYear2later: row[16] !== null ? row[16] : false,
-                        thisYear3later: row[17] !== null ? row[17] : false,
-                        thisYear4later: row[18] !== null ? row[18] : false,
-                        thisYear5later: row[19] !== null ? row[19] : false,
-                        thisYear6later: row[20] !== null ? row[20] : false,
-                        thisYear7later: row[21] !== null ? row[21] : false,
-                        thisYear8later: row[22] !== null ? row[22] : false,
-                        thisYear9later: row[23] !== null ? row[23] : false,
-                        thisYear10later: row[24] !== null ? row[24] : false
-                    };
-                });
-
-                console.log('送信するデータ:', JSON.stringify(formattedData, null, 2));
-
-                const url = `http://127.0.0.1:8000/api/task/taskList/`;
-
-                axios
-                    .post(url, formattedData, {
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        withCredentials: true
-                    })
-                    .then((response) => {
-                        console.log('Data saved successfully:', response.data);
-                        this.alertType = 'success';
-                        this.alertMessage = 'データが正常に保存されました。';
-                        this.showAlert = true;
-                        setTimeout(() => {
-                            this.showAlert = false;
-                        }, 3000);
-                    })
-                    .catch((error) => {
-                        console.error('Error saving data:', error);
-
-                        if (error.response) {
-                            console.error('Error response status:', error.response.status);
-                            console.error('Error response headers:', error.response.headers);
-                            console.error('Error response data:', error.response.data);
-                        } else if (error.request) {
-                            console.error('Error request data:', error.request);
-                        } else {
-                            console.error('Error message:', error.message);
-                        }
-
-                        console.error('Error config:', error.config);
-                        this.alertType = 'error';
-                        this.alertMessage = 'データの保存に失敗しました。エラーを確認してください。';
-                        this.errorMessages = ['Quis commodo odio aenean sed adipiscing diam.', 'Risus pretium quam vulputate dignissim suspendisse.', 'Bibendum enim facilisis gravida neque convallis a cras semper。'];
-                        this.showAlert = true;
-                        setTimeout(() => {
-                            this.showAlert = false;
-                        }, 5000);
-                    });
-            } catch (err) {
-                console.error('An error occurred in saveData:', err);
-            }
-        },
-
-        nextPage() {
-            if (this.currentPage < this.totalPages) {
-                this.currentPage++;
-                this.getDataAxios(this.currentPage);
-            }
-        },
-
-        prevPage() {
-            if (this.currentPage > 1) {
-                this.currentPage--;
-                this.getDataAxios(this.currentPage);
-            }
-        }
-    },
-    components: {
-        HotTable,
-        Button,
-        Save_Alert
-    }
-});
-export default TaskListComponent;
-</script>
-
-<style scoped>
-.button-container {
-    display: flex;
-    gap: 10px;
-    margin-top: 10px;
-}
-
-.legend {
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-}
-
-.legend-item {
-    display: flex;
-    align-items: center;
-    margin-right: 15px;
-}
-
-.color-box {
-    width: 20px;
-    height: 20px;
-    margin-right: 10px;
-    border: 1px solid #000;
-}
-
-.blue-button {
-    background-color: #007bff;
-    border-color: #007bff;
-    color: white;
-}
-
-.pagination-container {
-    margin-top: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-}
-
-.pagination-container span {
-    font-weight: bold;
-}
-</style>
+  </template>
+  
+  <script lang="ts" setup>
+  import criticalEquipmentHeader from '@/assets/Critical_equipment_header.png';
+  import authorImage from '@/assets/self_photo.png';
+  </script>
+  
