@@ -1,44 +1,56 @@
 <template>
-	<!--AdminLTE copy-->
-	<div class="base-content"> <!--AdminLTEのcssがわからなかったから適当に作った-->
-
-		<section class="content-header">
-			<div class="container-fluid">
-				<div class="row mb-2">
-					<div class="col-sm-6">
-						<h1>Work Order</h1>
-					</div>
-					<div class="col-sm-6">
-						<ol class="breadcrumb float-sm-right">
-							<li class="breadcrumb-item"><a href="#">How to use detail</a></li>
-							<li class="breadcrumb-item"><a href="#">Spare parts list</a></li>
-							<li class="breadcrumb-item active">MECHPHAISTOS</li>
-						</ol>
-					</div>
-				</div>
-			</div>
-		</section>
-
-
-		<section class="content">
-			<div class="card card-solid">
-				<!--Tabはsakai-vue-template-->
-
-				<TabView>
-					<TabPanel header="Work permission">
-						<p class="line-height-3 m-0">
-						</p>
-					</TabPanel>
-					<TabPanel header="Work Order List">
-						<p class="line-height-3 m-0">
-						</p>
-					</TabPanel>
-					<TabPanel header="Work order">
-						<p class="line-height-3 m-0">
-						</p>
-					</TabPanel>
-				</TabView>
-			</div>
-		</section>
+	<div>
+	  <h1>Machine/Part Recognition</h1>
+	  <input type="file" @change="uploadImage" />
+	  <div v-if="prediction !== null">
+		<h2>Prediction: {{ prediction }}</h2>
+		<img :src="imageUrl" alt="Uploaded Image" v-if="imageUrl" class="uploaded-image" />
+	  </div>
+	  <div v-if="error">
+		<h2>Error: {{ error }}</h2>
+	  </div>
 	</div>
-</template>
+  </template>
+  
+  <script>
+  import axios from 'axios';
+  
+  export default {
+	data() {
+	  return {
+		prediction: null,
+		imageUrl: null,
+		error: null,
+	  };
+	},
+	methods: {
+	  async uploadImage(event) {
+		this.error = null;
+		const file = event.target.files[0];
+		const formData = new FormData();
+		formData.append('image', file);
+  
+		try {
+		  const response = await axios.post('http://localhost:8000/api/images/', formData, {
+			headers: {
+			  'Content-Type': 'multipart/form-data',
+			},
+		  });
+  
+		  this.prediction = response.data.predicted_class;
+		  this.imageUrl = 'http://localhost:8000' + response.data.image;
+		} catch (err) {
+		  this.error = err.response ? err.response.data.error : err.message;
+		}
+	  },
+	},
+  };
+  </script>
+  
+  <style>
+  .uploaded-image {
+	max-width: 300px;
+	max-height: 300px;
+  }
+  </style>
+  

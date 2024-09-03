@@ -34,18 +34,33 @@ class Payment(models.Model):
         return f'{self.paymentType}'
 
 #companyCode
+#companyCodeはユニークである必要がある。
 class CompanyCode(models.Model):
+    companyCode = models.CharField(
+        verbose_name='companyCode',
+        max_length=200,
+        null=True,
+        blank=True,
+        unique=True  # ユニーク制約を追加
+    )
+    description = models.TextField(
+        verbose_name='description',
+        max_length=500,
+        null=True,
+        blank=True
+    )
+    createdDay = models.DateTimeField(auto_now_add=True)
 
-    companyCode = models.CharField(verbose_name='companyCode',max_length=200,null=True,blank=True)
-    description = models.TextField(verbose_name='description',max_length=500,null=True,blank=True)
-    createdDay = models.DateTimeField(auto_now_add=True) 
     class Meta:
         verbose_name = 'companyCode'
         verbose_name_plural = 'companyCode'
         ordering = ('id',)
-    
+
     def __str__(self):
         return f'{self.companyCode}'
+
+
+
 
 class CompanyName(models.Model):
 
@@ -143,7 +158,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     userName = models.CharField(verbose_name='userName',max_length=200,null=True,blank=True)
 
-    email = models.EmailField(unique=True)
+    email = models.EmailField(unique=True, null=True, blank=True)  # emailフィールドをオプションに設定
     phoneNumber = models.CharField(verbose_name='phoneNumber',max_length=200,null=True,blank=True)
 
     is_active = models.BooleanField(default=True)

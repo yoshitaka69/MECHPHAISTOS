@@ -66,7 +66,7 @@ def update_ppm_year_cost(ppm_entry, year_offset, cost_field_name, future=True):
 
 
 
-#Gap計算用 これはどちらかのsenderが更新された際に独立したシグナルとして実行される。
+# Gap計算用シグナル
 @receiver(post_save, sender=EventYearPPM)
 @receiver(post_save, sender=SummedActualCost)
 def update_gap_cost(sender, instance, **kwargs):
@@ -91,12 +91,10 @@ def update_gap_cost(sender, instance, **kwargs):
             ppm_data = EventYearPPM.objects.filter(companyCode=company_code).first()
             ppm_cost = getattr(ppm_data, ppm_cost_attr, 0) if ppm_data else 0
 
-            # SummedActualCost から同じ年のデータを取得
-            try:
-                actual_cost_data = SummedActualCost.objects.get(companyCode=company_code, year=target_year)
-                total_actual_cost = actual_cost_data.totalActualCost
-            except SummedActualCost.DoesNotExist:
-                total_actual_cost = 0
+            # SummedActualCost から同じ年のデータを取得し合算
+            actual_cost_data = SummedActualCost.objects.filter(companyCode=company_code, year=target_year)
+            total_actual_cost = actual_cost_data.aggregate(total=Sum('totalActualCost'))['total'] or 0
+
 
             # 計算結果
             result = ppm_cost - total_actual_cost

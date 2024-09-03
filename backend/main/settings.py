@@ -1,14 +1,14 @@
 from pathlib import Path
-from datetime import timedelta
+import os
 
+# 環境変数で無効にするアプリケーションを指定
+disabled_apps = os.getenv('DISABLE_APPS', '').split(',')
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = "django-insecure-_qv0fxcogfc^1gxjyx)7_3u9b=c&l15$vlv1-^bmk%m&o5oxeq"
-
 DEBUG = True
-
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -19,7 +19,6 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     'rest_framework',
     'rest_framework.authtoken',
-    #'rest_framework_simplejwt',
     'corsheaders',
     'djoser',
     'accounts.apps.AccountsConfig',
@@ -34,19 +33,26 @@ INSTALLED_APPS = [
     'calculation.apps.CalculationConfig',
     'agora',
     'workOrder',
+    'benefit',
+    'reliability',
+    'workingReport',
+    'test_app',
 ]
 
+# INSTALLED_APPSから無効にするアプリを除外
+INSTALLED_APPS = [app for app in INSTALLED_APPS if app not in disabled_apps]
 
+if 'audio_recognition' not in disabled_apps:
+    INSTALLED_APPS.append('audio_recognition')
 
+if 'ai' not in disabled_apps:
+    INSTALLED_APPS.append('ai')
 
-#JWT_AUTH設定
-#SIMPLE_JWT = {
-    #'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
-    #'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-    # その他の設定...
-#}
+if 'scada' not in disabled_apps:
+    INSTALLED_APPS.append('scada')
 
-
+if 'channels' not in disabled_apps:
+    INSTALLED_APPS.append('channels')
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -57,7 +63,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-
 ]
 
 ROOT_URLCONF = "main.urls"
@@ -89,29 +94,10 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 CORS_ALLOW_CREDENTIALS = True
-
-CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:8000"]
-
-#INTERNAL_IPS = ['127.0.0.1',]
-
-
-#Django rest frame work setting
-#REST_FRAMEWORK = {
-    #'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    #'PAGE_SIZE': 10,
-    #'DEFAULT_PERMISSION_CLASSES': (
-        #'rest_framework.permissions.IsAuthenticated',
-   # ),
-    #'DEFAULT_AUTHENTICATION_CLASSES': (
-        #'rest_framework.authentication.SessionAuthentication',
-        #'rest_framework.authentication.BasicAuthentication',
-       # 'rest_framework_simplejwt.authentication.JWTAuthentication',
-    #),
-#}
-
-# Database
-# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
+CSRF_TRUSTED_ORIGINS = [
+    "http://127.0.0.1:8000",
+    "http://localhost:8000",
+]
 
 DATABASES = {
     "default": {
@@ -119,11 +105,6 @@ DATABASES = {
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
-
-
-
-# Password validation
-# https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -140,44 +121,27 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/5.0/topics/i18n/
-
 LANGUAGE_CODE = "en-us"
-
 TIME_ZONE = "UTC"
-
 USE_I18N = True
-
 USE_TZ = True
-
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = "/static/"
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media/'
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
+ASGI_APPLICATION = 'main.asgi.application'
 
-LOGGING = {
-    'version': 1,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
         },
     },
-    'root': {
-        'handlers': ['console'],
-        'level': 'INFO',
-    },
 }
+

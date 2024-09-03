@@ -113,7 +113,7 @@
                     TH.style.color = 'black';
                     TH.style.fontWeight = 'bold';  // テキストを太字に設定
                 },
-                
+          rowHeaders: true, // 行ヘッダーを有効化
           width: '100%',
           height: 'auto',
           contextMenu: true,//コンテキストメニュー

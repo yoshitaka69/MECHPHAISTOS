@@ -22,11 +22,14 @@
 <script>
 import { useUserStore } from '@/stores/userStore';
 
+import Accordion from 'primevue/accordion';
+import AccordionTab from 'primevue/accordiontab';
+
 export default {
   name: "InformationBox",
   components: {
-    Accordion: () => import('primevue/accordion'),
-    AccordionTab: () => import('primevue/accordiontab')
+    Accordion,
+    AccordionTab
   },
   props: {
     message: {

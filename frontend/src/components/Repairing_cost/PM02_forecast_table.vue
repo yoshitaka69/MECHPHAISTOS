@@ -29,6 +29,7 @@
           data: [[]],
           colHeaders,
           columns,
+          rowHeaders: true, // 行ヘッダーを有効化
           width: '100%',
           height: 'auto',
           contextMenu: true,

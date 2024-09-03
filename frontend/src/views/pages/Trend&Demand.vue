@@ -1,42 +1,46 @@
 <template>
-	<!--AdminLTE copy-->
-	<div class="base-content"> <!--AdminLTEのcssがわからなかったから適当に作った-->
-
-		<section class="content">
-			<div class="card card-solid">
-				<TabView>
-					<TabPanel header="Trend & Demand map">
-						<div class="row">
-							<div class="flex-child col-12 lg:col-6 xl:col-8">
-								<Trend_map />
-							</div>
-						</div>
-					</TabPanel>
-				</TabView>
-			</div>
-		</section>
-	</div>
-</template>
-
-
-
-<script>
-
-import Trend_map from '@/components/Trend_map/Trend_map.vue'
-
-export default {
-	components: {
-		Trend_map,
-	},
-}
-
-</script>
-
-<style>
-
-.row {
+    <div class="base-content">
+      <section class="content">
+        <div class="card card-solid">
+          <TabView v-model:activeIndex="activeIndex" @tab-change="onTabChange">
+            <TabPanel header="Trend & Demand map">
+              <div class="row">
+                <div class="flex-child col-12 lg:col-6 xl:col-8">
+                  <Trend_map />
+                </div>
+              </div>
+            </TabPanel>
+          </TabView>
+        </div>
+      </section>
+    </div>
+  </template>
+  
+  <script>
+  import Trend_map from '@/components/Trend_map/Trend_map.vue';
+  
+  export default {
+    components: {
+      Trend_map
+    },
+    data() {
+      return {
+        activeIndex: parseInt(localStorage.getItem('trendMapTabIndex')) || 0 // キー名を変更
+      };
+    },
+    methods: {
+      onTabChange(event) {
+        this.activeIndex = event.index;
+        localStorage.setItem('trendMapTabIndex', this.activeIndex); // キー名を変更
+      }
+    }
+  };
+  </script>
+  
+  <style>
+  .row {
     display: flex;
     flex-wrap: wrap;
-}
-
-</style>
+  }
+  </style>
+  

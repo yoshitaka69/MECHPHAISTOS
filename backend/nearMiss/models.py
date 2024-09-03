@@ -8,30 +8,30 @@ from accounts.models import CompanyCode,CompanyName,CustomUser
 
 class NearMiss(models.Model):
 
-    #on_delateはいちよPROTECTにしておく。ビッグデータは財産として残したいがプライバシーポリシーとも相談になる。
-    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='nearMiss_companyCode',null=True, blank=True)
-    companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE,related_name='nearMiss_companyName', null=True, blank=True)
+    #on_delete は一応 PROTECT にしておく。ビッグデータは財産として残したいがプライバシーポリシーとも相談になる。
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='nearMiss_companyCode', null=True, blank=True)
+    companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='nearMiss_companyName', null=True, blank=True)
 
-    nearMissNo = models.CharField(verbose_name='nearMissNo', max_length=50,null=True,blank=True)
+    nearMissNo = models.CharField(verbose_name='nearMissNo', max_length=50, null=True, blank=True)
     userName = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='nearMiss_userName', null=True, blank=True)
-    department = models.CharField(verbose_name='department', max_length=200,null=True,blank=True)
-    dateOfOccurrence = models.DateField(verbose_name='dateOfOccurrence', null=True,blank=True, default=timezone.now)
-    placeOfOccurrence = models.CharField(verbose_name='placeOfOccurrence', max_length=200,null=True,blank=True)
-    typeOfAccident = models.CharField(verbose_name='typeOfAccident', max_length=200,null=True,blank=True)
-    description = models.TextField(verbose_name='description', max_length=1000,null=True,blank=True)
-    factor = models.CharField(verbose_name='factor', max_length=200,null=True,blank=True)
-    injuredLv = models.CharField(verbose_name='injuredLv', max_length=200,null=True,blank=True)
-    equipmentDamageLv = models.CharField(verbose_name='equipmentDamageLv', max_length=200,null=True,blank=True)
-    affectOfEnviroment = models.CharField(verbose_name='affectOfEnviroment', max_length=200,null=True,blank=True)
-    newsCoverage = models.CharField(verbose_name='newsCoverage', max_length=200,null=True,blank=True)
-    measures = models.CharField(verbose_name='measures', max_length=200,null=True,blank=True)
-    actionItems = models.CharField(verbose_name='actionItems', max_length=200,null=True,blank=True)
-    solvedActionItems = models.BooleanField(verbose_name='solvedActionItems',default=False)
+    email = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='nearMiss_email', null=True, blank=True)
+    department = models.CharField(verbose_name='department', max_length=200, null=True, blank=True)
+    dateOfOccurrence = models.DateField(verbose_name='dateOfOccurrence', null=True, blank=True, default=timezone.now)
+    placeOfOccurrence = models.CharField(verbose_name='placeOfOccurrence', max_length=200, null=True, blank=True)
+    typeOfAccident = models.CharField(verbose_name='typeOfAccident', max_length=200, null=True, blank=True)
+    description = models.TextField(verbose_name='description', max_length=1000, null=True, blank=True)
+    factor = models.CharField(verbose_name='factor', max_length=200, null=True, blank=True)
+    injuredLv = models.CharField(verbose_name='injuredLv', max_length=200, null=True, blank=True)
+    equipmentDamageLv = models.CharField(verbose_name='equipmentDamageLv', max_length=200, null=True, blank=True)
+    affectOfEnviroment = models.CharField(verbose_name='affectOfEnviroment', max_length=200, null=True, blank=True)
+    newsCoverage = models.CharField(verbose_name='newsCoverage', max_length=200, null=True, blank=True)
+    measures = models.CharField(verbose_name='measures', max_length=200, null=True, blank=True)
+    actionItems = models.CharField(verbose_name='actionItems', max_length=200, null=True, blank=True)
+    solvedActionItems = models.BooleanField(verbose_name='solvedActionItems', default=False)
 
-    createdDay = models.DateTimeField(verbose_name='createdDay',null=True,blank=True,default=timezone.now)
+    createdDay = models.DateTimeField(verbose_name='createdDay', null=True, blank=True, default=timezone.now)
     """記入した日付を記入してくれる"""
-    updateDay = models.DateTimeField(verbose_name='updatedDay',auto_now_add=True) 
-
+    updateDay = models.DateTimeField(verbose_name='updatedDay', auto_now_add=True) 
 
     class Meta:
         verbose_name = 'Near Miss List'
@@ -40,31 +40,18 @@ class NearMiss(models.Model):
 
     def __str__(self):
         return f"{self.companyCode}"
-    
 
-    def save(self, *args, **kwargs):
-        # nearMissNo がまだ設定されていない場合のみ生成
-        if not self.nearMissNo:
-            last_instance = NearMiss.objects.filter(companyCode=self.companyCode).order_by('nearMissNo').last()
-            if last_instance:
-                try:
-                    last_number = int(last_instance.nearMissNo.split('-')[-1])
-                    new_number = last_number + 1
-                except ValueError:
-                    # last_instance.nearMissNo の形式が期待と異なる場合のエラーハンドリング
-                    new_number = 1
-            else:
-                new_number = 1
-            self.nearMissNo = f"{self.companyCode}-{str(new_number).zfill(3)}"
-
-        super().save(*args, **kwargs)
+    #def save(self, *args, **kwargs):
+        #super().save(*args, **kwargs)
 
         # 追加の処理を呼び出し
-        update_total_of_near_miss(self.companyCode_id)
-        update_total_of_action_items(self.companyCode_id)
-        update_total_of_solved_action_items(self.companyCode_id)
-        update_count_of_level_a(self.companyCode_id)
-        update_danger_area(self.companyCode_id)
+        #update_total_of_near_miss(self.companyCode_id)
+        #update_total_of_action_items(self.companyCode_id)
+        #update_total_of_solved_action_items(self.companyCode_id)
+        #update_count_of_level_a(self.companyCode_id)
+        #update_danger_area(self.companyCode_id)
+
+
 
 
 

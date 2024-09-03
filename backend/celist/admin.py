@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import CeList,Equipment,Machine
+from .models import CeList,Equipment,Machine,RiskMatrixPossibility,RiskMatrixImpact
 
 
 class EquipmentAdmin(admin.ModelAdmin):
@@ -34,7 +34,26 @@ class CeListAdmin(admin.ModelAdmin):
     list_per_page = 50 # １ページあたりに表示するオブジェクト数を指定
 
 
+
+class RiskMatrixPossibilityAdmin(admin.ModelAdmin):
+    list_display = ('companyCode', 'companyName', 'x', 'y', 'timestamp')
+    list_filter = ('companyCode', 'companyName', 'timestamp')
+    search_fields = ('companyCode__code', 'companyName__name')  # Assuming `code` and `name` are fields in the related models
+    ordering = ('-timestamp',)
+
+    list_per_page = 50 # １ページあたりに表示するオブジェクト数を指定
+
+
+class RiskMatrixImpactAdmin(admin.ModelAdmin):
+    list_display = ('companyCode', 'companyName', 'levelSetValue', 'x', 'y', 'timestamp')
+    search_fields = ('companyCode__companyCode', 'companyName__companyName', 'levelSetValue')
+    list_filter = ('levelSetValue', 'timestamp')
+
+
+
 # 以下でadminサイトに表示させる
 admin.site.register(CeList,CeListAdmin)
 admin.site.register(Equipment,EquipmentAdmin)
 admin.site.register(Machine,MachineAdmin)
+admin.site.register(RiskMatrixPossibility,RiskMatrixPossibilityAdmin)
+admin.site.register(RiskMatrixImpact,RiskMatrixImpactAdmin)

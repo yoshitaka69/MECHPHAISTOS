@@ -1,6 +1,6 @@
 <template>
-  <DataTable :value="sortedTasks" tableStyle="min-width: 50rem">
-    <Column v-for="col of columns" :key="col.field" :field="col.field" :header="col.header"></Column>
+  <DataTable :value="sortedTasks" tableStyle="min-width: 50rem" class="custom-datatable">
+    <Column v-for="col of columns" :key="col.field" :field="col.field" :header="col.header" sortable></Column>
   </DataTable>
 </template>
 
@@ -71,3 +71,38 @@ const sortedTasks = computed(() => {
   return orderAlertList.value.slice(0, 20); // 20件に制限
 });
 </script>
+
+<style>
+.custom-datatable .p-datatable-thead > tr > th {
+  background-color: #2d3a4f !important;
+  color: white !important;
+}
+
+.custom-datatable .p-datatable {
+  border: 1px solid black;
+}
+
+.custom-datatable .p-datatable-tbody > tr:nth-child(odd) {
+  background-color: white !important; /* 奇数行は白色 */
+}
+
+.custom-datatable .p-datatable-tbody > tr:nth-child(even) {
+  background-color: #d3d3d3 !important; /* 偶数行は明るい灰色 */
+}
+
+.custom-datatable .p-datatable-tbody > tr > td {
+  border-right: 1px solid black;
+}
+
+.custom-datatable .p-datatable-tbody > tr > td:last-child {
+  border-right: none;
+}
+
+.custom-datatable .p-datatable-thead > tr > th {
+  border-right: 1px solid black;
+}
+
+.custom-datatable .p-datatable-thead > tr > th:last-child {
+  border-right: none;
+}
+</style>

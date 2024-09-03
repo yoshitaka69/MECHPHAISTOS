@@ -36,7 +36,7 @@ class TaskListPPM02Serializer(serializers.ModelSerializer):
 
     class Meta:
         model = TaskListPPM02 #呼び出すモデル名
-        fields = ["companyCode","companyName","plant","equipment","machineName","taskCode","taskName","laborCostOfPPM02","countOfPPM02","latestPPM02","periodOfPPM02","constructionPeriod","nextEventDate","situation","thisYear","thisYear1later","thisYear2later","thisYear3later","thisYear4later","thisYear5later","thisYear6later","thisYear7later","thisYear8later","thisYear9later","thisYear10later",]# API上に表示するモデルのデータ項目
+        fields = ["companyCode","companyName","ceListNo","plant","equipment","machineName","taskCode","taskName","laborCostOfPPM02","countOfPPM02","latestPPM02","periodOfPPM02", "pM02Content", "maintenanceCategory","constructionPeriod","nextEventDate","situation","thisYear10ago","thisYear9ago","thisYear8ago","thisYear7ago","thisYear6ago","thisYear5ago","thisYear4ago","thisYear3ago","thisYear2ago","thisYear1ago","thisYear","thisYear1later","thisYear2later","thisYear3later","thisYear4later","thisYear5later","thisYear6later","thisYear7later","thisYear8later","thisYear9later","thisYear10later",]# API上に表示するモデルのデータ項目
         
 
     #situationを判定する関数
@@ -69,6 +69,9 @@ class CompanyTaskListPPM02Serializer(serializers.ModelSerializer):
     class Meta:
         model = CompanyCode
         fields = ['companyCode', 'taskListPPM02']
+
+
+
 
 
 
@@ -123,7 +126,7 @@ class TaskListPPM03Serializer(serializers.ModelSerializer):
 
     class Meta:
         model = TaskListPPM03 #呼び出すモデル名
-        fields = ["companyCode","companyName","plant","equipment","machineName","taskCode","taskName","laborCostOfPPM03","countOfPPM03","latestPPM03","periodOfPPM03","constructionPeriod","nextEventDate","situation","thisYear","thisYear1later","thisYear2later","thisYear3later","thisYear4later","thisYear5later","thisYear6later","thisYear7later","thisYear8later","thisYear9later","thisYear10later",]# API上に表示するモデルのデータ項目
+        fields = ["companyCode","companyName","ceListNo","plant","equipment","machineName","taskCode","taskName","laborCostOfPPM03","countOfPPM03","latestPPM03","periodOfPPM03","pM03Content", "maintenanceCategory","constructionPeriod","nextEventDate","situation","thisYear10ago","thisYear9ago","thisYear8ago","thisYear7ago","thisYear6ago","thisYear5ago","thisYear4ago","thisYear3ago","thisYear2ago","thisYear1ago","thisYear","thisYear1later","thisYear2later","thisYear3later","thisYear4later","thisYear5later","thisYear6later","thisYear7later","thisYear8later","thisYear9later","thisYear10later",]# API上に表示するモデルのデータ項目
         
 
     #situationを判定する関数
@@ -336,7 +339,7 @@ class TypicalTaskListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TypicalTaskList #呼び出すモデル名
-        fields = ["taskCode", 'typicalTaskName', 'typicalTaskCode', 'typicalLatestDate', 'typicalConstPeriod', 'typicalNextEventDate', 'multiTasking','typicalSituation']# API上に表示するモデルのデータ項目
+        fields = ["taskCode", 'typicalTaskName', 'typicalLatestDate', 'typicalConstPeriod', 'typicalNextEventDate', 'multiTasking','typicalSituation']# API上に表示するモデルのデータ項目
         
 class CompanyTypicalTaskListSerializer(serializers.ModelSerializer):
     typicalTaskList = TypicalTaskListSerializer(many=True, read_only=True, source='typicalTaskList_companyCode')#ここのsourceは注意
@@ -357,31 +360,35 @@ def create_slug_related_field(field_name, queryset):
 
 
 
+
+#-------------------------------------------------------
+
+from rest_framework import serializers
+from .models import TaskList, CompanyCode, Plant, Equipment, Machine, TypicalTaskList, BomList
+
 class TaskListSerializer(serializers.ModelSerializer):
-    companyCode = create_slug_related_field('companyCode', CompanyCode.objects.all())
-    plant = create_slug_related_field('plant', Plant.objects.all())
-    equipment = create_slug_related_field('equipment', Equipment.objects.all())
-    machineName = create_slug_related_field('machineName', Machine.objects.all())
-    typicalLatestDate = create_slug_related_field('typicalLatestDate', TypicalTaskList.objects.all())
-    typicalTaskName = create_slug_related_field('typicalTaskName', TypicalTaskList.objects.all())
-    typicalTaskCost = create_slug_related_field('typicalTaskCost', TypicalTaskList.objects.all())
-    typicalConstPeriod = create_slug_related_field('typicalConstPeriod', TypicalTaskList.objects.all())
-    multiTasking = create_slug_related_field('multiTasking', TypicalTaskList.objects.all())
-    typicalNextEventDate = create_slug_related_field('typicalNextEventDate', TypicalTaskList.objects.all())
-    typicalSituation = create_slug_related_field('typicalSituation', TypicalTaskList.objects.all())
-
-    bomCode = create_slug_related_field('bomCode', TypicalTaskList.objects.all())
-    bomCost = create_slug_related_field('bomCost', TypicalTaskList.objects.all())
-
-    
     class Meta:
-        model = TaskList #呼び出すモデル名
-        fields = ["companyCode", 'plant', 'equipment', 'machineName', 'taskListNo', 'typicalLatestDate', 'typicalTaskName', 'typicalTaskCost', 'typicalConstPeriod', 'multiTasking', 'typicalNextEventDate', 'typicalSituation', 'bomCode', 'bomCost', 'totalCost', 'thisYear', 'thisYear1later', 'thisYear2later', 'thisYear3later', 'thisYear4later', 'thisYear5later', 'thisYear6later', 'thisYear7later', 'thisYear8later', 'thisYear9later', 'thisYear10later', ]# API上に表示するモデルのデータ項目
+        model = TaskList
+        fields = '__all__'
 
 
 class CompanyTaskListSerializer(serializers.ModelSerializer):
-    taskList = TaskListSerializer(many=True, read_only=True, source='taskList_companyCode')#ここのsourceは注意
+    taskList = TaskListSerializer(many=True, read_only=True, source='taskList_companyCode')
 
     class Meta:
         model = CompanyCode
         fields = ['companyCode', 'taskList']
+    
+    def create(self, validated_data):
+        company_code_data = validated_data.pop('companyCode')
+        instance = TaskList.objects.create(companyCode=company_code_data, **validated_data)
+        return instance
+
+    def update(self, instance, validated_data):
+        instance.companyCode = validated_data.get('companyCode', instance.companyCode)
+        instance.taskListNo = validated_data.get('taskListNo', instance.taskListNo)
+        instance.save()
+        return instance
+
+
+#-------------------------------------------------------

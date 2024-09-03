@@ -7,26 +7,43 @@ from django.db.models import Max
 
 
 
+#------------------------------------------------------------
+from rest_framework import serializers
+from .models import SpareParts, CompanyCode, CompanyName, Plant, Equipment, Machine
+
+from rest_framework import serializers
+from .models import SpareParts, CompanyCode
+
 class SparePartsSerializer(serializers.ModelSerializer):
-
-    companyCode = serializers.SlugRelatedField(
-        slug_field='companyCode',  # companyCode モデルの表示したい文字列フィールド
-        queryset=CompanyCode.objects.all()
-    )
-
-
     class Meta:
-        model = SpareParts #呼び出すモデル名
-        fields = ['companyCode','partsNo','image', 'bomCode', 'partsName', 'category', 'partsModel', 'serialNumber', 'taskCode', 'partsCost', 'numberOf', 'summedPartsCost','unit', 'location', 'partsDeliveryTime', 'orderAlert', 'orderSituation', 'classification', 'partsDescription',]# API上に表示するモデルのデータ項目
-
+        model = SpareParts
+        fields = '__all__'
 
 class CompanyCodeSPSerializer(serializers.ModelSerializer):
-    sparePartsList = SparePartsSerializer(many=True, source='spareParts_companyCode')#ここのsourceは本当に注意
+    sparePartsList = SparePartsSerializer(many=True, read_only=True, source='spareParts_companyCode')
 
     class Meta:
         model = CompanyCode
         fields = ['companyCode', 'sparePartsList']
 
+    def create(self, validated_data):
+        company_code_data = validated_data.pop('companyCode')
+        instance = SpareParts.objects.create(companyCode=company_code_data, **validated_data)
+        return instance
+
+    def update(self, instance, validated_data):
+        instance.companyCode = validated_data.get('companyCode', instance.companyCode)
+        instance.partsNo = validated_data.get('partsNo', instance.partsNo)
+        instance.save()
+        return instance
+
+
+
+
+
+
+
+#------------------------------------------------------------
 
 
 
