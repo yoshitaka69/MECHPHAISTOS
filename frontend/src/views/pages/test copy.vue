@@ -74,9 +74,9 @@
               Lacus viverra vitae congue eu consequat ac felis donec et。 A lacus vestibulum sed arcu non...
             </div>
             <div class="flex flex-wrap justify-content-between align-items-center gap-3 bg-primary text-primary-700 p-3 border-round">
-              <span class="font-medium text-2xl">Content Section Title</span>
+              <span class="font-medium text-2xl">Risk Matrix</span>
               <div class="flex align-items-center cursor-pointer">
-                <span class="font-bold mr-3">View Post Statistics</span>
+                <span class="font-bold mr-3">Go to NEXT PAGE</span>
                 <i class="pi pi-arrow-right"></i>
               </div>
             </div>

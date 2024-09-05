@@ -1,35 +1,170 @@
+<template>
+    <div>
+        <div class="block-category-title">Content Sections</div>
+        <div class="surface-section px-4 py-8 md:px-6 lg:px-8">
+            <div class="py-4 text-center md:text-left border-round bg-cover h-20rem lg:h-30rem flex flex-column justify-content-end mb-5" :style="{ backgroundImage: `url(${Task_List_Explanation})` }">
+                <div class="grid">
+                    <div class="col lg:col-offset-2 px-5">
+                        <div class="text-5xl font-bold text-black">Best practice tool for Task</div>
+                        <p class="line-height-3 text-black text-lg text-center md:text-left mt-3">Published May 16, 2024 by Yoshitaka Noto</p>
+                    </div>
+                </div>
+            </div>
+            <!--左側のサイドのいいね！など-->
+            <div class="grid">
+                <div class="col-12 lg:col-2">
+                    <div class="flex flex-row lg:flex-column lg:border-right-1 surface-border gap-5 mb-4 lg:px-5">
+                        <div class="text-900 flex flex-row align-items-center justify-content-end">
+                            <span class="font-semibold mr-3">71</span>
+                            <i class="pi pi-bookmark"></i>
+                        </div>
+                        <div class="text-900 flex flex-row align-items-center justify-content-end">
+                            <span class="font-semibold mr-3">298</span>
+                            <i class="pi pi-heart"></i>
+                        </div>
+                        <div class="text-900 flex flex-row align-items-center justify-content-end">
+                            <span class="font-semibold mr-3">34</span>
+                            <i class="pi pi-comments"></i>
+                        </div>
+                    </div>
+                </div>
 
-プロット図における MTBF（平均故障間隔） と青い曲線（事後分布による故障確率）の関係性は、機械の故障リスクを評価するための重要な指標を示しています。以下にその関係性と意味を詳しく説明します。
+                <!--メインページ-->
+                <div class="col-12 lg:col lg:px-5">
+                    <div class="flex flex-wrap align-items-center justify-content-between mb-5 gap-5">
+                        <div class="flex flex-row">
+                            <span class="text-900 surface-100 inline-flex font-semibold py-2 px-3 mr-2 border-round">New</span>
+                            <span class="text-900 surface-100 inline-flex font-semibold py-2 px-3 mr-2 border-round">Technology</span>
+                            <span class="text-900 surface-100 inline-flex font-semibold py-2 px-3 border-round">Education</span>
+                        </div>
+                        <div class="flex align-items-center gap-4">
+                            <i class="pi pi-twitter cursor-pointer"></i>
+                            <i class="pi pi-facebook cursor-pointer"></i>
+                            <i class="pi pi-link cursor-pointer"></i>
+                        </div>
+                    </div>
+                    <div class="line-height-3 text-xl text-900 mb-5">
+                        プラントにおいてどのようなメンテナンスを行うかによっては、設備の修繕費は大きく変わってきます。よく、経営者視点に立ちますと、設備点検保守を削減し、修繕費を削減すれば、それは彼らによってはうれしい報告にはなりますが、設備の寿命を縮めることになり、結果的には修繕費が増加することになります。 このようなことを防ぐために、設備の修繕費を最適化するためには、設備のリスクを把握し、リスクを管理することが重要です。 そのために、リスクマトリックスを活用し、次のようなテーブルから得られる修繕費をモニタリングしてください。
+                        これらの蓄積されたデータは翌年や、翌々年、10年後までに参考となる素晴らしいデータとなるでしょう。
+                    </div>
+                    <div class="text-center mb-5">
+                        <img src="" alt="Related content image" class="w-full border-round mb-2" />
+                        <span class="block text-600 line-height-3">Risk Matrix</span>
+                    </div>
 
-MTBF（平均故障間隔）
-定義:
+                    <!-- MTBF and Failure Probability Explanation -->
+                    <div class="line-height-3 text-lg text-900 mb-5">
+                        <h3>MTBF（平均故障間隔） と青い曲線（事後分布による故障確率）の関係性</h3>
+                        プロット図における MTBF（平均故障間隔） と青い曲線（事後分布による故障確率）の関係性は、機械の故障リスクを評価するための重要な指標を示しています。以下にその関係性と意味を詳しく説明します。
+                        <h4>MTBF（平均故障間隔）</h4>
+                        <strong>定義:</strong>
+                        MTBFは、機械が故障せずに稼働できる平均時間を示す指標です。計算式としては、総稼働時間を故障の総数で割った値になります。<br />
+                        <strong>役割:</strong>
+                        MTBFは、機械の信頼性を評価するための指標であり、保全計画の策定に用いられます。MTBFが長いほど、機械の信頼性が高いとされています。
+                        <h4>青い曲線（故障確率）</h4>
+                        <strong>定義:</strong>
+                        青い曲線は、稼働時間に応じた故障確率を示します。ワイブル分布を用いて推定された故障確率をプロットしています。<br />
+                        <strong>形状:</strong>
+                        曲線の形状は、時間とともに変化する故障リスクを表現しています。故障確率が低い時間帯は、機械の信頼性が高い状態を示し、故障確率が高まると、故障のリスクが増加していることを示します。
+                        <h4>MTBFと青い曲線の関係</h4>
+                        <strong>MTBFラインと故障確率のピーク:</strong>
+                        MTBFは、通常、故障確率の曲線が上昇し始める時間の目安となります。MTBF付近で故障確率が上昇し始めることが多く、この付近で予防保全を行うことが一般的です。<br />
+                        <strong>MTBFより早い故障:</strong>
+                        MTBFよりも前に故障確率が高まる場合は、予定より早い段階での故障リスクがあることを示唆しており、より頻繁なメンテナンスが必要な可能性があります。<br />
+                        <strong>MTBFより遅い故障:</strong>
+                        MTBFを超えた後に故障確率が高まる場合は、機械の状態が良好であることを示しており、メンテナンス間隔を延ばすことを検討できる可能性があります。
+                        <h4>実際の運用への応用</h4>
+                        <strong>予防保全のタイミング:</strong>
+                        MTBFに基づいて、予防保全のタイミングを計画し、故障のピークに到達する前に保全活動を行うことで、機械のダウンタイムを最小限に抑えることができます。<br />
+                        <strong>保全戦略の見直し:</strong>
+                        故障確率の曲線が想定よりも早く上昇する場合、保全戦略や機械の運用条件の見直しが必要になるかもしれません。
+                    </div>
 
-MTBFは、機械が故障せずに稼働できる平均時間を示す指標です。計算式としては、総稼働時間を故障の総数で割った値になります。
-役割:
+                    <div class="line-height-3 text-lg text-900 mb-4">Critical Equipment Listの使い方について説明していきます。 Critical Equipment Listは以下のデータリストのよって構成されてます。</div>
+                    <ul class="text-lg mb-5 mt-0 mr-0 ml-3 p-0 text-900 font-light">
+                        <li class="mb-3">Risk Matrix</li>
+                        <li class="mb-3">Spare Parts List</li>
+                        <li class="mb-3">Task List</li>
+                    </ul>
 
-MTBFは、機械の信頼性を評価するための指標であり、保全計画の策定に用いられます。MTBFが長いほど、機械の信頼性が高いとされています。
-青い曲線（故障確率）
-定義:
+                    <div class="text-3xl text-800 mb-4">1.Input formやエクセルをアップロードし、リストにデータを入力してください。</div>
+                    <div class="line-height-3 text-lg text-900 mb-5">Lacus viverra vitae congue eu consequat ac felis donec et。 A lacus vestibulum sed arcu non...</div>
+                    <div class="text-3xl text-800 mb-4">2.リスト内のPM02やPM03等の補修履歴を確認してください。</div>
+                    <div class="line-height-3 text-lg text-900 mb-5">Lacus viverra vitae congue eu consequat ac felis donec et。 A lacus vestibulum sed arcu non...</div>
+                    <div class="text-3xl text-800 mb-4">3.Risk Matrixの評価方法を検討してください。</div>
+                    <div class="line-height-3 text-lg text-900 mb-5">Lacus viverra vitae congue eu consequat ac felis donec et。 A lacus vestibulum sed arcu non...</div>
+                    <div class="text-3xl text-800 mb-4">4.Input formやエクセルをアップロードし、リストにデータを入力してください。</div>
+                    <div class="line-height-3 text-lg text-900 mb-5">Lacus viverra vitae congue eu consequat ac felis donec et。 A lacus vestibulum sed arcu non...</div>
 
-青い曲線は、稼働時間に応じた故障確率を示します。ワイブル分布を用いて推定された故障確率をプロットしています。
-形状:
+                    <!-- Back to Previous Page and Go to Next Page -->
+                    <div class="flex flex-wrap justify-content-between align-items-center gap-3 bg-primary text-primary-700 p-3 border-round">
+                        <div class="flex align-items-center cursor-pointer">
+                            <i class="pi pi-arrow-left mr-3"></i>
+                            <span class="font-bold">Back to PREVIOUS PAGE</span>
+                        </div>
+                        <span class="font-medium text-2xl">Risk Matrix</span>
+                        <div class="flex align-items-center cursor-pointer">
+                            <span class="font-bold mr-3">Go to NEXT PAGE</span>
+                            <i class="pi pi-arrow-right"></i>
+                        </div>
+                    </div>
+                </div>
 
-曲線の形状は、時間とともに変化する故障リスクを表現しています。故障確率が低い時間帯は、機械の信頼性が高い状態を示し、故障確率が高まると、故障のリスクが増加していることを示します。
-MTBFと青い曲線の関係
-MTBFラインと故障確率のピーク:
+                <!--右側のポストページ-->
+                <div class="col-12 lg:col-3 lg:border-left-1 surface-border">
+                    <div class="p-3">
+                        <div class="flex border-bottom-1 surface-border pb-4 mb-5">
+                            <img :src="authorImage" alt="Author image" class="mr-3 h-5rem w-5rem" />
+                            <div class="flex flex-column align-items-start">
+                                <span class="text-lg text-900 font-medium mb-1">Jessica Doe</span>
+                                <span class="text-600 font-medium mb-2">1.7K Followers</span>
+                                <Button label="Follow" class="p-button-rounded p-button-primary"></Button>
+                            </div>
+                        </div>
+                        <span class="text-900 font-medium text-xl block mb-5">Other Posts</span>
+                        <div class="flex pb-4">
+                            <img src="" alt="Post thumbnail" class="mr-3 h-5rem w-5rem" />
+                            <div class="flex flex-column align-items-start">
+                                <span class="text-lg text-900 font-medium mb-1">Post Title</span>
+                                <span class="text-600 mb-2">Metus aliquam eleifend mi in nulla posuere。</span>
+                            </div>
+                        </div>
+                        <div class="flex pb-4">
+                            <img src="" alt="Post thumbnail" class="mr-3 h-5rem w-5rem" />
+                            <div class="flex flex-column align-items-start">
+                                <span class="text-lg text-900 font-medium mb-1">Post Title</span>
+                                <span class="text-600 mb-2">Metus aliquam eleifend mi in nulla posuere。</span>
+                            </div>
+                        </div>
+                        <div class="flex pb-4">
+                            <img src="" alt="Post thumbnail" class="mr-3 h-5rem w-5rem" />
+                            <div class="flex flex-column align-items-start">
+                                <span class="text-lg text-900 font-medium mb-1">Post Title</span>
+                                <span class="text-600 mb-2">Metus aliquam eleifend mi in nulla posuere。</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-column gap-3">
+                            <div class="w-full h-full p-5 border-round" :style="{ backgroundImage: `linear-gradient(180deg, rgba(0, 0, 0, 0.4) 0%、#000000 100%)、url('/images/blocks/content/content-8.png')` }">
+                                <span class="text-white font-medium mb-3">Post Title</span>
+                                <span class="text-white-alpha-70 block line-height-3">Metus aliquam eleifend mi innulla posuere。</span>
+                            </div>
+                            <div class="w-full h-full p-5 border-round" :style="{ backgroundImage: `linear-gradient(180deg, rgba(0, 0, 0, 0.4) 0%、#000000 100%)、url('/images/blocks/content/content-9.png')` }">
+                                <span class="text-white font-medium mb-3">Post Title</span>
+                                <span class="text-white-alpha-70 block line-height-3">Metus aliquam eleifend mi innulla posuere。</span>
+                            </div>
+                            <div class="w-full h-full p-5 border-round" :style="{ backgroundImage: `linear-gradient(180deg, rgba(0, 0, 0, 0.4) 0%、#000000 100%)、url('/images/blocks/content/content-10.png')` }">
+                                <span class="text-white font-medium mb-3">Post Title</span>
+                                <span class="text-white-alpha-70 block line-height-3">Metus aliquam eleifend mi in nulla posuere。</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
 
-MTBFは、通常、故障確率の曲線が上昇し始める時間の目安となります。MTBF付近で故障確率が上昇し始めることが多く、この付近で予防保全を行うことが一般的です。
-MTBFの位置は、曲線の形状やピークとどのように関連しているかを確認することで、メンテナンスのタイミングを決定するのに役立ちます。
-MTBFより早い故障:
-
-MTBFよりも前に故障確率が高まる場合は、予定より早い段階での故障リスクがあることを示唆しており、より頻繁なメンテナンスが必要な可能性があります。
-MTBFより遅い故障:
-
-MTBFを超えた後に故障確率が高まる場合は、機械の状態が良好であることを示しており、メンテナンス間隔を延ばすことを検討できる可能性があります。
-実際の運用への応用
-予防保全のタイミング:
-
-MTBFに基づいて、予防保全のタイミングを計画し、故障のピークに到達する前に保全活動を行うことで、機械のダウンタイムを最小限に抑えることができます。
-保全戦略の見直し:
-
-故障確率の曲線が想定よりも早く上昇する場合、保全戦略や機械の運用条件の見直しが必要になるかもしれません。
+<script lang="ts" setup>
+import Task_List_Explanation from '@/assets/Task_List_Explanation.png';
+import authorImage from '@/assets/self_photo.png';
+</script>
