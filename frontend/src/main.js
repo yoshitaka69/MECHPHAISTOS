@@ -143,6 +143,35 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 
+
+
+
+//i18n
+import { createI18n } from 'vue-i18n';
+import ja from './i18n/ja.json';
+import en from './i18n/en.json';
+
+
+const i18n = createI18n({
+    locale: 'ja', // デフォルトの言語
+    fallbackLocale: 'en', // 言語が見つからない場合に使用する言語
+    messages: {
+        ja,
+        en
+    }
+});
+
+
+
+
+
+
+
+
+
+
+
+
 library.add(faPen, faTrash);
 
 
@@ -287,5 +316,7 @@ registerAllValidators();
 // or, register all of Handsontable's modules at once
 registerAllModules();
 
+
+app.use(i18n);
 
 app.mount('#app')

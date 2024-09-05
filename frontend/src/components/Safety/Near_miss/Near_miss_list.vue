@@ -346,10 +346,11 @@
   }
   
   .p-datatable-custom .p-datatable-thead > tr > th {
-	background-color: #2d3a4f;
-	color: white;
-  }
-  
+  background-color: #FFDAB9; /* 薄いオレンジ色 */
+  color: black; /* テキストの色を黒に設定 */
+}
+
+
   /* CSSで交互に背景色を設定 */
   .custom-near-miss-table .p-datatable-tbody > tr:nth-child(odd) {
 	background-color: #ffffff !important; /* 白色 */
