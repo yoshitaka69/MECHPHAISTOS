@@ -150,3 +150,14 @@ class CompanyCodeGapOfRepairingCostSerializer(serializers.ModelSerializer):
     class Meta:
         model = CompanyCode
         fields = ['companyCode', 'GapOfRepairingCostList']
+
+
+
+# serializers.py
+from rest_framework import serializers
+from .models import Schedule
+
+class ScheduleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Schedule
+        fields = ['id', 'name', 'pmType', 'startDate', 'endDate']

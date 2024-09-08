@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import MasterDataTable,BomAndTask,CeListAndTask,BadActorManagement,EventYearPPM,GapOfRepairingCost
+from .models import Schedule
 
 class MasterDataTableAdmin(admin.ModelAdmin):
 
@@ -83,6 +84,13 @@ class GapOfRepairingCostAdmin(admin.ModelAdmin):
 
 
 
+class ScheduleAdmin(admin.ModelAdmin):
+    list_display = ('name', 'pmType', 'startDate', 'endDate')  # 管理画面に表示するフィールド
+    search_fields = ('name', 'pmType')  # 検索可能なフィールド
+    list_filter = ('pmType', 'startDate')  # フィルタリングできるフィールド
+
+
+
 
 
 # 以下でadminサイトに表示させる
@@ -92,4 +100,5 @@ admin.site.register(CeListAndTask,CeListAndTaskAdmin)
 admin.site.register(BadActorManagement,BadActorManagementAdmin)
 admin.site.register(EventYearPPM,EventYearPPMAdmin)
 admin.site.register(GapOfRepairingCost,GapOfRepairingCostAdmin)
+admin.site.register(Schedule,ScheduleAdmin)
 

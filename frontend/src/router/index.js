@@ -90,10 +90,7 @@ const router = createRouter({
 							path: '/schedule/calendar',
 							component: () => import('../views/pages/Schedule/Calendar.vue')
 						},
-						{
-							path: '/schedule/ganttchart',
-							component: () => import('../views/pages/Schedule/Ganttchart.vue')
-						},
+
 					]
 				},
 				{
@@ -168,6 +165,10 @@ const router = createRouter({
             name: 'error',
             component: () => import('@/views/pages/test.vue')
         },
+		{
+			path: '/schedule/ganttchart',
+			component: () => import('@/components/Ganttchart/Ganttchart.vue')
+		},
 		{
 			path: '/near_miss_input_form',
 			name:'Near_Miss_input_form',

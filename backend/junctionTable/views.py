@@ -291,3 +291,30 @@ class CompanyCodeGapOfRepairingCostViewSet(viewsets.ModelViewSet):
         if company_code:
             queryset = queryset.filter(companyCode=company_code)
         return queryset
+    
+
+
+
+
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework import status  # ステータスコードを使用するためのインポート
+from .models import Schedule
+from .serializers import ScheduleSerializer
+
+# タスクを取得するビュー
+class ScheduleListView(APIView):
+    def get(self, request):
+        schedules = Schedule.objects.all()
+        serializer = ScheduleSerializer(schedules, many=True)
+        return Response(serializer.data)
+
+# 新しいタスクを保存するビュー
+class ScheduleSaveView(APIView):
+    def post(self, request):
+        # 複数のタスクを一度に保存する
+        serializer = ScheduleSerializer(data=request.data, many=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

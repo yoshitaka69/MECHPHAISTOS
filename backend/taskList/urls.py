@@ -16,6 +16,8 @@ from .views import (TaskListPPM02ViewSet,CompanyCodeTaskListPPM02ViewSet,
 
 
 
+
+
 router = DefaultRouter()
 router.register(r'typicalTaskList', TypicalTaskListViewSet, basename='typicalTaskList')
 router.register(r'typicalTaskListByCompany', CompanyCodeTypicalTaskListViewSet, basename='companyCode-typicalTaskList')
@@ -41,6 +43,8 @@ router.register(r'taskListPPM05ByCompany', CompanyCodeTaskListPPM05ViewSet, base
 router.register(r'taskListAPM05', TaskListAPM05ViewSet, basename='taskListAPM05')
 router.register(r'taskListAPM05ByCompany', CompanyCodeTaskListAPM05ViewSet, basename='companyCode-taskListAPM05')
 
+
 urlpatterns = [
     path('task/', include(router.urls)),
+
 ]
