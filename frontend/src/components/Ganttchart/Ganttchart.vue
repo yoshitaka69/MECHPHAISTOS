@@ -1,596 +1,450 @@
 <template>
-  <!-- 全体を囲むコンテナ -->
   <div class="gantt-container">
-      <!-- タイトルを大きな文字で太字にする -->
-      <div class="gantt-title">9月度月間工程</div>
-      <div id="gantt" class="space-y-8"> <!-- 上下ガントチャート間にスペースを追加 -->
-          <!-- 上部のガントチャート -->
-          <div class="gantt-chart-wrapper top-chart">
-              <div id="gantt-chart-container-1" class="overflow-auto w-full select-none bg-white">
-                  <div id="top-header" class="top-0 flex z-20 sticky" :style="{ width: `${topViewWidth + scrollbarOffset}px` }">
-                      <div class="border-b border-black bg-green-100 flex sticky left-0 top-0" :style="{ minWidth: `${topTaskWidth}px` }">
-                          <div class="py-2 h-full px-2 border-r border-black text-sm" style="width: 120px">Plant</div>
-                          <div class="py-2 h-full text-center border-r border-black text-sm" style="width: 90px">開始日</div>
-                          <div class="py-2 h-full text-center border-r border-black text-sm" style="width: 90px">期限日</div>
-                      </div>
-                      <template v-for="month in calendars" :key="month.title">
-                          <div class="border-b border-black bg-white" :style="{ minWidth: `${blockWidth * month.days}px` }">
-                              <div class="border-b border-r border-black px-2">{{ month.title }}</div>
-                              <div class="flex">
-                                  <div v-for="day in month.days" :key="day.date" class="border-r border-black text-xs text-center" :class="weekendColor(day.dayOfWeek)" :style="{ minWidth: `${blockWidth}px` }">
-                                      {{ day.date }}
-                                  </div>
-                              </div>
-                              <div class="flex">
-                                  <div v-for="day in month.days" :key="day.date" class="border-r border-black text-xs text-center" :class="weekendColor(day.dayOfWeek)" :style="{ minWidth: `${blockWidth}px` }">
-                                      {{ day.dayOfWeek }}
-                                  </div>
-                              </div>
-                          </div>
-                      </template>
-                  </div>
-                  <div id="top-contents" class="relative overflow-y-auto" :style="{ width: `${topViewWidth + scrollbarOffset}px`, height: `${topTaskRows.length * taskRowHeight}px` }">
-                      <!-- 縦のグリッド線を表示 -->
-                      <div v-for="i in totalDays" :key="i" class="absolute bg-gray-200" :style="{ left: `${i * blockWidth + topTaskWidth}px`, top: 0, height: `${topTaskRows.length * taskRowHeight}px`, width: '1px' }"></div>
-                      <!-- 今日の日付を示す赤い帯 -->
-                      <div v-if="topTodayPosition >= 0" class="absolute bg-red-100" :style="{ width: `${blockWidth - 1}px`, left: `${topTodayPosition}px`, height: `${topTaskRows.length * taskRowHeight}px` }"></div>
-                      <div v-for="task in topTaskRows" :key="task.id" class="task-row top-task-row flex">
-                          <div class="bg-green-100 z-10 flex sticky left-0" :style="{ minWidth: `${topTaskWidth}px` }">
-                              <!-- 編集可能なタスク名フィールド -->
-                              <input class="py-2 h-full px-2 border-r border-black text-sm" style="width: 120px" v-model="task.name" @change="updateTopTaskName(task)" />
-                              <!-- 編集可能な開始日フィールド -->
-                              <input class="py-2 h-full text-center border-r border-black text-sm" style="width: 90px" type="date" v-model="task.startDate" @change="updateTopTaskDates(task)" />
-                              <!-- 編集可能な期限日フィールド -->
-                              <input class="py-2 h-full text-center border-r border-black text-sm" style="width: 90px" type="date" v-model="task.endDate" @change="updateTopTaskDates(task)" />
-                          </div>
-                          <div :style="task.style" class="h-10 flex py-2 will-change-transform cursor-pointer" @mousedown="onMouseDown_MoveStart($event, task, topTasks)">
-                              <div class="w-2 bg-yellow-200 rounded-l-lg cursor-col-resize" @mousedown.stop="onMouseDown_ResizeStart($event, task, 'left', topTasks)"></div>
-                              <div class="flex-1 bg-yellow-200 pointer-events-none"></div>
-                              <div class="w-2 bg-yellow-200 rounded-r-lg cursor-col-resize" @mousedown.stop="onMouseDown_ResizeStart($event, task, 'right', topTasks)"></div>
-                          </div>
-                      </div>
-                  </div>
-              </div>
-          </div>
+    <div class="gantt-title">ガントチャート</div>
+    <div id="gantt" class="space-y-8 flex">
+      <!-- タスク追加ボタン -->
+      <div class="buttons-container">
+        <button @click="addTask" class="task-add-button">タスク追加</button>
+        <!-- 保存ボタン -->
+        <button @click="saveTasks" class="task-save-button">保存</button>
+      </div>
 
-          <!-- 下部のガントチャート -->
-          <div class="gantt-chart-wrapper bottom-chart">
-              <div id="gantt-chart-container-2" class="overflow-auto w-full select-none bg-white">
-                  <div id="bottom-header" class="top-0 flex z-20 sticky" :style="{ width: `${bottomViewWidth + scrollbarOffset}px` }">
-                      <div class="border-b border-black bg-blue-100 flex sticky left-0 top-0" :style="{ minWidth: `${bottomTaskWidth}px` }">
-                          <div class="py-2 h-full px-2 border-r border-black text-sm" style="width: 120px">タスク</div>
-                          <div class="py-2 h-full text-center border-r border-black text-sm" style="width: 120px">PM type</div>
-                          <div class="py-2 h-full text-center border-r border-black text-sm" style="width: 120px">開始日</div>
-                          <div class="py-2 h-full text-center border-r border-black text-sm" style="width: 120px">期限日</div>
-                      </div>
-                      <template v-for="month in calendars" :key="month.title">
-                          <div class="border-b border-black bg-white" :style="{ minWidth: `${blockWidth * month.days}px` }">
-                              <div class="border-b border-r border-black px-2">{{ month.title }}</div>
-                              <div class="flex">
-                                  <div v-for="day in month.days" :key="day.date" class="border-r border-black text-xs text-center" :class="weekendColor(day.dayOfWeek)" :style="{ minWidth: `${blockWidth}px` }">
-                                      {{ day.date }}
-                                  </div>
-                              </div>
-                              <div class="flex">
-                                  <div v-for="day in month.days" :key="day.date" class="border-r border-black text-xs text-center" :class="weekendColor(day.dayOfWeek)" :style="{ minWidth: `${blockWidth}px` }">
-                                      {{ day.dayOfWeek }}
-                                  </div>
-                              </div>
-                          </div>
-                      </template>
-                  </div>
-                  <div id="bottom-contents" class="relative overflow-y-auto" :style="{ width: `${bottomViewWidth + scrollbarOffset}px`, height: `${bottomTaskRows.length * taskRowHeight}px` }">
-                      <!-- 縦のグリッド線を表示 -->
-                      <div v-for="i in totalDays" :key="i" class="absolute bg-gray-200" :style="{ left: `${i * blockWidth + bottomTaskWidth}px`, top: 0, height: `${bottomTaskRows.length * taskRowHeight}px`, width: '1px' }"></div>
-                      <!-- 今日の日付を示す赤い帯 -->
-                      <div v-if="bottomTodayPosition >= 0" class="absolute bg-red-100" :style="{ width: `${blockWidth - 1}px`, left: `${bottomTodayPosition}px`, height: `${bottomTaskRows.length * taskRowHeight}px` }"></div>
-                      <div v-for="task in bottomTaskRows" :key="task.id" class="task-row bottom-task-row flex">
-                          <div class="bg-blue-100 z-10 flex sticky left-0" :style="{ minWidth: `${bottomTaskWidth}px` }">
-                              <!-- 編集可能なタスク名フィールド -->
-                              <input class="py-2 h-full px-2 border-r border-black text-sm" style="width: 120px" v-model="task.name" @change="updateTaskName(task)" />
-                              <!-- 編集可能なPM typeフィールド -->
-                              <input class="py-2 h-full text-center border-r border-black text-sm" style="width: 120px" v-model="task.pmType" @change="updateTaskPmType(task)" />
-                              <!-- 編集可能な開始日フィールド -->
-                              <input class="py-2 h-full text-center border-r border-black text-sm" style="width: 120px" type="date" v-model="task.startDate" @change="updateTaskDates(task)" />
-                              <!-- 編集可能な期限日フィールド -->
-                              <input class="py-2 h-full text-center border-r border-black text-sm" style="width: 120px" type="date" v-model="task.endDate" @change="updateTaskDates(task)" />
-                          </div>
-                          <div :style="task.style" class="h-10 flex py-2 will-change-transform cursor-pointer" @mousedown="onMouseDown_MoveStart($event, task, tasks)">
-                              <div class="w-2 bg-yellow-200 rounded-l-lg cursor-col-resize" @mousedown.stop="onMouseDown_ResizeStart($event, task, 'left', tasks)"></div>
-                              <div class="flex-1 bg-yellow-200 pointer-events-none"></div>
-                              <div class="w-2 bg-yellow-200 rounded-r-lg cursor-col-resize" @mousedown.stop="onMouseDown_ResizeStart($event, task, 'right', tasks)"></div>
-                          </div>
-                      </div>
-                  </div>
-              </div>
-          </div>
+      <!-- 左側に入力フォームのヘッダーを追加 -->
+      <div class="task-inputs">
+        <!-- ヘッダー -->
+        <div class="task-input-header">
+          <div class="task-header-item task-name">タスク名</div>
+          <div class="task-header-item task-plant">プラント</div>
+          <div class="task-header-item task-pm-type">PM Type</div>
+          <div class="task-header-item task-date">開始日</div>
+          <div class="task-header-item task-date">終了日</div>
+        </div>
+
+        <!-- 入力フォーム -->
+        <div v-for="(task, index) in tasks" :key="task.id" class="task-input-row">
+          <input type="text" v-model="task.name" placeholder="タスク名" class="task-input task-name" @change="updateTaskName(index, task.name)" />
+          <input type="text" v-model="task.plant" placeholder="プラント" class="task-input task-plant" />
+          <input type="text" v-model="task.pmType" placeholder="PM Type" class="task-input task-pm-type" />
+          <input type="date" v-model="task.startDate" class="task-input task-date" @change="updateTaskDates(index)" />
+          <input type="date" v-model="task.endDate" class="task-input task-date" @change="updateTaskDates(index)" />
+        </div>
       </div>
-      <!-- タブエリア -->
-      <div class="gantt-tabs">
-          <button class="gantt-tab" @click="selectTab('9月度')">9月度</button>
-          <button class="gantt-tab" @click="selectTab('10月度')">10月度</button>
-          <!-- 他の月のタブもここに追加可能 -->
+
+      <!-- D3.jsでタスクバーと日付を表示するコンテナ -->
+      <div id="gantt-chart-container-2" class="overflow-auto w-full select-none bg-white">
+        <!-- 月と日付表示エリア -->
+        <div id="month-header" class="month-header"></div>
+        <div id="date-header" class="date-header"></div>
+        <div id="day-of-week-header" class="day-of-week-header"></div>
+        <svg id="gantt-chart"></svg>
       </div>
+    </div>
   </div>
 </template>
 
-<script>
-import { ref, onMounted, onUnmounted, reactive, computed } from 'vue';
+
+
+<script lang="ts" setup>
+import { onMounted, ref } from 'vue';
+import * as d3 from 'd3';
 import dayjs from 'dayjs';
+import axios from 'axios';
 
-const BLOCK_SIZE = 20;
-const TOP_TASK_WIDTH = 300; // 上部ガントチャートのタスク幅
-const BOTTOM_TASK_WIDTH = 480; // 下部ガントチャートのタスク幅
+// 追加: 現在の日付を取得し、その前後1か月の日付範囲を計算
+const today = dayjs(); // 今日の日付
+const startDate = today.subtract(1, 'month'); // 1か月前
+const endDate = today.add(1, 'month'); // 1か月後
 
-export default {
-  name: 'GanttChart',
-  setup() {
-      const dragging = ref(false);
-      const leftResizing = ref(false);
-      const rightResizing = ref(false);
-      const target = reactive({
-          pageX: 0,
-          element: null,
-          task: null
-      });
+const tasks = ref([]); // タスクデータ
 
-      const blockWidth = ref(BLOCK_SIZE);
-      const topTaskWidth = ref(TOP_TASK_WIDTH);
-      const bottomTaskWidth = ref(BOTTOM_TASK_WIDTH);
-      const topViewWidth = ref(0);
-      const bottomViewWidth = ref(0);
-      const contentWidth = ref(0);
-      const totalDays = ref(0);
-      const startMonth = ref(dayjs().add(0, 'month').format('YYYY-MM'));
-      const endMonth = ref(dayjs().add(1, 'month').format('YYYY-MM'));
-      const calendars = ref([]);
-      const tasks = ref([]);
-      const topTasks = ref([]);
-      const calendar = ref(null);
-      const scrollbarOffset = 20; // スクロールバーのオフセット
-      const taskRowHeight = 40; // 各タスク行の高さ
-      // 選択されたタブを管理
-      const selectTab = (month) => {
-          console.log(`${month} が選択されました`);
-      };
+const rowHeight = 40;
+const blockWidth = 30;
+const totalDays = endDate.diff(startDate, 'day') + 1; // 表示する合計日数
 
-      onMounted(() => {
-          initView();
-          makeTestData();
-          document.addEventListener('mousemove', onMouseDown_Moving);
-          document.addEventListener('mouseup', onMouseDown_MoveStop);
-          document.addEventListener('mousemove', onMouseDown_Resizing);
-          document.addEventListener('mouseup', onMouseDown_ResizeStop);
-      });
+// xScaleの修正: 現在の日付を基準に前後1か月のスケールを計算
+const xScale = d3
+    .scaleTime()
+    .domain([startDate.toDate(), endDate.toDate()]) // 追加: 前後1か月の日付範囲を設定
+    .range([0, blockWidth * totalDays]); // 表示する日数に応じて幅を設定
 
-      onUnmounted(() => {
-          document.removeEventListener('mousemove', onMouseDown_Moving);
-          document.removeEventListener('mouseup', onMouseDown_MoveStop);
-          document.removeEventListener('mousemove', onMouseDown_Resizing);
-          document.removeEventListener('mouseup', onMouseDown_ResizeStop);
-      });
+// タスクデータを取得する関数
+async function fetchTasks() {
+    try {
+        const response = await axios.get('http://127.0.0.1:8000/api/schedules/');
+        tasks.value = response.data;
+        updateChart();
+    } catch (error) {
+        console.error('Error fetching tasks:', error);
+    }
+}
 
-      const topTaskRows = computed(() => {
-          const startMonthDate = dayjs(startMonth.value);
+// 保存処理
+async function saveTasks() {
+    try {
+        const response = await axios.post('http://127.0.0.1:8000/api/schedules/save/', tasks.value);
+        console.log('Response from server:', response.data);
+    } catch (error) {
+        console.error('Error saving tasks:', error);
+    }
+}
 
-          return topTasks.value.map((task) => {
-              const dateFrom = dayjs(task.startDate);
-              const dateTo = dayjs(task.endDate);
-              const between = dateTo.diff(dateFrom, 'day') + 1;
-              const start = dateFrom.diff(startMonthDate, 'day');
+onMounted(() => {
+    fetchTasks();
+    drawGanttChart();
+    drawMonthHeader();
+    drawDateHeader();
+    drawDayOfWeekHeader();
+});
 
-              const pos = {
-                  x: start * BLOCK_SIZE,
-                  width: BLOCK_SIZE * between
-              };
+// ガントチャート描画関数
+function drawGanttChart() {
+    const svg = d3
+        .select('#gantt-chart')
+        .attr('width', blockWidth * totalDays) // 修正: 表示する日数に応じた幅
+        .attr('height', tasks.value.length * rowHeight);
 
-              const style = {
-                  width: `${pos.width}px`,
-                  transform: `translateX(${pos.x}px)`
-              };
+    drawVerticalGridLines(svg);
 
-              return {
-                  style,
-                  pos,
-                  ...task
-              };
-          });
-      });
+    svg.selectAll('.row-grid-line')
+        .data(tasks.value)
+        .enter()
+        .append('line')
+        .attr('x1', 0)
+        .attr('x2', blockWidth * totalDays) // 修正: 表示する日数に応じたグリッド線の幅
+        .attr('y1', (d, i) => (i + 1) * rowHeight)
+        .attr('y2', (d, i) => (i + 1) * rowHeight)
+        .attr('stroke', 'black');
 
-      const bottomTaskRows = computed(() => {
-          const startMonthDate = dayjs(startMonth.value);
+    const drag = d3.drag().on('start', dragStarted).on('drag', dragged).on('end', dragEnded);
 
-          return tasks.value.map((task) => {
-              const dateFrom = dayjs(task.startDate);
-              const dateTo = dayjs(task.endDate);
-              const between = dateTo.diff(dateFrom, 'day') + 1;
-              const start = dateFrom.diff(startMonthDate, 'day');
+    const resizeLeft = d3.drag().on('start', resizeStarted).on('drag', resizingLeft).on('end', resizeEnded);
 
-              const pos = {
-                  x: start * BLOCK_SIZE,
-                  width: BLOCK_SIZE * between
-              };
+    const resizeRight = d3.drag().on('start', resizeStarted).on('drag', resizingRight).on('end', resizeEnded);
 
-              const style = {
-                  width: `${pos.width}px`,
-                  transform: `translateX(${pos.x}px)`
-              };
+    // タスクバーの描画
+    const bars = svg.selectAll('g').data(tasks.value).enter().append('g');
 
-              return {
-                  style,
-                  pos,
-                  ...task
-              };
-          });
-      });
+    bars.append('rect')
+        .attr('x', (d) => xScale(dayjs(d.startDate).toDate())) // 修正: 日付範囲に基づいてバーの位置を調整
+        .attr('y', (d, i) => i * rowHeight)
+        .attr('width', (d) => xScale(dayjs(d.endDate).toDate()) - xScale(dayjs(d.startDate).toDate()))
+        .attr('height', rowHeight)
+        .attr('fill', 'steelblue')
+        .call(drag);
 
-      const topTodayPosition = computed(() => {
-          const today = dayjs();
-          const startDate = dayjs(startMonth.value);
-          const endDate = dayjs(endMonth.value);
-          const diffFuture = today.diff(startDate, 'day');
-          const diffPast = endDate.diff(today, 'day') + endDate.daysInMonth();
-          return diffFuture >= 0 && diffPast > 0 ? diffFuture * BLOCK_SIZE + topTaskWidth.value : -1;
-      });
+    // 左側のリサイズハンドルを追加
+    bars.append('rect')
+        .attr('x', (d) => xScale(dayjs(d.startDate).toDate()) - 5)
+        .attr('y', (d, i) => i * rowHeight)
+        .attr('width', 10)
+        .attr('height', rowHeight)
+        .attr('fill', 'gray')
+        .attr('cursor', 'ew-resize')
+        .call(resizeLeft); // 左端のリサイズハンドルを追加
 
-      const bottomTodayPosition = computed(() => {
-          const today = dayjs();
-          const startDate = dayjs(startMonth.value);
-          const endDate = dayjs(endMonth.value);
-          const diffFuture = today.diff(startDate, 'day');
-          const diffPast = endDate.diff(today, 'day') + endDate.daysInMonth();
-          return diffFuture >= 0 && diffPast > 0 ? diffFuture * BLOCK_SIZE + bottomTaskWidth.value : -1;
-      });
+    // 右側のリサイズハンドルを追加
+    bars.append('rect')
+        .attr('x', (d) => xScale(dayjs(d.endDate).toDate()) - 5)
+        .attr('y', (d, i) => i * rowHeight)
+        .attr('width', 10)
+        .attr('height', rowHeight)
+        .attr('fill', 'gray')
+        .attr('cursor', 'ew-resize')
+        .call(resizeRight); // 右端のリサイズハンドルを追加
 
-      function initView() {
-          serCalendar();
-          totalDays.value = calendars.value.reduce((p, c) => p + c.days.length, 0);
-          contentWidth.value = totalDays.value * blockWidth.value;
-          topViewWidth.value = topTaskWidth.value + contentWidth.value;
-          bottomViewWidth.value = bottomTaskWidth.value + contentWidth.value;
-          if (calendar.value) {
-              calendar.value.scrollLeft = bottomTodayPosition.value - BOTTOM_TASK_WIDTH;
-          }
-      }
+    svg.selectAll('text')
+        .data(tasks.value)
+        .enter()
+        .append('text')
+        .attr('x', (d) => xScale(dayjs(d.startDate).toDate()) + 5)
+        .attr('y', (d, i) => i * rowHeight + rowHeight / 2 + 5)
+        .text((d) => d.name)
+        .attr('fill', 'white');
+}
 
-      function getDays(startMonth) {
-          const dayOfWeek = ['日', '月', '火', '水', '木', '金', '土'];
-          const days = [];
-          for (let i = 0; i < startMonth.daysInMonth(); i++) {
-              const targetDate = startMonth.add(i, 'day');
-              days.push({
-                  date: targetDate.date(),
-                  dayOfWeek: dayOfWeek[targetDate.day()]
-              });
-          }
-          return days;
-      }
+// ドラッグ開始時の処理
+function dragStarted(event, d) {
+    d3.select(this).raise().attr('stroke', 'black');
+}
 
-      function serCalendar() {
-          const startMonthDate = dayjs(startMonth.value);
-          const endMonthDate = dayjs(endMonth.value);
-          const betweenMonth = endMonthDate.diff(startMonthDate, 'month');
-          for (let i = 0; i <= betweenMonth; i++) {
-              const targetMonth = startMonthDate.add(i, 'month');
-              calendars.value.push({
-                  title: targetMonth.format('YYYY-MM'),
-                  days: getDays(targetMonth)
-              });
-          }
-      }
+// ドラッグ中の処理
+function dragged(event, d) {
+    const newX = event.x;
+    const numDaysDragged = Math.round(newX / blockWidth); // ドラッグされた日数を計算
 
-      function onMouseDown_MoveStart(e, task, taskList) {
-          dragging.value = true;
-          target.pageX = e.pageX;
-          target.element = e.target;
-          target.task = task;
-          target.taskList = taskList;
-      }
+    const newStartDate = startDate.add(numDaysDragged, 'day'); // 修正: currentMonthではなくstartDateを基準に計算
+    const taskDuration = dayjs(d.endDate).diff(dayjs(d.startDate), 'day');
+    const newEndDate = newStartDate.add(taskDuration, 'day');
 
-      function onMouseDown_Moving(e) {
-          if (!dragging.value) return;
+    // 開始日と終了日を更新
+    d.startDate = newStartDate.format('YYYY-MM-DD');
+    d.endDate = newEndDate.format('YYYY-MM-DD');
 
-          const realX = calcMovePositionX(e.pageX);
-          target.element.style.transform = `translateX(${realX}px)`;
-      }
+    // バーの位置を更新
+    d3.select(this)
+        .attr('x', newX)
+        .attr('width', blockWidth * (taskDuration + 1));
+}
 
-      function onMouseDown_MoveStop(e) {
-          if (!dragging.value) return;
+// ドラッグ終了時の処理
+function dragEnded(event, d) {
+    d3.select(this).attr('stroke', null);
+    updateTaskDates(d.id); // 日付をフォームに反映
+}
 
-          const realX = calcMovePositionX(e.pageX);
-          const days = Math.round((target.task?.pos?.x - realX) / BLOCK_SIZE);
+// リサイズ開始時の処理
+function resizeStarted(event, d) {
+    d3.select(this).raise().attr('stroke', 'black');
+}
 
-          if (days !== 0 && target.taskList) {
-              const task = target.taskList.find((t) => t.id === target.task.id);
-              if (task) {
-                  task.startDate = dayjs(task.startDate).add(-days, 'day').format('YYYY-MM-DD');
-                  task.endDate = dayjs(task.endDate).add(-days, 'day').format('YYYY-MM-DD');
-                  updateTaskDates(task);
-              }
-          } else if (target.task) {
-              target.element.style.transform = `translateX(${target.task.pos.x}px)`;
-          }
+// 左端リサイズ中の処理
+function resizingLeft(event, d) {
+    const newX = event.x;
+    const numDaysResized = Math.round(newX / blockWidth);
 
-          dragging.value = false;
-          target.element = null;
-          target.task = null;
-          target.pageX = 0;
-      }
+    const newStartDate = startDate.add(numDaysResized, 'day'); // 修正: currentMonthではなくstartDateを基準に計算
+    d.startDate = newStartDate.format('YYYY-MM-DD');
 
-      function onMouseDown_ResizeStart(e, task, direction, taskList) {
-          if (direction === 'left') {
-              leftResizing.value = true;
-          } else {
-              rightResizing.value = true;
-          }
-          target.pageX = e.pageX;
-          target.element = e.target.parentElement;
-          target.task = task;
-          target.direction = direction;
-          target.taskList = taskList;
-      }
+    d3.select(this.parentNode)
+        .select('rect')
+        .attr('x', newX)
+        .attr('width', xScale(dayjs(d.endDate).toDate()) - xScale(dayjs(d.startDate).toDate()));
+}
 
-      function onMouseDown_Resizing(e) {
-          if (leftResizing.value || rightResizing.value) {
-              const realWidth = calcResizeWidth(e.pageX, target.direction);
-              const realX = target.direction === 'left' ? calcResizePositionX(e.pageX) : target.task.pos.x;
-              target.element.style.transform = `translateX(${realX}px)`;
-              target.element.style.width = `${realWidth}px`;
-          }
-      }
+// 右端リサイズ中の処理
+function resizingRight(event, d) {
+    const newX = event.x;
+    const numDaysResized = Math.round(newX / blockWidth);
 
-      function onMouseDown_ResizeStop(e) {
-          if (leftResizing.value || rightResizing.value) {
-              const realWidth = calcResizeWidth(e.pageX, target.direction);
-              const days = Math.round((target.task.pos.width - realWidth) / BLOCK_SIZE);
+    const newEndDate = startDate.add(numDaysResized, 'day'); // 修正: currentMonthではなくstartDateを基準に計算
+    d.endDate = newEndDate.format('YYYY-MM-DD');
 
-              if (days !== 0) {
-                  const task = target.taskList.find((t) => t.id === target.task.id);
-                  if (leftResizing.value) {
-                      task.startDate = dayjs(task.startDate).add(days, 'day').format('YYYY-MM-DD');
-                  } else {
-                      task.endDate = dayjs(task.endDate).add(-days, 'day').format('YYYY-MM-DD');
-                  }
-                  updateTaskDates(task);
-              } else {
-                  target.element.style.transform = `translateX(${target.task.pos.x}px)`;
-                  target.element.style.width = `${target.task.pos.width}px`;
-              }
-          }
+    d3.select(this.parentNode)
+        .select('rect')
+        .attr('width', xScale(dayjs(d.endDate).toDate()) - xScale(dayjs(d.startDate).toDate()));
+}
 
-          leftResizing.value = false;
-          rightResizing.value = false;
-          target.element = null;
-          target.task = null;
-          target.pageX = 0;
-      }
+// リサイズ終了時の処理
+function resizeEnded(event, d) {
+    d3.select(this).attr('stroke', null);
+    updateTaskDates(d.id); // 日付をフォームに反映
+}
 
-      function calcMovePositionX(currentPageX) {
-          if (!target.task || !target.task.pos) {
-              console.error('Task or task.pos is null in calcMovePositionX');
-              return 0;
-          }
+// 月のヘッダーを表示する関数
+function drawMonthHeader() {
+    // 修正: currentMonthではなく、startDateを使用
+    const monthHeader = d3.select('#month-header');
 
-          const diff = target.pageX - currentPageX;
-          return keepThreshold(target.task.pos.x - diff, 0, contentWidth.value - target.task.pos.width);
-      }
+    monthHeader
+        .append('div')
+        .style('display', 'inline-block')
+        .style('width', `${blockWidth * totalDays}px`) // 表示する日数に基づいて幅を設定
+        .style('text-align', 'center')
+        .style('font-weight', 'bold')
+        .text(startDate.format('MMMM YYYY')); // 開始日の月と年を表示
+}
 
-      function calcResizePositionX(currentPageX) {
-          const diff = target.pageX - currentPageX;
-          return keepThreshold(target.task.pos.x - diff, 0, target.task.pos.x + target.task.pos.width - BLOCK_SIZE);
-      }
+// 日付のヘッダーを表示する関数
+function drawDateHeader() {
+    const dateHeader = d3.select('#date-header');
 
-      function calcResizeWidth(currentPageX, direction) {
-          const diff = target.pageX - currentPageX;
-          if (direction === 'left') {
-              return keepThreshold(target.task.pos.width + diff, BLOCK_SIZE, target.task.pos.width + target.task.pos.x);
-          } else {
-              return keepThreshold(target.task.pos.width - diff, BLOCK_SIZE, contentWidth.value - target.task.pos.x);
-          }
-      }
+    for (let i = 0; i < totalDays; i++) {
+        const currentDay = startDate.add(i, 'day');
+        const dayOfWeek = currentDay.day();
 
-      function keepThreshold(value, min, max) {
-          if (value <= min) return min;
-          if (value >= max) return max;
-          return value;
-      }
+        dateHeader.append('div').style('display', 'inline-block').style('width', `${blockWidth}px`).style('text-align', 'center').style('color', getDayColor(dayOfWeek)).style('border-right', '1px solid black').text(currentDay.format('D'));
+    }
+}
 
-      function weekendColor(dayOfWeek) {
-          switch (dayOfWeek) {
-              case '土':
-                  return 'bg-blue-100';
-              case '日':
-                  return 'bg-red-100';
-              default:
-                  return '';
-          }
-      }
+// 曜日ヘッダーを表示する関数
+function drawDayOfWeekHeader() {
+    const dayOfWeekHeader = d3.select('#day-of-week-header');
 
-      function makeTestData() {
-          const today = dayjs();
-          for (let i = 1; i <= 3; i++) {
-              topTasks.value.push({
-                  id: i,
-                  name: `plant - ${i}`,
-                  startDate: today.format('YYYY-MM-DD'),
-                  endDate: today.add(Math.floor(Math.random() * 5), 'day').format('YYYY-MM-DD')
-              });
-          }
-          for (let i = 4; i <= 10; i++) {
-              tasks.value.push({
-                  id: i,
-                  name: `task - ${i}`,
-                  pmType: `PM-${(i % 3) + 1}`,
-                  startDate: today.format('YYYY-MM-DD'),
-                  endDate: today.add(Math.floor(Math.random() * 5), 'day').format('YYYY-MM-DD')
-              });
-          }
-      }
+    // 修正: currentMonthではなくstartDateを使用し、表示する日数分ループ
+    for (let i = 0; i < totalDays; i++) {
+        const currentDay = startDate.add(i, 'day');
+        const dayOfWeek = currentDay.day();
 
-      function updateTopTaskDates(task) {
-          const dateFrom = dayjs(task.startDate);
-          const dateTo = dayjs(task.endDate);
-          const between = dateTo.diff(dateFrom, 'day') + 1;
-          const startMonthDate = dayjs(startMonth.value);
-          const start = dateFrom.diff(startMonthDate, 'day');
-          const pos = {
-              x: start * BLOCK_SIZE,
-              width: BLOCK_SIZE * between
-          };
-          task.style.width = `${pos.width}px`;
-          task.style.transform = `translateX(${pos.x}px)`;
-      }
-      function updateTaskDates(task) {
-          if (!task) {
-              console.error('Task is undefined in updateTaskDates');
-              return;
-          }
+        dayOfWeekHeader.append('div').style('display', 'inline-block').style('width', `${blockWidth}px`).style('text-align', 'center').style('color', getDayColor(dayOfWeek)).style('border-right', '1px solid black').text(currentDay.format('dd')); // 修正: 曜日を表示
+    }
+}
 
-          const dateFrom = dayjs(task.startDate);
-          const dateTo = dayjs(task.endDate);
-          const between = dateTo.diff(dateFrom, 'day') + 1;
-          const startMonthDate = dayjs(startMonth.value);
-          const start = dateFrom.diff(startMonthDate, 'day');
-          const pos = {
-              x: start * BLOCK_SIZE,
-              width: BLOCK_SIZE * between
-          };
+// 曜日に応じて色を決定
+function getDayColor(dayOfWeek) {
+    if (dayOfWeek === 0) {
+        return 'red';
+    } else if (dayOfWeek === 6) {
+        return 'blue';
+    } else {
+        return 'black';
+    }
+}
 
-          if (!task.style) {
-              task.style = {};
-          }
+// 日付の更新時にガントチャートを再描画
+function updateTaskDates(id) {
+    const task = tasks.value.find((t) => t.id === id);
+    if (task) {
+        task.startDate = dayjs(task.startDate).format('YYYY-MM-DD');
+        task.endDate = dayjs(task.endDate).format('YYYY-MM-DD');
+        updateChart();
+    }
+}
 
-          task.style.width = `${pos.width}px`;
-          task.style.transform = `translateX(${pos.x}px)`;
-      }
+// ガントチャートを更新
+function updateChart() {
+    d3.select('#gantt-chart').selectAll('*').remove();
+    drawGanttChart();
+}
 
-      function updateTopTaskName(task) {
-          const taskToUpdate = topTasks.value.find((t) => t.id === task.id);
-          if (taskToUpdate) {
-              taskToUpdate.name = task.name;
-          }
-      }
+// 縦グリッド線の描画
+function drawVerticalGridLines(svg) {
+    const daysArray = Array.from({ length: totalDays }, (_, i) => i + 1);
 
-      function updateTaskName(task) {
-          const taskToUpdate = tasks.value.find((t) => t.id === task.id);
-          if (taskToUpdate) {
-              taskToUpdate.name = task.name;
-          }
-      }
+    svg.selectAll('.column-grid-line')
+        .data(daysArray)
+        .enter()
+        .append('line')
+        .attr('x1', (d) => d * blockWidth)
+        .attr('x2', (d) => d * blockWidth)
+        .attr('y1', 0)
+        .attr('y2', tasks.value.length * rowHeight)
+        .attr('stroke', '#ccc');
+}
 
-      function updateTaskPmType(task) {
-          const taskToUpdate = tasks.value.find((t) => t.id === task.id);
-          if (taskToUpdate) {
-              taskToUpdate.pmType = task.pmType;
-          }
-      }
-
-      return {
-          dragging,
-          leftResizing,
-          rightResizing,
-          target,
-          blockWidth,
-          topTaskWidth,
-          bottomTaskWidth,
-          topViewWidth,
-          bottomViewWidth,
-          contentWidth,
-          totalDays,
-          startMonth,
-          endMonth,
-          calendars,
-          tasks,
-          topTasks,
-          calendar,
-          topTaskRows,
-          bottomTaskRows,
-          topTodayPosition,
-          bottomTodayPosition,
-          initView,
-          getDays,
-          serCalendar,
-          onMouseDown_MoveStart,
-          onMouseDown_Moving,
-          onMouseDown_MoveStop,
-          onMouseDown_ResizeStart,
-          onMouseDown_Resizing,
-          onMouseDown_ResizeStop,
-          calcMovePositionX,
-          calcResizePositionX,
-          calcResizeWidth,
-          keepThreshold,
-          weekendColor,
-          makeTestData,
-          updateTopTaskDates,
-          updateTaskDates,
-          updateTopTaskName,
-          updateTaskName,
-          updateTaskPmType,
-          scrollbarOffset,
-          taskRowHeight,
-          selectTab
-      };
-  }
-};
+//task追加関数
+function addTask() {
+    const newTaskId = tasks.value.length + 1;
+    const newTask = {
+        id: newTaskId,
+        name: `Task ${newTaskId}`,
+        pmType: `PM${newTaskId}`,
+        startDate: startDate.format('YYYY-MM-DD'), // 修正: currentMonthではなくstartDateを使用
+        endDate: startDate.add(1, 'day').format('YYYY-MM-DD') // 修正: currentMonthではなくstartDateを使用
+    };
+    tasks.value.push(newTask); // 新しいタスクを追加
+    updateChart(); // ガントチャートを更新
+}
 </script>
 
 <style scoped>
-/* 全体のコンテナ */
 .gantt-container {
-display: flex;
-flex-direction: column;
-height: 100vh;
-justify-content: flex-start;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: white; /* 背景を白に変更 */
 }
 
-/* 上下のガントチャートにスペースを追加 */
-.space-y-8 > * + * {
-margin-top: 2rem;
+/* タスク入力ヘッダーのスタイル */
+.task-input-header {
+    display: flex;
+    font-weight: bold;
+    text-align: center;
+    background-color: #28a745; /* 緑色に変更 */
+    border-bottom: 2px solid black;
+    height: 90px; /* ヘッダーの高さ */
+    align-items: center;
 }
 
-/* タイトルのスタイル */
-.gantt-title {
-font-size: 2rem;
-font-weight: bold;
-text-align: center;
+/* 各項目のスタイル */
+.task-header-item, .task-input {
+    padding: 10px;
+    border-right: 1px solid black;
+    height: 100%; /* ヘッダーと入力フォームの高さを揃える */
 }
 
-/* タスクバーのリサイズ用カーソルのスタイル */
-.cursor-col-resize {
-cursor: col-resize;
+/* 各列の幅を統一 */
+.task-name, .task-plant, .task-pm-type, .task-date {
+    width: 150px; /* 各項目の横幅を150pxに統一 */
 }
 
-/* タブエリアのスタイル */
-.gantt-tabs {
-display: flex;
-justify-content: center;
-background-color: #f0f0f0;
-padding: 1rem;
-border-top: 1px solid #ccc;
+/* 入力フォームのスタイル */
+.task-input-row {
+    display: flex;
+    height: 40px;
+    margin: 0;
 }
 
-/* 各タブのスタイル */
-.gantt-tab {
-background-color: white;
-border: 1px solid #ccc;
-padding: 0.5rem 1rem;
-margin: 0 0.5rem;
-cursor: pointer;
-font-weight: bold;
+.task-input {
+    margin: 0;
+    padding: 5px;
+    height: 100%;
+    border: 1px solid black;
+    border-top: none;
 }
 
-/* 横線（ボーダー）のスタイル */
-.top-task-row,
-.bottom-task-row {
-border-bottom: 2px solid black;
+/* 月のヘッダー */
+.month-header {
+    display: flex;
+    justify-content: flex-start;
+    padding: 0px;
+    background-color: #f0f0f0;
+    border-bottom: 1px solid black;
+    font-size: 1.2rem;
+    height: 30px;
 }
 
-.gantt-tab:hover {
-background-color: #ddd;
+/* 日付ヘッダー */
+.date-header {
+    display: flex;
+    justify-content: flex-start;
+    padding: 0px;
+    background-color: #f0f0f0;
+    border-bottom: 1px solid black;
+    height: 30px;
 }
 
-.gantt-tab.active {
-background-color: #ccc;
+/* 曜日ヘッダー */
+.day-of-week-header {
+    display: flex;
+    justify-content: flex-start;
+    padding: 0px;
+    background-color: #f0f0f0;
+    border-bottom: 1px solid black;
+    height: 30px;
+}
+
+/* 日付と曜日のスタイル */
+.date-header div, .day-of-week-header div {
+    width: 30px;
+    text-align: center;
+}
+
+/* ボタンコンテナのスタイル */
+.buttons-container {
+  display: flex;
+  flex-direction: column; /* 縦に並べる */
+  align-items: flex-start; /* 左揃えにする */
+  margin-left: 20px; /* 左側のマージンを追加 */
+  margin-right: 20px; /* 右側のマージンを追加 */
+}
+
+/* タスク追加ボタンのスタイル */
+.task-add-button {
+  margin-bottom: 10px;
+  padding: 8px 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.task-add-button:hover {
+    background-color: #0056b3;
+}
+
+/* 保存ボタンのスタイル */
+.task-save-button {
+  margin-bottom: 10px;
+  padding: 8px 16px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.task-save-button:hover {
+    background-color: #218838;
 }
 </style>

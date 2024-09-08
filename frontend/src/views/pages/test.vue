@@ -1,500 +1,351 @@
 <template>
-  <div class="gantt-container">
-    <div class="gantt-title">ガントチャート</div>
-    <div id="gantt" class="space-y-8 flex">
-      <!-- タスク追加ボタン -->
-      <button @click="addTask" class="task-add-button">タスク追加</button>
+  <div id="app">
+    <!-- タスクリストを表示 -->
+    <div id="TaskList" v-if="isDataReady">
+      <hot-table ref="hotTableComponent" :settings="hotSettings"></hot-table>
+      <br />
+      <Button @click="calculateTotalCostSums" label="Calculate Total Costs" class="controls button-margin blue-button" />
+      <Button @click="runSimulation(1)" label="Simulation No1" class="controls button-margin" />
+      <Button @click="runSimulation(2)" label="Simulation No2" class="controls button-margin" />
+      <Button @click="runSimulation(3)" label="Simulation No3" class="controls button-margin" />
+    </div>
 
-      <!-- 保存ボタン -->
-      <button @click="saveTasks" class="task-save-button">保存</button>
-
-      <!-- 左側に入力フォームのヘッダーを追加 -->
-      <div class="task-inputs">
-        <!-- ヘッダー -->
-        <div class="task-input-header">
-          <div class="task-header-item task-name">タスク名</div>
-          <div class="task-header-item task-date">開始日</div>
-          <div class="task-header-item task-date">終了日</div>
-        </div>
-
-        <!-- 入力フォーム -->
-        <div v-for="(task, index) in tasks" :key="task.id" class="task-input-row">
-          <input type="text" v-model="task.name" placeholder="タスク名" class="task-input task-name" @change="updateTaskName(index, task.name)" />
-          <input type="date" v-model="task.startDate" class="task-input task-date" @change="updateTaskDates(index)" />
-          <input type="date" v-model="task.endDate" class="task-input task-date" @change="updateTaskDates(index)" />
-        </div>
+    <!-- 月次コストテーブルと合計コストテーブルを表示 -->
+    <div class="tables-container" v-if="isDataReady">
+      <div id="monthlyCostTable">
+        <hot-table ref="monthlyCostTableComponent" :settings="monthlyCostSettings"></hot-table>
       </div>
-
-      <!-- D3.jsでタスクバーと日付を表示するコンテナ -->
-      <div id="gantt-chart-container-2" class="overflow-auto w-full select-none bg-white">
-        <!-- 月と日付表示エリア -->
-        <div id="month-header" class="month-header"></div>
-        <div id="date-header" class="date-header"></div>
-        <div id="day-of-week-header" class="day-of-week-header"></div>
-        <svg id="gantt-chart"></svg>
+      <div id="totalCostTable">
+        <hot-table ref="totalCostTableComponent" :settings="totalCostSettings"></hot-table>
       </div>
     </div>
   </div>
 </template>
 
-
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue';
-import * as d3 from 'd3';
-import dayjs from 'dayjs';
+import { ref, onMounted, nextTick } from 'vue';
 import axios from 'axios';
+import { useUserStore } from '@/stores/userStore';
+import { HotTable } from '@handsontable/vue3';
+import Handsontable from 'handsontable';  // Handsontableをインポート
 
-// 追加: 現在の日付を取得し、その前後1か月の日付範囲を計算
-const today = dayjs();  // 今日の日付
-const startDate = today.subtract(1, 'month');  // 1か月前
-const endDate = today.add(1, 'month');  // 1か月後
+// データの準備が完了したかどうかのフラグ
+const isDataReady = ref(false);
 
-const tasks = ref([]);  // タスクデータ
+// テーブルの参照を取得するためのref
+const hotTableComponent = ref(null);
+const totalCostTableComponent = ref(null);
+const monthlyCostTableComponent = ref(null);
 
-const rowHeight = 40;
-const blockWidth = 30;
-const totalDays = endDate.diff(startDate, 'day') + 1;  // 表示する合計日数
-
-
-// xScaleの修正: 現在の日付を基準に前後1か月のスケールを計算
-const xScale = d3.scaleTime()
-  .domain([startDate.toDate(), endDate.toDate()])  // 追加: 前後1か月の日付範囲を設定
-  .range([0, blockWidth * totalDays]);  // 表示する日数に応じて幅を設定
-
-
-
-
-
-// タスクデータを取得する関数
-async function fetchTasks() {
-  try {
-    const response = await axios.get('http://127.0.0.1:8000/api/schedules/');
-    tasks.value = response.data;
-    updateChart();
-  } catch (error) {
-    console.error('Error fetching tasks:', error);
+// タスクリストテーブルの設定
+const hotSettings = ref({
+  data: Array.from({ length: 15 }, () => Array(25).fill('')),
+  colHeaders: generateColHeaders(),
+  columns: [
+    { data: 'taskListNo', type: 'text' },
+    { data: 'typicalTaskName', type: 'text' },
+    { data: 'plant', type: 'text' },
+    { data: 'equipment', type: 'text' },
+    { data: 'machineName', type: 'text' },
+    { data: 'typicalLatestDate', type: 'date', dateFormat: 'YYYY-MM-DD', correctFormat: true },
+    { data: 'multiTasking', type: 'checkbox', className: 'htCenter' },
+    { data: 'totalCost', type: 'numeric' },
+    { data: 'taskOfPeriod', type: 'numeric' },
+    { data: 'typicalNextEventDate', type: 'text', readOnly: true },
+    { data: 'typicalSituation', type: 'text', readOnly: true },
+    { data: 'thisYear', type: 'checkbox', className: 'htCenter', renderer: customCheckboxRenderer, readOnly: true },
+    { data: 'thisYear1later', type: 'checkbox', className: 'htCenter', renderer: customCheckboxRenderer, readOnly: true },
+    { data: 'thisYear2later', type: 'checkbox', className: 'htCenter', renderer: customCheckboxRenderer, readOnly: true },
+    { data: 'thisYear3later', type: 'checkbox', className: 'htCenter', renderer: customCheckboxRenderer, readOnly: true },
+    { data: 'thisYear4later', type: 'checkbox', className: 'htCenter', renderer: customCheckboxRenderer, readOnly: true },
+    { data: 'thisYear5later', type: 'checkbox', className: 'htCenter', renderer: customCheckboxRenderer, readOnly: true },
+    { data: 'thisYear6later', type: 'checkbox', className: 'htCenter', renderer: customCheckboxRenderer, readOnly: true },
+    { data: 'thisYear7later', type: 'checkbox', className: 'htCenter', renderer: customCheckboxRenderer, readOnly: true },
+    { data: 'thisYear8later', type: 'checkbox', className: 'htCenter', renderer: customCheckboxRenderer, readOnly: true },
+    { data: 'thisYear9later', type: 'checkbox', className: 'htCenter', renderer: customCheckboxRenderer, readOnly: true },
+    { data: 'thisYear10later', type: 'checkbox', className: 'htCenter', renderer: customCheckboxRenderer, readOnly: true }
+  ],
+  afterGetColHeader: (col, TH) => {
+    if (col === -1) return;
+    TH.style.backgroundColor = '#FFFFCC';
+    TH.style.color = 'black';
+    TH.style.fontWeight = 'bold';
+  },
+  rowHeaders: true,
+  width: '100%',
+  height: 'auto',
+  contextMenu: true,
+  autoWrapRow: true,
+  autoWrapCol: true,
+  fixedColumnsStart: 2,
+  fixedRowsTop: 2,
+  manualColumnFreeze: true,
+  manualColumnResize: true,
+  manualRowResize: true,
+  filters: true,
+  dropdownMenu: true,
+  comments: true,
+  fillHandle: {
+    autoInsertRow: true
+  },
+  licenseKey: 'non-commercial-and-evaluation',
+  afterChange: (changes, source) => {
+    if (source === 'loadData') return;
+    changes.forEach(([row, prop, oldValue, newValue]) => {
+      if (prop === 'typicalLatestDate' || prop === 'taskOfPeriod') {
+        calculateNextEventDate(row);
+      }
+    });
   }
-}
-
-
-
-
-
-
-// 保存処理
-async function saveTasks() {
-  try {
-    const response = await axios.post('http://127.0.0.1:8000/api/schedules/save/', tasks.value);
-    console.log('Response from server:', response.data);
-  } catch (error) {
-    console.error('Error saving tasks:', error);
-  }
-}
-
-
-
-
-onMounted(() => {  
-  fetchTasks(); 
-  drawGanttChart();
-  drawMonthHeader();
-  drawDateHeader();
-  drawDayOfWeekHeader();
 });
 
+// 合計コストテーブルの設定
+const totalCostSettings = ref({
+  data: Array.from({ length: 4 }, () => Array(11).fill('')),
+  columns: Array.from({ length: 11 }, (_, i) => ({
+    data: i,
+    type: 'numeric',
+    className: 'htCenter'
+  })),
+  colHeaders: generateColTotalCostHeaders(),
+  rowHeaders: ['Base repairing Cost', 'Simulation No.1', 'Simulation No.2', 'Simulation No.3'],
+  rowHeaderWidth: 150,
+  contextMenu: true,
+  autoWrapRow: true,
+  autoWrapCol: true,
+  autoColumnSize: true,
+  autoRowSize: true,
+  licenseKey: 'non-commercial-and-evaluation'
+});
 
+// 月次コストテーブルの設定
+const monthlyCostSettings = ref({
+  data: Array.from({ length: 4 }, () => Array(11).fill('')),
+  columns: Array.from({ length: 13 }, (_, i) => ({
+    data: i,
+    type: 'numeric',
+    className: 'htCenter'
+  })),
+  colHeaders: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Total'],
+  rowHeaders: ['Base repairing Cost', 'Simulation No.1', 'Simulation No.2', 'Simulation No.3'],
+  rowHeaderWidth: 150,
+  contextMenu: true,
+  autoWrapRow: true,
+  autoWrapCol: true,
+  autoColumnSize: true,
+  autoRowSize: true,
+  licenseKey: 'non-commercial-and-evaluation'
+});
 
-// ガントチャート描画関数
-function drawGanttChart() {
-  const svg = d3.select('#gantt-chart')
-    .attr('width', blockWidth * totalDays)  // 修正: 表示する日数に応じた幅
-    .attr('height', tasks.value.length * rowHeight);
+// データ取得用の関数
+const getDataAxios = () => {
+  const userStore = useUserStore();
+  const userCompanyCode = userStore.companyCode;
 
-  drawVerticalGridLines(svg);
+  console.log("Fetching data for company code:", userCompanyCode);
 
-  svg.selectAll('.row-grid-line')
-    .data(tasks.value)
-    .enter()
-    .append('line')
-    .attr('x1', 0)
-    .attr('x2', blockWidth * totalDays)  // 修正: 表示する日数に応じたグリッド線の幅
-    .attr('y1', (d, i) => (i + 1) * rowHeight)
-    .attr('y2', (d, i) => (i + 1) * rowHeight)
-    .attr('stroke', 'black');
-
-  const drag = d3.drag()
-    .on('start', dragStarted)
-    .on('drag', dragged)
-    .on('end', dragEnded);
-
-  const resizeLeft = d3.drag()
-    .on('start', resizeStarted)
-    .on('drag', resizingLeft)
-    .on('end', resizeEnded);
-
-  const resizeRight = d3.drag()
-    .on('start', resizeStarted)
-    .on('drag', resizingRight)
-    .on('end', resizeEnded);
-
-
-
-
-  // タスクバーの描画
-  const bars = svg.selectAll('g')
-    .data(tasks.value)
-    .enter()
-    .append('g');
-
-  bars.append('rect')
-    .attr('x', (d) => xScale(dayjs(d.startDate).toDate()))  // 修正: 日付範囲に基づいてバーの位置を調整
-    .attr('y', (d, i) => i * rowHeight)
-    .attr('width', (d) => xScale(dayjs(d.endDate).toDate()) - xScale(dayjs(d.startDate).toDate()))
-    .attr('height', rowHeight)
-    .attr('fill', 'steelblue')
-    .call(drag);
-
-
-
-  // 左側のリサイズハンドルを追加
-  bars.append('rect')
-    .attr('x', (d) => xScale(dayjs(d.startDate).toDate()) - 5)
-    .attr('y', (d, i) => i * rowHeight)
-    .attr('width', 10)
-    .attr('height', rowHeight)
-    .attr('fill', 'gray')
-    .attr('cursor', 'ew-resize')
-    .call(resizeLeft); // 左端のリサイズハンドルを追加
-
-  // 右側のリサイズハンドルを追加
-  bars.append('rect')
-    .attr('x', (d) => xScale(dayjs(d.endDate).toDate()) - 5)
-    .attr('y', (d, i) => i * rowHeight)
-    .attr('width', 10)
-    .attr('height', rowHeight)
-    .attr('fill', 'gray')
-    .attr('cursor', 'ew-resize')
-    .call(resizeRight); // 右端のリサイズハンドルを追加
-
-  svg.selectAll('text')
-    .data(tasks.value)
-    .enter()
-    .append('text')
-    .attr('x', (d) => xScale(dayjs(d.startDate).toDate()) + 5)
-    .attr('y', (d, i) => i * rowHeight + (rowHeight / 2) + 5)
-    .text((d) => d.name)
-    .attr('fill', 'white');
-}
-
-// ドラッグ開始時の処理
-function dragStarted(event, d) {
-  d3.select(this).raise().attr('stroke', 'black');
-}
-
-// ドラッグ中の処理
-function dragged(event, d) {
-  const newX = event.x;
-  const numDaysDragged = Math.round(newX / blockWidth); // ドラッグされた日数を計算
-
-  const newStartDate = startDate.add(numDaysDragged, 'day');  // 修正: currentMonthではなくstartDateを基準に計算
-  const taskDuration = dayjs(d.endDate).diff(dayjs(d.startDate), 'day');
-  const newEndDate = newStartDate.add(taskDuration, 'day');
-
-  // 開始日と終了日を更新
-  d.startDate = newStartDate.format('YYYY-MM-DD');
-  d.endDate = newEndDate.format('YYYY-MM-DD');
-
-  // バーの位置を更新
-  d3.select(this)
-    .attr('x', newX)
-    .attr('width', blockWidth * (taskDuration + 1));
-}
-
-
-// ドラッグ終了時の処理
-function dragEnded(event, d) {
-  d3.select(this).attr('stroke', null);
-  updateTaskDates(d.id); // 日付をフォームに反映
-}
-
-// リサイズ開始時の処理
-function resizeStarted(event, d) {
-  d3.select(this).raise().attr('stroke', 'black');
-}
-
-
-
-// 左端リサイズ中の処理
-function resizingLeft(event, d) {
-  const newX = event.x;
-  const numDaysResized = Math.round(newX / blockWidth);
-
-  const newStartDate = startDate.add(numDaysResized, 'day');  // 修正: currentMonthではなくstartDateを基準に計算
-  d.startDate = newStartDate.format('YYYY-MM-DD');
-
-  d3.select(this.parentNode).select('rect')
-    .attr('x', newX)
-    .attr('width', xScale(dayjs(d.endDate).toDate()) - xScale(dayjs(d.startDate).toDate()));
-}
-
-// 右端リサイズ中の処理
-function resizingRight(event, d) {
-  const newX = event.x;
-  const numDaysResized = Math.round(newX / blockWidth);
-
-  const newEndDate = startDate.add(numDaysResized, 'day');  // 修正: currentMonthではなくstartDateを基準に計算
-  d.endDate = newEndDate.format('YYYY-MM-DD');
-
-  d3.select(this.parentNode).select('rect')
-    .attr('width', xScale(dayjs(d.endDate).toDate()) - xScale(dayjs(d.startDate).toDate()));
-}
-
-
-
-
-// リサイズ終了時の処理
-function resizeEnded(event, d) {
-  d3.select(this).attr('stroke', null);
-  updateTaskDates(d.id); // 日付をフォームに反映
-}
-
-
-
-
-// 月のヘッダーを表示する関数
-function drawMonthHeader() {
-  // 修正: currentMonthではなく、startDateを使用
-  const monthHeader = d3.select('#month-header');
-
-  monthHeader.append('div')
-    .style('display', 'inline-block')
-    .style('width', `${blockWidth * totalDays}px`)  // 表示する日数に基づいて幅を設定
-    .style('text-align', 'center')
-    .style('font-weight', 'bold')
-    .text(startDate.format('MMMM YYYY'));  // 開始日の月と年を表示
-}
-
-
-
-
-// 日付のヘッダーを表示する関数
-function drawDateHeader() {
-  const dateHeader = d3.select('#date-header');
-
-  for (let i = 0; i < totalDays; i++) {
-    const currentDay = startDate.add(i, 'day');
-    const dayOfWeek = currentDay.day();
-
-    dateHeader.append('div')
-      .style('display', 'inline-block')
-      .style('width', `${blockWidth}px`)
-      .style('text-align', 'center')
-      .style('color', getDayColor(dayOfWeek))
-      .style('border-right', '1px solid black')
-      .text(currentDay.format('D'));
+  if (!userCompanyCode) {
+    console.error('Error: No company code found.');
+    return;
   }
-}
 
-
-// 曜日ヘッダーを表示する関数
-function drawDayOfWeekHeader() {
-  const dayOfWeekHeader = d3.select('#day-of-week-header');
-
-  // 修正: currentMonthではなくstartDateを使用し、表示する日数分ループ
-  for (let i = 0; i < totalDays; i++) {
-    const currentDay = startDate.add(i, 'day');
-    const dayOfWeek = currentDay.day();
-
-    dayOfWeekHeader.append('div')
-      .style('display', 'inline-block')
-      .style('width', `${blockWidth}px`)
-      .style('text-align', 'center')
-      .style('color', getDayColor(dayOfWeek))
-      .style('border-right', '1px solid black')
-      .text(currentDay.format('dd'));  // 修正: 曜日を表示
-  }
-}
-
-
-
-// 曜日に応じて色を決定
-function getDayColor(dayOfWeek) {
-  if (dayOfWeek === 0) {
-    return 'red';
-  } else if (dayOfWeek === 6) {
-    return 'blue';
-  } else {
-    return 'black';
-  }
-}
-
-// 日付の更新時にガントチャートを再描画
-function updateTaskDates(id) {
-  const task = tasks.value.find(t => t.id === id);
-  if (task) {
-    task.startDate = dayjs(task.startDate).format('YYYY-MM-DD');
-    task.endDate = dayjs(task.endDate).format('YYYY-MM-DD');
-    updateChart();
-  }
-}
-
-// ガントチャートを更新
-function updateChart() {
-  d3.select('#gantt-chart').selectAll('*').remove();
-  drawGanttChart();
-}
-
-
-// 縦グリッド線の描画
-function drawVerticalGridLines(svg) {
-  const daysArray = Array.from({ length: totalDays }, (_, i) => i + 1);
+  const url = `http://127.0.0.1:8000/api/task/taskListByCompany/?format=json&companyCode=${userCompanyCode}`;
   
-  svg.selectAll('.column-grid-line')
-    .data(daysArray)
-    .enter()
-    .append('line')
-    .attr('x1', (d) => d * blockWidth)
-    .attr('x2', (d) => d * blockWidth)
-    .attr('y1', 0)
-    .attr('y2', tasks.value.length * rowHeight)
-    .attr('stroke', '#ccc');
+  axios.get(url)
+    .then((response) => {
+      console.log("Axios response data:", response.data);
+
+      const companyData = response.data.find((company) => {
+        return String(company.companyCode) === String(userCompanyCode);
+      });
+
+      if (companyData) {
+        if (Array.isArray(companyData.taskList) && companyData.taskList.length > 0) {
+          console.log("Task list data found for company:", companyData.taskList);
+
+          nextTick(() => {
+            if (hotTableComponent.value) {
+              hotTableComponent.value.hotInstance.loadData(companyData.taskList);
+              isDataReady.value = true;
+            } else {
+              console.warn('hotTableComponent is null, skipping data loading.');
+            }
+          });
+        } else {
+          console.error('Task list is empty or invalid for this company.');
+        }
+      } else {
+        console.error('No company data found for this company code.');
+      }
+    })
+    .catch((error) => {
+      console.error('Error fetching data:', error);
+    });
+};
+
+onMounted(() => {
+  getDataAxios();
+});
+
+// カラムヘッダー生成の関数
+function generateColHeaders() {
+  const currentYear = new Date().getFullYear();
+  const futureYears = Array.from({ length: 11 }, (_, index) => (currentYear + index).toString());
+  return ['TaskListNo', 'TaskName', 'Plant', 'Equipment', 'MachineName', 'LatestDate<br>PM', 'Multi<br>Tasking', 'TotalCost', 'Task Of Period', 'Next Even<br>date', 'Situation', ...futureYears];
 }
 
-//task追加関数
-function addTask() {
-  const newTaskId = tasks.value.length + 1;
-  const newTask = {
-    id: newTaskId,
-    name: `Task ${newTaskId}`,
-    pmType: `PM${newTaskId}`,
-    startDate: startDate.format('YYYY-MM-DD'),  // 修正: currentMonthではなくstartDateを使用
-    endDate: startDate.add(1, 'day').format('YYYY-MM-DD')  // 修正: currentMonthではなくstartDateを使用
-  };
-  tasks.value.push(newTask); // 新しいタスクを追加
-  updateChart(); // ガントチャートを更新
+// 合計コスト用のカラムヘッダー生成
+function generateColTotalCostHeaders() {
+  const currentYear = new Date().getFullYear();
+  const futureYears = Array.from({ length: 11 }, (_, index) => (currentYear + index).toString());
+  return [...futureYears];
 }
 
+// カスタムチェックボックスレンダラ
+function customCheckboxRenderer(instance, td, row, col, prop, value, cellProperties) {
+  Handsontable.renderers.CheckboxRenderer.apply(this, arguments);
+  const matchedYears = getMatchingYears(instance, row);
+  const currentYear = new Date().getFullYear();
+  const yearOfThisColumn = currentYear + (col - 10);
+
+  if (matchedYears.includes(yearOfThisColumn)) {
+    td.style.background = '#90EE90';
+    td.querySelector('input[type="checkbox"]').checked = true;
+  }
+}
+
+// マッチする年を取得する関数
+function getMatchingYears(instance, row) {
+  const latestDate = instance.getDataAtRowProp(row, 'typicalLatestDate');
+  const taskOfPeriod = instance.getDataAtRowProp(row, 'taskOfPeriod');
+  const matchedYears = [];
+
+  if (!latestDate || !taskOfPeriod) return matchedYears;
+
+  let checkDate = new Date(latestDate);
+  const currentYear = new Date().getFullYear();
+  const endYear = currentYear + 10;
+
+  while (checkDate.getFullYear() <= endYear) {
+    const futureYear = checkDate.getFullYear();
+    if (futureYear >= currentYear) {
+      matchedYears.push(futureYear);
+    }
+    checkDate = new Date(checkDate.setDate(checkDate.getDate() + taskOfPeriod));
+  }
+
+  return matchedYears;
+}
+
+// 合計コストの計算
+function calculateTotalCostSums() {
+  if (!hotTableComponent.value) return;
+  const hotInstance = hotTableComponent.value.hotInstance;
+  const currentYear = new Date().getFullYear();
+  const endYear = currentYear + 10;
+  let sums = new Array(11).fill(0);
+
+  hotInstance.getData().forEach((row, rowIndex) => {
+    const latestDatePM = hotInstance.getDataAtCell(rowIndex, 4);
+    const taskOfPeriod = parseInt(hotInstance.getDataAtCell(rowIndex, 7));
+    const totalCost = parseFloat(hotInstance.getDataAtCell(rowIndex, 6));
+
+    if (latestDatePM && !isNaN(taskOfPeriod) && !isNaN(totalCost)) {
+      let checkDate = new Date(latestDatePM);
+
+      while (checkDate.getFullYear() <= endYear) {
+        const year = checkDate.getFullYear();
+        if (year >= currentYear && year <= endYear) {
+          sums[year - currentYear] += totalCost;
+        }
+        checkDate.setDate(checkDate.getDate() + taskOfPeriod);
+      }
+    }
+  });
+
+  totalCostTableComponent.value?.hotInstance.loadData([sums]);
+  calculateMonthlyCosts();
+  emitData();
+}
+
+// 次のイベント日を計算
+function calculateNextEventDate(row) {
+  if (!hotTableComponent.value) return;
+  const hotInstance = hotTableComponent.value.hotInstance;
+  const latestDatePM = hotInstance.getDataAtCell(row, 4);
+  const taskOfPeriod = parseInt(hotInstance.getDataAtCell(row, 7));
+
+  if (latestDatePM && !isNaN(taskOfPeriod)) {
+    const latestDate = new Date(latestDatePM);
+    const nextEventDate = new Date(latestDate.setDate(latestDate.getDate() + taskOfPeriod));
+
+    const year = nextEventDate.getFullYear();
+    const month = ('0' + (nextEventDate.getMonth() + 1)).slice(-2);
+    const day = ('0' + nextEventDate.getDate()).slice(-2);
+
+    hotInstance.setDataAtCell(row, 8, `${year}-${month}-${day}`);
+  }
+}
+
+// 月次コストを計算
+function calculateMonthlyCosts() {
+  if (!hotTableComponent.value) return;
+  const hotInstance = hotTableComponent.value.hotInstance;
+  const currentYear = new Date().getFullYear();
+  let monthlyCosts = new Array(12).fill(0);
+
+  hotInstance.getData().forEach((row, rowIndex) => {
+    const latestDatePM = hotInstance.getDataAtCell(rowIndex, 4);
+    const taskOfPeriod = parseInt(hotInstance.getDataAtCell(rowIndex, 7));
+    const totalCost = parseFloat(hotInstance.getDataAtCell(rowIndex, 6));
+
+    if (latestDatePM && !isNaN(taskOfPeriod) && !isNaN(totalCost)) {
+      let checkDate = new Date(latestDatePM);
+
+      while (checkDate.getFullYear() === currentYear) {
+        const month = checkDate.getMonth();
+        monthlyCosts[month] += totalCost;
+        checkDate.setDate(checkDate.getDate() + taskOfPeriod);
+      }
+    }
+  });
+
+  const total = monthlyCosts.reduce((a, b) => a + b, 0);
+  monthlyCosts.push(total);
+
+  monthlyCostTableComponent.value?.hotInstance.loadData([monthlyCosts]);
+}
+
+// 計算結果をemitする
+function emitData() {
+  const totalCostData = totalCostTableComponent.value?.hotInstance.getData();
+  const monthlyCostData = monthlyCostTableComponent.value?.hotInstance.getData();
+  // 計算結果をemit
+  // this.$emitで親コンポーネントに送信
+}
 </script>
 
-<style scoped>
-.gantt-container {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-}
 
-.task-inputs {
+<style>
+/* テーブルのコンテナ */
+.tables-container {
     display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    padding: 0;
+    justify-content: space-between;
+}
+/* コストテーブルのスタイル */
+#totalCostTable,
+#monthlyCostTable {
+    width: 48%;
 }
 
-/* ヘッダーのスタイル */
-.task-input-header {
-    display: flex;
-    font-weight: bold;
-    text-align: center;
-    background-color: #f0f0f0;
-    border-bottom: 2px solid black;
-    height: 90px; /* 月+日付+曜日の合計高さ */
-    align-items: center; /* テキストを垂直中央揃えに */
+/* ボタン間にマージンを追加 */
+.button-margin {
+    margin-right: 10px;
 }
 
-/* 各項目にグリッド線（右ボーダー）を追加 */
-.task-header-item {
-    padding: 10px;
-    border-right: 1px solid black; /* グリッド線を追加 */
-    height: 100%; /* グリッド線の高さを親要素（ヘッダー）の高さに合わせる */
+/* 青色のCalculationボタン */
+.blue-button {
+    background-color: blue;
+    color: white;
 }
-
-.task-name {
-    width: 120px;
-}
-
-.task-date {
-    width: 120px;
-}
-
-.task-input-row {
-    display: flex;
-    height: 40px;
-    margin: 0;
-}
-
-.task-input {
-    margin: 0;
-    padding: 5px;
-    height: 100%;
-    border: 1px solid black;
-    border-top: none;
-}
-
-.month-header {
-    display: flex;
-    justify-content: flex-start;
-    padding: 0px;
-    background-color: #f0f0f0;
-    border-bottom: 1px solid black;
-    font-size: 1.2rem;
-    height: 30px; /* 月の高さ */
-}
-
-.date-header {
-    display: flex;
-    justify-content: flex-start;
-    padding: 0px;
-    background-color: #f0f0f0;
-    border-bottom: 1px solid black;
-    height: 30px; /* 日付の高さ */
-}
-
-.day-of-week-header {
-    display: flex;
-    justify-content: flex-start;
-    padding: 0px;
-    background-color: #f0f0f0;
-    border-bottom: 1px solid black;
-    height: 30px; /* 曜日の高さ */
-}
-
-.date-header div,
-.day-of-week-header div {
-    width: 30px; /* 日付と曜日の横幅を30pxに設定 */
-    text-align: center;
-}
-
-
-.task-add-button {
-  margin-bottom: 10px;
-  padding: 8px 16px; /* ボタンのパディング */
-  background-color: #007bff; /* ボタンの背景色 */
-  color: white; /* テキストの色 */
-  border: none;
-  border-radius: 4px; /* 角を丸くする */
-  cursor: pointer;
-  align-self: flex-start; /* ボタンを左揃えにする */
-}
-
-.task-add-button:hover {
-  background-color: #0056b3; /* ホバー時の色 */
-}
-
-
-/* 保存ボタン */
-.task-save-button {
-  margin-bottom: 10px;
-  margin-left: 10px;
-  padding: 8px 16px;
-  background-color: #28a745;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.task-save-button:hover {
-  background-color: #218838;
-}
-
 </style>
