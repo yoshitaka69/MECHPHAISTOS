@@ -93,6 +93,7 @@ class ScheduleAdmin(admin.ModelAdmin):
 
 
 
+
 # 以下でadminサイトに表示させる
 admin.site.register(MasterDataTable,MasterDataTableAdmin)
 admin.site.register(BomAndTask,BomAndTaskAdmin)

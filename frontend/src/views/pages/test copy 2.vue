@@ -22,6 +22,7 @@
             <Button @click="runSimulation(1)" label="Simulation No1" class="controls button-margin" />
             <Button @click="runSimulation(2)" label="Simulation No2" class="controls button-margin" />
             <Button @click="runSimulation(3)" label="Simulation No3" class="controls button-margin" />
+            <Button @click="getDataAxios" label="Test Data Fetch" />
         </div>
     </div>
   </template>

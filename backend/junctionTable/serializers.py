@@ -161,3 +161,5 @@ class ScheduleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Schedule
         fields = ['id', 'name', 'pmType', 'startDate', 'endDate']
+
+

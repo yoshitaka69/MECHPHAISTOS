@@ -10,6 +10,7 @@ from .views import (MasterDataTableViewSet,CompanyCodeMDTViewSet,
 from .views import ScheduleListView
 
 
+
 router = DefaultRouter()
 router.register(r'masterDataTable', MasterDataTableViewSet, basename='masterDataTable')
 router.register(r'masterDataTableByCompany', CompanyCodeMDTViewSet, basename='companyCode-masterDataTable')
@@ -34,4 +35,5 @@ urlpatterns = [
     path('junctionTable/', include(router.urls)),
     path('schedules/', ScheduleListView.as_view(), name='schedule-list'),
     path('schedules/save/', ScheduleListView.as_view()),
+
 ]
