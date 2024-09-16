@@ -30,12 +30,12 @@
                 </div>
               </div>
               <div class="spacer"></div>
-              <div class="near-miss-list-container card-light-yellow">
+
                 <Near_miss_list />
                 <div class="text-center">
                   <h3>Table. Near Miss List</h3>
                 </div>
-              </div>
+
             </TabPanel>
   
             <TabPanel header="Analyze">
@@ -185,11 +185,5 @@
     height: 10px; /* Adjust the height as needed */
   }
   
-  .near-miss-list-container {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 薄い影を追加 */
-    padding: 20px; /* パディングを追加して内容を囲む */
-    border-radius: 8px; /* 角を丸くする */
-    background-color: #fff9c4; /* 背景色を薄い黄色に変更 */
-  }
   </style>
   

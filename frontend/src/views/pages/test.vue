@@ -1,363 +1,636 @@
 <template>
-    <Dialog :visible="visible" @hide="hideModal" modal :closable="false" style="width: 70vw">
-      <template #header>
-        <div class="flex justify-content-between align-items-center">
-          <span class="text-lg font-bold">Work Order</span>
-          <Button icon="pi pi-times" class="p-button-text" @click="hideModal" />
-        </div>
-      </template>
-      <div class="surface-ground px-4 py-8 md:px-6 lg:px-8">
-        <div class="p-fluid flex flex-column lg:flex-row">
-          <ul class="list-none m-0 p-0 flex flex-row lg:flex-column justify-content-evenly md:justify-content-between lg:justify-content-start mb-5 lg:pr-8 lg:mb-0" style="background-color: #e0f7fa">
-            <li @click="currentTab = 'form'">
-              <a v-ripple class="flex align-items-center cursor-pointer p-3 border-round text-800 hover:surface-hover transition-duration-150 transition-colors p-ripple">
-                <i class="pi pi-file md:mr-2"></i>
-                <span class="font-medium hidden md:block">Work Order Form</span>
-              </a>
-            </li>
-            <li @click="currentTab = 'history'">
-              <a v-ripple class="flex align-items-center cursor-pointer p-3 border-round text-800 hover:surface-hover transition-duration-150 transition-colors p-ripple">
-                <i class="pi pi-clock md:mr-2"></i>
-                <span class="font-medium hidden md:block">History</span>
-              </a>
-            </li>
-          </ul>
-          <div v-if="currentTab === 'form'" class="surface-card p-5 shadow-2 border-round flex-auto">
-            <div class="text-900 font-semibold text-lg mt-3 flex align-items-center justify-content-between">
-              <span>Work Order Entry</span>
-              <span v-if="workOrderNo" class="text-sm">Work Order No: {{ workOrderNo }}</span>
+    <div class="surface-section px-4 py-8 md:px-6 lg:px-8">
+        <div class="grid">
+            <div class="col-12 lg:col-2"></div>
+            <div class="col-12 lg:col-10">
+                <!-- アラート表示 -->
+                <Save_Alert v-if="showAlert" :type="alertType" :message="alertMessage" :errorMessages="errorMessages" />
+                <!-- フォーム内容 -->
+
+                <div v-if="showError" class="error-message">*The form is incomplete.</div>
+                <div class="grid formgrid p-fluid">
+                    <div class="field mb-4 col-12">
+                        <label for="nearMissNo" class="form-label">NearMiss No</label>
+                        <p>{{ lastNearMissNo }}</p>
+                    </div>
+                    <div class="field mb-4 col-12">
+                        <label for="date" class="form-label">Date</label>
+                        <Calendar v-model="formState.Date" id="date" class="w-full" />
+                    </div>
+                    <div class="field mb-4 col-12 md:col-6" :class="{ 'input-error': errorMessagesState.Name.length > 0 }">
+                        <label for="name" class="form-label">Name</label>
+                        <InputText id="name" type="text" placeholder="write your Name" v-model="formState.Name" class="w-full" />
+                        <ul class="errorMessages">
+                            <li v-for="message in errorMessagesState.Name" :key="message">
+                                {{ message }}
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="field mb-4 col-12 md:col-6" :class="{ 'input-error': errorMessagesState.Department.length > 0 }">
+                        <label for="department" class="form-label">Department</label>
+                        <InputText id="department" type="text" placeholder="write your department" v-model="formState.Department" class="w-full" />
+                        <ul class="errorMessages">
+                            <li v-for="message in errorMessagesState.Department" :key="message">
+                                {{ message }}
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="field mb-4 col-12" :class="{ 'input-error': errorMessagesState.Where.length > 0 }">
+                        <label for="where" class="form-label">Where</label>
+                        <InputText id="where" type="text" placeholder="write the place" v-model="formState.Where" class="w-full" />
+                        <ul class="errorMessages">
+                            <li v-for="message in errorMessagesState.Where" :key="message">
+                                {{ message }}
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Type of Accident -->
+                    <div class="field mb-4 col-12" :class="{ 'input-error': errorMessagesState.TypeOfAccIdent.length > 0 }">
+                        <label for="typeOfAccIdent" class="form-label">Type of Accident</label>
+                        <div class="flex flex-wrap gap-3">
+                            <div v-for="(type, index) in accidentTypes" :key="index" class="field">
+                                <div class="ui radio checkbox d-flex gap-1 align-items-center">
+                                    <RadioButton :name="type" :value="type" v-model="formState.TypeOfAccIdent" :tabindex="index" />
+                                    <label>{{ type }}</label>
+                                </div>
+                            </div>
+                        </div>
+                        <ul class="errorMessages">
+                            <li v-for="message in errorMessagesState.TypeOfAccIdent" :key="message">
+                                {{ message }}
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Factor -->
+                    <div class="field mb-4 col-12 lg:col-4" :class="{ 'input-error': errorMessagesState.Factor.length > 0 }">
+                        <label for="factor" class="form-label">Factor</label>
+                        <div class="flex flex-wrap gap-3">
+                            <div v-for="(factor, index) in factors" :key="index" class="field">
+                                <div class="ui radio checkbox d-flex gap-1 align-items-center">
+                                    <RadioButton :name="factor" :value="factor" v-model="formState.Factor" :tabindex="index" />
+                                    <label>{{ factor }}</label>
+                                </div>
+                            </div>
+                        </div>
+                        <ul class="errorMessages">
+                            <li v-for="message in errorMessagesState.Factor" :key="message">
+                                {{ message }}
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="grid formgrid p-fluid">
+                    <div class="form-container lg:col-4">
+                        <div class="field mb-4 col-12">
+                            <label for="injuredLv" class="form-label">Injured Lv</label>
+                            <div class="flex flex-wrap gap-3">
+                                <div v-for="(level, index) in injuredLevels" :key="index" class="field">
+                                    <div class="ui radio checkbox d-flex gap-1 align-items-center">
+                                        <RadioButton :name="level" :value="level" v-model="formState.InjuredLv" :tabindex="index" />
+                                        <label>{{ level }}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field mb-4 col-12">
+                            <label for="equipmentDamageLv" class="form-label">Equipment Damage Lv</label>
+                            <div class="flex flex-wrap gap-3">
+                                <div v-for="(level, index) in equipmentDamageLevels" :key="index" class="field">
+                                    <div class="ui radio checkbox d-flex gap-1 align-items-center">
+                                        <RadioButton :name="level" :value="level" v-model="formState.EquipmentDamageLv" :tabindex="index" />
+                                        <label>{{ level }}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field mb-4 col-12">
+                            <label for="affectOfEnvironment" class="form-label">Affect Of Environment</label>
+                            <div class="flex flex-wrap gap-3">
+                                <div v-for="(level, index) in affectOfEnviromentLevels" :key="index" class="field">
+                                    <div class="ui radio checkbox d-flex gap-1 align-items-center">
+                                        <RadioButton :name="level" :value="level" v-model="formState.AffectOfEnviroment" :tabindex="index" />
+                                        <label>{{ level }}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field mb-4 col-12">
+                            <label for="newsCoverage" class="form-label">News Coverage</label>
+                            <div class="flex flex-wrap gap-3">
+                                <div v-for="(level, index) in newsCoverageLevels" :key="index" class="field">
+                                    <div class="ui radio checkbox d-flex gap-1 align-items-center">
+                                        <RadioButton :name="level" :value="level" v-model="formState.NewsCoverage" :tabindex="index" />
+                                        <label>{{ level }}</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="risk-level">
+                                <div class="risk-label">Risk Level</div>
+                                <div class="risk-arrows">
+                                    <div class="arrow-label high">High</div>
+                                    <div class="arrow">←---------------------------→</div>
+                                    <div class="arrow-label low">Low</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ボタンを中央に配置 -->
+                        <div class="field mb-4 col-12 lg:col-4 measures-field">
+                            <label for="measures" class="form-label">Measures</label>
+                            <div class="measures-container">
+                                <Button :label="calculateCategory()" :severity="getButtonSeverity(calculateCategory())" raised class="measures-button" />
+                            </div>
+                        </div>
+
+                        <!-- Action Items -->
+                        <div class="field mb-4 col-12" :class="{ 'input-error': errorMessagesState.ActionItems && errorMessagesState.ActionItems.length > 0 }">
+                            <label for="actionItems" class="form-label">Action Items</label>
+                            <Textarea id="actionItems" placeholder="Enter action items" v-model="formState.ActionItems" class="w-full" rows="4" autoResize />
+                            <ul class="errorMessages">
+                                <li v-for="message in errorMessagesState.ActionItems" :key="message">
+                                    {{ message }}
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Solved Action Items -->
+                        <div class="field mb-4 col-12">
+                            <div class="flex align-items-center gap-2">
+                                <Checkbox v-model="formState.SolvedActionItems" id="solvedActionItems" />
+                                <label for="solvedActionItems" class="form-label m-0">Solved Action Items</label>
+                            </div>
+                            <p>＊ここはまだ入力しなくても問題なし</p>
+                        </div>
+                    </div>
+
+                    <!-- Level Description -->
+                    <div class="field mb-8 col-12 lg:col-8">
+                        <LevelDescription />
+                        <!-- "Define Safety Measures" のテキストを追加 -->
+                        <p class="define-safety-measures">Define Safety Measures</p>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="field mb-4 col-12" :class="{ 'input-error': errorMessagesState.Description.length > 0 }">
+                        <label for="description" class="form-label">Description</label>
+                        <Textarea v-model="formState.Description" autoResize rows="6" id="description" class="w-full" />
+                        <ul class="errorMessages">
+                            <li v-for="message in errorMessagesState.Description" :key="message">
+                                {{ message }}
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="col-12 text-right">
+                        <Button type="button" label="Save" @click="validateForm" class="w-auto mt-3 save-button"></Button>
+                    </div>
+                </div>
             </div>
-            <Divider></Divider>
-            <div class="flex gap-5 flex-column-reverse md:flex-row">
-              <div class="flex-auto p-fluid">
-                <div class="mb-4">
-                  <label for="title" class="block font-medium text-900 mb-2">Title</label>
-                  <InputText id="title" v-model="localEntry.title" type="text" class="w-full" />
-                </div>
-                <div class="flex mb-4 gap-4">
-                  <div class="flex-auto">
-                    <label for="plant" class="block font-medium text-900 mb-2">Plant</label>
-                    <Dropdown id="plant" v-model="localEntry.plant" :options="plantOptions" optionLabel="label" optionValue="value" placeholder="Select a Plant" />
-                  </div>
-                  <div class="flex-auto">
-                    <label for="equipment" class="block font-medium text-900 mb-2">Equipment</label>
-                    <Dropdown id="equipment" v-model="localEntry.equipment" :options="equipmentOptions" optionLabel="label" optionValue="value" placeholder="Select Equipment" />
-                  </div>
-                </div>
-                <div class="mb-4">
-                  <label class="block font-medium text-900 mb-2">Failure Type</label>
-                  <div v-for="type in failureTypes" :key="type.value" class="flex align-items-center">
-                    <Checkbox v-model="localEntry.failureTypes" :value="type.value" class="mr-2" />
-                    <label>{{ type.label }}</label>
-                  </div>
-                </div>
-                <div class="mb-4">
-                  <label class="block font-medium text-900 mb-2">Failure Mode</label>
-                  <div v-for="mode in failureModes" :key="mode.value" class="flex align-items-center">
-                    <Checkbox v-model="localEntry.failureModes" :value="mode.value" class="mr-2" />
-                    <label>{{ mode.label }}</label>
-                  </div>
-                </div>
-                <div class="mb-4">
-                  <label for="failureDescription" class="block font-medium text-900 mb-2">Failure Description</label>
-                  <Textarea id="failureDescription" v-model="localEntry.failureDescription" type="text" rows="5" :autoResize="true" class="w-full"></Textarea>
-                </div>
-                <div class="mb-4">
-                  <label for="failureDate" class="block font-medium text-900 mb-2">Failure Date</label>
-                  <InputText id="failureDate" v-model="localEntry.failureDate" type="date" />
-                </div>
-                <div class="mb-4">
-                  <label for="description" class="block font-medium text-900 mb-2">Description</label>
-                  <Textarea id="description" v-model="localEntry.description" type="text" rows="5" :autoResize="true"></Textarea>
-                </div>
-                <div class="mb-4">
-                  <label for="status" class="block font-medium text-900 mb-2">Status</label>
-                  <Dropdown id="status" v-model="localEntry.status" :options="statuses" optionLabel="label" optionValue="value" placeholder="Select a Status" />
-                </div>
-                <div class="mb-4">
-                  <label for="registrationDate" class="block font-medium text-900 mb-2">Registration Date</label>
-                  <InputText id="registrationDate" v-model="localEntry.registrationDate" type="date" />
-                </div>
-                <div class="flex justify-content-end">
-                  <Button label="Save" icon="pi pi-check" @click="submitEntry" class="mr-2" />
-                  <Button label="Cancel" icon="pi pi-times" @click="cancelNewEntry" class="p-button-secondary" />
-                </div>
-              </div>
-              <div class="flex flex-column align-items-center flex-or">
-                <span class="font-medium text-900 mb-2">Picture 1</span>
-                <img :src="pictureSrc1" class="h-10rem w-10rem border-black mb-4" @click="enlargeImage1" />
-                <Button type="button" icon="pi pi-pencil" class="p-button-rounded -mt-4"></Button>
-  
-                <span class="font-medium text-900 mb-2">Picture 2</span>
-                <img :src="pictureSrc2" class="h-10rem w-10rem border-black mb-4" @click="enlargeImage2" />
-                <Button type="button" icon="pi pi-pencil" class="p-button-rounded -mt-4"></Button>
-              </div>
-            </div>
-          </div>
-  
-          <div v-if="currentTab === 'history'" class="surface-card p-5 shadow-2 border-round flex-auto">
-            <div class="text-900 font-semibold text-lg mt-3">Work Order History</div>
-            <Divider></Divider>
-            <ul>
-              <li v-for="history in sampleHistory" :key="history.id" class="mb-2">
-                <div class="flex justify-content-between">
-                  <span>{{ history.date }}</span>
-                  <span>{{ history.workOrderNo }}</span>
-                  <span>{{ history.status }}</span>
-                </div>
-              </li>
-            </ul>
-          </div>
         </div>
-      </div>
-    </Dialog>
-  
-    <Dialog v-model:visible="imageDialogVisible1" modal :closable="false">
-      <img :src="pictureSrc1" class="w-full h-auto" />
-      <Button label="Close" icon="pi pi-times" @click="imageDialogVisible1 = false" class="p-button-secondary mt-2" />
-    </Dialog>
-  
-    <Dialog v-model:visible="imageDialogVisible2" modal :closable="false">
-      <img :src="pictureSrc2" class="w-full h-auto" />
-      <Button label="Close" icon="pi pi-times" @click="imageDialogVisible2 = false" class="p-button-secondary mt-2" />
-    </Dialog>
-  </template>
-  
-  <script setup>
-  import { ref, watch, onMounted, defineEmits, defineProps } from 'vue';
-  import axios from 'axios';
-  import InputText from 'primevue/inputtext';
-  import Textarea from 'primevue/textarea';
-  import Button from 'primevue/button';
-  import Dropdown from 'primevue/dropdown';
-  import Dialog from 'primevue/dialog';
-  import Divider from 'primevue/divider';
-  import Checkbox from 'primevue/checkbox';
-  import noImage from '@/assets/no_image.jpg'; // 画像をimportする
-  import { useUserStore } from '@/stores/userStore'; // Piniaストアをインポート
-  
-  const props = defineProps(['visible', 'statuses', 'entry']);
-  const emit = defineEmits(['update:visible', 'submit', 'cancel']);
-  
-  const localEntry = ref({ ...props.entry || {} });
-  const failureTypes = ref([
-    { label: 'Electrical', value: 'electrical' },
-    { label: 'Mechanical', value: 'mechanical' },
-    { label: 'Software', value: 'software' },
-    { label: 'Human Error', value: 'human_error' }
-  ]);
-  
-  const failureModes = ref([
-    { label: 'Overload', value: 'overload' },
-    { label: 'Wear', value: 'wear' },
-    { label: 'Corrosion', value: 'corrosion' },
-    { label: 'Fatigue', value: 'fatigue' }
-  ]);
-  
-  const pictureSrc1 = ref(noImage); // 1枚目の画像を初期状態として設定
-  const pictureSrc2 = ref(noImage); // 2枚目の画像を初期状態として設定
-  const imageDialogVisible1 = ref(false);
-  const imageDialogVisible2 = ref(false);
-  const currentTab = ref('form');
-  const sampleHistory = ref([
-    { id: 1, date: '2024-08-01', workOrderNo: 'WO-001', status: 'Completed' },
-    { id: 2, date: '2024-07-28', workOrderNo: 'WO-002', status: 'Ongoing' },
-    { id: 3, date: '2024-07-20', workOrderNo: 'WO-003', status: 'Delayed' }
-  ]);
-  
-  const plantOptions = ref([]); // プラントの選択肢を格納する状態
-  const equipmentOptions = ref([]); // 装置の選択肢を格納する状態
-  const workOrderNo = ref(''); // Work Order Noを格納する状態
-  
-  // PiniaストアからcompanyCodeを取得
-  const userStore = useUserStore();
-  const companyCode = userStore.companyCode;
-  
-  // axiosを使用してプラントのリストを取得するメソッド
-  const fetchPlantOptions = async () => {
-    try {
-      const response = await axios.get('http://127.0.0.1:8000/api/ceList/ceListByCompany/', {
-        params: {
-          companyCode: companyCode // クエリパラメータとしてcompanyCodeを渡す
-        }
-      });
-  
-      const companyData = response.data.find((company) => company.companyCode === companyCode);
-      if (companyData) {
-        console.log('Company data found:', companyData); // 成功時のコンソールログ
-        plantOptions.value = [...new Set(companyData.ceList.map((item) => item.plant))].map((plant) => ({
-          label: `Plant ${plant}`, // 表示名
-          value: plant // 実際の値
-        }));
-        console.log('Plant options:', plantOptions.value);
-      } else {
-        console.log('No data found for companyCode:', companyCode);
-      }
-    } catch (error) {
-      console.error('Failed to fetch plant options:', error); // エラー時のコンソールログ
+    </div>
+</template>
+
+<script>
+import { ref, reactive } from 'vue';
+import axios from 'axios';
+import moment from 'moment';
+import { useUserStore } from '@/stores/userStore';
+import InputText from 'primevue/inputtext';
+import Textarea from 'primevue/textarea';
+import Calendar from 'primevue/calendar';
+import RadioButton from 'primevue/radiobutton';
+import Checkbox from 'primevue/checkbox';
+import Button from 'primevue/button';
+import LevelDescription from '@/components/Safety/Near_miss/Level_description.vue';
+import Save_Alert from '@/components/Alert/Save_Alert.vue'; // Save_Alert コンポーネントをインポート
+
+export default {
+    props: {
+        show: Boolean
+    },
+    components: {
+        InputText,
+        Textarea,
+        Calendar,
+        RadioButton,
+        Checkbox,
+        Button,
+        LevelDescription,
+        Save_Alert // Save_Alertをコンポーネントに追加
+    },
+    setup() {
+        const userStore = useUserStore();
+        const showError = ref(false);
+        const showAlert = ref(false); // 追加
+        const alertType = ref(''); // 追加
+        const alertMessage = ref(''); // 追加
+        const errorMessages = ref([]); // 追加
+
+        const lastNearMissNo = ref('001-testChemical-000001');
+        const formState = reactive({
+            NearMissNo: '',
+            Date: new Date(), // デフォルトで現在の日付を設定
+            Name: '',
+            Department: '',
+            Where: '',
+            TypeOfAccIdent: '',
+            Factor: '',
+            InjuredLv: '',
+            EquipmentDamageLv: '',
+            AffectOfEnviroment: '',
+            NewsCoverage: '',
+            ActionItems: '',
+            SolvedActionItems: false,
+            Description: ''
+        });
+
+        const errorMessagesState = reactive({
+            Date: [],
+            Name: [],
+            Department: [],
+            Where: [],
+            TypeOfAccIdent: [],
+            Factor: [],
+            InjuredLv: [],
+            EquipmentDamageLv: [],
+            AffectOfEnviroment: [],
+            NewsCoverage: [],
+            ActionItems: [],
+            Description: []
+        });
+
+        const getLastNearMissNo = async () => {
+            try {
+                const companyCode = userStore.companyCode;
+                const response = await axios.get(`http://127.0.0.1:8000/api/nearMiss/nearMissByCompany/?companyCode=${companyCode}`);
+                const lastNearMissNo = response.data.lastNearMissNo; // バックエンドから取得
+                return lastNearMissNo; // 単に取得した値を返す
+            } catch (error) {
+                console.error('Error getting last nearMissNo:', error.response ? error.response.data : error.message);
+                throw error;
+            }
+        };
+
+        getLastNearMissNo().then((nearMissNo) => (lastNearMissNo.value = nearMissNo));
+
+        const calculateCategory = () => {
+            const valueMapping = { A: 10, B: 8, C: 3, D: 2, E: 1 };
+            const total = ['InjuredLv', 'EquipmentDamageLv', 'AffectOfEnviroment', 'NewsCoverage'].reduce((acc, key) => {
+                const value = formState[key] || 'E';
+                return acc + (valueMapping[formState[key]] || 0);
+            }, 0);
+            return total >= 11 ? 'A' : total >= 10 ? 'B' : total >= 9 ? 'C' : total >= 5 ? 'D' : 'E';
+        };
+
+        const getButtonSeverity = (category) => {
+            const severityMapping = {
+                A: 'danger',
+                B: 'help',
+                C: 'warn',
+                D: 'info',
+                E: 'success'
+            };
+            return severityMapping[category] || 'secondary';
+        };
+
+        const validateForm = () => {
+            showError.value = false;
+            let hasError = false;
+
+            Object.keys(formState).forEach((key) => {
+                if (formState[key] === '' || formState[key] === null) {
+                    if (key !== 'ActionItems' && key !== 'SolvedActionItems' && key !== 'TypeOfAccIdent' && key !== 'NearMissNo') {
+                        showError.value = true;
+                        errorMessagesState[key] = ['This field is required'];
+                        hasError = true;
+                        console.log(`Validation error in field: ${key}`); // エラーのあるフィールドをコンソールに出力
+                    }
+                } else {
+                    errorMessagesState[key] = [];
+                }
+            });
+
+            if (!hasError) {
+                submitForm();
+            } else {
+                alertType.value = 'error';
+                alertMessage.value = 'Form validation failed.';
+                errorMessages.value = ['Please fill in the required fields.'];
+                showAlert.value = true; // エラー時にアラート表示
+                console.log('Validation errors:', errorMessagesState); // すべてのエラーメッセージをコンソールに出力
+            }
+        };
+
+        const getCookie = (name) => {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === name + '=') {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        };
+
+        const submitForm = async () => {
+            try {
+                const userStore = useUserStore();
+                const postData = {
+                    userName: {
+                        userName: formState.Name,
+                        email: formState.Email
+                    },
+                    department: formState.Department,
+                    dateOfOccurrence: moment(formState.Date).format('YYYY-MM-DD'),
+                    placeOfOccurrence: formState.Where,
+                    typeOfAccident: formState.TypeOfAccIdent,
+                    factor: formState.Factor,
+                    injuredLv: formState.InjuredLv,
+                    equipmentDamageLv: formState.EquipmentDamageLv,
+                    affectOfEnviroment: formState.AffectOfEnviroment,
+                    newsCoverage: formState.NewsCoverage,
+                    actionItems: formState.ActionItems,
+                    solvedActionItems: formState.SolvedActionItems,
+                    measures: calculateCategory(),
+                    description: formState.Description,
+                    companyCode: userStore.companyCode // バックエンドで NearMiss No を生成
+                };
+                console.log('Sending data:', postData);
+
+                const response = await axios.post('http://127.0.0.1:8000/api/nearMiss/nearMissByCompany/', postData, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    }
+                });
+
+                alertType.value = 'success';
+                alertMessage.value = 'Data saved successfully!'; // 成功メッセージ
+                errorMessages.value = []; // エラーメッセージをクリア
+                showAlert.value = true; // アラートを表示
+
+                console.log(response.data);
+                resetForm();
+            } catch (error) {
+                alertType.value = 'error';
+                alertMessage.value = 'Error saving data!'; // エラーメッセージ
+                errorMessages.value = ['An error occurred while saving the data. Please try again.']; // エラーメッセージを設定
+                showAlert.value = true; // アラートを表示
+
+                if (error.response) {
+                    console.error('Error submitting form:', error.response.data);
+                } else if (error.request) {
+                    console.error('Error submitting form:', error.request);
+                } else {
+                    console.error('Error submitting form:', error.message);
+                }
+            }
+        };
+
+        const resetForm = () => {
+            Object.assign(formState, {
+                NearMissNo: '',
+                Date: null,
+                Name: '',
+                Department: '',
+                Where: '',
+                TypeOfAccIdent: '',
+                Factor: '',
+                InjuredLv: '',
+                EquipmentDamageLv: '',
+                AffectOfEnviroment: '',
+                NewsCoverage: '',
+                ActionItems: '',
+                SolvedActionItems: false,
+                Description: ''
+            });
+        };
+
+        return {
+            lastNearMissNo,
+            formState,
+            errorMessagesState,
+            showError,
+            validateForm,
+            submitForm,
+            calculateCategory,
+            getButtonSeverity,
+            showAlert, // 追加
+            alertType, // 追加
+            alertMessage, // 追加
+            errorMessages // 追加
+        };
+    },
+    data() {
+        return {
+            accidentTypes: [
+                'fall down',
+                'fall/slip',
+                'collision',
+                'accidental fall',
+                'collapse',
+                'hit by something',
+                'got caught up in',
+                'cut/Rubbing',
+                'treading on something sharp',
+                'drown',
+                'contact with hot or cold objects',
+                'contact with organic matter',
+                'electric shock',
+                'explosion',
+                'rupture',
+                'conflagration',
+                'traffic accident',
+                'impossible movement',
+                'protective equipment violation',
+                'others'
+            ],
+            factors: ['Person', 'Rule', 'Equipment', 'Methods', 'Others'],
+            injuredLevels: ['A', 'B', 'C', 'D', 'E'],
+            equipmentDamageLevels: ['A', 'B', 'C', 'D', 'E'],
+            affectOfEnviromentLevels: ['A', 'B', 'C', 'D', 'E'],
+            newsCoverageLevels: ['A', 'B', 'C', 'D', 'E']
+        };
     }
-  };
-  
-  // axiosを使用して装置のリストを取得するメソッド
-  const fetchEquipmentOptions = async (selectedPlant) => {
-    try {
-      const response = await axios.get('http://127.0.0.1:8000/api/ceList/ceListByCompany/', {
-        params: {
-          companyCode: companyCode, // クエリパラメータとしてcompanyCodeを渡す
-          plant: selectedPlant // 選択されたplantをクエリパラメータとして渡す
-        }
-      });
-  
-      const companyData = response.data.find((company) => company.companyCode === companyCode);
-      if (companyData) {
-        console.log('Selected plant:', selectedPlant); // 成功時のコンソールログ
-        equipmentOptions.value = companyData.ceList
-          .filter((item) => item.plant === selectedPlant)
-          .map((equipment) => ({
-            label: `Equipment ${equipment.equipment}`, // 表示名
-            value: equipment.equipment // 実際の値
-          }));
-        console.log('Equipment options:', equipmentOptions.value);
-      } else {
-        console.log('No data found for companyCode and selected plant:', companyCode, selectedPlant);
-      }
-    } catch (error) {
-      console.error('Failed to fetch equipment options:', error); // エラー時のコンソールログ
-    }
-  };
-  
-  // axiosを使用してWork Order Noを取得し、最大値+1を設定するメソッド
-  const fetchAndIncrementWorkOrderNo = async () => {
-    try {
-      const response = await axios.get('http://127.0.0.1:8000/api/workOrder/workOrderByCompany/', {
-        params: {
-          companyCode: companyCode // クエリパラメータとしてcompanyCodeを渡す
-        }
-      });
-  
-      const companyData = response.data.find((company) => company.companyCode === companyCode);
-      if (companyData && companyData.workOrderList.length > 0) {
-        const maxWorkOrderNo = Math.max(...companyData.workOrderList.map((order) => parseInt(order.workOrderNo, 10)));
-        workOrderNo.value = (maxWorkOrderNo + 1).toString();
-        console.log('Incremented Work Order No:', workOrderNo.value); // 成功時のコンソールログ
-      } else {
-        workOrderNo.value = '1'; // データがない場合は '1' を初期値とする
-        console.log('No work order found, setting Work Order No to 1');
-      }
-    } catch (error) {
-      console.error('Failed to fetch and increment work order no:', error); // エラー時のコンソールログ
-    }
-  };
-  
-  // コンポーネントがマウントされたときにプラントのリストとWork Order Noを取得
-  onMounted(() => {
-    fetchPlantOptions();
-    fetchAndIncrementWorkOrderNo();
-  });
-  
-  // plantが選択されたときにequipmentのリストを取得
-  watch(
-    () => localEntry.value.plant,
-    (newPlant) => {
-      if (newPlant) {
-        fetchEquipmentOptions(newPlant);
-      }
-    }
-  );
-  
-  // SaveボタンがクリックされたときにPOSTリクエストを送信
-  const submitEntry = async () => {
-      try {
-          const postData = {
-              companyCode: companyCode,
-              plant: localEntry.value.plant || null,
-              equipment: localEntry.value.equipment || null,
-              workOrderNo: workOrderNo.value,
-              workOrderDesc: localEntry.value.workOrderDesc || null,
-              status: localEntry.value.status || null,
-              title: localEntry.value.title || null,
-              failureTypes: localEntry.value.failureTypes && localEntry.value.failureTypes.length > 0 ? localEntry.value.failureTypes : null,
-              failureModes: localEntry.value.failureModes && localEntry.value.failureModes.length > 0 ? localEntry.value.failureModes : null,
-              failureDescription: localEntry.value.failureDescription || null,
-              failureDate: localEntry.value.failureDate || null,
-              description: localEntry.value.description || null,
-              registrationDate: localEntry.value.registrationDate || null  // 登録日を追加
-          };
-  
-          const response = await axios.post('http://127.0.0.1:8000/api/workOrder/workOrder/', postData);
-          console.log('POST request successful:', response.data);
-  
-          emit('submit', localEntry.value);
-          emit('update:visible', false);
-      } catch (error) {
-          if (error.response) {
-              console.error('Error during submitEntry execution:', error.response.data);
-          } else if (error.request) {
-              console.error('No response received:', error.request);
-          } else {
-              console.error('Error during submitEntry execution:', error.message);
-          }
-      }
-  };
-  
-  
-  
-  const hideModal = () => {
-    try {
-      cancelNewEntry();
-    } catch (error) {
-      console.error('Error during hideModal execution:', error);
-    }
-  };
-  
-  const cancelNewEntry = () => {
-    try {
-      emit('cancel');
-      emit('update:visible', false);
-    } catch (error) {
-      console.error('Error during cancelNewEntry execution:', error);
-    }
-  };
-  
-  const enlargeImage1 = () => {
-    imageDialogVisible1.value = true;
-  };
-  
-  const enlargeImage2 = () => {
-    imageDialogVisible2.value = true;
-  };
-  
-  watch(
-    () => props.visible,
-    (newValue) => {
-      if (!newValue) {
-        localEntry.value = { ...props.entry || {} };
-      }
-    }
-  );
-  </script>
-  
-  <style scoped>
-  .surface-ground {
-    padding: 1rem;
-  }
-  
-  .flex-or {
-    margin-top: 1rem;
-  }
-  
-  img {
-    cursor: pointer;
-    border: 1px solid black; /* 黒い細い枠線を追加 */
-  }
-  
-  :deep(.p-dialog) {
-    max-width: 70vw;
-  }
-  
-  .history-list {
+};
+</script>
+
+<style scoped>
+/* 共通スタイル */
+.inputfield {
+    width: 100%;
+}
+
+.errorMessages {
+    color: red;
     list-style-type: none;
     padding: 0;
-  }
-  </style>
-  
+}
+
+textarea {
+    resize: vertical;
+}
+
+/* ラベルとエラーメッセージ */
+.form-label {
+    font-size: 1.5em; /* フォントサイズを大きく */
+    font-weight: bold;
+}
+
+.error-message {
+    color: red;
+    font-size: 1.2em;
+    margin-bottom: 10px;
+}
+
+.input-error {
+    border: 1px solid red;
+}
+
+/* コンテナスタイル */
+.form-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 33%;
+}
+
+.flex-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+/* リスクレベルと矢印のスタイル */
+.risk-level {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 10px;
+    width: 100%;
+}
+
+.risk-label {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 5px;
+    text-align: center;
+    width: 100%;
+}
+
+.risk-arrows {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 0 10px;
+}
+
+.arrow-label {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.arrow-label.high {
+    color: red;
+}
+
+.arrow-label.low {
+    color: green;
+}
+
+/* HighとLowのフォントサイズを大きくして太字に */
+.risk-arrows .arrow-label.high,
+.risk-arrows .arrow-label.low {
+    font-size: 1.5em; /* フォントサイズを大きく */
+    font-weight: bold; /* 太字にする */
+}
+
+.arrow {
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+/* MeasuresとRisk Levelの間にスペースを追加 */
+.measures-field {
+    margin-bottom: 20px; /* Measuresの下に余白を追加 */
+    max-width: 300px;
+}
+
+/* Define Safety Measuresスタイル */
+.define-safety-measures {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-top: 10px;
+    text-align: center; /* 中央揃え */
+}
+
+/* ボタンのスタイル */
+.measures-container {
+    display: flex;
+    justify-content: center; /* 横方向に中央揃え */
+    width: 100%; /* コンテナの幅を100%に */
+}
+
+.measures-button {
+    width: 200px; /* ボタンの幅を調整 */
+    max-width: 100%; /* 必要に応じて幅の最大値を制限 */
+    padding: 10px 20px; /* ボタン内の余白を調整 */
+}
+
+/* PrimeVueコンポーネントのスタイル */
+::v-deep .p-inputtext,
+::v-deep .p-inputtextarea {
+    font-size: 1.2em !important; /* フォントサイズを大きく */
+    border: 1px solid black !important; /* 枠線を黒色に */
+}
+
+/* PrimeVueのCalendarコンポーネント */
+::v-deep .p-calendar .p-inputtext {
+    border: 1px solid black !important;
+}
+
+/* PrimeVueのRadioButtonラベルのフォントスタイル */
+::v-deep .p-radiobutton .p-radiobutton-label {
+    font-size: 1.2em !important; /* フォントサイズを大きく */
+    font-weight: bold; /* 太字にする */
+}
+
+/* 事故の種類リストのラベル */
+::v-deep .ui.radio.checkbox label {
+    font-size: 1.2em !important; /* フォントサイズを大きく */
+    font-weight: bold;
+}
+
+/* 特定の背景パターン */
+#app > div > div > div.col-12.lg\:col-2 {
+    background: repeating-linear-gradient(45deg, black 0, black 5%, yellow 5%, yellow 10%);
+}
+
+/* SAVEボタンのスタイルを調整して青色に変更 */
+.save-button {
+    font-size: 1.2em; /* フォントサイズを大きく */
+    padding: 12px 24px; /* ボタンの余白を調整 */
+    width: auto; /* 必要に応じてボタンの幅を調整 */
+    background-color: #007bff; /* 背景色を青に設定 */
+    color: white; /* テキストを白色に設定 */
+    border: none; /* ボーダーを削除 */
+    border-radius: 4px; /* ボタンに角丸を追加 */
+    cursor: pointer; /* カーソルをポインタに変更 */
+}
+
+/* ボタンホバー時のスタイル */
+.save-button:hover {
+    background-color: #0056b3; /* ホバー時に濃い青に変更 */
+}
+</style>

@@ -1,18 +1,25 @@
 from django.db.models import Prefetch
 from rest_framework.response import Response
-from rest_framework import viewsets
-from .models import NearMiss, CompanyCode, SafetyIndicators,TrendSafetyIndicators
-from .serializers import (NearMissSerializer,CompanyNearMissSerializer,
-                          SafetyIndicatorsSerializer,CompanySafetyIndicatorsSerializer,
-                          TrendSafetyIndicatorsSerializer,CompanyTrendSafetyIndicatorsSerializer)
-
-
-# views.py
-from rest_framework.decorators import api_view
 from rest_framework import viewsets, status
-from rest_framework.response import Response
-from .models import NearMiss, CompanyCode, CustomUser
-from .serializers import NearMissSerializer, CompanyNearMissSerializer
+from rest_framework.decorators import api_view
+
+from .models import (
+    NearMiss, 
+    CompanyCode, 
+    SafetyIndicators, 
+    TrendSafetyIndicators, 
+    CustomUser
+)
+
+from .serializers import (
+    NearMissSerializer, 
+    CompanyNearMissSerializer,
+    SafetyIndicatorsSerializer, 
+    CompanySafetyIndicatorsSerializer,
+    TrendSafetyIndicatorsSerializer, 
+    CompanyTrendSafetyIndicatorsSerializer
+)
+
 
 class NearMissViewSet(viewsets.ModelViewSet):
     queryset = NearMiss.objects.all()
