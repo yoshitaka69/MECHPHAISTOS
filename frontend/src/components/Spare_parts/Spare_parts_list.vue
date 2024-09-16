@@ -117,29 +117,7 @@ const SparePartsComponent = defineComponent({
     data() {
         return {
             hotSettings: {
-                data: [
-                    [
-                        'image_url',
-                        '1',
-                        '1',
-                        'Motor',
-                        'Standard',
-                        'RX-78-5.7',
-                        '12345-98',
-                        'Change motor',
-                        900000,
-                        1,
-                        'pieces',
-                        'warehouse1',
-                        '8',
-                        'order',
-                        false,
-                        'classification',
-                        'inventoryTurnover',
-                        'when we change No.1 agitator, we have to change this motor too'
-                    ]
-                    // 以下、初期データ
-                ],
+                data: [], // **修正**: 初期データを空に設定しました
                 colHeaders: [
                     'Image',
                     'parts No',
@@ -147,6 +125,7 @@ const SparePartsComponent = defineComponent({
                     'Parts Name',
                     'Category',
                     'Model',
+                    'Manufacturer', // ここに追加
                     'Serial Number',
                     'Task Code',
                     'Price',
@@ -157,7 +136,7 @@ const SparePartsComponent = defineComponent({
                     'Alert <br>order',
                     'Order <br>situation',
                     'classification',
-                    'inventoryTurnover',
+                    'inventory<br>Turnover',
                     'Description'
                 ],
                 rowHeaders: true, // ここで行ヘッダーを有効にします
@@ -195,11 +174,16 @@ const SparePartsComponent = defineComponent({
                         data: 'category',
                         className: 'htRight',
                         type: 'dropdown',
-                        source: ['Standard', 'Inventory', 'consumables']
+                        source: ['Inventory', 'Standard', 'Consumables']
                     },
                     {
                         //Model
                         data: 'partsModel',
+                        type: 'text'
+                    },
+                    {
+                        //Manufacturer（新しく追加）
+                        data: 'manufacturer', // ここに追加
                         type: 'text'
                     },
                     {
@@ -231,7 +215,7 @@ const SparePartsComponent = defineComponent({
                         //Unit
                         data: 'unit',
                         width: 60,
-                        type: 'numeric',
+                        type: 'text',
                         className: 'htRight'
                     },
                     {
@@ -255,7 +239,7 @@ const SparePartsComponent = defineComponent({
                         className: 'htCenter',
                         type: 'text',
                         renderer: customRendererForAlertOrder,
-                        readOnly: true
+                        //readOnly: true
                     },
                     {
                         //Order situation
@@ -269,7 +253,8 @@ const SparePartsComponent = defineComponent({
                         data: 'classification',
                         width: 100,
                         className: 'htCenter',
-                        type: 'text'
+                        type: 'dropdown',
+                        source: ['','Long-Term Stock Items', 'Short-Term Stock Items', 'Dead Stock Items','Critical Stock Items','Safety Stock Items','Irregular Use Stock Items']
                     },
                     {
                         //inventoryTurnover
@@ -301,11 +286,11 @@ const SparePartsComponent = defineComponent({
                     if (changes) {
                         changes.forEach(([row, prop, oldValue, newValue]) => {
                             if (prop === 'orderSituation') {
-                                const alertOrderValue = this.getDataAtCell(row, 13);
+                                const alertOrderValue = this.getDataAtCell(row, 14);
                                 if (newValue === true && alertOrderValue === 'order') {
-                                    this.setDataAtCell(row, 13, 'ordered');
+                                    this.setDataAtCell(row, 14, 'ordered');
                                 } else if (newValue === false && alertOrderValue === 'ordered') {
-                                    this.setDataAtCell(row, 13, 'order');
+                                    this.setDataAtCell(row, 14, 'order');
                                 }
                             }
                         });
@@ -385,6 +370,7 @@ const SparePartsComponent = defineComponent({
                         'partsName',
                         'category',
                         'partsModel',
+                        'manufacturer', // **追加**: Manufacturer列を含むように修正
                         'serialNumber',
                         'taskCode',
                         'partsCost',
@@ -440,24 +426,25 @@ const SparePartsComponent = defineComponent({
             const hotInstance = this.$refs.hotTableComponent.hotInstance;
             const blankRows = Array.from({ length: this.rowsToAdd }, () => {
                 return {
-                    image: '',
-                    partsNo: '',
-                    bomCode: '',
-                    partsName: '',
-                    category: '',
-                    partsModel: '',
-                    serialNumber: '',
-                    taskCode: '',
-                    partsCost: 0,
-                    numberOf: 0,
-                    unit: '',
-                    location: '',
-                    partsDeliveryTime: 0,
-                    orderAlert: '',
-                    orderSituation: false,
-                    classification: '',
-                    inventoryTurnover: '',
-                    partsDescription: ''
+                    companyCode: userCompanyCode,
+                    partsNo: row[1],
+                    bomCode: row[2],
+                    partsName: row[3],
+                    category: row[4],
+                    partsModel: row[5],
+                    manufacturer: row[6], // **追加**: Manufacturer列をPOSTリクエストに含める
+                    serialNumber: row[7],
+                    taskCode: row[8],
+                    partsCost: row[9],
+                    numberOf: row[10],
+                    unit: row[11],
+                    location: row[12],
+                    partsDeliveryTime: row[13],
+                    orderAlert: row[14],
+                    orderSituation: row[15] !== null ? row[15] : false, // null を false に変換
+                    classification: row[16],
+                    inventoryTurnover: row[17],
+                    partsDescription: row[18]
                 };
             });
 
@@ -485,39 +472,40 @@ const SparePartsComponent = defineComponent({
             const formattedData = tableData.map((row) => {
                 return {
                     companyCode: userCompanyCode,
-                    partsNo: row[1],
-                    bomCode: row[2],
-                    partsName: row[3],
-                    category: row[4],
-                    partsModel: row[5],
-                    serialNumber: row[6],
-                    taskCode: row[7],
-                    partsCost: row[8],
-                    numberOf: row[9],
-                    unit: row[10],
-                    location: row[11],
-                    partsDeliveryTime: row[12],
-                    orderAlert: row[13],
-                    orderSituation: row[14] !== null ? row[14] : false,  // null を false に変換
-                    classification: row[15],
-                    inventoryTurnover: row[16],
-                    partsDescription: row[17],
+                    partsNo: row[1], // parts No
+                    bomCode: row[2], // BOM Code
+                    partsName: row[3], // Parts Name
+                    category: row[4], // Category
+                    partsModel: row[5], // Model
+                    manufacturer: row[6], // **追加**: Manufacturer フィールドを追加
+                    serialNumber: row[7], // Serial Number
+                    taskCode: row[8], // Task Code
+                    partsCost: row[9], // Price (Parts Cost)
+                    numberOf: row[10], // Number of
+                    unit: row[11], // Unit
+                    location: row[12], // Location
+                    partsDeliveryTime: row[13], // Delivery Time
+                    orderAlert: row[14], // Alert Order
+                    orderSituation: row[15] !== null ? row[15] : false, // Order Situation
+                    classification: row[16], // Classification
+                    inventoryTurnover: row[17], // Inventory Turnover
+                    partsDescription: row[18] // Description
                 };
             });
 
-            console.log("送信するデータ:", JSON.stringify(formattedData, null, 2));
+            console.log('送信するデータ:', JSON.stringify(formattedData, null, 2));
 
             const url = `http://127.0.0.1:8000/api/spareParts/spareParts/`;
 
             axios
                 .post(url, formattedData, {
                     headers: {
-                        'Content-Type': 'application/json',
+                        'Content-Type': 'application/json'
                     },
-                    withCredentials: true,
+                    withCredentials: true
                 })
                 .then((response) => {
-                    console.log("Data saved successfully:", response.data);
+                    console.log('Data saved successfully:', response.data);
                     this.alertType = 'success';
                     this.alertMessage = 'データが正常に保存されました。';
                     this.showAlert = true;
@@ -526,22 +514,10 @@ const SparePartsComponent = defineComponent({
                     }, 3000); // 3秒後にアラートを非表示にする
                 })
                 .catch((error) => {
-                    console.error("Error saving data:", error);
-
-                    if (error.response) {
-                        console.error("Error response status:", error.response.status);
-                        console.error("Error response headers:", error.response.headers);
-                        console.error("Error response data:", error.response.data);
-                    } else if (error.request) {
-                        console.error("Error request data:", error.request);
-                    } else {
-                        console.error("Error message:", error.message);
-                    }
-
-                    console.error("Error config:", error.config);
+                    console.error('Error saving data:', error);
                     this.alertType = 'error';
                     this.alertMessage = 'データの保存に失敗しました。エラーを確認してください。';
-                    this.errorMessages = ["Quis commodo odio aenean sed adipiscing diam.", "Risus pretium quam vulputate dignissim suspendisse.", "Bibendum enim facilisis gravida neque convallis a cras semper."];
+                    this.errorMessages = ['エラーが発生しました。再度試してください。'];
                     this.showAlert = true;
                     setTimeout(() => {
                         this.showAlert = false;

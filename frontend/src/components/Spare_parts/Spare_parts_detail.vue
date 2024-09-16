@@ -44,11 +44,11 @@
                             <div class="image-container">
                                 <div class="small-images">
                                     <div v-for="(img, index) in smallImages" :key="index" class="small-image" @click="setLargeImage(img)">
-                                        <img :src="img" alt="Small Spare Part Image" class="w-full h-auto" />
+                                        <img :src="img" alt="Small Spare Part Image" class="w-full h-auto border-image" />
                                     </div>
                                 </div>
                                 <div class="large-image">
-                                    <img :src="largeImage" alt="Large Spare Part Image" class="w-full h-auto" />
+                                    <img :src="largeImage" alt="Large Spare Part Image" class="w-full h-auto border-image" />
                                 </div>
                             </div>
                         </div>
@@ -75,6 +75,7 @@
                             <li><strong>BOM Code:</strong> {{ sparePart.bomCode }}</li>
                             <li><strong>Category:</strong> {{ sparePart.category }}</li>
                             <li><strong>Model:</strong> {{ sparePart.partsModel }}</li>
+                            <li><strong>Manufacturer:</strong> {{ sparePart.manufacturer }}</li> <!-- 追加 -->
                             <li><strong>Serial Number:</strong> {{ sparePart.serialNumber }}</li>
                             <li><strong>Task Code:</strong> {{ sparePart.taskCode }}</li>
                             <li><strong>Price:</strong> {{ sparePart.partsCost }}</li>
@@ -116,7 +117,7 @@
                 <div class="col-12 md:col-6 lg:col-3 mb-3 lg:mb-0" v-for="product in relatedProducts" :key="product.partsNo">
                     <div class="p-2">
                         <div class="relative">
-                            <img :src="product.image || noImage" class="w-full" />
+                            <img :src="product.image || noImage" class="w-full border-image" /> <!-- 黒い枠線のスタイルを追加 -->
                             <button
                                 v-ripple
                                 class="p-link w-3rem h-3rem surface-0 hover:surface-200 border-circle shadow-2 inline-flex align-items-center justify-content-center absolute transition-colors transition-duration-300 p-ripple"
@@ -136,6 +137,7 @@
         </div>
     </div>
 </template>
+
 
 <script>
 import axios from 'axios';
@@ -227,12 +229,18 @@ export default {
     width: 50px;
     height: 50px;
     object-fit: cover;
+    border: 1px solid black; /* 黒い枠線を追加 */
 }
 
 .large-image img {
     width: 100%;
     height: auto;
     object-fit: cover;
+    border: 1px solid black; /* 黒い枠線を追加 */
+}
+
+.border-image {
+    border: 1px solid black; /* 画像全体に黒い枠線を適用 */
 }
 
 .details-list {
@@ -250,4 +258,5 @@ export default {
     font-weight: bold;
     color: #333;
 }
+
 </style>

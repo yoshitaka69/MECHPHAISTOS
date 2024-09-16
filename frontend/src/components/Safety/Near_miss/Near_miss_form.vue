@@ -266,39 +266,17 @@ export default {
         });
 
         const getLastNearMissNo = async () => {
-            try {
-                const companyCode = userStore.companyCode;
-                const response = await axios.get(`http://127.0.0.1:8000/api/nearMiss/nearMissByCompany/?companyCode=${companyCode}`);
-                const allData = response.data;
-                const companyData = allData.find((item) => item.companyCode === companyCode);
-
-                if (companyData && companyData.nearMissList && companyData.nearMissList.length > 0) {
-                    const existingNumbers = companyData.nearMissList
-                        .map((entry) => {
-                            const match = entry.nearMissNo.match(/(\d+)-(\w+)-(\d+)$/);
-                            return match ? parseInt(match[3], 10) : null;
-                        })
-                        .filter((num) => num !== null)
-                        .sort((a, b) => a - b);
-
-                    let newNumber = 1;
-                    for (let i = 0; i < existingNumbers.length; i++) {
-                        if (existingNumbers[i] !== newNumber) {
-                            break;
-                        }
-                        newNumber++;
-                    }
-
-                    const lastNo = `${companyCode}-00${newNumber.toString().padStart(3, '0')}`;
-                    return lastNo;
-                }
-
-                return `${companyCode}-001`; // データがない場合は初期値を設定
-            } catch (error) {
-                console.error('Error getting last nearMissNo:', error.response ? error.response.data : error.message);
-                throw error;
-            }
-        };
+    try {
+        const companyCode = userStore.companyCode;
+        const response = await axios.get(`http://127.0.0.1:8000/api/nearMiss/nearMissByCompany/?companyCode=${companyCode}`);
+        const lastNearMissNo = response.data.lastNearMissNo; // バックエンドから取得
+        console.log('Received NearMissNo from backend:', lastNearMissNo);  // デバッグログ
+        return lastNearMissNo; // 単に取得した値を返す
+    } catch (error) {
+        console.error('Error getting last nearMissNo:', error.response ? error.response.data : error.message);
+        throw error;
+    }
+};
 
         getLastNearMissNo().then((nearMissNo) => (lastNearMissNo.value = nearMissNo));
 
@@ -367,12 +345,11 @@ export default {
 
         const submitForm = async () => {
             try {
-                const userStore = useUserStore(); // userStoreを取得
+                const userStore = useUserStore();
                 const postData = {
-                    nearMissNo: lastNearMissNo.value,
                     userName: {
                         userName: formState.Name,
-                        email: formState.Email // emailがオプションフィールドであることを確認
+                        email: formState.Email
                     },
                     department: formState.Department,
                     dateOfOccurrence: moment(formState.Date).format('YYYY-MM-DD'),
@@ -387,41 +364,39 @@ export default {
                     solvedActionItems: formState.SolvedActionItems,
                     measures: calculateCategory(),
                     description: formState.Description,
-                    companyCode: userStore.companyCode // useUserStore内のcompanyCodeを使用
+                    companyCode: userStore.companyCode // バックエンドで NearMiss No を生成
                 };
-
                 console.log('Sending data:', postData);
 
                 const response = await axios.post('http://127.0.0.1:8000/api/nearMiss/nearMissByCompany/', postData, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCookie('csrftoken')
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    }
+                });
+
+                alertType.value = 'success';
+                alertMessage.value = 'Data saved successfully!'; // 成功メッセージ
+                errorMessages.value = []; // エラーメッセージをクリア
+                showAlert.value = true; // アラートを表示
+
+                console.log(response.data);
+                resetForm();
+            } catch (error) {
+                alertType.value = 'error';
+                alertMessage.value = 'Error saving data!'; // エラーメッセージ
+                errorMessages.value = ['An error occurred while saving the data. Please try again.']; // エラーメッセージを設定
+                showAlert.value = true; // アラートを表示
+
+                if (error.response) {
+                    console.error('Error submitting form:', error.response.data);
+                } else if (error.request) {
+                    console.error('Error submitting form:', error.request);
+                } else {
+                    console.error('Error submitting form:', error.message);
                 }
-            });
-
-            alertType.value = 'success';
-            alertMessage.value = 'Data saved successfully!';  // 成功メッセージ
-            errorMessages.value = [];  // エラーメッセージをクリア
-            showAlert.value = true;  // アラートを表示
-
-            console.log(response.data);
-            resetForm();
-
-        } catch (error) {
-            alertType.value = 'error';
-            alertMessage.value = 'Error saving data!';  // エラーメッセージ
-            errorMessages.value = ['An error occurred while saving the data. Please try again.'];  // エラーメッセージを設定
-            showAlert.value = true;  // アラートを表示
-
-            if (error.response) {
-                console.error('Error submitting form:', error.response.data);
-            } else if (error.request) {
-                console.error('Error submitting form:', error.request);
-            } else {
-                console.error('Error submitting form:', error.message);
             }
-        }
-    };
+        };
 
         const resetForm = () => {
             Object.assign(formState, {
@@ -615,25 +590,25 @@ textarea {
 }
 
 /* PrimeVueコンポーネントのスタイル */
-::v-deep .p-inputtext,
-::v-deep .p-inputtextarea {
+:deep(.p-inputtext),
+:deep(.p-inputtextarea) {
     font-size: 1.2em !important; /* フォントサイズを大きく */
     border: 1px solid black !important; /* 枠線を黒色に */
 }
 
 /* PrimeVueのCalendarコンポーネント */
-::v-deep .p-calendar .p-inputtext {
+:deep(.p-calendar .p-inputtext) {
     border: 1px solid black !important;
 }
 
 /* PrimeVueのRadioButtonラベルのフォントスタイル */
-::v-deep .p-radiobutton .p-radiobutton-label {
+:deep(.p-radiobutton .p-radiobutton-label) {
     font-size: 1.2em !important; /* フォントサイズを大きく */
     font-weight: bold; /* 太字にする */
 }
 
 /* 事故の種類リストのラベル */
-::v-deep .ui.radio.checkbox label {
+:deep(.ui.radio.checkbox label) {
     font-size: 1.2em !important; /* フォントサイズを大きく */
     font-weight: bold;
 }

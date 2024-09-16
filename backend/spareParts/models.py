@@ -49,6 +49,9 @@ class SpareParts(models.Model):
     serialNumber = models.CharField(verbose_name='serialNumber', max_length=30, blank=True, null=True)
     category = models.CharField(verbose_name='category', max_length=50, blank=True, null=True)
 
+    # **追加**: Manufacturerフィールド
+    manufacturer = models.CharField(verbose_name='manufacturer', max_length=100, blank=True, null=True)  # 製造者を追加
+
     # 部品コスト
     partsCost = models.DecimalField(verbose_name='partsCost', max_digits=10, decimal_places=2, blank=True, null=True, default=0.00)
     numberOf = models.PositiveIntegerField(verbose_name='numberOf', blank=True, null=True, default=0)
