@@ -1,11 +1,16 @@
+
+
 @media screen and (min-width: 1960px) {
     .layout-main, .landing-wrapper {
-        width: 1504px;
+        width: 98%; /* 横幅を90%に設定 */
+        height: 98%; /* 縦方向も90%に設定 */
         margin-left: auto !important;
         margin-right: auto !important;
+        margin-top: auto !important;
+        margin-bottom: auto !important;
     }
-
 }
+
 
 @media (min-width: 992px) {
     .layout-wrapper {

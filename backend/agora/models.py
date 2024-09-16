@@ -9,6 +9,9 @@ from spareParts.models import SpareParts
 
 
 
+
+#SparePartsからのsignalでこのモデルは更新される！！
+
 class AlertSchedule(models.Model):
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='alertSchedule_companyCode',null=True, blank=True)
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='alertSchedule_companyName', null=True, blank=True)
@@ -26,7 +29,7 @@ class AlertSchedule(models.Model):
         verbose_name_plural = 'AlertSchedule'
         ordering = ('companyCode',) #モデルのクエリセットを取得した際にどのような順番でフィールドを並べ変えるかを決める。
     
-
+ 
     def __str__(self):
         return str('AlertSchedule')
 

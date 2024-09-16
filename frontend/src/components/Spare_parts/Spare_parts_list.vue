@@ -235,7 +235,7 @@ const SparePartsComponent = defineComponent({
                     {
                         //Alert order
                         data: 'orderAlert',
-                        width: 100,
+                        width: 80,
                         className: 'htCenter',
                         type: 'text',
                         renderer: customRendererForAlertOrder,

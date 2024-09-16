@@ -83,6 +83,9 @@ export default {
 </script>
 
 <style scoped>
+
+
+
 .card-light-blue {
     background-color: #e0f7fa;
 }
