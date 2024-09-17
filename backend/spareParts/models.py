@@ -58,7 +58,7 @@ class SpareParts(models.Model):
     summedPartsCost = models.DecimalField(verbose_name='summedPartsCost', max_digits=10, decimal_places=2, blank=True, null=True, default=0.000)
     unit = models.CharField(verbose_name='unit', max_length=20, blank=True, null=True)
 
-    taskCode = models.CharField(verbose_name='taskCode', max_length=20, blank=True, null=True)
+    taskListNo = models.CharField(verbose_name='taskListNo', max_length=20, blank=True, null=True)
 
     # 物理的な状況
     location = models.CharField(verbose_name='location', max_length=200, blank=True, null=True)
