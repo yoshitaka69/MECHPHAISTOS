@@ -8,11 +8,17 @@ from accounts.models import CompanyCode
 
 
 #---------------------------------------------------------------------------------------------------------------
-class WorkOrderSerializer(serializers.ModelSerializer):
+from rest_framework import serializers
+from .models import WorkOrder
 
+class WorkOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = WorkOrder
-        fields = ['companyCode','plant', 'equipment', 'workOrderNo','workOrderDesc','status']
+        fields = '__all__'
+        read_only_fields = ('workOrderNo',)  # workOrderNoを読み取り専用に設定
+
+
+        
 
 class CompanyCodeWorkOrderSerializer(serializers.ModelSerializer):
     workOrderList = WorkOrderSerializer(many=True, read_only=True, source='workOrder_companyCode')

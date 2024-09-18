@@ -23,41 +23,30 @@ class WorkOrder(models.Model):
     workOrderNo = models.CharField(max_length=100, null=True, blank=True)
     workOrderDesc = models.CharField(max_length=255, null=True, blank=True)
     status = models.CharField(max_length=100, null=True, blank=True)
-    title = models.CharField(max_length=255, null=True, blank=True)  # タイトルを追加
-    failureTypes = models.JSONField(null=True, blank=True)  # failureTypesはリストとして保存
-    failureModes = models.JSONField(null=True, blank=True)  # failureModesもリストとして保存
+    title = models.CharField(max_length=255, null=True, blank=True)
+    failureTypes = models.JSONField(null=True, blank=True)
+    failureModes = models.JSONField(null=True, blank=True)
     failureDescription = models.TextField(null=True, blank=True)
     failureDate = models.DateField(null=True, blank=True)
     description = models.TextField(null=True, blank=True)
-    registrationDate = models.DateField(default=timezone.now)  # デフォルト値を現在の日付に設定
+    registrationDate = models.DateField(default=timezone.now)
 
     class Meta:
-        # 管理画面で表示されるモデル名の複数形を「Work Orders」に設定
         verbose_name_plural = 'Work Orders'
-
-        # デフォルトの並び順をcompanyCodeの順番にする
         ordering = ('companyCode',)
-
-        # companyCodeとworkOrderNoの組み合わせが一意であることを保証する
         unique_together = ('companyCode', 'workOrderNo')
 
-    # saveメソッドをオーバーライドして、workOrderNoが未設定の場合に自動的に番号を生成する
     def save(self, *args, **kwargs):
         if not self.workOrderNo:
-            # 既存の作業指示番号を取得し、番号を自動生成するロジック
             existing_work_order_nos = WorkOrder.objects.filter(companyCode=self.companyCode).values_list('workOrderNo', flat=True).order_by('workOrderNo')
-            
-            # 1から順に、既存の番号をチェックしながら未使用の番号を探す
             for i in range(1, len(existing_work_order_nos) + 2):
-                candidate = str(i).zfill(5)  # ゼロパディングで5桁の番号を生成
+                candidate = str(i).zfill(5)
                 if candidate not in existing_work_order_nos:
-                    self.workOrderNo = candidate  # 使用されていない番号をworkOrderNoに設定
+                    self.workOrderNo = candidate
                     break
 
-        # オーバーライドしたsaveメソッドで親クラスのsaveも実行
         super(WorkOrder, self).save(*args, **kwargs)
 
-    # 作業指示を文字列として返す際の表示形式を定義
     def __str__(self):
         return f'Work Order {self.workOrderNo}'
 
