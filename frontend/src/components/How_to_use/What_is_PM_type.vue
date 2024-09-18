@@ -43,9 +43,9 @@
                         </div>
                     </div>
                     <div class="line-height-3 text-xl text-900 mb-5">
-                        ここでは、メンテナンスタイプについて説明します。MECHPHAISOTSでは以下のようにメンテナンスタイプを定義づけています。
-                        これらのメンテナンスタイプをカテゴライズすることで、保全方法の定義づけを行っています。
-
+                        ここでは、メンテナンスタイプについて説明します。MECHPHAISOTSでは以下のようにメンテナンスタイプ（Plant Maintenance Type)を定義づけています。
+                        これらのメンテナンスタイプをカテゴライズすることで、設備に対してどのようなメンテナンスが行われ、修繕費や設備の稼働率とメンテナンスタイプを紐づけることができます。
+                        その結果、修繕費とメンテナンス方法の最適化についてレビューすることができます。
                     </div>
 
   
@@ -72,6 +72,11 @@
                           </tbody>
                         </table>
                         <span class="block text-600 line-height-3">PM Type</span>
+                    </div>
+
+                    <div class="line-height-3 text-xl text-900 mb-5">
+                        PM01~05つのメンテナンスタイプをMECHPHAISOTS上のDaily Report, Working Report, Task List等に記入してください。
+                        修繕費に対する影響が強く出る要因ですので、工場の修繕費を気にするユーザーにとっては、漏れのない入力を強くお薦めいたします。
                     </div>
 
 
