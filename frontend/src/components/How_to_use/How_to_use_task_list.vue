@@ -44,8 +44,10 @@
                         </div>
                     </div>
                     <div class="line-height-3 text-xl text-900 mb-5">
-                        プラントにおいてどのようなメンテナンスを行うかによっては、設備の修繕費は大きく変わってきます。よく、経営者視点に立ちますと、設備点検保守を削減し、修繕費を削減すれば、それは彼らによってはうれしい報告にはなりますが、設備の寿命を縮めることになり、結果的には修繕費が増加することになります。 このようなことを防ぐために、設備の修繕費を最適化するためには、設備のリスクを把握し、リスクを管理することが重要です。 そのために、リスクマトリックスを活用し、次のようなテーブルから得られる修繕費をモニタリングしてください。
-                        これらの蓄積されたデータは翌年や、翌々年、10年後までに参考となる素晴らしいデータとなるでしょう。
+                        ここではTask Listについて説明します。下記のTaskListによって、一年間のTask内容と金額、周期等が明瞭になります。
+                        これを用いることで、設備の稼働率を確保するための、メンテナンスを可視化し、過剰なタスクがないか？　タスクに抜けがないかをチェックすることができます。
+                        メンテナンステクニシャンにとって、次のタスクのタイミングが明瞭になることで、部品注文や人材や工事業者の確保、スケジュール調整を効率的に行うことができます。
+                        また、経営者視点にでは、過剰なタスクの削減や周期の見直しを行い、タスク最適化による修繕費の最適化や、キャッシュフローを明確にすることができます。
                     </div>
                     <div class="text-center mb-5">
                         <img src="" alt="Related content image" class="w-full border-round mb-2" />
@@ -57,7 +59,11 @@
                         <li class="mb-3">Spare Parts List</li>
                         <li class="mb-3">Task List</li>
                     </ul>
-  
+
+                    <div class="line-height-3 text-xl text-900 mb-5">
+                        Task Listの使い方は次の通りです。
+
+                    </div>
                     <div class="text-3xl text-800 mb-4">1.Input formやエクセルをアップロードし、リストにデータを入力してください。</div>
                     <div class="line-height-3 text-lg text-900 mb-5">Lacus viverra vitae congue eu consequat ac felis donec et。 A lacus vestibulum sed arcu non...</div>
                     <div class="text-3xl text-800 mb-4">2.リスト内のPM02やPM03等の補修履歴を確認してください。</div>
