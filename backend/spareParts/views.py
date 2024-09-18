@@ -11,7 +11,7 @@ from PIL import Image
 import io
 from rest_framework.pagination import PageNumberPagination
 
-from .models import SpareParts, BomList, SparePartsManagement, CompanyCode
+from .models import SpareParts, BomList, SparePartsManagement, CompanyCode,Plant
 from .serializers import (
     SparePartsSerializer, CompanyCodeSPSerializer, 
     BomListSerializer, CompanyBomListSerializer, 
@@ -29,6 +29,11 @@ class SparePartsViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         data = request.data
+
+        # データがリストではない場合、リストに変換
+        if not isinstance(data, list):
+            data = [data]
+
         sent_parts_nos = [item.get('partsNo') for item in data if item.get('partsNo') is not None]
 
         # 現在のデータベースに存在するpartsNoを取得
@@ -45,8 +50,6 @@ class SparePartsViewSet(viewsets.ModelViewSet):
         created_items = []
         for item in data:
             company_code_str = item.get('companyCode')
-
-            # companyCodeが文字列として渡された場合、それに対応するオブジェクトを取得
             try:
                 company_code_obj = CompanyCode.objects.get(companyCode=company_code_str)
                 item['companyCode'] = company_code_obj.id  # IDに変換
@@ -55,6 +58,19 @@ class SparePartsViewSet(viewsets.ModelViewSet):
                     {"error": f"CompanyCode '{company_code_str}' does not exist."},
                     status=status.HTTP_400_BAD_REQUEST
                 )
+
+            # plant が文字列として渡された場合、それに対応するオブジェクトを取得
+            plant_name = item.get('plant')  # ここで 'plant' フィールドを使用
+            if plant_name:
+                try:
+                    # Plantが存在する場合は取得、存在しない場合は新規作成
+                    plant_obj, created = Plant.objects.get_or_create(plant=plant_name)
+                    item['plant'] = plant_obj.id  # IDに変換
+                except Plant.DoesNotExist:
+                    return Response(
+                        {"error": f"Failed to create or retrieve Plant '{plant_name}'."},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
 
             parts_no = item.get('partsNo')
 
@@ -81,6 +97,10 @@ class SparePartsViewSet(viewsets.ModelViewSet):
             created_items.append(serializer.data)
 
         return Response(created_items, status=status.HTTP_201_CREATED)
+
+
+
+
 
     def destroy(self, request, *args, **kwargs):
         parts_no = request.data.get('partsNo')

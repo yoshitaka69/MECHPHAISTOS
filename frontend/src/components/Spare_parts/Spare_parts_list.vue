@@ -123,9 +123,10 @@ const SparePartsComponent = defineComponent({
                     'parts No',
                     'BOM <br>Code.',
                     'Parts Name',
+                    'Plant',
                     'Category',
                     'Model',
-                    'Manufacturer', // ここに追加
+                    'Manufacturer',
                     'Serial Number',
                     'Task Code',
                     'Price',
@@ -168,6 +169,11 @@ const SparePartsComponent = defineComponent({
                         data: 'partsName',
                         type: 'text',
                         className: 'htCenter'
+                    },
+                    {
+                        // Plant（新しく追加）
+                        data: 'plant', // データのプロパティ名
+                        type: 'text' // プラント名をテキストとして入力
                     },
                     {
                         //Category
@@ -238,7 +244,7 @@ const SparePartsComponent = defineComponent({
                         width: 80,
                         className: 'htCenter',
                         type: 'text',
-                        renderer: customRendererForAlertOrder,
+                        renderer: customRendererForAlertOrder
                         //readOnly: true
                     },
                     {
@@ -254,7 +260,7 @@ const SparePartsComponent = defineComponent({
                         width: 100,
                         className: 'htCenter',
                         type: 'dropdown',
-                        source: ['','Long-Term Stock Items', 'Short-Term Stock Items', 'Dead Stock Items','Critical Stock Items','Safety Stock Items','Irregular Use Stock Items']
+                        source: ['', 'Long-Term Stock Items', 'Short-Term Stock Items', 'Dead Stock Items', 'Critical Stock Items', 'Safety Stock Items', 'Irregular Use Stock Items']
                     },
                     {
                         //inventoryTurnover
@@ -286,11 +292,11 @@ const SparePartsComponent = defineComponent({
                     if (changes) {
                         changes.forEach(([row, prop, oldValue, newValue]) => {
                             if (prop === 'orderSituation') {
-                                const alertOrderValue = this.getDataAtCell(row, 14);
+                                const alertOrderValue = this.getDataAtCell(row, 15);
                                 if (newValue === true && alertOrderValue === 'order') {
-                                    this.setDataAtCell(row, 14, 'ordered');
+                                    this.setDataAtCell(row, 15, 'ordered');
                                 } else if (newValue === false && alertOrderValue === 'ordered') {
-                                    this.setDataAtCell(row, 14, 'order');
+                                    this.setDataAtCell(row, 15, 'order');
                                 }
                             }
                         });
@@ -368,9 +374,10 @@ const SparePartsComponent = defineComponent({
                         'partsNo',
                         'bomCode',
                         'partsName',
+                        'plant', // **plantをpartsNameの直後に移動**
                         'category',
                         'partsModel',
-                        'manufacturer', // **追加**: Manufacturer列を含むように修正
+                        'manufacturer',
                         'serialNumber',
                         'taskCode',
                         'partsCost',
@@ -427,24 +434,25 @@ const SparePartsComponent = defineComponent({
             const blankRows = Array.from({ length: this.rowsToAdd }, () => {
                 return {
                     companyCode: userCompanyCode,
-                    partsNo: row[1],
-                    bomCode: row[2],
-                    partsName: row[3],
-                    category: row[4],
-                    partsModel: row[5],
-                    manufacturer: row[6], // **追加**: Manufacturer列をPOSTリクエストに含める
-                    serialNumber: row[7],
-                    taskCode: row[8],
-                    partsCost: row[9],
-                    numberOf: row[10],
-                    unit: row[11],
-                    location: row[12],
-                    partsDeliveryTime: row[13],
-                    orderAlert: row[14],
-                    orderSituation: row[15] !== null ? row[15] : false, // null を false に変換
-                    classification: row[16],
-                    inventoryTurnover: row[17],
-                    partsDescription: row[18]
+                    partsNo: row[1], // parts No
+                    bomCode: row[2], // BOM Code
+                    partsName: row[3], // Parts Name
+                    plant: row[4], // Plant を partsName の直後に移動
+                    category: row[5], // Category
+                    partsModel: row[6], // Model
+                    manufacturer: row[7], // Manufacturer
+                    serialNumber: row[8], // Serial Number
+                    taskCode: row[9], // Task Code
+                    partsCost: row[10], // Price (Parts Cost)
+                    numberOf: row[11], // Number of
+                    unit: row[12], // Unit
+                    location: row[13], // Location
+                    partsDeliveryTime: row[14], // Delivery Time
+                    orderAlert: row[15], // Alert Order
+                    orderSituation: row[16] !== null ? row[16] : false, // Order Situation
+                    classification: row[17], // Classification
+                    inventoryTurnover: row[18], // Inventory Turnover
+                    partsDescription: row[19] // Description
                 };
             });
 
@@ -475,21 +483,22 @@ const SparePartsComponent = defineComponent({
                     partsNo: row[1], // parts No
                     bomCode: row[2], // BOM Code
                     partsName: row[3], // Parts Name
-                    category: row[4], // Category
-                    partsModel: row[5], // Model
-                    manufacturer: row[6], // **追加**: Manufacturer フィールドを追加
-                    serialNumber: row[7], // Serial Number
-                    taskCode: row[8], // Task Code
-                    partsCost: row[9], // Price (Parts Cost)
-                    numberOf: row[10], // Number of
-                    unit: row[11], // Unit
-                    location: row[12], // Location
-                    partsDeliveryTime: row[13], // Delivery Time
-                    orderAlert: row[14], // Alert Order
-                    orderSituation: row[15] !== null ? row[15] : false, // Order Situation
-                    classification: row[16], // Classification
-                    inventoryTurnover: row[17], // Inventory Turnover
-                    partsDescription: row[18] // Description
+                    plant: row[4], // Plant を partsName の直後に移動
+                    category: row[5], // Category
+                    partsModel: row[6], // Model
+                    manufacturer: row[7], // Manufacturer
+                    serialNumber: row[8], // Serial Number
+                    taskCode: row[9], // Task Code
+                    partsCost: row[10], // Price (Parts Cost)
+                    numberOf: row[11], // Number of
+                    unit: row[12], // Unit
+                    location: row[13], // Location
+                    partsDeliveryTime: row[14], // Delivery Time
+                    orderAlert: row[15], // Alert Order
+                    orderSituation: row[16] !== null ? row[16] : false, // Order Situation
+                    classification: row[17], // Classification
+                    inventoryTurnover: row[18], // Inventory Turnover
+                    partsDescription: row[19] // Description
                 };
             });
 

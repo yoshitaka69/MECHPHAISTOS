@@ -24,6 +24,8 @@ class BomList(models.Model):
 
 
 
+
+
 from django.db import models
 from django.db.models import Max
 from accounts.models import CompanyCode
@@ -113,31 +115,33 @@ class SparePartsManagement(models.Model):
         return f'{self.companyCode}'
     
 
-    @receiver(post_save, sender=SpareParts)
-    def update_total_spare_parts_cost(sender, instance, **kwargs):
-        # SpareParts が保存されたときに関連する SparePartsManagement の totalSparePartsCost を更新
-        if instance.companyCode and instance.plant:
-            # companyCode と plant でフィルタリング
-            related_spare_parts = SpareParts.objects.filter(
-                companyCode=instance.companyCode,
-                plant=instance.plant
-            )
-            total_cost = related_spare_parts.aggregate(Sum('summedPartsCost'))['summedPartsCost__sum'] or 0
 
-            # Debug output
-            print(f"Total cost calculated: {total_cost} for companyCode: {instance.companyCode} and plant: {instance.plant}")
 
-            # 対応する SparePartsManagement を取得または作成
-            spare_parts_management, created = SparePartsManagement.objects.get_or_create(
-                companyCode=instance.companyCode,
-                plant=instance.plant,
-                defaults={'totalSparePartsCost': total_cost}
-            )
+# @receiver(post_save, sender=SpareParts)
+# def update_total_spare_parts_cost(sender, instance, **kwargs):
+#     # SpareParts が保存されたときに関連する SparePartsManagement の totalSparePartsCost を更新
+#     if instance.companyCode and instance.plant:
+#         # companyCode と plant でフィルタリング
+#         related_spare_parts = SpareParts.objects.filter(
+#             companyCode=instance.companyCode,
+#             plant=instance.plant
+#         )
+#         total_cost = related_spare_parts.aggregate(Sum('summedPartsCost'))['summedPartsCost__sum'] or 0
 
-            # 既存の場合は更新
-            if not created:
-                spare_parts_management.totalSparePartsCost = total_cost
-                spare_parts_management.save()
+#         # Debug output
+#         print(f"Total cost calculated: {total_cost} for companyCode: {instance.companyCode} and plant: {instance.plant}")
 
-            # Debug output for created or updated instance
-            print(f"Spare Parts Management {('created' if created else 'updated')} with total cost: {spare_parts_management.totalSparePartsCost}")
+#         # 対応する SparePartsManagement を取得または作成
+#         spare_parts_management, created = SparePartsManagement.objects.get_or_create(
+#             companyCode=instance.companyCode,
+#             plant=instance.plant,
+#             defaults={'totalSparePartsCost': total_cost}
+#         )
+
+#         # 既存の場合は更新
+#         if not created:
+#             spare_parts_management.totalSparePartsCost = total_cost
+#             spare_parts_management.save()
+
+#         # Debug output for created or updated instance
+#         print(f"Spare Parts Management {('created' if created else 'updated')} with total cost: {spare_parts_management.totalSparePartsCost}")
