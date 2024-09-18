@@ -142,7 +142,7 @@
   </template>
   
   <script lang="ts" setup>
-  import Task_List_Explanation from '@/assets/Task_List_Explanation.png';
+  import Task_List_Explanation from '@/assets/Task_List.png';
   import authorImage from '@/assets/self_photo.png';
   </script>
   

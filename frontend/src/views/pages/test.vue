@@ -1,574 +1,372 @@
 <template>
-    <div id="SparePartsList">
-        <!-- 成功時または失敗時のアラート表示 -->
-        <Save_Alert v-if="showAlert" :type="alertType" :message="alertMessage" :errorMessages="errorMessages" />
+    <div class="table-container custom-work-order-table-v2">
+        <p class="description-text">
+            This is the Work Order page. Here, you can issue work orders for maintenance tasks such as repair requests, modification work, and inspections. The more detailed you fill out the work order form, the more accurate the equipment
+            information and equipment lifespan data will be.
+        </p>
+        <div class="header-container-v2">
+            <DataTable
+                v-model:filters="filters"
+                :value="sortedItems"
+                :loading="loading"
+                paginator
+                showGridlines
+                :rows="serverOptions.rowsPerPage"
+                :total-records="serverItemsLength"
+                :lazy="true"
+                :resizable-columns="true"
+                :global-filter-fields="['workOrderNo', 'registrationDate', 'plant', 'equipment', 'workOrderDesc', 'status', 'title', 'failureTypes', 'failureModes', 'failureDescription', 'failureDate', 'description']"
+                filter-display="menu"
+                @page="onPage"
+                @sort="onSort"
+                @filter="onFilter"
+                :rows-per-page-options="[5, 10, 20, 50]"
+                class="p-datatable-custom custom-work-order-table-v2"
+                :sort-field="sortField"
+                :sort-order="sortOrder"
+                style="width: 100%"
+            >
+                <template #header>
+                    <div class="header-content">
+                        <span class="p-input-icon-left">
+                            <i class="pi pi-search" />
+                            <InputText v-model="filters['global'].value" placeholder="Keyword Search" />
+                        </span>
+                        <Button type="button" label="New Work Order" @click="showNewEntryForm" class="new-work-order-button" />
+                    </div>
+                </template>
+                <Column field="workOrderNo" sortable filter filterMatchMode="contains">
+                    <template #header>
+                        <div style="text-align: center">Work Order<br />No</div>
+                    </template>
+                    <template #filter="{ filterModel }">
+                        <InputText v-model="filterModel.value" type="text" placeholder="Search by Work Order No" />
+                    </template>
+                </Column>
 
-        <div class="legend">
-            <div class="legend-item">
-                <div class="color-box" style="background-color: #f0a0a0"></div>
-                <span>Form input format is incorrect</span>
-            </div>
-            <div class="legend-item">
-                <div class="color-box" style="background-color: #f0f0f0"></div>
-                <span>Input not allowed. Value is automatically filled.</span>
-            </div>
+                <Column field="registrationDate" header="Registration Date" sortable filter filterMatchMode="contains">
+                    <template #filter="{ filterModel }">
+                        <InputText v-model="filterModel.value" type="text" placeholder="Search by Registration Date" />
+                    </template>
+                </Column>
+                <Column field="plant" header="Plant" sortable filter filterMatchMode="contains">
+                    <template #filter="{ filterModel }">
+                        <InputText v-model="filterModel.value" type="text" placeholder="Search by Plant" />
+                    </template>
+                </Column>
+                <Column field="equipment" header="Equipment" sortable filter filterMatchMode="contains">
+                    <template #filter="{ filterModel }">
+                        <InputText v-model="filterModel.value" type="text" placeholder="Search by Equipment" />
+                    </template>
+                </Column>
+                <Column field="workOrderDesc" header="Work Order Description" sortable filter filterMatchMode="contains">
+                    <template #filter="{ filterModel }">
+                        <InputText v-model="filterModel.value" type="text" placeholder="Search by Description" />
+                    </template>
+                </Column>
+                <Column field="status" header="Status" sortable filter filterMatchMode="contains">
+                    <template #body="slotProps">
+                        <Tag :value="slotProps.data.status" :severity="getStatusLabel(slotProps.data.status)" />
+                    </template>
+                    <template #filter="{ filterModel }">
+                        <Dropdown v-model="filterModel.value" :options="statuses" optionLabel="label" optionValue="value" placeholder="Select a Status" />
+                    </template>
+                </Column>
+                <Column field="title" header="Title" sortable filter filterMatchMode="contains">
+                    <template #filter="{ filterModel }">
+                        <InputText v-model="filterModel.value" type="text" placeholder="Search by Title" />
+                    </template>
+                </Column>
+                <Column field="failureTypes" header="Failure Types" sortable filter filterMatchMode="contains">
+                    <template #filter="{ filterModel }">
+                        <InputText v-model="filterModel.value" type="text" placeholder="Search by Failure Types" />
+                    </template>
+                </Column>
+                <Column field="failureModes" header="Failure Modes" sortable filter filterMatchMode="contains">
+                    <template #filter="{ filterModel }">
+                        <InputText v-model="filterModel.value" type="text" placeholder="Search by Failure Modes" />
+                    </template>
+                </Column>
+                <Column field="failureDescription" header="Failure Description" sortable filter filterMatchMode="contains">
+                    <template #filter="{ filterModel }">
+                        <InputText v-model="filterModel.value" type="text" placeholder="Search by Failure Description" />
+                    </template>
+                </Column>
+                <Column field="failureDate" header="Failure Date" sortable filter filterMatchMode="contains">
+                    <template #filter="{ filterModel }">
+                        <InputText v-model="filterModel.value" type="text" placeholder="Search by Failure Date" />
+                    </template>
+                </Column>
+                <Column field="description" header="Description" sortable filter filterMatchMode="contains">
+                    <template #filter="{ filterModel }">
+                        <InputText v-model="filterModel.value" type="text" placeholder="Search by Description" />
+                    </template>
+                </Column>
+                <Column header="Operation">
+                    <template #body="slotProps">
+                        <div>
+                            <i class="pi pi-pencil" @click="editItem(slotProps.data)" style="margin-right: 10px; cursor: pointer"></i>
+                            <i class="pi pi-trash" @click="deleteItem(slotProps.data)" style="cursor: pointer"></i>
+                        </div>
+                    </template>
+                </Column>
+            </DataTable>
         </div>
-
-        <hot-table ref="hotTableComponent" :settings="hotSettings"></hot-table>
-
-        <div class="button-container">
-            <input type="number" v-model="rowsToAdd" placeholder="Number of rows" />
-            <Button label="Add Rows" icon="pi pi-plus" class="p-button-primary blue-button" @click="addRows" />
-            <Button label="Save Data" icon="pi pi-save" class="p-button-primary blue-button ml-3" @click="saveData" />
-        </div>
+        <WorkOrderForm v-model:visible="isModalVisible" :statuses="statuses" :entry="currentEntry" @submit="onSubmit" @cancel="onCancel" />
     </div>
 </template>
 
-<script>
+<script setup>
+import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
-import Handsontable from 'handsontable';
-import { defineComponent } from 'vue';
-import { HotTable } from '@handsontable/vue3';
-import { registerAllModules } from 'handsontable/registry';
-import 'handsontable/dist/handsontable.full.css';
 import { useUserStore } from '@/stores/userStore'; // Piniaストアをインポート
-import Save_Alert from '@/components/Alert/Save_Alert.vue'; // 新しいアラートコンポーネントをインポート
-import Button from 'primevue/button'; // PrimeVue Button コンポーネントをインポート
+import InputText from 'primevue/inputtext';
+import Button from 'primevue/button';
+import Tag from 'primevue/tag';
+import Dropdown from 'primevue/dropdown';
+import WorkOrderForm from '@/components/Work_order/Work_order_form.vue'; // 修正: WorkOrderFormをインポート
 
-// register Handsontable's modules
-registerAllModules();
+const userStore = useUserStore(); // Piniaストアを使用
 
-function customRendererForAlertOrder(instance, td, row, col, prop, value, cellProperties) {
-    Handsontable.renderers.TextRenderer.apply(this, arguments); // 常に基本のテキストレンダラーを適用
-    if (value === 'order') {
-        td.style.backgroundColor = '#FF0000'; // 注文が必要な場合は赤色
-        td.style.color = 'black';
-    } else if (value === 'ordered') {
-        td.style.backgroundColor = '#00FF00'; // 注文済みの場合は緑色
-        td.style.color = 'black';
-    } else if (cellProperties.readOnly) {
-        td.style.backgroundColor = '#f5f5f5'; // 読み取り専用のセルは薄い灰色
-    }
-}
+const products = ref([]);
+const editingRows = ref([]);
+const statuses = ref([
+    { label: 'Completed', value: 'COMPLETED' },
+    { label: 'Ongoing', value: 'Ongoing' },
+    { label: 'Delayed', value: 'Delayed' }
+]);
 
-function imageRenderer(instance, td, row, col, prop, value, cellProperties) {
-    td.innerHTML = ''; // セルをクリア
+const isModalVisible = ref(false); // モーダル表示の状態
+const currentEntry = ref({}); // 編集するエントリー
+const isAddingNew = ref(false);
+const isEditing = ref(false);
+const newEntry = ref({
+    workOrderNo: '',
+    plant: '',
+    equipment: '',
+    workOrderDesc: '',
+    status: '',
+    title: '',
+    failureTypes: [],
+    failureModes: [],
+    failureDescription: '',
+    failureDate: null,
+    description: '',
+    registrationDate: null // 登録日を追加
+});
+const editingItem = ref({});
 
-    const partsNo = instance.getDataAtRowProp(row, 'partsNo'); // partsNo を取得
-    const link = document.createElement('a');
-    link.href = `/spare_parts_detail/${partsNo}`;
-    link.target = '_blank';
-
-    if (partsNo && value) {
-        const img = document.createElement('img');
-        img.src = value;
-        img.style.width = '50px';
-        img.style.height = '50px';
-        link.appendChild(img);
-
-        const url = document.createElement('div');
-        url.innerText = value; // 画像のURLを表示
-        url.style.fontSize = '10px';
-        link.appendChild(url);
-    } else if (partsNo) {
-        link.innerText = 'no image';
-    }
-
-    td.appendChild(link);
-}
-
-function imageEditor(instance, td, row, col, prop, value, cellProperties) {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    input.style.display = 'none';
-
-    input.addEventListener('change', (event) => {
-        const file = event.target.files[0];
-        const formData = new FormData();
-        formData.append('image', file);
-
-        axios
-            .post('http://127.0.0.1:8000/api/spareParts/upload_image/', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            })
-            .then((response) => {
-                const imageUrl = response.data.imageUrl;
-                instance.setDataAtCell(row, col, imageUrl);
-            })
-            .catch((error) => {
-                console.error('Image upload failed:', error);
-            });
-    });
-
-    td.appendChild(input);
-    input.click();
-}
-
-const SparePartsComponent = defineComponent({
-    components: {
-        HotTable,
-        Save_Alert,
-        Button // PrimeVue Button コンポーネントを登録
-    },
-
-    data() {
-        return {
-            hotSettings: {
-                data: [], // **修正**: 初期データを空に設定しました
-                colHeaders: [
-                    'Image',
-                    'parts No',
-                    'BOM <br>Code.',
-                    'Parts Name',
-                    'Plant', // 追加
-                    'Category',
-                    'Model',
-                    'Manufacturer', // ここに追加
-                    'Serial Number',
-                    'Task Code',
-                    'Price',
-                    'Number <br>of ~',
-                    'Unit',
-                    'Location',
-                    'Delivery <br>Time',
-                    'Alert <br>order',
-                    'Order <br>situation',
-                    'classification',
-                    'inventory<br>Turnover',
-                    'Description'
-                ],
-                rowHeaders: true, // ここで行ヘッダーを有効にします
-                columns: [
-                    {
-                        //Image
-                        data: 'image',
-                        renderer: imageRenderer,
-                        editor: imageEditor
-                    },
-                    {
-                        //Parts No
-                        data: 'partsNo',
-                        type: 'text',
-                        readOnly: true,
-                        renderer: function (instance, td, row, col, prop, value, cellProperties) {
-                            Handsontable.renderers.TextRenderer.apply(this, arguments);
-                            td.style.backgroundColor = '#f5f5f5'; // 背景色を灰色に設定
-                            td.style.color = 'black'; // テキスト色を黒に設定
-                        }
-                    },
-                    {
-                        //BOM Code.
-                        data: 'bomCode',
-                        type: 'text'
-                    },
-                    {
-                        //PartsName
-                        data: 'partsName',
-                        type: 'text',
-                        className: 'htCenter'
-                    },
-                    {
-                        // Plant (追加)
-                        data: 'plant',
-                        type: 'text',
-                        className: 'htRight'
-                    },
-                    {
-                        //Category
-                        data: 'category',
-                        className: 'htRight',
-                        type: 'dropdown',
-                        source: ['Inventory', 'Standard', 'Consumables']
-                    },
-                    {
-                        //Model
-                        data: 'partsModel',
-                        type: 'text'
-                    },
-                    {
-                        //Manufacturer（新しく追加）
-                        data: 'manufacturer', // ここに追加
-                        type: 'text'
-                    },
-                    {
-                        //SerialNumber
-                        data: 'serialNumber',
-                        type: 'text',
-                        className: 'htRight'
-                    },
-                    {
-                        //TaskCode
-                        data: 'taskCode',
-                        type: 'text',
-                        className: 'htCenter'
-                    },
-                    {
-                        //PartsCost
-                        data: 'partsCost',
-                        type: 'numeric',
-                        className: 'htRight'
-                    },
-                    {
-                        //Number of ~
-                        data: 'numberOf',
-                        width: 60,
-                        className: 'htRight',
-                        type: 'numeric'
-                    },
-                    {
-                        //Unit
-                        data: 'unit',
-                        width: 60,
-                        type: 'text',
-                        className: 'htRight'
-                    },
-                    {
-                        //Location
-                        data: 'location',
-                        className: 'htRight',
-                        type: 'text',
-                        className: 'htRight'
-                    },
-                    {
-                        //Delivery Parts time
-                        data: 'partsDeliveryTime',
-                        width: 60,
-                        className: 'htRight',
-                        type: 'numeric'
-                    },
-                    {
-                        //Alert order
-                        data: 'orderAlert',
-                        width: 80,
-                        className: 'htCenter',
-                        type: 'text',
-                        renderer: customRendererForAlertOrder
-                        //readOnly: true
-                    },
-                    {
-                        //Order situation
-                        data: 'orderSituation',
-                        width: 100,
-                        className: 'htCenter',
-                        type: 'checkbox'
-                    },
-                    {
-                        //classification
-                        data: 'classification',
-                        width: 100,
-                        className: 'htCenter',
-                        type: 'dropdown',
-                        source: ['', 'Long-Term Stock Items', 'Short-Term Stock Items', 'Dead Stock Items', 'Critical Stock Items', 'Safety Stock Items', 'Irregular Use Stock Items']
-                    },
-                    {
-                        //inventoryTurnover
-                        data: 'inventoryTurnover',
-                        width: 100,
-                        className: 'htCenter',
-                        type: 'text'
-                    },
-                    {
-                        //Description
-                        data: 'partsDescription',
-                        className: 'htCenter',
-                        type: 'text'
-                    }
-                ],
-
-                afterGetColHeader: (col, TH) => {
-                    if (col === -1) {
-                        // ヘッダー行の場合
-                        return;
-                    }
-                    // 全ヘッダーセルに薄い青色の背景を設定
-                    TH.style.backgroundColor = '#E6F7FF'; // 薄い青色
-                    TH.style.color = 'black'; // テキスト色を黒に設定
-                    TH.style.fontWeight = 'bold'; // テキストを太字に設定
-                },
-
-                afterChange: function (changes, source) {
-                    if (changes) {
-                        changes.forEach(([row, prop, oldValue, newValue]) => {
-                            if (prop === 'orderSituation') {
-                                const alertOrderValue = this.getDataAtCell(row, 15);
-                                if (newValue === true && alertOrderValue === 'order') {
-                                    this.setDataAtCell(row, 15, 'ordered');
-                                } else if (newValue === false && alertOrderValue === 'ordered') {
-                                    this.setDataAtCell(row, 15, 'order');
-                                }
-                            }
-                        });
-                    }
-                },
-
-                cells: function (row, col, prop) {
-                    const cellProperties = {};
-                    const readOnlyColumns = ['inventoryTurnover'];
-
-                    if (readOnlyColumns.includes(this.columns[col].data)) {
-                        cellProperties.readOnly = true; // 列を読み取り専用に設定
-                        cellProperties.renderer = customRendererForAlertOrder; // すべての読み取り専用列にカスタムレンダラーを適用
-                    }
-                    return cellProperties;
-                },
-
-                width: '100%',
-                height: 'auto',
-                stretchH: 'all', // 'none' is default 様子見
-                contextMenu: true, //コンテキストメニュー
-                autoWrapRow: true,
-                autoWrapCol: true,
-                fixedColumnsStart: 2, //カラム固定
-                fixedRowsTop: 2, //列固定
-                manualColumnFreeze: true, //コンテキストメニュー手動でコラム解除
-                manualColumnResize: true, //手動での列幅調整
-                manualRowResize: true, //列の手動高さ調整
-                filters: true,
-                dropdownMenu: true,
-                comments: true, //コメントの有り無し
-                fillHandle: {
-                    autoInsertRow: true
-                },
-
-                licenseKey: 'non-commercial-and-evaluation'
-            },
-            rowsToAdd: 1, // 追加する行数のデフォルト値
-            sparePartsDataStore: [], // データストア
-            showAlert: false, // アラート表示用のフラグ
-            alertType: 'success', // 'success' か 'error' を指定
-            alertMessage: 'データが正常に保存されました。',
-            errorMessages: [] // エラーメッセージのリスト
-        };
-    },
-
-    created() {
-        this.getDataAxios();
-    },
-
-    methods: {
-        getDataAxios() {
-            const userStore = useUserStore();
-            const userCompanyCode = userStore.companyCode;
-
-            if (!userCompanyCode) {
-                console.error('Error: No company code found for the user.');
-                return;
-            }
-
-            const url = `http://127.0.0.1:8000/api/spareParts/sparePartsByCompany/?format=json&companyCode=${userCompanyCode}`;
-
-            axios
-                .get(url, {
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    withCredentials: true
-                })
-                .then((response) => {
-                    const sparePartsData = response.data;
-
-                    const index = [
-                        'image',
-                        'partsNo',
-                        'bomCode',
-                        'partsName',
-                        'plant',
-                        'category',
-                        'partsModel',
-                        'manufacturer', // **追加**: Manufacturer列を含むように修正
-                        'serialNumber',
-                        'taskCode',
-                        'partsCost',
-                        'numberOf',
-                        'unit',
-                        'location',
-                        'partsDeliveryTime',
-                        'orderAlert',
-                        'orderSituation',
-                        'classification',
-                        'inventoryTurnover',
-                        'partsDescription'
-                    ];
-
-                    const tableData = sparePartsData.flatMap((companyData) =>
-                        companyData.sparePartsList.flatMap((partData) => {
-                            const rowData = {};
-                            index.forEach((key) => {
-                                rowData[key] = key === 'partsCost' || key === 'numberOf' ? parseFloat(partData[key]) || 0 : partData[key];
-                                if (key === 'image' && !partData[key]) {
-                                    rowData[key] = ''; // 画像がない場合は空文字に設定
-                                }
-                            });
-                            return rowData;
-                        })
-                    );
-
-                    // partsNoでソート
-                    tableData.sort((a, b) => (parseInt(a.partsNo, 10) || 0) - (parseInt(b.partsNo, 10) || 0));
-
-                    this.sparePartsDataStore = tableData;
-
-                    // もしデータが10行未満の場合のみダミーデータを追加
-                    if (tableData.length < 10) {
-                        const blankRows = Array.from({ length: 10 - tableData.length }, () => ({}));
-                        const newData = tableData.concat(blankRows);
-
-                        this.$refs.hotTableComponent.hotInstance.updateSettings({
-                            data: newData
-                        });
-                    } else {
-                        this.$refs.hotTableComponent.hotInstance.updateSettings({
-                            data: tableData
-                        });
-                    }
-                })
-                .catch((error) => {
-                    console.error('Error fetching data:', error);
-                });
-        },
-
-        addRows() {
-            const hotInstance = this.$refs.hotTableComponent.hotInstance;
-            const blankRows = Array.from({ length: this.rowsToAdd }, () => {
-                return {
-                    companyCode: userCompanyCode,
-                    partsNo: row[1],
-                    bomCode: row[2],
-                    partsName: row[3],
-                    plant: row[4],
-                    category: row[5],
-                    partsModel: row[6],
-                    manufacturer: row[7], // **追加**: Manufacturer列をPOSTリクエストに含める
-                    serialNumber: row[8],
-                    taskCode: row[9],
-                    partsCost: row[10],
-                    numberOf: row[11],
-                    unit: row[12],
-                    location: row[13],
-                    partsDeliveryTime: row[14],
-                    orderAlert: row[15],
-                    orderSituation: row[16] !== null ? row[16] : false, // null を false に変換
-                    classification: row[17],
-                    inventoryTurnover: row[18],
-                    partsDescription: row[19]
-                };
-            });
-
-            this.sparePartsDataStore = this.sparePartsDataStore.concat(blankRows);
-
-            const newData = this.sparePartsDataStore;
-
-            hotInstance.updateSettings({
-                data: newData
-            });
-        },
-
-        saveData() {
-            const userStore = useUserStore();
-            const userCompanyCode = userStore.companyCode;
-
-            if (!userCompanyCode) {
-                console.error('Error: No company code found for the user.');
-                return;
-            }
-
-            const hotInstance = this.$refs.hotTableComponent.hotInstance;
-            const tableData = hotInstance.getData();
-
-            const formattedData = tableData.map((row) => {
-                return {
-                    companyCode: userCompanyCode, // Company Code
-                    partsNo: row[1], // parts No
-                    bomCode: row[2], // BOM Code
-                    partsName: row[3], // Parts Name
-                    plant: row[4], // **追加**: Plant フィールドを追加
-                    category: row[5], // Category
-                    partsModel: row[6], // Model
-                    manufacturer: row[7], // Manufacturer
-                    serialNumber: row[8], // Serial Number
-                    taskCode: row[9], // Task Code
-                    partsCost: row[10], // Price (Parts Cost)
-                    numberOf: row[11], // Number of
-                    unit: row[12], // Unit
-                    location: row[13], // Location
-                    partsDeliveryTime: row[14], // Delivery Time
-                    orderAlert: row[15], // Alert Order
-                    orderSituation: row[16] !== null ? row[16] : false, // Order Situation
-                    classification: row[17], // Classification
-                    inventoryTurnover: row[18], // Inventory Turnover
-                    partsDescription: row[19] // Description
-                };
-            });
-
-            console.log('送信するデータ:', JSON.stringify(formattedData, null, 2));
-
-            const url = `http://127.0.0.1:8000/api/spareParts/spareParts/`;
-
-            axios
-                .post(url, formattedData, {
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    withCredentials: true
-                })
-                .then((response) => {
-                    console.log('Data saved successfully:', response.data);
-                    this.alertType = 'success';
-                    this.alertMessage = 'データが正常に保存されました。';
-                    this.showAlert = true;
-                    setTimeout(() => {
-                        this.showAlert = false;
-                    }, 3000); // 3秒後にアラートを非表示にする
-                })
-                .catch((error) => {
-                    console.error('Error saving data:', error);
-                    this.alertType = 'error';
-                    this.alertMessage = 'データの保存に失敗しました。エラーを確認してください。';
-                    this.errorMessages = ['エラーが発生しました。再度試してください。'];
-                    this.showAlert = true;
-                    setTimeout(() => {
-                        this.showAlert = false;
-                    }, 5000); // 5秒後にアラートを非表示にする
-                });
-        }
-    }
+onMounted(async () => {
+    // axiosを使用してデータを取得
+    const response = await axios.get(`http://127.0.0.1:8000/api/workOrder/workOrderByCompany/?format=json&companyCode=${userStore.companyCode}`);
+    // 取得したデータをフラットな配列に変換
+    const flattenedData = response.data.flatMap((company) => company.workOrderList);
+    products.value = flattenedData; // 変換したデータをproductsにセット
+    console.log('flattenedData', flattenedData);
 });
 
-export default SparePartsComponent;
+const serverItemsLength = computed(() => products.value.length);
+const serverOptions = ref({
+    page: 1,
+    rowsPerPage: 30
+});
+const loading = ref(false);
+const sortField = ref(null);
+const sortOrder = ref(null);
+const filters = ref({
+    global: { value: null, matchMode: 'contains' },
+    workOrderNo: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
+    registrationDate: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] }, // 登録日フィルターを追加
+    plant: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
+    equipment: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
+    workOrderDesc: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
+    status: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
+    title: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
+    failureTypes: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
+    failureModes: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
+    failureDescription: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
+    failureDate: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
+    description: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] }
+});
+
+const sortedItems = computed(() => {
+    let items = [...products.value];
+    if (sortField.value) {
+        items.sort((a, b) => {
+            let result = 0;
+            if (a[sortField.value] < b[sortField.value]) result = -1;
+            else if (a[sortField.value] > b[sortField.value]) result = 1;
+            return sortOrder.value === 1 ? result : -result;
+        });
+    }
+    while (items.length < serverOptions.value.rowsPerPage) {
+        items.push({
+            id: '',
+            workOrderNo: '',
+            registrationDate: null, // 登録日を追加
+            plant: '',
+            equipment: '',
+            workOrderDesc: '',
+            status: '',
+            title: '',
+            failureTypes: [],
+            failureModes: [],
+            failureDescription: '',
+            failureDate: null,
+            description: ''
+        });
+    }
+    return items;
+});
+
+const onSort = (event) => {
+    sortField.value = event.sortField;
+    sortOrder.value = event.sortOrder;
+};
+
+const onFilter = (event) => {
+    filters.value = event.filters;
+};
+
+const editItem = (item) => {
+    isEditing.value = true;
+    currentEntry.value = { ...item }; // 編集するエントリーをセット
+    isModalVisible.value = true;
+    console.log('Editing item:', currentEntry.value);
+};
+
+const onSubmit = (entry) => {
+    if (isEditing.value) {
+        const item = products.value.find((i) => i.id === entry.id);
+        if (item) {
+            Object.assign(item, entry);
+        }
+        isEditing.value = false;
+    } else {
+        products.value.push({ ...entry, id: products.value.length + 1 });
+        isAddingNew.value = false;
+    }
+    isModalVisible.value = false; // モーダルを閉じる
+};
+
+const onCancel = () => {
+    isModalVisible.value = false; // モーダルを閉じる
+};
+
+const deleteItem = (item) => {
+    products.value = products.value.filter((i) => i.id !== item.id);
+    console.log('Item deleted successfully');
+};
+
+const showNewEntryForm = () => {
+    isAddingNew.value = true;
+    currentEntry.value = {
+        workOrderNo: '',
+        registrationDate: null, // 登録日を初期化
+        plant: '',
+        equipment: '',
+        workOrderDesc: '',
+        status: '',
+        title: '',
+        failureTypes: [],
+        failureModes: [],
+        failureDescription: '',
+        failureDate: null,
+        description: ''
+    };
+    isModalVisible.value = true; // 新規エントリ用のモーダルを表示
+};
+
+const onPage = (event) => {
+    serverOptions.value.page = event.page + 1;
+    serverOptions.value.rowsPerPage = event.rows;
+};
+
+const clearFilter = () => {
+    filters.value = {
+        global: { value: null, matchMode: 'contains' },
+        workOrderNo: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
+        registrationDate: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] }, // 登録日フィルターを追加
+        plant: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
+        equipment: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
+        workOrderDesc: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
+        status: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
+        title: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
+        failureTypes: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
+        failureModes: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
+        failureDescription: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
+        failureDate: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
+        description: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] }
+    };
+};
+
+const rowClass = (data, index) => {
+    return index % 2 === 0 ? 'even-row' : 'odd-row';
+};
+
+const getStatusLabel = (status) => {
+    switch (status) {
+        case 'COMPLETED':
+            return 'success';
+
+        case 'Ongoing':
+            return 'warning';
+
+        case 'Delayed':
+            return 'danger';
+
+        default:
+            return null;
+    }
+};
+
+const onRowEditSave = (event) => {
+    let { newData, index } = event;
+    products.value[index] = newData;
+};
 </script>
 
-<style scoped>
-.button-container {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
+<style>
+.description-text {
+    font-size: 16px;
+    line-height: 1.5;
+    margin-bottom: 20px;
+    color: #333;
 }
 
-.legend {
-    margin-bottom: 10px;
+.table-container.custom-work-order-table-v2 .header-content {
     display: flex;
+    justify-content: space-between;
     align-items: center;
+    margin-bottom: 10px; /* リストとボタンの間に隙間を追加 */
 }
 
-.legend-item {
-    display: flex;
-    align-items: center;
-    margin-right: 15px;
+.table-container.custom-work-order-table-v2 .new-work-order-button {
+    margin-left: auto; /* ボタンを右上に配置 */
 }
 
-.color-box {
-    width: 20px;
-    height: 20px;
-    margin-right: 10px;
-    border: 1px solid #000;
+.table-container.custom-work-order-table-v2 .p-datatable-thead > tr > th {
+    background-color: #b2d8b2 !important; /* ヘッダーの色を薄い緑色に変更 */
+    color: black !important; /* ヘッダーの文字色を黒に変更 */
 }
 
-.blue-button {
-    background-color: #007bff;
-    border-color: #007bff;
-    color: white;
+.table-container.custom-work-order-table-v2 .p-datatable {
+    border: none; /* 黒い枠線を削除 */
+}
+
+.table-container.custom-work-order-table-v2 .p-datatable-tbody > tr:nth-child(odd) > td {
+    background-color: #ffffff !important; /* 奇数行は白色 */
+}
+
+.table-container.custom-work-order-table-v2 .p-datatable-tbody > tr:nth-child(even) > td {
+    background-color: #d3d3d3 !important; /* 偶数行は明るい灰色 */
+}
+
+.table-container.custom-work-order-table-v2 .p-datatable-tbody > tr > td {
+    border-right: none;
+}
+
+.table-container.custom-work-order-table-v2 .p-datatable-thead > tr > th {
+    border-right: none;
 }
 </style>

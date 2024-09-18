@@ -184,10 +184,14 @@ const fetchPlantOptions = async () => {
 
     const companyData = response.data.find((company) => company.companyCode === companyCode);
     if (companyData) {
+      console.log('Company data found:', companyData); // 成功時のコンソールログ
       plantOptions.value = [...new Set(companyData.ceList.map((item) => item.plant))].map((plant) => ({
         label: `Plant ${plant}`, // 表示名
         value: plant // 実際の値
       }));
+      console.log('Plant options:', plantOptions.value);
+    } else {
+      console.log('No data found for companyCode:', companyCode);
     }
   } catch (error) {
     console.error('Failed to fetch plant options:', error); // エラー時のコンソールログ
@@ -206,12 +210,16 @@ const fetchEquipmentOptions = async (selectedPlant) => {
 
     const companyData = response.data.find((company) => company.companyCode === companyCode);
     if (companyData) {
+      console.log('Selected plant:', selectedPlant); // 成功時のコンソールログ
       equipmentOptions.value = companyData.ceList
         .filter((item) => item.plant === selectedPlant)
         .map((equipment) => ({
           label: `Equipment ${equipment.equipment}`, // 表示名
           value: equipment.equipment // 実際の値
         }));
+      console.log('Equipment options:', equipmentOptions.value);
+    } else {
+      console.log('No data found for companyCode and selected plant:', companyCode, selectedPlant);
     }
   } catch (error) {
     console.error('Failed to fetch equipment options:', error); // エラー時のコンソールログ
@@ -231,8 +239,10 @@ const fetchAndIncrementWorkOrderNo = async () => {
     if (companyData && companyData.workOrderList.length > 0) {
       const maxWorkOrderNo = Math.max(...companyData.workOrderList.map((order) => parseInt(order.workOrderNo, 10)));
       workOrderNo.value = (maxWorkOrderNo + 1).toString();
+      console.log('Incremented Work Order No:', workOrderNo.value); // 成功時のコンソールログ
     } else {
       workOrderNo.value = '1'; // データがない場合は '1' を初期値とする
+      console.log('No work order found, setting Work Order No to 1');
     }
   } catch (error) {
     console.error('Failed to fetch and increment work order no:', error); // エラー時のコンソールログ
@@ -257,59 +267,58 @@ watch(
 
 // SaveボタンがクリックされたときにPOSTリクエストを送信
 const submitEntry = async () => {
+    try {
+        const postData = {
+            companyCode: companyCode,
+            plant: localEntry.value.plant || null,
+            equipment: localEntry.value.equipment || null,
+            workOrderNo: workOrderNo.value,
+            workOrderDesc: localEntry.value.workOrderDesc || null,
+            status: localEntry.value.status || null,
+            title: localEntry.value.title || null,
+            failureTypes: localEntry.value.failureTypes && localEntry.value.failureTypes.length > 0 ? localEntry.value.failureTypes : null,
+            failureModes: localEntry.value.failureModes && localEntry.value.failureModes.length > 0 ? localEntry.value.failureModes : null,
+            failureDescription: localEntry.value.failureDescription || null,
+            failureDate: localEntry.value.failureDate || null,
+            description: localEntry.value.description || null,
+            registrationDate: localEntry.value.registrationDate || null  // 登録日を追加
+        };
+
+        const response = await axios.post('http://127.0.0.1:8000/api/workOrder/workOrder/', postData);
+        console.log('POST request successful:', response.data);
+
+        emit('submit', localEntry.value);
+        emit('update:visible', false);
+    } catch (error) {
+        if (error.response) {
+            console.error('Error during submitEntry execution:', error.response.data);
+        } else if (error.request) {
+            console.error('No response received:', error.request);
+        } else {
+            console.error('Error during submitEntry execution:', error.message);
+        }
+    }
+};
+
+
+
+const hideModal = () => {
   try {
-    // registrationDateがnullなら、本日の日付を設定
-    if (!localEntry.value.registrationDate) {
-      const today = new Date().toISOString().split('T')[0]; // 本日の日付をYYYY-MM-DD形式で取得
-      localEntry.value.registrationDate = today;
-    }
-
-    // POSTリクエストに送信するデータ
-    const postData = {
-      companyCode: companyCode,
-      plant: localEntry.value.plant || null,
-      equipment: localEntry.value.equipment || null,
-      workOrderNo: workOrderNo.value,
-      workOrderDesc: localEntry.value.workOrderDesc || null,
-      status: localEntry.value.status || null,
-      title: localEntry.value.title || null,
-      failureTypes: localEntry.value.failureTypes && localEntry.value.failureTypes.length > 0 ? localEntry.value.failureTypes : null,
-      failureModes: localEntry.value.failureModes && localEntry.value.failureModes.length > 0 ? localEntry.value.failureModes : null,
-      failureDescription: localEntry.value.failureDescription || null,
-      failureDate: localEntry.value.failureDate || null,
-      description: localEntry.value.description || null,
-      registrationDate: localEntry.value.registrationDate || null  // 登録日を追加
-    };
-
-    // POSTリクエストを送信
-    const response = await axios.post('http://127.0.0.1:8000/api/workOrder/workOrder/', postData);
-    console.log('POST request successful:', response.data);
-
-    emit('submit', localEntry.value);  // 成功したら親コンポーネントにデータを送信
-    emit('update:visible', false); // モーダルを閉じる
+    emit('update:visible', false);  // visibleをfalseにしてモーダルを閉じる
   } catch (error) {
-    if (error.response) {
-      console.error('Error during submitEntry execution:', error.response.data);
-    } else if (error.request) {
-      console.error('No response received:', error.request);
-    } else {
-      console.error('Error during submitEntry execution:', error.message);
-    }
+    console.error('Error during hideModal execution:', error);
   }
 };
 
-// モーダルを閉じる処理
-const hideModal = () => {
-  emit('update:visible', false);  // visibleをfalseにしてモーダルを閉じる
-};
-
-// キャンセルボタンを押したときの処理
 const cancelNewEntry = () => {
-  emit('cancel');  // 親にキャンセルイベントを伝える
-  emit('update:visible', false);  // visibleをfalseにしてモーダルを閉じる
+  try {
+    emit('cancel');  // 親にキャンセルイベントを伝える
+    emit('update:visible', false);  // visibleをfalseにしてモーダルを閉じる
+  } catch (error) {
+    console.error('Error during cancelNewEntry execution:', error);
+  }
 };
 
-// 画像を拡大表示
 const enlargeImage1 = () => {
   imageDialogVisible1.value = true;
 };
@@ -318,7 +327,6 @@ const enlargeImage2 = () => {
   imageDialogVisible2.value = true;
 };
 
-// モーダルのvisibleが変更されたときにlocalEntryをリセット
 watch(
   () => props.visible,
   (newValue) => {
@@ -328,8 +336,6 @@ watch(
   }
 );
 </script>
-
-
 
 <style scoped>
 .surface-ground {

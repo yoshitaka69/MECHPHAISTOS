@@ -35,12 +35,19 @@
                         <Button type="button" label="New Work Order" @click="showNewEntryForm" class="new-work-order-button" />
                     </div>
                 </template>
-                <Column field="workOrderNo" header="Work Order No" sortable filter filterMatchMode="contains">
+                <Column field="workOrderNo" sortable filter filterMatchMode="contains">
+                    <template #header>
+                        <div style="text-align: center">Work Order<br />No</div>
+                    </template>
                     <template #filter="{ filterModel }">
                         <InputText v-model="filterModel.value" type="text" placeholder="Search by Work Order No" />
                     </template>
                 </Column>
-                <Column field="registrationDate" header="Registration Date" sortable filter filterMatchMode="contains">
+
+                <Column field="registrationDate" sortable filter filterMatchMode="contains">
+                    <template #header>
+                        <div style="text-align: center">Registration<br />Date</div>
+                    </template>
                     <template #filter="{ filterModel }">
                         <InputText v-model="filterModel.value" type="text" placeholder="Search by Registration Date" />
                     </template>
@@ -55,9 +62,12 @@
                         <InputText v-model="filterModel.value" type="text" placeholder="Search by Equipment" />
                     </template>
                 </Column>
-                <Column field="workOrderDesc" header="Work Order Description" sortable filter filterMatchMode="contains">
+                <Column field="workOrderDesc" sortable filter filterMatchMode="contains">
+                    <template #header>
+                        <div style="text-align: center">Work Order<br />Description</div>
+                    </template>
                     <template #filter="{ filterModel }">
-                        <InputText v-model="filterModel.value" type="text" placeholder="Search by Description" />
+                        <InputText v-model="filterModel.value" type="text" placeholder="Search by Work Order Description" />
                     </template>
                 </Column>
                 <Column field="status" header="Status" sortable filter filterMatchMode="contains">
@@ -88,7 +98,10 @@
                         <InputText v-model="filterModel.value" type="text" placeholder="Search by Failure Description" />
                     </template>
                 </Column>
-                <Column field="failureDate" header="Failure Date" sortable filter filterMatchMode="contains">
+                <Column field="failureDate" sortable filter filterMatchMode="contains">
+                    <template #header>
+                        <div style="text-align: center">Failure<br />Date</div>
+                    </template>
                     <template #filter="{ filterModel }">
                         <InputText v-model="filterModel.value" type="text" placeholder="Search by Failure Date" />
                     </template>
@@ -108,18 +121,7 @@
                 </Column>
             </DataTable>
         </div>
-        <WorkOrderInputModal
-            :visible="isEditing || isAddingNew"
-            :statuses="statuses"
-            :entry="isEditing ? editingItem : newEntry"
-            @update:visible="
-                (value) => {
-                    isAddingNew.value = isEditing.value = value;
-                }
-            "
-            @submit="submitEntry"
-            @cancel="cancelEntry"
-        />
+        <WorkOrderForm v-model:visible="isModalVisible" :statuses="statuses" :entry="currentEntry" @submit="onSubmit" @cancel="onCancel" />
     </div>
 </template>
 
@@ -131,67 +133,69 @@ import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import Tag from 'primevue/tag';
 import Dropdown from 'primevue/dropdown';
-import WorkOrderInputModal from '@/components/Work_order/Work_order_form.vue';
+import WorkOrderForm from '@/components/Work_order/Work_order_form.vue'; // 修正: WorkOrderFormをインポート
 
 const userStore = useUserStore(); // Piniaストアを使用
 
 const products = ref([]);
 const editingRows = ref([]);
 const statuses = ref([
-  { label: 'Completed', value: 'COMPLETED' },
-  { label: 'Ongoing', value: 'Ongoing' },
-  { label: 'Delayed', value: 'Delayed' }
+    { label: 'Completed', value: 'COMPLETED' },
+    { label: 'Ongoing', value: 'Ongoing' },
+    { label: 'Delayed', value: 'Delayed' }
 ]);
 
+const isModalVisible = ref(false); // モーダル表示の状態
+const currentEntry = ref({}); // 編集するエントリー
 const isAddingNew = ref(false);
 const isEditing = ref(false);
 const newEntry = ref({
-  workOrderNo: '',
-  plant: '',
-  equipment: '',
-  workOrderDesc: '',
-  status: '',
-  title: '',
-  failureTypes: [],
-  failureModes: [],
-  failureDescription: '',
-  failureDate: null,
-  description: '',
-  registrationDate: null  // 登録日を追加
+    workOrderNo: '',
+    plant: '',
+    equipment: '',
+    workOrderDesc: '',
+    status: '',
+    title: '',
+    failureTypes: [],
+    failureModes: [],
+    failureDescription: '',
+    failureDate: null,
+    description: '',
+    registrationDate: null // 登録日を追加
 });
 const editingItem = ref({});
 
 onMounted(async () => {
-  // axiosを使用してデータを取得
-  const response = await axios.get(`http://127.0.0.1:8000/api/workOrder/workOrderByCompany/?format=json&companyCode=${userStore.companyCode}`);
-  // 取得したデータをフラットな配列に変換
-  const flattenedData = response.data.flatMap((company) => company.workOrderList);
-  products.value = flattenedData; // 変換したデータをproductsにセット
-  console.log('flattenedData', flattenedData);
+    // axiosを使用してデータを取得
+    const response = await axios.get(`http://127.0.0.1:8000/api/workOrder/workOrderByCompany/?format=json&companyCode=${userStore.companyCode}`);
+    // 取得したデータをフラットな配列に変換
+    const flattenedData = response.data.flatMap((company) => company.workOrderList);
+    products.value = flattenedData; // 変換したデータをproductsにセット
+    console.log('flattenedData', flattenedData);
 });
 
 const serverItemsLength = computed(() => products.value.length);
 const serverOptions = ref({
-  page: 1,
-  rowsPerPage: 30
+    page: 1,
+    rowsPerPage: 30
 });
 const loading = ref(false);
 const sortField = ref(null);
 const sortOrder = ref(null);
 const filters = ref({
-  global: { value: null, matchMode: 'contains' },
-  workOrderNo: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
-  registrationDate: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },  // 登録日フィルターを追加
-  plant: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
-  equipment: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
-  workOrderDesc: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
-  status: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
-  title: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
-  failureTypes: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
-  failureModes: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
-  failureDescription: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
-  failureDate: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
-  description: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] }
+    global: { value: null, matchMode: 'contains' },
+    workOrderNo: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
+    registrationDate: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] }, // 登録日フィルターを追加
+    plant: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
+    equipment: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
+    workOrderDesc: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
+    status: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
+    title: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
+    failureTypes: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
+    failureModes: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
+    failureDescription: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
+    failureDate: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
+    description: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] }
 });
 
 const sortedItems = computed(() => {
@@ -208,7 +212,7 @@ const sortedItems = computed(() => {
         items.push({
             id: '',
             workOrderNo: '',
-            registrationDate: null,  // 登録日を追加
+            registrationDate: null, // 登録日を追加
             plant: '',
             equipment: '',
             workOrderDesc: '',
@@ -235,11 +239,12 @@ const onFilter = (event) => {
 
 const editItem = (item) => {
     isEditing.value = true;
-    editingItem.value = { ...item };
-    console.log('Editing item:', editingItem.value);
+    currentEntry.value = { ...item }; // 編集するエントリーをセット
+    isModalVisible.value = true;
+    console.log('Editing item:', currentEntry.value);
 };
 
-const submitEntry = (entry) => {
+const onSubmit = (entry) => {
     if (isEditing.value) {
         const item = products.value.find((i) => i.id === entry.id);
         if (item) {
@@ -250,11 +255,11 @@ const submitEntry = (entry) => {
         products.value.push({ ...entry, id: products.value.length + 1 });
         isAddingNew.value = false;
     }
+    isModalVisible.value = false; // モーダルを閉じる
 };
 
-const cancelEntry = () => {
-    isEditing.value = false;
-    isAddingNew.value = false;
+const onCancel = () => {
+    isModalVisible.value = false; // モーダルを閉じる
 };
 
 const deleteItem = (item) => {
@@ -264,9 +269,9 @@ const deleteItem = (item) => {
 
 const showNewEntryForm = () => {
     isAddingNew.value = true;
-    newEntry.value = {
+    currentEntry.value = {
         workOrderNo: '',
-        registrationDate: null,  // 登録日を初期化
+        registrationDate: null, // 登録日を初期化
         plant: '',
         equipment: '',
         workOrderDesc: '',
@@ -278,6 +283,7 @@ const showNewEntryForm = () => {
         failureDate: null,
         description: ''
     };
+    isModalVisible.value = true; // 新規エントリ用のモーダルを表示
 };
 
 const onPage = (event) => {
@@ -289,7 +295,7 @@ const clearFilter = () => {
     filters.value = {
         global: { value: null, matchMode: 'contains' },
         workOrderNo: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
-        registrationDate: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },  // 登録日フィルターを追加
+        registrationDate: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] }, // 登録日フィルターを追加
         plant: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
         equipment: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
         workOrderDesc: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
@@ -299,7 +305,7 @@ const clearFilter = () => {
         failureModes: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
         failureDescription: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
         failureDate: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
-        description: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
+        description: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] }
     };
 };
 
@@ -325,11 +331,9 @@ const getStatusLabel = (status) => {
 
 const onRowEditSave = (event) => {
     let { newData, index } = event;
-
     products.value[index] = newData;
 };
 </script>
-
 
 <style>
 .description-text {
