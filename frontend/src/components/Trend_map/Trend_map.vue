@@ -12,7 +12,7 @@
         </span>
       </div>
     </div>
-    <div>Selected Month: {{ state.months[state.currentMonthIndex] }}</div>
+    <div style="font-size: 1.5rem;">Selected Month: {{ state.months[state.currentMonthIndex] }}</div>
   </div>
 </template>
 
@@ -89,21 +89,29 @@ const renderPlot = (data) => {
   };
 
   const layout = {
-    title: 'Monthly Parts Count by Country',
-    geo: {
-      projection: {
-        type: 'natural earth'
-      }
+  title: 'Monthly Parts Count by Country',
+  geo: {
+    projection: {
+      type: 'natural earth'
     }
-  };
+  },
+  width: 800,  // 幅を800に調整
+  height: 600,  // 高さを600に調整
+};
 
   Plotly.newPlot(plotContainer.value, [trace], layout);
 };
 
+
+
 const renderTable = (data) => {
   const headers = ["plant", "partsName", "eventDate", "orderAlertDate", "country"];
   const headerValues = headers.map(header => [header]);
-  const cellValues = headers.map(header => data.map(alert => alert[header] || ''));
+  
+  // データがない場合、15行の空データを生成
+  const rows = data.length > 0 ? data : Array(15).fill({ plant: '', partsName: '', eventDate: '', orderAlertDate: '', country: '' });
+  
+  const cellValues = headers.map(header => rows.map(alert => alert[header] || ''));
 
   const tableData = {
     type: 'table',
@@ -111,19 +119,20 @@ const renderTable = (data) => {
     header: {
       values: headerValues,
       align: "center",
-      fill: {color: ['rgb(235, 100, 230)']},
-      font: {family: "Arial", size: 12, color: "white"}
+      fill: { color: ['rgb(235, 100, 230)'] },
+      font: { family: "Arial", size: 12, color: "white" }
     },
     cells: {
       values: cellValues,
       align: ["center"],
-      fill: {color: ['rgb(245, 245, 245)', 'rgb(235, 235, 235)']},
-      font: {family: "Arial", size: 11, color: ["black"]}
+      fill: { color: ['rgb(245, 245, 245)', 'rgb(235, 235, 235)'] },
+      font: { family: "Arial", size: 11, color: ["black"] }
     }
   };
 
   Plotly.newPlot(tableContainer.value, [tableData]);
 };
+
 
 const updateMapAndTable = () => {
   const filteredAlerts = state.alertLists.filter(alert =>
@@ -140,3 +149,7 @@ watch(() => state.currentMonthIndex, updateMapAndTable);
 onMounted(fetchData);
 </script>
 
+<style scoped>
+
+
+</style>
