@@ -2,7 +2,7 @@
   <div>
     <div style="display: flex; height: 500px;">
       <div ref="plotContainer" style="flex: 1;"></div>
-      <div ref="tableContainer" style="flex: 1; overflow-y: auto; max-height: 500px;"></div>
+      <div ref="tableContainer" style="flex: 1; overflow-y: auto; max-height: 500px; padding: 10px;"></div> <!-- テーブルの余白を設定 -->
     </div>
     <div style="width: 100%; padding: 10px 0;">
       <input type="range" min="0" :max="state.months.length - 1" v-model="state.currentMonthIndex" @input="updateMapAndTable" style="width: 100%;" step="1">
@@ -89,20 +89,24 @@ const renderPlot = (data) => {
   };
 
   const layout = {
-  title: 'Monthly Parts Count by Country',
-  geo: {
-    projection: {
-      type: 'natural earth'
+    title: 'Monthly Parts Count by Country',
+    geo: {
+      projection: {
+        type: 'natural earth'
+      }
+    },
+    width: 600,  // 幅の設定
+    height: 500,  // 高さの設定
+    margin: {
+      l: 20,  // 左マージン
+      r: 20,  // 右マージン
+      t: 50,  // 上マージン
+      b: 50   // 下マージン
     }
-  },
-  width: 800,  // 幅を800に調整
-  height: 600,  // 高さを600に調整
-};
+  };
 
   Plotly.newPlot(plotContainer.value, [trace], layout);
 };
-
-
 
 const renderTable = (data) => {
   const headers = ["plant", "partsName", "eventDate", "orderAlertDate", "country"];
@@ -115,12 +119,12 @@ const renderTable = (data) => {
 
   const tableData = {
     type: 'table',
-    columnwidth: [200, 200, 200, 200, 200],
+    columnwidth: [250, 250, 250, 250, 250],  // 列の幅を調整
     header: {
       values: headerValues,
       align: "center",
-      fill: { color: ['rgb(235, 100, 230)'] },
-      font: { family: "Arial", size: 12, color: "white" }
+      fill: { color: ['rgb(255, 255, 200)'] },  // ヘッダーの背景色を薄い黄色に変更
+      font: { family: "Arial", size: 12, color: "black" }
     },
     cells: {
       values: cellValues,
@@ -130,9 +134,18 @@ const renderTable = (data) => {
     }
   };
 
-  Plotly.newPlot(tableContainer.value, [tableData]);
-};
+  const layout = {
+    width: 800,  // テーブルの全体幅を指定
+    margin: {
+      l: 30,  // 左マージン
+      r: 30,  // 右マージン
+      t: 30,  // 上マージン
+      b: 30   // 下マージン
+    }
+  };
 
+  Plotly.newPlot(tableContainer.value, [tableData], layout);
+};
 
 const updateMapAndTable = () => {
   const filteredAlerts = state.alertLists.filter(alert =>
