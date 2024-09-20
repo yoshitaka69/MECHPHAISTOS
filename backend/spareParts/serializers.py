@@ -1,11 +1,19 @@
 from rest_framework import serializers
+from .models import SpareParts,BomList,SparePartsManagement
+
+from accounts.models import CompanyCode,Plant
 from django.db.models import Max
-from .models import SpareParts, BomList, SparePartsManagement, CompanyCode, Plant, Equipment, Machine
-from accounts.models import CompanyCode, Plant
+
 
 
 
 #------------------------------------------------------------
+from rest_framework import serializers
+from .models import SpareParts, CompanyCode, CompanyName, Plant, Equipment, Machine
+
+from rest_framework import serializers
+from .models import SpareParts, CompanyCode
+
 
 
 class SparePartsSerializer(serializers.ModelSerializer):
@@ -30,6 +38,9 @@ class CompanyCodeSPSerializer(serializers.ModelSerializer):
         instance.partsNo = validated_data.get('partsNo', instance.partsNo)
         instance.save()
         return instance
+
+
+
 
 
 

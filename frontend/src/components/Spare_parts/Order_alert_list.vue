@@ -92,14 +92,16 @@ const sortedTasks = computed(() => {
 
 .custom-datatable .p-datatable-tbody > tr > td {
   border-right: 1px solid black;
-}
-
-.custom-datatable .p-datatable-tbody > tr > td:last-child {
-  border-right: none;
+  font-size: 16px; /* フォントサイズを調整 */
 }
 
 .custom-datatable .p-datatable-thead > tr > th {
   border-right: 1px solid black;
+  font-size: 16px; /* ヘッダーのフォントサイズを調整 */
+}
+
+.custom-datatable .p-datatable-tbody > tr > td:last-child {
+  border-right: none;
 }
 
 .custom-datatable .p-datatable-thead > tr > th:last-child {

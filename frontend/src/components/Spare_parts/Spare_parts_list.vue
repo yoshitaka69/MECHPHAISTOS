@@ -3,6 +3,11 @@
         <!-- 成功時または失敗時のアラート表示 -->
         <Save_Alert v-if="showAlert" :type="alertType" :message="alertMessage" :errorMessages="errorMessages" />
 
+        <!-- companyCode 表示 -->
+        <div class="company-code-container">
+            <span>Company Code: {{ companyCode }}</span>
+        </div>
+
         <div class="legend">
             <div class="legend-item">
                 <div class="color-box" style="background-color: #f0a0a0"></div>
@@ -14,15 +19,28 @@
             </div>
         </div>
 
+        <!-- 行数選択ドロップダウン -->
+        <div class="row-count-container">
+            <span>表示する行数:</span>
+            <select v-model="rowsToShow" @change="updateRowCount">
+                <option value="10">10行</option>
+                <option value="30">30行</option>
+                <option value="50">50行</option>
+                <option value="100">100行</option>
+            </select>
+        </div>
+
         <hot-table ref="hotTableComponent" :settings="hotSettings"></hot-table>
 
         <div class="button-container">
             <input type="number" v-model="rowsToAdd" placeholder="Number of rows" />
             <Button label="Add Rows" icon="pi pi-plus" class="p-button-primary blue-button" @click="addRows" />
             <Button label="Save Data" icon="pi pi-save" class="p-button-primary blue-button ml-3" @click="saveData" />
+            <Button label="Export CSV" icon="pi pi-file-excel" class="p-button-primary green-button ml-3" @click="exportCSV" />
         </div>
     </div>
 </template>
+
 
 <script>
 import axios from 'axios';
@@ -125,10 +143,10 @@ const SparePartsComponent = defineComponent({
                     'Parts Name',
                     'Plant',
                     'Category',
-                    'Model',
+                    'Model/Size',
                     'Manufacturer',
                     'Serial Number',
-                    'Task Code',
+                    'Task List No',
                     'Price',
                     'Number <br>of ~',
                     'Unit',
@@ -335,16 +353,24 @@ const SparePartsComponent = defineComponent({
                 licenseKey: 'non-commercial-and-evaluation'
             },
             rowsToAdd: 1, // 追加する行数のデフォルト値
+            rowsToShow: 10, // デフォルトで表示する行数
             sparePartsDataStore: [], // データストア
             showAlert: false, // アラート表示用のフラグ
             alertType: 'success', // 'success' か 'error' を指定
             alertMessage: 'データが正常に保存されました。',
-            errorMessages: [] // エラーメッセージのリスト
+            errorMessages: [], // エラーメッセージのリスト
+            companyCode: '' // companyCode を追加
         };
     },
 
     created() {
         this.getDataAxios();
+    },
+
+    watch: {
+        rowsToShow() {
+            this.updateRowCount();
+        }
     },
 
     methods: {
@@ -374,7 +400,7 @@ const SparePartsComponent = defineComponent({
                         'partsNo',
                         'bomCode',
                         'partsName',
-                        'plant', // **plantをpartsNameの直後に移動**
+                        'plant',
                         'category',
                         'partsModel',
                         'manufacturer',
@@ -398,31 +424,17 @@ const SparePartsComponent = defineComponent({
                             index.forEach((key) => {
                                 rowData[key] = key === 'partsCost' || key === 'numberOf' ? parseFloat(partData[key]) || 0 : partData[key];
                                 if (key === 'image' && !partData[key]) {
-                                    rowData[key] = ''; // 画像がない場合は空文字に設定
+                                    rowData[key] = '';
                                 }
                             });
                             return rowData;
                         })
                     );
 
-                    // partsNoでソート
                     tableData.sort((a, b) => (parseInt(a.partsNo, 10) || 0) - (parseInt(b.partsNo, 10) || 0));
 
                     this.sparePartsDataStore = tableData;
-
-                    // もしデータが10行未満の場合のみダミーデータを追加
-                    if (tableData.length < 10) {
-                        const blankRows = Array.from({ length: 10 - tableData.length }, () => ({}));
-                        const newData = tableData.concat(blankRows);
-
-                        this.$refs.hotTableComponent.hotInstance.updateSettings({
-                            data: newData
-                        });
-                    } else {
-                        this.$refs.hotTableComponent.hotInstance.updateSettings({
-                            data: tableData
-                        });
-                    }
+                    this.updateRowCount(); // 初回データ取得後に行数を更新
                 })
                 .catch((error) => {
                     console.error('Error fetching data:', error);
@@ -430,39 +442,54 @@ const SparePartsComponent = defineComponent({
         },
 
         addRows() {
+            const userStore = useUserStore();
+            const userCompanyCode = userStore.companyCode;
+
+            if (!userCompanyCode) {
+                console.error('Error: No company code found for the user.');
+                return;
+            }
+
             const hotInstance = this.$refs.hotTableComponent.hotInstance;
             const blankRows = Array.from({ length: this.rowsToAdd }, () => {
                 return {
                     companyCode: userCompanyCode,
-                    partsNo: row[1], // parts No
-                    bomCode: row[2], // BOM Code
-                    partsName: row[3], // Parts Name
-                    plant: row[4], // Plant を partsName の直後に移動
-                    category: row[5], // Category
-                    partsModel: row[6], // Model
-                    manufacturer: row[7], // Manufacturer
-                    serialNumber: row[8], // Serial Number
-                    taskCode: row[9], // Task Code
-                    partsCost: row[10], // Price (Parts Cost)
-                    numberOf: row[11], // Number of
-                    unit: row[12], // Unit
-                    location: row[13], // Location
-                    partsDeliveryTime: row[14], // Delivery Time
-                    orderAlert: row[15], // Alert Order
-                    orderSituation: row[16] !== null ? row[16] : false, // Order Situation
-                    classification: row[17], // Classification
-                    inventoryTurnover: row[18], // Inventory Turnover
-                    partsDescription: row[19] // Description
+                    partsNo: '',
+                    bomCode: '',
+                    partsName: '',
+                    plant: '',
+                    category: '',
+                    partsModel: '',
+                    manufacturer: '',
+                    serialNumber: '',
+                    taskCode: '',
+                    partsCost: 0,
+                    numberOf: 0,
+                    unit: '',
+                    location: '',
+                    partsDeliveryTime: 0,
+                    orderAlert: '',
+                    orderSituation: false,
+                    classification: '',
+                    inventoryTurnover: '',
+                    partsDescription: ''
                 };
             });
 
             this.sparePartsDataStore = this.sparePartsDataStore.concat(blankRows);
+            this.updateRowCount(); // 新しい行を追加後に行数を更新
+        },
 
-            const newData = this.sparePartsDataStore;
+        updateRowCount() {
+            const hotInstance = this.$refs.hotTableComponent.hotInstance;
+            const newData = this.sparePartsDataStore.slice(0, this.rowsToShow); // rowsToShowに基づいてデータをスライス
 
-            hotInstance.updateSettings({
-                data: newData
+            // データ更新前にバリデーション
+            hotInstance.validateCells(() => {
+                hotInstance.loadData(newData); // loadDataを使ってデータを設定
             });
+
+            console.log('表示する行数:', this.rowsToShow); // rowsToShowの値を確認するためのログ
         },
 
         saveData() {
@@ -480,25 +507,25 @@ const SparePartsComponent = defineComponent({
             const formattedData = tableData.map((row) => {
                 return {
                     companyCode: userCompanyCode,
-                    partsNo: row[1], // parts No
-                    bomCode: row[2], // BOM Code
-                    partsName: row[3], // Parts Name
-                    plant: row[4], // Plant を partsName の直後に移動
-                    category: row[5], // Category
-                    partsModel: row[6], // Model
-                    manufacturer: row[7], // Manufacturer
-                    serialNumber: row[8], // Serial Number
-                    taskCode: row[9], // Task Code
-                    partsCost: row[10], // Price (Parts Cost)
-                    numberOf: row[11], // Number of
-                    unit: row[12], // Unit
-                    location: row[13], // Location
-                    partsDeliveryTime: row[14], // Delivery Time
-                    orderAlert: row[15], // Alert Order
-                    orderSituation: row[16] !== null ? row[16] : false, // Order Situation
-                    classification: row[17], // Classification
-                    inventoryTurnover: row[18], // Inventory Turnover
-                    partsDescription: row[19] // Description
+                    partsNo: row[1],
+                    bomCode: row[2],
+                    partsName: row[3],
+                    plant: row[4],
+                    category: row[5],
+                    partsModel: row[6],
+                    manufacturer: row[7],
+                    serialNumber: row[8],
+                    taskCode: row[9],
+                    partsCost: row[10],
+                    numberOf: row[11],
+                    unit: row[12],
+                    location: row[13],
+                    partsDeliveryTime: row[14],
+                    orderAlert: row[15],
+                    orderSituation: row[16] !== null ? row[16] : false,
+                    classification: row[17],
+                    inventoryTurnover: row[18],
+                    partsDescription: row[19]
                 };
             });
 
@@ -520,7 +547,7 @@ const SparePartsComponent = defineComponent({
                     this.showAlert = true;
                     setTimeout(() => {
                         this.showAlert = false;
-                    }, 3000); // 3秒後にアラートを非表示にする
+                    }, 3000);
                 })
                 .catch((error) => {
                     console.error('Error saving data:', error);
@@ -530,20 +557,109 @@ const SparePartsComponent = defineComponent({
                     this.showAlert = true;
                     setTimeout(() => {
                         this.showAlert = false;
-                    }, 5000); // 5秒後にアラートを非表示にする
+                    }, 5000);
                 });
-        }
+        },
+        exportCSV() {
+        const headers = [
+            'Image',
+            'Parts No',
+            'BOM Code',
+            'Parts Name',
+            'Plant',
+            'Category',
+            'Model',
+            'Manufacturer',
+            'Serial Number',
+            'Task Code',
+            'Price',
+            'Number of ~',
+            'Unit',
+            'Location',
+            'Delivery Time',
+            'Alert order',
+            'Order situation',
+            'Classification',
+            'Inventory Turnover',
+            'Description'
+        ];
+
+        // CSVデータを配列に変換
+        const csvContent = [headers];
+
+        this.sparePartsDataStore.forEach((item) => {
+            csvContent.push([
+                item.image,
+                item.partsNo,
+                item.bomCode,
+                item.partsName,
+                item.plant,
+                item.category,
+                item.partsModel,
+                item.manufacturer,
+                item.serialNumber,
+                item.taskCode,
+                item.partsCost,
+                item.numberOf,
+                item.unit,
+                item.location,
+                item.partsDeliveryTime,
+                item.orderAlert,
+                item.orderSituation,
+                item.classification,
+                item.inventoryTurnover,
+                item.partsDescription
+            ]);
+        });
+
+        // CSV文字列を作成
+        const csvString = csvContent.map(row => row.join(',')).join('\n');
+        const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+
+        // ダウンロード用リンクを作成してクリックイベントをトリガー
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.href = url;
+        link.setAttribute('download', 'spare_parts_list.csv');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     }
+}
+    
 });
 
 export default SparePartsComponent;
 </script>
 
 <style scoped>
+#SparePartsList {
+    padding: 20px;
+}
+
+.company-code-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.row-count-container {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+}
+
+.row-count-container span {
+    margin-right: 10px;
+    font-weight: bold;
+}
+
 .button-container {
     display: flex;
     justify-content: flex-end;
     gap: 10px;
+    margin-top: 20px;
 }
 
 .legend {
@@ -570,4 +686,11 @@ export default SparePartsComponent;
     border-color: #007bff;
     color: white;
 }
+
+.green-button {
+    background-color: #28a745;
+    border-color: #28a745;
+    color: white;
+}
+
 </style>

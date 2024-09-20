@@ -56,6 +56,8 @@ class PlantSerializer(serializers.ModelSerializer):
         queryset=CompanyCode.objects.all()
     )
 
+    
+
 class CompanyPlantSerializer(serializers.ModelSerializer):
     plantList = PlantSerializer(many=True, source='plant_companyCode')  
     class Meta:
