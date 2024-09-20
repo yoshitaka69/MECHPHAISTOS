@@ -1,7 +1,7 @@
 <template>
     <div class="table-container custom-work-order-table-v2">
         <p class="description-text">
-            This is the Work Order page. Here, you can issue work orders for maintenance tasks such as repair requests, modification work, and inspections. The more detailed you fill out the work order form, the more accurate the equipment
+            This is the Work Order page. Here, you can issue work orders for maintenance tasks such as repair requests, modification work, and inspections. <br>The more detailed you fill out the work order form, the more accurate the equipment
             information and equipment lifespan data will be.
         </p>
         <div class="header-container-v2">

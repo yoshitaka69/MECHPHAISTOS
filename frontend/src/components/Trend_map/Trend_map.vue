@@ -1,9 +1,9 @@
 <template>
   <div>
-    <div style="display: flex; height: 500px;">
-      <div ref="plotContainer" style="flex: 1;"></div>
-      <div ref="tableContainer" style="flex: 1; overflow-y: auto; max-height: 500px; padding: 10px;"></div> <!-- テーブルの余白を設定 -->
-    </div>
+    <!-- プロットコンテナを上部に配置 -->
+    <div ref="plotContainer" style="width: 100%; height: 500px;"></div>
+    
+    <!-- スライドバーを中央に配置 -->
     <div style="width: 100%; padding: 10px 0;">
       <input type="range" min="0" :max="state.months.length - 1" v-model="state.currentMonthIndex" @input="updateMapAndTable" style="width: 100%;" step="1">
       <div style="display: flex; justify-content: space-between;">
@@ -12,7 +12,12 @@
         </span>
       </div>
     </div>
-    <div style="font-size: 1.5rem;">Selected Month: {{ state.months[state.currentMonthIndex] }}</div>
+    
+    <!-- 選択された月を表示 -->
+    <div style="font-size: 1.5rem; margin-bottom: 20px;">Selected Month: {{ state.months[state.currentMonthIndex] }}</div>
+    
+    <!-- テーブルコンテナをスライドバーの下に配置 -->
+    <div ref="tableContainer" style="width: 100%; overflow-y: auto; max-height: 500px; padding: 10px;"></div> <!-- テーブルの余白を設定 -->
   </div>
 </template>
 
@@ -83,17 +88,33 @@ const renderPlot = (data) => {
       [1, 'rgb(84,39,143)']
     ],
     colorbar: {
-      title: 'Parts Count',
-      thickness: 10
+      title: {
+        text: 'Parts Count',
+        font: {
+          family: "Arial",
+          size: 12,
+          color: "yellow" // カラーバーのタイトルを黄色に変更
+        }
+      },
+      thickness: 10,
+      tickfont: { color: 'yellow' } // カラーバーの目盛りフォントを黄色に変更
     }
   };
 
   const layout = {
-    title: 'Monthly Parts Count by Country',
+    title: {
+      text: 'Monthly Parts Count by Country',
+      font: {
+        family: 'Arial',
+        size: 18,
+        color: 'yellow' // タイトルのフォントを黄色に変更
+      }
+    },
     geo: {
       projection: {
         type: 'natural earth'
-      }
+      },
+      bgcolor: 'rgb(0, 0, 0)' // 地図部分の背景色を黒に設定
     },
     width: 600,  // 幅の設定
     height: 500,  // 高さの設定
@@ -102,10 +123,19 @@ const renderPlot = (data) => {
       r: 20,  // 右マージン
       t: 50,  // 上マージン
       b: 50   // 下マージン
+    },
+    paper_bgcolor: 'rgb(0, 0, 0)', // 全体の背景色を黒に設定
+    plot_bgcolor: 'rgb(0, 0, 0)', // プロット領域の背景色を黒に設定
+    font: {
+      color: 'yellow' // 全体のフォントを黄色に設定
     }
   };
 
-  Plotly.newPlot(plotContainer.value, [trace], layout);
+  const config = {
+    displayModeBar: false // 右上のツールバーを非表示にする
+  };
+
+  Plotly.newPlot(plotContainer.value, [trace], layout, config);
 };
 
 const renderTable = (data) => {
@@ -123,29 +153,46 @@ const renderTable = (data) => {
     header: {
       values: headerValues,
       align: "center",
-      fill: { color: ['rgb(255, 255, 200)'] },  // ヘッダーの背景色を薄い黄色に変更
-      font: { family: "Arial", size: 12, color: "black" }
+      fill: { color: 'rgb(50, 50, 50)' },  // ヘッダーの背景色を黒に変更
+      font: { 
+        family: "Arial", 
+        size: 18, // フォントサイズを18に設定（2回り大きく）
+        color: "yellow" // ヘッダーの文字色を黄色に変更
+      }
     },
     cells: {
       values: cellValues,
       align: ["center"],
-      fill: { color: ['rgb(245, 245, 245)', 'rgb(235, 235, 235)'] },
-      font: { family: "Arial", size: 11, color: ["black"] }
+      fill: { color: ['rgb(30, 30, 30)', 'rgb(50, 50, 50)'] }, // セルの背景色を黒に変更（交互の色も設定）
+      font: { 
+        family: "Arial", 
+        size: 11, 
+        color: ["white"] 
+      }
     }
   };
 
   const layout = {
     width: 800,  // テーブルの全体幅を指定
+    height: 400, // テーブルの高さを指定
     margin: {
       l: 30,  // 左マージン
       r: 30,  // 右マージン
       t: 30,  // 上マージン
       b: 30   // 下マージン
-    }
+    },
+    paper_bgcolor: 'rgb(0, 0, 0)', // テーブル全体の背景色を黒に変更
+    plot_bgcolor: 'rgb(0, 0, 0)' // テーブル領域の背景色を黒に変更
   };
 
-  Plotly.newPlot(tableContainer.value, [tableData], layout);
+  const config = {
+    displayModeBar: false // 右上のツールバーを非表示にする
+  };
+
+
+  Plotly.newPlot(tableContainer.value, [tableData], layout, config);
 };
+
 
 const updateMapAndTable = () => {
   const filteredAlerts = state.alertLists.filter(alert =>
@@ -163,6 +210,8 @@ onMounted(fetchData);
 </script>
 
 <style scoped>
-
-
+/* テーブルコンテナの最小高さを指定 */
+#tableContainer {
+  min-height: 400px; 
+}
 </style>

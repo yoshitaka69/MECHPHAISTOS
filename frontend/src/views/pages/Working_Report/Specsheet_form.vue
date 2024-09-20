@@ -2,12 +2,8 @@
 	<div class="base-content">
 	  <section class="content">
 		<div class="card card-solid">
-		  <TabView v-model:activeIndex="activeIndex" @tab-change="onTabChange">
-			<TabPanel header="Specsheet">
-			  <p class="line-height-3 m-0"></p>
-			  <MaintenanceReportList />
-			</TabPanel>
-		  </TabView>
+		  <p class="line-height-3 m-0"></p>
+		  <MaintenanceReportList />
 		</div>
 	  </section>
 	</div>
@@ -20,17 +16,6 @@
 	components: {
 	  MaintenanceReportList,
 	},
-	data() {
-	  return {
-		activeIndex: parseInt(localStorage.getItem('specsheetTabIndex')) || 0 // キー名を変更
-	  };
-	},
-	methods: {
-	  onTabChange(event) {
-		this.activeIndex = event.index;
-		localStorage.setItem('specsheetTabIndex', this.activeIndex); // キー名を変更
-	  }
-	}
   };
   </script>
   

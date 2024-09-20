@@ -45,12 +45,12 @@ export default {
 .base-content {
   display: grid;
   grid-template-columns: 1fr 3fr 1fr; /* 左右のサイドバーと中央のメインコンテンツの割合を設定 */
-  grid-template-rows: auto auto; /* 行の設定を追加して、メインとサブコンテンツを縦に並べる */
+  grid-template-rows: 2fr 1fr; /* 行の高さを2:1の比率に設定して、メインコンテンツを大きくする */
   gap: 20px; /* 各グリッド間の隙間を設定 */
   padding: 20px;
   background-color: black; /* 背景を黒に設定 */
   color: white; /* テキストを白に設定 */
-  min-height: 100vh; /* ビューポート全体の高さに合わせる */
+  min-height: 120vh; /* ベースコンテンツの高さをより大きく設定 (デフォルト: 100vh → 120vh) */
 }
 
 .side-area {
@@ -71,6 +71,7 @@ export default {
   overflow: hidden; /* はみ出しを防ぐ */
   grid-column: 2 / 3; /* 中央列に配置 */
   grid-row: 1; /* 1行目に配置 */
+  height: 100%; /* 高さを100%に設定して親要素に合わせる */
 }
 
 .sub-content {
@@ -79,6 +80,7 @@ export default {
   border-radius: 8px;
   grid-column: 2 / 3; /* 中央列に配置 */
   grid-row: 2; /* サブコンテンツを2行目に配置 */
+  height: 100%; /* 高さを100%に設定して親要素に合わせる */
 }
 
 /* レスポンシブ対応 */
