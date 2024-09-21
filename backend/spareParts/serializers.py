@@ -75,22 +75,24 @@ class CompanyBomListSerializer(serializers.ModelSerializer):
 
 
 
+from rest_framework import serializers
+from .models import SparePartsManagement, CompanyCode
+
 class SparePartsManagementSerializer(serializers.ModelSerializer):
     companyCode = serializers.SlugRelatedField(
         slug_field='companyCode',  # companyCode モデルの表示したい文字列フィールド
         queryset=CompanyCode.objects.all()
     )
-    plant = serializers.SlugRelatedField(
-        slug_field='plant', 
-        queryset=Plant.objects.all()
-    )
+    # plant フィールドを CharField として定義
+    plant = serializers.CharField(max_length=200)
+
     class Meta:
-        model = SparePartsManagement #呼び出すモデル名
-        fields = ['companyCode','companyName','plant', 'equipment','machineName','totalSparePartsCost','inventoryTurnover',]
+        model = SparePartsManagement  # 呼び出すモデル名
+        fields = ['companyCode', 'companyName', 'plant', 'equipment', 'machineName', 'totalSparePartsCost', 'inventoryTurnover']
 
 
 class CompanySparePartsManagementSerializer(serializers.ModelSerializer):
-    SparePartsManagementList = SparePartsManagementSerializer(many=True, source='sparePartsManagement_companyCode')#ここのsourceは本当に注意
+    SparePartsManagementList = SparePartsManagementSerializer(many=True, source='sparePartsManagement_companyCode')  # ここのsourceは本当に注意
 
     class Meta:
         model = CompanyCode

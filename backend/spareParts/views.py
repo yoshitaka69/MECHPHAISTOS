@@ -162,6 +162,15 @@ class CompanyBomListViewSet(viewsets.ModelViewSet):
         return queryset
 
 
+
+
+#-----------------------------------------------------------------------------------------------------------------
+
+
+from rest_framework import viewsets
+from .models import SparePartsManagement, CompanyCode
+from .serializers import SparePartsManagementSerializer, CompanySparePartsManagementSerializer
+
 # SparePartsManagementのViewSet
 class SparePartsManagementViewSet(viewsets.ModelViewSet):
     queryset = SparePartsManagement.objects.all()

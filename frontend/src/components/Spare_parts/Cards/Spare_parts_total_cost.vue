@@ -2,7 +2,8 @@
     <div>
         <div>
             <span class="block text-500 font-medium mb-3">Spare Parts Total Cost</span>
-            <div class="text-900 large-bold-text">{{ displaySpareParts }}</div>
+            <!-- 改行が反映されるように style を追加 -->
+            <div class="text-900 large-bold-text" style="white-space: pre-line;">{{ displaySpareParts }}</div>
         </div>
         <div class="flex align-items-center justify-content-center bg-purple-100 border-round" style="width: 2.5rem; height: 2.5rem">
             <i class="pi pi-comment text-purple-500 text-xl"></i>
@@ -28,7 +29,7 @@ onMounted(async () => {
     const url = `http://127.0.0.1:8000/api/spareParts/sparePartsManagementByCompany/?format=json&companyCode=${companyCode}`;
     try {
         const response = await axios.get(url);
-        console.log('API Response Data:', response.data); // Log the complete API response
+        console.log('API Response Data:', response.data); 
         const companyData = response.data.find((item) => item.companyCode === companyCode);
         if (companyData && companyData.SparePartsManagementList) {
             console.log('Filtered Spare Parts Management List:', companyData.SparePartsManagementList);
@@ -43,7 +44,8 @@ onMounted(async () => {
 });
 
 const displaySpareParts = computed(() => {
-    return sparePartsList.value.map((part) => `${part.plant}: $${part.totalSparePartsCost}`).join(', ');
+    // 改行を反映させるために '\n' を使用
+    return sparePartsList.value.map((part) => `${part.plant}: $${part.totalSparePartsCost}`).join('\n');
 });
 </script>
 
