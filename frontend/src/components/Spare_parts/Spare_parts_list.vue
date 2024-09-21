@@ -41,7 +41,6 @@
     </div>
 </template>
 
-
 <script>
 import axios from 'axios';
 import Handsontable from 'handsontable';
@@ -66,6 +65,9 @@ function customRendererForAlertOrder(instance, td, row, col, prop, value, cellPr
         td.style.color = 'black';
     } else if (cellProperties.readOnly) {
         td.style.backgroundColor = '#f5f5f5'; // 読み取り専用のセルは薄い灰色
+    } else {
+        td.style.backgroundColor = ''; // デフォルトの背景色
+        td.style.color = ''; // デフォルトのテキスト色
     }
 }
 
@@ -150,6 +152,7 @@ const SparePartsComponent = defineComponent({
                     'Price',
                     'Number <br>of ~',
                     'Unit',
+                    'Summed <br>Parts Cost',
                     'Location',
                     'Delivery <br>Time',
                     'Alert <br>order',
@@ -217,8 +220,8 @@ const SparePartsComponent = defineComponent({
                         className: 'htRight'
                     },
                     {
-                        //TaskCode
-                        data: 'taskCode',
+                        //Task List No
+                        data: 'taskListNo',
                         type: 'text',
                         className: 'htCenter'
                     },
@@ -243,6 +246,13 @@ const SparePartsComponent = defineComponent({
                         className: 'htRight'
                     },
                     {
+                        //Summed Parts Cost（新規追加）
+                        data: 'summedPartsCost',
+                        type: 'numeric',
+                        className: 'htRight',
+                        readOnly: true // 自動計算なので読み取り専用に設定
+                    },
+                    {
                         //Location
                         data: 'location',
                         className: 'htRight',
@@ -262,8 +272,8 @@ const SparePartsComponent = defineComponent({
                         width: 80,
                         className: 'htCenter',
                         type: 'text',
-                        renderer: customRendererForAlertOrder
-                        //readOnly: true
+                        renderer: customRendererForAlertOrder,
+                        readOnly: true
                     },
                     {
                         //Order situation
@@ -309,12 +319,29 @@ const SparePartsComponent = defineComponent({
                 afterChange: function (changes, source) {
                     if (changes) {
                         changes.forEach(([row, prop, oldValue, newValue]) => {
+                            // 値が変更された場合にsummedPartsCostを更新
+                            if (prop === 'partsCost' || prop === 'numberOf') {
+                                const hotInstance = this;
+                                const price = hotInstance.getDataAtCell(row, 10); // partsCost の列番号（0から数えて10列目）
+                                const quantity = hotInstance.getDataAtCell(row, 11); // numberOf の列番号（0から数えて11列目）
+                                const summedPartsCost = (parseFloat(price) || 0) * (parseFloat(quantity) || 0);
+                                hotInstance.setDataAtCell(row, 13, summedPartsCost); // summedPartsCost の列番号（0から数えて13列目）
+
+                                // `price` が 0 より大きく `numberOf` が 0 の場合に `order` を設定
+                                if (price > 0 && quantity === 0) {
+                                    hotInstance.setDataAtCell(row, 16, 'order'); // `orderAlert` の列番号（0から数えて16列目）
+                                } else if (quantity > 0) {
+                                    // `numberOf` が 0 より大きい場合に `order` を消す
+                                    hotInstance.setDataAtCell(row, 16, '');
+                                }
+                            }
+
                             if (prop === 'orderSituation') {
-                                const alertOrderValue = this.getDataAtCell(row, 15);
+                                const alertOrderValue = this.getDataAtCell(row, 16);
                                 if (newValue === true && alertOrderValue === 'order') {
-                                    this.setDataAtCell(row, 15, 'ordered');
+                                    this.setDataAtCell(row, 16, 'ordered');
                                 } else if (newValue === false && alertOrderValue === 'ordered') {
-                                    this.setDataAtCell(row, 15, 'order');
+                                    this.setDataAtCell(row, 16, 'order');
                                 }
                             }
                         });
@@ -339,7 +366,7 @@ const SparePartsComponent = defineComponent({
                 autoWrapRow: true,
                 autoWrapCol: true,
                 fixedColumnsStart: 2, //カラム固定
-                fixedRowsTop: 2, //列固定
+                fixedRowsTop: 0, //列固定
                 manualColumnFreeze: true, //コンテキストメニュー手動でコラム解除
                 manualColumnResize: true, //手動での列幅調整
                 manualRowResize: true, //列の手動高さ調整
@@ -375,8 +402,8 @@ const SparePartsComponent = defineComponent({
 
     methods: {
         getDataAxios() {
-            const userStore = useUserStore();
-            const userCompanyCode = userStore.companyCode;
+            const userStore = useUserStore(); // Piniaストアからユーザー情報を取得
+            const userCompanyCode = userStore.companyCode; // ユーザーの companyCode を取得
 
             if (!userCompanyCode) {
                 console.error('Error: No company code found for the user.');
@@ -395,6 +422,11 @@ const SparePartsComponent = defineComponent({
                 .then((response) => {
                     const sparePartsData = response.data;
 
+                    // データのcompanyCodeをセット
+                    if (sparePartsData && sparePartsData.length > 0) {
+                        this.companyCode = sparePartsData[0].companyCode; // 取得したcompanyCodeを設定
+                    }
+
                     const index = [
                         'image',
                         'partsNo',
@@ -405,10 +437,11 @@ const SparePartsComponent = defineComponent({
                         'partsModel',
                         'manufacturer',
                         'serialNumber',
-                        'taskCode',
+                        'taskListNo',
                         'partsCost',
                         'numberOf',
                         'unit',
+                        'summedPartsCost',
                         'location',
                         'partsDeliveryTime',
                         'orderAlert',
@@ -418,15 +451,24 @@ const SparePartsComponent = defineComponent({
                         'partsDescription'
                     ];
 
+                    // テーブルデータの変換と整形
                     const tableData = sparePartsData.flatMap((companyData) =>
                         companyData.sparePartsList.flatMap((partData) => {
                             const rowData = {};
                             index.forEach((key) => {
-                                rowData[key] = key === 'partsCost' || key === 'numberOf' ? parseFloat(partData[key]) || 0 : partData[key];
+                                rowData[key] = key === 'partsCost' || key === 'numberOf' || key === 'summedPartsCost' ? parseFloat(partData[key]) || 0 : partData[key];
                                 if (key === 'image' && !partData[key]) {
                                     rowData[key] = '';
                                 }
                             });
+                            // summedPartsCost を初期設定
+                            rowData.summedPartsCost = rowData.partsCost * rowData.numberOf;
+
+                            // `price` が 0 より大きく `numberOf` が 0 の場合に `order` を設定
+                            if (rowData.partsCost > 0 && rowData.numberOf === 0) {
+                                rowData.orderAlert = 'order';
+                            }
+
                             return rowData;
                         })
                     );
@@ -462,10 +504,11 @@ const SparePartsComponent = defineComponent({
                     partsModel: '',
                     manufacturer: '',
                     serialNumber: '',
-                    taskCode: '',
+                    taskListNo: '',
                     partsCost: 0,
                     numberOf: 0,
                     unit: '',
+                    summedPartsCost: 0, // summedPartsCost を初期化
                     location: '',
                     partsDeliveryTime: 0,
                     orderAlert: '',
@@ -515,17 +558,18 @@ const SparePartsComponent = defineComponent({
                     partsModel: row[6],
                     manufacturer: row[7],
                     serialNumber: row[8],
-                    taskCode: row[9],
+                    taskListNo: row[9],
                     partsCost: row[10],
                     numberOf: row[11],
                     unit: row[12],
-                    location: row[13],
-                    partsDeliveryTime: row[14],
-                    orderAlert: row[15],
-                    orderSituation: row[16] !== null ? row[16] : false,
-                    classification: row[17],
-                    inventoryTurnover: row[18],
-                    partsDescription: row[19]
+                    summedPartsCost: row[13], // summedPartsCost を追加
+                    location: row[14],
+                    partsDeliveryTime: row[15],
+                    orderAlert: row[16],
+                    orderSituation: row[17] !== null ? row[17] : false,
+                    classification: row[18],
+                    inventoryTurnover: row[19],
+                    partsDescription: row[20]
                 };
             });
 
@@ -561,72 +605,73 @@ const SparePartsComponent = defineComponent({
                 });
         },
         exportCSV() {
-        const headers = [
-            'Image',
-            'Parts No',
-            'BOM Code',
-            'Parts Name',
-            'Plant',
-            'Category',
-            'Model',
-            'Manufacturer',
-            'Serial Number',
-            'Task Code',
-            'Price',
-            'Number of ~',
-            'Unit',
-            'Location',
-            'Delivery Time',
-            'Alert order',
-            'Order situation',
-            'Classification',
-            'Inventory Turnover',
-            'Description'
-        ];
+            const headers = [
+                'Image',
+                'Parts No',
+                'BOM Code',
+                'Parts Name',
+                'Plant',
+                'Category',
+                'Model',
+                'Manufacturer',
+                'Serial Number',
+                'Task List No',
+                'Price',
+                'Number of ~',
+                'Unit',
+                'Summed Parts Cost', // summedPartsCost を追加
+                'Location',
+                'Delivery Time',
+                'Alert order',
+                'Order situation',
+                'Classification',
+                'Inventory Turnover',
+                'Description'
+            ];
 
-        // CSVデータを配列に変換
-        const csvContent = [headers];
+            // CSVデータを配列に変換
+            const csvContent = [headers];
 
-        this.sparePartsDataStore.forEach((item) => {
-            csvContent.push([
-                item.image,
-                item.partsNo,
-                item.bomCode,
-                item.partsName,
-                item.plant,
-                item.category,
-                item.partsModel,
-                item.manufacturer,
-                item.serialNumber,
-                item.taskCode,
-                item.partsCost,
-                item.numberOf,
-                item.unit,
-                item.location,
-                item.partsDeliveryTime,
-                item.orderAlert,
-                item.orderSituation,
-                item.classification,
-                item.inventoryTurnover,
-                item.partsDescription
-            ]);
-        });
+            this.sparePartsDataStore.forEach((item) => {
+                csvContent.push([
+                    item.image,
+                    item.partsNo,
+                    item.bomCode,
+                    item.partsName,
+                    item.plant,
+                    item.category,
+                    item.partsModel,
+                    item.manufacturer,
+                    item.serialNumber,
+                    item.taskListNo,
+                    item.partsCost,
+                    item.numberOf,
+                    item.unit,
+                    item.summedPartsCost, // summedPartsCost を追加
+                    item.location,
+                    item.partsDeliveryTime,
+                    item.orderAlert,
+                    item.orderSituation,
+                    item.classification,
+                    item.inventoryTurnover,
+                    item.partsDescription
+                ]);
+            });
 
-        // CSV文字列を作成
-        const csvString = csvContent.map(row => row.join(',')).join('\n');
-        const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+            // CSV文字列を作成
+            const csvString = csvContent.map((row) => row.join(',')).join('\n');
+            const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
 
-        // ダウンロード用リンクを作成してクリックイベントをトリガー
-        const link = document.createElement('a');
-        const url = URL.createObjectURL(blob);
-        link.href = url;
-        link.setAttribute('download', 'spare_parts_list.csv');
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+            // ダウンロード用リンクを作成してクリックイベントをトリガー
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.href = url;
+            link.setAttribute('download', 'spare_parts_list.csv');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
     }
-}
-    
 });
 
 export default SparePartsComponent;
@@ -648,6 +693,7 @@ export default SparePartsComponent;
     margin-bottom: 15px;
     display: flex;
     align-items: center;
+    justify-content: flex-end; /* 右寄せに変更 */
 }
 
 .row-count-container span {
@@ -692,5 +738,4 @@ export default SparePartsComponent;
     border-color: #28a745;
     color: white;
 }
-
 </style>

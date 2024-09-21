@@ -357,7 +357,11 @@ class TypicalTaskList(models.Model):
 
 
 
+
+
+
 from django.db import models
+from django.db.models import Max
 
 class TaskList(models.Model):
     # accounts
@@ -371,19 +375,25 @@ class TaskList(models.Model):
     # Typical Task
     taskListNo = models.CharField(verbose_name='taskListNo', max_length=100, blank=True, null=True)
 
-    typicalLatestDate = models.CharField(max_length=100, null=True, blank=True)
-    typicalTaskName = models.CharField(max_length=100, null=True, blank=True)
-    typicalTaskCost = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    typicalConstPeriod = models.CharField(max_length=100, null=True, blank=True)
-    multiTasking = models.CharField(max_length=100, null=True, blank=True)
-    typicalNextEventDate = models.CharField(max_length=100, null=True, blank=True)
-    typicalSituation = models.CharField(max_length=100, null=True, blank=True)
+    # PM Type
+    pmType = models.CharField(verbose_name='pmType', max_length=100, null=True, blank=True, default='PM01')  # デフォルト値を設定
+
+    # Maintenance Type (追加)
+    maintenanceType = models.CharField(verbose_name='maintenanceType', max_length=100, null=True, blank=True)
+
+    # Other Fields
+    latestEventDate = models.CharField(max_length=100, null=True, blank=True)  # typicalLatestDateをlatestDateに変更
+    taskName = models.CharField(max_length=100, null=True, blank=True)  # typicalTaskNameをtaskNameに変更
+    taskLaborCost = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)  # typicalTaskCostをtaskCostに変更
+    taskPeriod = models.CharField(max_length=100, null=True, blank=True)  # typicalTaskPeriodに変更
+    nextEventDate = models.CharField(max_length=100, null=True, blank=True)  # typicalNextEventDateをnextEventDateに変更
+    situation = models.CharField(max_length=100, null=True, blank=True)  # typicalSituationをsituationに変更
 
     # bomCode
     bomCode = models.CharField(max_length=100, null=True, blank=True)
     bomCost = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 
-    totalCost = models.DecimalField(verbose_name='totalCost', max_digits=10, decimal_places=5, blank=True, null=True, default=0.00)
+    totalCost = models.DecimalField(verbose_name='totalCost', max_digits=10, decimal_places=2, blank=True, null=True, default=0)  # decimal_placesを2に変更
 
     # This Year Fields
     thisYear = models.BooleanField(verbose_name='thisYear', default=False)

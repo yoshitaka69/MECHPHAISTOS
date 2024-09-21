@@ -94,15 +94,33 @@ class TypicalTaskListAdmin(admin.ModelAdmin):
     list_per_page = 50 # １ページあたりに表示するオブジェクト数を指定
 
 
+
+#-------------------------------------------------------------------------------
+from django.contrib import admin
+from django.db import models  # models をインポート
+from .models import TaskList  # TaskList モデルのインポート
+
 class TaskListAdmin(admin.ModelAdmin):
-    list_display = ('companyCode','plant', 'equipment', 'machineName', 'taskListNo', 'typicalLatestDate', 'typicalTaskName', 'typicalTaskCost', 'typicalConstPeriod', 'multiTasking', 'typicalNextEventDate', 'typicalSituation', 'bomCode', 'bomCost', 'totalCost', 'thisYear', 'thisYear1later', 'thisYear2later', 'thisYear3later', 'thisYear4later', 'thisYear5later', 'thisYear6later', 'thisYear7later', 'thisYear8later', 'thisYear9later', 'thisYear10later',)
-    search_fields = ('companyCode','plant', 'equipment', 'machineName', 'taskListNo', 'typicalLatestDate', 'typicalTaskName', 'typicalTaskCost', 'typicalConstPeriod', 'multiTasking', 'typicalNextEventDate', 'typicalSituation', 'bomCode', 'bomCost', 'totalCost', 'thisYear', 'thisYear1later', 'thisYear2later', 'thisYear3later', 'thisYear4later', 'thisYear5later', 'thisYear6later', 'thisYear7later', 'thisYear8later', 'thisYear9later', 'thisYear10later', )
-    list_filter = ('companyCode',) # adminで右側にあるフィルターBOXのこと
-    ordering = ('companyCode',) # 表示する順番
-    save_on_top = True #上部にもsaveボタンを配置
+    # list_display, search_fields にすべてのフィールドを自動で設定
+    def get_list_display(self, request):
+        # '__all__' の代わりにモデルの全フィールドを取得して表示
+        return [field.name for field in self.model._meta.fields]
 
-    list_per_page = 50 # １ページあたりに表示するオブジェクト数を指定
+    def get_search_fields(self, request):
+        # 全ての CharField と TextField を検索フィールドに追加
+        search_fields = [
+            field.name for field in self.model._meta.fields
+            if isinstance(field, (models.CharField, models.TextField))
+        ]
+        return search_fields
 
+    list_filter = ('companyCode',)  # adminで右側にあるフィルターBOXのこと
+    ordering = ('companyCode',)  # 表示する順番
+    save_on_top = True  # 上部にもsaveボタンを配置
+    list_per_page = 50  # １ページあたりに表示するオブジェクト数
+
+
+#-------------------------------------------------------------------------------
 
 
 admin.site.register(TaskListPPM02,TaskListPPM02Admin)

@@ -129,8 +129,12 @@
   
   <script>
   import Total_graph from '@/components/Repairing_cost/Total_graph.vue';
-  import Total_cost_table from '@/components/Repairing_cost/Total_cost_table.vue';
-  import Planned_vs_actual_year_graph from '@/components/Repairing_cost/Planned_vs_actual_year_graph.vue';
+
+  //Task List
+  import Total_cost_table from '@/components/Task_of_maintenance/Total_cost_table.vue';
+  import Planned_vs_actual_year_graph from '@/components/Task_of_maintenance/Planned_vs_actual_year_graph.vue';
+
+//repairing cost
   import Actual_summary_table from '@/components/Repairing_cost/Actual_summary_table.vue';
   import PM02_actual_graph from '@/components/Repairing_cost/PM02_actual_graph.vue';
   import PM02_actual_table from '@/components/Repairing_cost/PM02_actual_table.vue';
@@ -145,6 +149,8 @@
   import Display_repairing_cost from '@/components/Repairing_cost/Cards/Display_repairing_cost.vue';
   import Card_predict_cost from '@/components/Task_of_maintenance/Cards/Card_predict_cost.vue';
   
+
+  //Simulation
   import Simulation_table from '@/components/Simulations/Simulation_table.vue';
   import SimulationGraph from '@/components/Simulations/Simulation_graph.vue';
   

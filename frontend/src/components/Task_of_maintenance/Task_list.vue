@@ -3,6 +3,11 @@
         <!-- 成功時または失敗時のアラート表示 -->
         <Save_Alert v-if="showAlert" :type="alertType" :message="alertMessage" :errorMessages="errorMessages" />
 
+        <!-- companyCode 表示 -->
+        <div class="company-code-container">
+            <span>Company Code: {{ companyCode }}</span>
+        </div>
+
         <div class="legend">
             <div class="legend-item">
                 <div class="color-box" style="background-color: #f0a0a0"></div>
@@ -13,11 +18,28 @@
                 <span>Input not allowed. Value is automatically filled.</span>
             </div>
         </div>
+
+        <!-- 行数選択ドロップダウン -->
+        <div class="row-count-container">
+            <span>表示する行数:</span>
+            <select v-model="rowsToShow" @change="updateRowCount">
+                <option value="10">10行</option>
+                <option value="30">30行</option>
+                <option value="50">50行</option>
+                <option value="100">100行</option>
+            </select>
+        </div>
+
         <hot-table ref="hotTableComponent" :settings="hotSettings"></hot-table><br />
+
         <div class="button-container">
             <input type="number" v-model="rowsToAdd" placeholder="Number of rows" />
             <Button label="Add Rows" icon="pi pi-plus" class="p-button-primary blue-button" @click="addRows" />
             <Button label="Save Data" icon="pi pi-save" class="p-button-primary blue-button ml-3" @click="saveData" />
+            <Button label="Export CSV" icon="pi pi-file-excel" class="p-button-primary green-button ml-3" @click="exportCSV" />
+            <!-- 行番号入力と計算ボタン -->
+            <input type="number" v-model="rowToRecalculate" placeholder="Row number to recalculate (1-based)" class="row-input" />
+            <Button label="Recalculate Row" icon="pi pi-refresh" class="p-button-primary orange-button ml-3" @click="recalculateRowByInput" />
         </div>
     </div>
 </template>
@@ -32,6 +54,7 @@ import axios from 'axios';
 import { useUserStore } from '@/stores/userStore';
 import Button from 'primevue/button';
 import Save_Alert from '@/components/Alert/Save_Alert.vue';
+import moment from 'moment'; // 日付計算のために moment.js を使用
 
 // register Handsontable's modules
 registerAllModules();
@@ -40,167 +63,133 @@ const TaskListComponent = defineComponent({
     data() {
         return {
             hotSettings: {
-                data: [
-                    ['PlantA', 'Dryer', 'blower', '2018-10-20', 'Change bearing', '5000', '5', 'true', 'BomCode-1', '58090', '111222', '', '遅延', 'true', '', '', '', '', '', '', '', '', 'true'], //1
-                    ['PlantA', 'Dryer', 'blower', '2018-10-20', 'Change bearing', '5000', '5', 'true', 'BomCode-1', '58090', '111222', '', '遅延', 'true', '', '', '', '', '', '', '', '', 'true'], //2
-                    ['PlantA', 'Dryer', 'blower', '2018-10-20', 'Change bearing', '5000', '5', 'true', 'BomCode-1', '58090', '111222', '', '遅延', 'true', '', '', '', '', '', '', '', '', 'true'], //3
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //4
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //5
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //6
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //7
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //8
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //9
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //10
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //11
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //12
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //13
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''], //14
-                    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''] //15
-                ],
+                data: [],
                 colHeaders: this.generateColHeaders(),
-
                 columns: [
                     {
                         data: 'taskListNo',
                         type: 'text',
                         readOnly: true,
-                        renderer: this.taskListNoRenderer // 修正したカスタムレンダラーを使用
+                        renderer: this.taskListNoRenderer
                     },
                     {
-                        //plant
+                        data: 'taskName',
+                        type: 'text'
+                    },
+                    {
                         data: 'plant',
                         type: 'text'
                     },
                     {
-                        //Equipment
                         data: 'equipment',
                         type: 'text'
                     },
                     {
-                        //MachineName
                         data: 'machineName',
                         type: 'text'
                     },
                     {
-                        //Latest Date PM
-                        data: 'typicalLatestDate',
-                        type: 'date',
-                        dateFormat: 'YYYY-MM-DD',
-                        correctFormat: false,
-                        readOnly: true
+                        data: 'pmType',
+                        type: 'dropdown',
+                        source: ['PM01', 'PM02', 'PM03', 'PM04', 'PM05'],
+                        strict: true,
+                        allowInvalid: false
                     },
                     {
-                        //TaskName
-                        data: 'typicalTaskName',
+                        data: 'maintenanceType',
+                        type: 'dropdown',
+                        source: ['Overhaul', 'Regular Maintenance', 'Inspection and Check', 'Adjustment', 'Parts Replacement', 'Calibration', 'Cleaning', 'Lubrication', 'Balancing', 'Testing and Trial Operation'],
+                        strict: true,
+                        allowInvalid: false
+                    },
+                    {
+                        data: 'latestEventDate',
+                        type: 'date',
+                        dateFormat: 'YYYY-MM-DD',
+                        correctFormat: false
+                    },
+                    {
+                        data: 'taskPeriod',
+                        type: 'numeric'
+                    },
+                    {
+                        data: 'taskLaborCost',
+                        type: 'numeric'
+                    },
+                    {
+                        data: 'bomCode',
                         type: 'text'
                     },
                     {
-                        //TaskLaborCost
-                        data: 'typicalTaskCost',
+                        data: 'bomCost',
                         type: 'numeric'
                     },
                     {
-                        //TaskConstructionCost
-                        data: 'typicalConstPeriod',
-                        type: 'numeric'
-                    },
-                    {
-                        //MultiTasking
-                        data: 'multiTasking',
-                        type: 'checkbox',
-                        className: 'htCenter'
-                    },
-                    {
-                        //BomCode
-                        data: 'bomCode',
-                        type: 'text',
-                        readOnly: true
-                    },
-                    {
-                        //BomCost
-                        data: 'bomCodeCost',
-                        type: 'numeric',
-                        readOnly: true
-                    },
-                    {
-                        //TotalCost
                         data: 'totalCost',
-                        type: 'numeric'
-                    },
-                    {
-                        //Next event date
-                        data: 'typicalNextEventDate',
                         type: 'numeric',
                         readOnly: true
                     },
                     {
-                        //Situation
-                        data: 'typicalSituation',
+                        data: 'nextEventDate',
                         type: 'text',
                         readOnly: true
                     },
                     {
-                        //現時点からの10年先まで繰り返し（今）
+                        data: 'situation',
+                        type: 'text',
+                        readOnly: true
+                    },
+                    {
                         data: 'thisYear',
                         type: 'checkbox',
                         className: 'htCenter'
                     },
                     {
-                        //現時点からの10年先まで繰り返し（1年後）
                         data: 'thisYear1later',
                         type: 'checkbox',
                         className: 'htCenter'
                     },
                     {
-                        //現時点からの10年先まで繰り返し（2年後）
                         data: 'thisYear2later',
                         type: 'checkbox',
                         className: 'htCenter'
                     },
                     {
-                        //現時点からの10年先まで繰り返し（3年後）
                         data: 'thisYear3later',
                         type: 'checkbox',
                         className: 'htCenter'
                     },
                     {
-                        //現時点からの10年先まで繰り返し（4年後）
                         data: 'thisYear4later',
                         type: 'checkbox',
                         className: 'htCenter'
                     },
                     {
-                        //現時点からの10年先まで繰り返し（5年後）
                         data: 'thisYear5later',
                         type: 'checkbox',
                         className: 'htCenter'
                     },
                     {
-                        //現時点からの10年先まで繰り返し（6年後）
                         data: 'thisYear6later',
                         type: 'checkbox',
                         className: 'htCenter'
                     },
                     {
-                        //現時点からの10年先まで繰り返し（7年後）
                         data: 'thisYear7later',
                         type: 'checkbox',
                         className: 'htCenter'
                     },
                     {
-                        //現時点からの10年先まで繰り返し（8年後）
                         data: 'thisYear8later',
                         type: 'checkbox',
                         className: 'htCenter'
                     },
                     {
-                        //現時点からの10年先まで繰り返し（9年後）
                         data: 'thisYear9later',
                         type: 'checkbox',
                         className: 'htCenter'
                     },
                     {
-                        //現時点からの10年先まで繰り返し（10年後）
                         data: 'thisYear10later',
                         type: 'checkbox',
                         className: 'htCenter'
@@ -208,12 +197,50 @@ const TaskListComponent = defineComponent({
                 ],
 
                 afterGetColHeader: (col, TH) => {
-                    if (col === -1) {
-                        return;
-                    }
+                    if (col === -1) return;
                     TH.style.backgroundColor = '#FFFFCC';
                     TH.style.color = 'black';
                     TH.style.fontWeight = 'bold';
+                },
+
+                afterChange: (changes, source) => {
+                    if (source === 'edit' || source === 'autofill') {
+                        changes.forEach(([row, prop, oldValue, newValue]) => {
+                            if (['taskLaborCost', 'bomCost'].includes(prop)) {
+                                this.calculateTotalCost(row);
+                            }
+                            if (['latestEventDate', 'taskPeriod'].includes(prop)) {
+                                this.calculateNextEventDate(row);
+                                this.calculateYears(row);
+                            }
+                        });
+                    }
+                },
+
+                cells: function (row, col, prop) {
+                    const cellProperties = {};
+
+                    const readOnlyColumns = ['taskListNo', 'situation', 'totalCost', 'nextEventDate'];
+
+                    if (readOnlyColumns.includes(this.columns[col].data)) {
+                        cellProperties.readOnly = true;
+                    }
+
+                    return cellProperties;
+                },
+
+                afterRenderer: function (TD, row, col, prop, value, cellProperties) {
+                    const readOnlyColumns = ['taskListNo', 'situation', 'totalCost', 'nextEventDate'];
+
+                    if (readOnlyColumns.includes(cellProperties.prop)) {
+                        TD.style.backgroundColor = '#f5f5f5';
+                        TD.style.color = 'black';
+                    }
+
+                    if (prop === 'situation' && value === 'delay') {
+                        TD.style.backgroundColor = '#ffcccc';
+                        TD.style.color = 'black';
+                    }
                 },
                 rowHeaders: true,
                 width: '100%',
@@ -222,7 +249,7 @@ const TaskListComponent = defineComponent({
                 autoWrapRow: true,
                 autoWrapCol: true,
                 fixedColumnsStart: 2,
-                fixedRowsTop: 2,
+                fixedRowsTop: 0,
                 manualColumnFreeze: true,
                 manualColumnResize: true,
                 manualRowResize: true,
@@ -239,7 +266,10 @@ const TaskListComponent = defineComponent({
             showAlert: false,
             alertType: 'success',
             alertMessage: 'データが正常に保存されました。',
-            errorMessages: []
+            errorMessages: [],
+            companyCode: '',
+            rowsToShow: 10,
+            rowToRecalculate: 1 // 再計算する行番号を格納（1-based index）
         };
     },
 
@@ -254,18 +284,19 @@ const TaskListComponent = defineComponent({
 
             return [
                 'TaskListNo',
+                'TaskName',
                 'Plant',
                 'Equipment',
                 'MachineName',
-                'LatestDate<br>PM',
-                'TaskName',
+                'PM <br> type',
+                'Maintenance <br> type',
+                'LatestEvent<br>Date',
+                'Task<br>Period',
                 'TaskLabor<br>Cost',
-                'TaskConstruction<br>Period',
-                'Multi<br>Tasking',
                 'BomCode',
                 'BomCost',
                 'TotalCost',
-                'Next Even<br>date',
+                'Next Even<br>Date',
                 'Situation',
                 ...futureYears
             ];
@@ -275,13 +306,20 @@ const TaskListComponent = defineComponent({
             Handsontable.renderers.TextRenderer.apply(this, arguments);
             if (value) {
                 const link = document.createElement('a');
-                link.href = `/task_list_detail/${value}`; // ルーティングに対応するURLを生成
+                link.href = `/task_list_detail/${value}`;
                 link.target = '_blank';
                 link.textContent = value;
                 link.style.color = 'blue';
                 td.innerHTML = '';
                 td.appendChild(link);
             }
+        },
+
+        updateRowCount() {
+            const hotInstance = this.$refs.hotTableComponent.hotInstance;
+            const newData = this.dataStore.slice(0, this.rowsToShow);
+
+            hotInstance.loadData(newData);
         },
 
         getDataAxios() {
@@ -304,7 +342,10 @@ const TaskListComponent = defineComponent({
                 })
                 .then((response) => {
                     const taskListData = response.data.flatMap((companyData) => companyData.taskList);
-                    console.log('Fetched Task List Data:', taskListData);
+
+                    if (response.data.length > 0) {
+                        this.companyCode = response.data[0].companyCode;
+                    }
 
                     this.dataStore = taskListData;
 
@@ -327,19 +368,20 @@ const TaskListComponent = defineComponent({
             const blankRows = Array.from({ length: this.rowsToAdd }, () => {
                 return {
                     taskListNo: '',
+                    taskName: '',
                     plant: '',
                     equipment: '',
                     machineName: '',
-                    typicalLatestDate: '',
-                    typicalTaskName: '',
-                    typicalTaskCost: 0,
-                    typicalConstPeriod: 0,
-                    multiTasking: false,
+                    pmType: 'PM01',
+                    maintenanceType: 'Overhaul',
+                    latestEventDate: '',
+                    taskPeriod: 0,
+                    taskLaborCost: 0,
                     bomCode: '',
-                    bomCodeCost: 0,
+                    bomCost: 0,
                     totalCost: 0,
-                    typicalNextEventDate: '',
-                    typicalSituation: '',
+                    nextEventDate: '',
+                    situation: '',
                     thisYear: false,
                     thisYear1later: false,
                     thisYear2later: false,
@@ -378,30 +420,31 @@ const TaskListComponent = defineComponent({
                     return {
                         companyCode: userCompanyCode,
                         taskListNo: row[0] || null,
-                        plant: row[1],
-                        equipment: row[2],
-                        machineName: row[3],
-                        typicalLatestDate: row[4],
-                        typicalTaskName: row[5],
-                        typicalTaskCost: row[6],
-                        typicalConstPeriod: row[7],
-                        multiTasking: row[8],
-                        bomCode: row[9],
-                        bomCost: row[10],
-                        totalCost: row[11],
-                        typicalNextEventDate: row[12],
-                        typicalSituation: row[13],
-                        thisYear: row[14] !== null ? row[14] : false,
-                        thisYear1later: row[15] !== null ? row[15] : false,
-                        thisYear2later: row[16] !== null ? row[16] : false,
-                        thisYear3later: row[17] !== null ? row[17] : false,
-                        thisYear4later: row[18] !== null ? row[18] : false,
-                        thisYear5later: row[19] !== null ? row[19] : false,
-                        thisYear6later: row[20] !== null ? row[20] : false,
-                        thisYear7later: row[21] !== null ? row[21] : false,
-                        thisYear8later: row[22] !== null ? row[22] : false,
-                        thisYear9later: row[23] !== null ? row[23] : false,
-                        thisYear10later: row[24] !== null ? row[24] : false
+                        taskName: row[1],
+                        plant: row[2],
+                        equipment: row[3],
+                        machineName: row[4],
+                        pmType: row[5],
+                        maintenanceType: row[6],
+                        latestEventDate: row[7],
+                        taskPeriod: row[8],
+                        taskLaborCost: row[9],
+                        bomCode: row[10],
+                        bomCost: row[11],
+                        totalCost: row[12],
+                        nextEventDate: row[13],
+                        situation: row[14],
+                        thisYear: row[15] !== null ? row[15] : false,
+                        thisYear1later: row[16] !== null ? row[16] : false,
+                        thisYear2later: row[17] !== null ? row[17] : false,
+                        thisYear3later: row[18] !== null ? row[18] : false,
+                        thisYear4later: row[19] !== null ? row[19] : false,
+                        thisYear5later: row[20] !== null ? row[20] : false,
+                        thisYear6later: row[21] !== null ? row[21] : false,
+                        thisYear7later: row[22] !== null ? row[22] : false,
+                        thisYear8later: row[23] !== null ? row[23] : false,
+                        thisYear9later: row[24] !== null ? row[24] : false,
+                        thisYear10later: row[25] !== null ? row[25] : false
                     };
                 });
 
@@ -450,6 +493,169 @@ const TaskListComponent = defineComponent({
             } catch (err) {
                 console.error('An error occurred in saveData:', err);
             }
+        },
+
+        // totalCost を計算する関数
+        calculateTotalCost(row) {
+            const hotInstance = this.$refs.hotTableComponent.hotInstance;
+
+            // taskLaborCost と bomCost を数値に変換
+            const taskLaborCost = parseFloat(hotInstance.getDataAtRowProp(row, 'taskLaborCost')) || 0;
+            const bomCost = parseFloat(hotInstance.getDataAtRowProp(row, 'bomCost')) || 0;
+
+            // 合計を計算
+            const totalCost = taskLaborCost + bomCost;
+
+            // 計算結果を totalCost に設定
+            hotInstance.setDataAtRowProp(row, 'totalCost', totalCost);
+        },
+
+        // nextEventDate を計算する関数
+        calculateNextEventDate(row) {
+            const hotInstance = this.$refs.hotTableComponent.hotInstance;
+            const latestEventDate = hotInstance.getDataAtRowProp(row, 'latestEventDate');
+            const taskPeriod = hotInstance.getDataAtRowProp(row, 'taskPeriod');
+
+            if (!taskPeriod || taskPeriod === 0) {
+                hotInstance.setDataAtRowProp(row, 'nextEventDate', '');
+                this.calculateSituation(row);
+                return;
+            }
+
+            if (latestEventDate) {
+                const nextEventDate = moment(latestEventDate).add(taskPeriod, 'days').format('YYYY-MM-DD');
+                hotInstance.setDataAtRowProp(row, 'nextEventDate', nextEventDate);
+                this.calculateSituation(row);
+            }
+        },
+
+        // 年次チェックボックスを更新する関数
+        calculateYears(row) {
+            const hotInstance = this.$refs.hotTableComponent.hotInstance;
+            const latestEventDate = hotInstance.getDataAtRowProp(row, 'latestEventDate');
+            const taskPeriod = hotInstance.getDataAtRowProp(row, 'taskPeriod');
+            const startYear = moment().year();
+            const endYear = startYear + 10;
+
+            if (taskPeriod && taskPeriod <= 365) {
+                for (let i = 0; i <= 10; i++) {
+                    hotInstance.setDataAtRowProp(row, `thisYear${i === 0 ? '' : `${i}later`}`, true);
+                }
+                return;
+            }
+
+            for (let i = 0; i <= 10; i++) {
+                hotInstance.setDataAtRowProp(row, `thisYear${i === 0 ? '' : `${i}later`}`, false);
+            }
+
+            if (!latestEventDate || !taskPeriod) {
+                return;
+            }
+
+            let currentEventDate = moment(latestEventDate);
+            while (currentEventDate.year() <= endYear) {
+                const currentYear = currentEventDate.year();
+                if (currentYear >= startYear && currentYear <= endYear) {
+                    const yearIndex = currentYear - startYear;
+                    hotInstance.setDataAtRowProp(row, `thisYear${yearIndex === 0 ? '' : `${yearIndex}later`}`, true);
+                }
+                currentEventDate.add(taskPeriod, 'days');
+            }
+        },
+
+        // situation を計算する関数
+        calculateSituation(row) {
+            const hotInstance = this.$refs.hotTableComponent.hotInstance;
+            const nextEventDate = hotInstance.getDataAtRowProp(row, 'nextEventDate');
+            const today = moment().format('YYYY-MM-DD');
+
+            if (nextEventDate && moment(nextEventDate).isBefore(today)) {
+                hotInstance.setDataAtRowProp(row, 'situation', 'delay');
+            } else {
+                hotInstance.setDataAtRowProp(row, 'situation', '');
+            }
+        },
+
+        // 入力された行番号で再計算を行う関数
+        recalculateRowByInput() {
+            const hotInstance = this.$refs.hotTableComponent.hotInstance;
+            // 1-based index から 0-based index に変換
+            const row = this.rowToRecalculate - 1;
+
+            if (row < 0 || row >= this.dataStore.length) {
+                console.error(`Invalid row number: ${row + 1}`);
+                return;
+            }
+
+            console.log(`Recalculating for row: ${row + 1}`);
+            this.calculateTotalCost(row);
+            this.calculateNextEventDate(row);
+            this.calculateYears(row);
+        },
+
+        exportCSV() {
+            const headers = [
+                'TaskListNo',
+                'TaskName',
+                'Plant',
+                'Equipment',
+                'MachineName',
+                'PM Type',
+                'Maintenance Type',
+                'LatestEvent Date',
+                'Task Period',
+                'TaskLabor Cost',
+                'BomCode',
+                'BomCost',
+                'TotalCost',
+                'Next Event Date',
+                'Situation',
+                ...Array.from({ length: 11 }, (_, index) => `Year ${index + 1}`)
+            ];
+
+            const csvContent = [headers];
+
+            this.dataStore.forEach((item) => {
+                csvContent.push([
+                    item.taskListNo,
+                    item.taskName,
+                    item.plant,
+                    item.equipment,
+                    item.machineName,
+                    item.pmType,
+                    item.maintenanceType,
+                    item.latestEventDate,
+                    item.taskPeriod,
+                    item.taskLaborCost,
+                    item.bomCode,
+                    item.bomCost,
+                    item.totalCost,
+                    item.nextEventDate,
+                    item.situation,
+                    item.thisYear,
+                    item.thisYear1later,
+                    item.thisYear2later,
+                    item.thisYear3later,
+                    item.thisYear4later,
+                    item.thisYear5later,
+                    item.thisYear6later,
+                    item.thisYear7later,
+                    item.thisYear8later,
+                    item.thisYear9later,
+                    item.thisYear10later
+                ]);
+            });
+
+            const csvString = csvContent.map((row) => row.join(',')).join('\n');
+            const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.href = url;
+            link.setAttribute('download', 'task_list.csv');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
     },
     components: {
@@ -462,10 +668,34 @@ export default TaskListComponent;
 </script>
 
 <style scoped>
+#TaskList {
+    padding: 20px;
+}
+
+.company-code-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.row-count-container {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.row-count-container span {
+    margin-right: 10px;
+    font-weight: bold;
+}
+
 .button-container {
     display: flex;
+    justify-content: flex-end;
     gap: 10px;
-    margin-top: 10px;
+    margin-top: 20px;
 }
 
 .legend {
@@ -491,5 +721,28 @@ export default TaskListComponent;
     background-color: #007bff;
     border-color: #007bff;
     color: white;
+}
+
+.green-button {
+    background-color: #28a745;
+    border-color: #28a745;
+    color: white;
+}
+
+.orange-button {
+    background-color: #ff7f0e;
+    border-color: #ff7f0e;
+    color: white;
+}
+
+.row-input {
+    width: 150px;
+    padding: 5px;
+    margin-right: 10px;
+}
+
+.read-only-cell {
+    background-color: #f5f5f5;
+    color: black;
 }
 </style>
