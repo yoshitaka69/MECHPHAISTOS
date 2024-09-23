@@ -21,8 +21,8 @@
                         </div>
                         <div class="row">
                             <div class="col-12 xl:col-6">
-                                <div class="card" style="background-color: #f2f2f2; padding: 1rem">
-                                  <div class="pm02-actual-cost-label">PM02 Actual cost</div>
+                                <div class="card fixed-height" style="background-color: #f2f2f2; padding: 1rem">
+                                    <div class="pm02-actual-cost-label">PM02 Actual cost</div>
                                     <PM02_actual_graph />
                                     <div style="margin-top: 2rem">
                                         <PM02_actual_table />
@@ -35,8 +35,8 @@
                                 </div>
                             </div>
                             <div class="col-12 xl:col-6">
-                                <div class="card" style="background-color: #f2f2f2; padding: 1rem">
-                                  <div class="pm03-actual-cost-label">PM03 Actual cost</div>
+                                <div class="card fixed-height" style="background-color: #f2f2f2; padding: 1rem">
+                                    <div class="pm03-actual-cost-label">PM03 Actual cost</div>
                                     <PM03_actual_graph />
                                     <div style="margin-top: 2rem">
                                         <PM03_actual_table />
@@ -49,8 +49,8 @@
                                 </div>
                             </div>
                             <div class="col-12 xl:col-6">
-                                <div class="card" style="background-color: #f2f2f2; padding: 1rem">
-                                  <div class="pm04-actual-cost-label">PM04 Actual cost</div>
+                                <div class="card fixed-height" style="background-color: #f2f2f2; padding: 1rem">
+                                    <div class="pm04-actual-cost-label">PM04 Actual cost</div>
                                     <PM04_actual_graph />
                                     <div style="margin-top: 2rem">
                                         <PM04_actual_table />
@@ -63,8 +63,8 @@
                                 </div>
                             </div>
                             <div class="col-12 xl:col-6">
-                                <div class="card" style="background-color: #f2f2f2; padding: 1rem">
-                                  <div class="pm05-actual-cost-label">PM05 Actual cost</div>
+                                <div class="card fixed-height" style="background-color: #f2f2f2; padding: 1rem">
+                                    <div class="pm05-actual-cost-label">PM05 Actual cost</div>
                                     <PM05_actual_graph />
                                     <div style="margin-top: 2rem">
                                         <PM05_actual_table />
@@ -136,6 +136,7 @@
         </section>
     </div>
 </template>
+
 
 <script>
 import Total_graph from '@/components/Repairing_cost/Total_graph.vue';
@@ -247,5 +248,16 @@ h3 {
   font-size: 2rem;  /* フォントサイズを調整 */
   color: #2c3e50;     /* 目立つ色を設定 (必要に応じて変更) */
   margin-bottom: 0.5rem; /* 下に余白を追加 */
+}
+
+/* card の高さを固定 */
+.card.fixed-height {
+    height: 1200px; /* 固定の高さを指定 */
+    overflow-y: auto; /* 高さを超えた場合のスクロールを有効化 */
+}
+
+/* メッセージコンテンツのマージン調整（オプション） */
+.card.fixed-height .Message {
+    margin-top: auto; /* コンテンツの最後にメッセージを固定 */
 }
 </style>

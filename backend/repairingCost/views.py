@@ -64,7 +64,13 @@ class ActualPM02ViewSet(viewsets.ModelViewSet):
             print("Error: Data is not a list.")  # エラーログ
             return Response({"error": "Invalid data format. Expected a list of records."}, status=status.HTTP_400_BAD_REQUEST)
 
-        # 各レコードを個別に保存・更新
+        # リクエストに含まれるplantとyearの組み合わせを格納するリスト
+        request_records = [(item.get('plant'), item.get('year')) for item in data]
+
+        # データベースからすべてのデータを取得
+        existing_records = ActualPM02.objects.all()
+
+        # データの作成または更新
         for item in data:
             print("Processing Item:", item)  # 各レコードのログ
 
@@ -73,7 +79,7 @@ class ActualPM02ViewSet(viewsets.ModelViewSet):
             year = item.get('year')
 
             # データベースでplantとyearが一致するデータを検索
-            existing_record = ActualPM02.objects.filter(plant=plant, year=year).first()
+            existing_record = existing_records.filter(plant=plant, year=year).first()
 
             if existing_record:
                 # 既存データがあれば、更新を行う
@@ -92,8 +98,14 @@ class ActualPM02ViewSet(viewsets.ModelViewSet):
                 print("Validation Error:", serializer.errors)  # バリデーションエラーのログ
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+        # リクエストに含まれていないデータを削除
+        for existing_record in existing_records:
+            if (existing_record.plant, existing_record.year) not in request_records:
+                print(f"Deleting record for plant: {existing_record.plant}, year: {existing_record.year}")
+                existing_record.delete()
+
         print("All Items Processed Successfully")  # 全レコードが成功した場合のログ
-        return Response({"message": "Data saved successfully"}, status=status.HTTP_201_CREATED)
+        return Response({"message": "Data saved and deleted successfully"}, status=status.HTTP_201_CREATED)
 
 
 
@@ -135,9 +147,69 @@ class CompanyCodePPM03ViewSet(viewsets.ModelViewSet):
 
 
 #PM03-Actual
+from rest_framework import viewsets, status
+from rest_framework.response import Response
+from .models import ActualPM03
+from .serializers import ActualPM03Serializer
+from rest_framework.exceptions import ValidationError
+
 class ActualPM03ViewSet(viewsets.ModelViewSet):
     queryset = ActualPM03.objects.all()
     serializer_class = ActualPM03Serializer
+
+    def create(self, request, *args, **kwargs):
+        data = request.data
+        print("Received Data:", data)  # 受け取ったデータをログに出力
+
+        # データがリスト形式であることを確認
+        if not isinstance(data, list):
+            print("Error: Data is not a list.")  # エラーログ
+            return Response({"error": "Invalid data format. Expected a list of records."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # リクエストに含まれるplantとyearの組み合わせを格納するリスト
+        request_records = [(item.get('plant'), item.get('year')) for item in data]
+
+        # データベースからすべてのデータを取得
+        existing_records = ActualPM03.objects.all()
+
+        # データの作成または更新
+        for item in data:
+            print("Processing Item:", item)  # 各レコードのログ
+
+            # plantとyearの組み合わせで既存データを検索
+            plant = item.get('plant')
+            year = item.get('year')
+
+            # データベースでplantとyearが一致するデータを検索
+            existing_record = existing_records.filter(plant=plant, year=year).first()
+
+            if existing_record:
+                # 既存データがあれば、更新を行う
+                print(f"Updating record for plant: {plant}, year: {year}")
+                serializer = self.get_serializer(existing_record, data=item)
+            else:
+                # 既存データがなければ、新規追加を行う
+                print(f"Creating new record for plant: {plant}, year: {year}")
+                serializer = self.get_serializer(data=item)
+
+            try:
+                serializer.is_valid(raise_exception=True)
+                serializer.save()
+                print("Item Saved Successfully:", item)  # 保存成功時のログ
+            except ValidationError as e:
+                print("Validation Error:", serializer.errors)  # バリデーションエラーのログ
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        # リクエストに含まれていないデータを削除
+        for existing_record in existing_records:
+            if (existing_record.plant, existing_record.year) not in request_records:
+                print(f"Deleting record for plant: {existing_record.plant}, year: {existing_record.year}")
+                existing_record.delete()
+
+        print("All Items Processed Successfully")  # 全レコードが成功した場合のログ
+        return Response({"message": "Data saved and deleted successfully"}, status=status.HTTP_201_CREATED)
+
+
 
 class CompanyCodeAPM03ViewSet(viewsets.ModelViewSet):
     serializer_class = CompanyCodeAPM03Serializer
@@ -152,9 +224,74 @@ class CompanyCodeAPM03ViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
+
+from rest_framework import viewsets, status
+from rest_framework.response import Response
+from .models import ActualPM04
+from .serializers import ActualPM04Serializer
+from rest_framework.exceptions import ValidationError
+
 class ActualPM04ViewSet(viewsets.ModelViewSet):
     queryset = ActualPM04.objects.all()
     serializer_class = ActualPM04Serializer
+
+    def create(self, request, *args, **kwargs):
+        data = request.data
+        print("Received Data:", data)  # 受け取ったデータをログに出力
+
+        # データがリスト形式であることを確認
+        if not isinstance(data, list):
+            print("Error: Data is not a list.")  # エラーログ
+            return Response({"error": "Invalid data format. Expected a list of records."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # リクエストに含まれるplantとyearの組み合わせを格納するリスト
+        request_records = [(item.get('plant'), item.get('year')) for item in data]
+
+        # データベースからすべてのデータを取得
+        existing_records = ActualPM04.objects.all()
+
+        # データの作成または更新
+        for item in data:
+            print("Processing Item:", item)  # 各レコードのログ
+
+            # plantとyearの組み合わせで既存データを検索
+            plant = item.get('plant')
+            year = item.get('year')
+
+            # データベースでplantとyearが一致するデータを検索
+            existing_record = existing_records.filter(plant=plant, year=year).first()
+
+            if existing_record:
+                # 既存データがあれば、更新を行う
+                print(f"Updating record for plant: {plant}, year: {year}")
+                serializer = self.get_serializer(existing_record, data=item)
+            else:
+                # 既存データがなければ、新規追加を行う
+                print(f"Creating new record for plant: {plant}, year: {year}")
+                serializer = self.get_serializer(data=item)
+
+            try:
+                serializer.is_valid(raise_exception=True)
+                serializer.save()
+                print("Item Saved Successfully:", item)  # 保存成功時のログ
+            except ValidationError as e:
+                print("Validation Error:", serializer.errors)  # バリデーションエラーのログ
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        # リクエストに含まれていないデータを削除
+        for existing_record in existing_records:
+            if (existing_record.plant, existing_record.year) not in request_records:
+                print(f"Deleting record for plant: {existing_record.plant}, year: {existing_record.year}")
+                existing_record.delete()
+
+        print("All Items Processed Successfully")  # 全レコードが成功した場合のログ
+        return Response({"message": "Data saved and deleted successfully"}, status=status.HTTP_201_CREATED)
+
+
 
 class CompanyCodeAPM04ViewSet(viewsets.ModelViewSet):
     serializer_class = CompanyCodeAPM04Serializer
@@ -187,9 +324,73 @@ class CompanyCodePPM05ViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
+from rest_framework import viewsets, status
+from rest_framework.response import Response
+from .models import ActualPM05
+from .serializers import ActualPM05Serializer
+from rest_framework.exceptions import ValidationError
+
 class ActualPM05ViewSet(viewsets.ModelViewSet):
     queryset = ActualPM05.objects.all()
     serializer_class = ActualPM05Serializer
+
+    def create(self, request, *args, **kwargs):
+        data = request.data
+        print("Received Data:", data)  # 受け取ったデータをログに出力
+
+        # データがリスト形式であることを確認
+        if not isinstance(data, list):
+            print("Error: Data is not a list.")  # エラーログ
+            return Response({"error": "Invalid data format. Expected a list of records."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # リクエストに含まれるplantとyearの組み合わせを格納するリスト
+        request_records = [(item.get('plant'), item.get('year')) for item in data]
+
+        # データベースからすべてのデータを取得
+        existing_records = ActualPM05.objects.all()
+
+        # データの作成または更新
+        for item in data:
+            print("Processing Item:", item)  # 各レコードのログ
+
+            # plantとyearの組み合わせで既存データを検索
+            plant = item.get('plant')
+            year = item.get('year')
+
+            # データベースでplantとyearが一致するデータを検索
+            existing_record = existing_records.filter(plant=plant, year=year).first()
+
+            if existing_record:
+                # 既存データがあれば、更新を行う
+                print(f"Updating record for plant: {plant}, year: {year}")
+                serializer = self.get_serializer(existing_record, data=item)
+            else:
+                # 既存データがなければ、新規追加を行う
+                print(f"Creating new record for plant: {plant}, year: {year}")
+                serializer = self.get_serializer(data=item)
+
+            try:
+                serializer.is_valid(raise_exception=True)
+                serializer.save()
+                print("Item Saved Successfully:", item)  # 保存成功時のログ
+            except ValidationError as e:
+                print("Validation Error:", serializer.errors)  # バリデーションエラーのログ
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        # リクエストに含まれていないデータを削除
+        for existing_record in existing_records:
+            if (existing_record.plant, existing_record.year) not in request_records:
+                print(f"Deleting record for plant: {existing_record.plant}, year: {existing_record.year}")
+                existing_record.delete()
+
+        print("All Items Processed Successfully")  # 全レコードが成功した場合のログ
+        return Response({"message": "Data saved and deleted successfully"}, status=status.HTTP_201_CREATED)
+
+
 
 class CompanyCodeAPM05ViewSet(viewsets.ModelViewSet):
     serializer_class = CompanyCodeAPM05Serializer

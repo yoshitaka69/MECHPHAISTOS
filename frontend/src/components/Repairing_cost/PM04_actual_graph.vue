@@ -1,8 +1,11 @@
 <template>
-  <div class="chart-container">
-      <div id="rpcPM04P"></div>
-  </div>
+    <div class="chart-container">
+        <div class="aspect-ratio-box">
+            <div id="rpcPM04P"></div>
+        </div>
+    </div>
 </template>
+
 
 <script>
 import Plotly from 'plotly.js-dist-min';
@@ -176,15 +179,25 @@ export default {
 
 <style scoped>
 .chart-container {
-  width: 100%; /* 親要素の幅に合わせる */
-  height: 100%; /* 親要素の高さに合わせる */
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    width: 100%; /* 親要素の幅に合わせる */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative; /* 子要素を絶対配置にするために設定 */
 }
 
 #rpcPM04P {
-  width: 100%;
-  height: 100%;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
 }
+
+.aspect-ratio-box {
+    width: 100%;
+    padding-bottom: 56.25%; /* 16:9 のアスペクト比を設定 */
+    position: relative;
+}
+
 </style>

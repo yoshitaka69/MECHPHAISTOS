@@ -111,7 +111,7 @@ class ActualPM03(models.Model):
 
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='actualPM03_companyCode', null=True, blank=True)
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='actualPM03_companyName', null=True, blank=True)
-    plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='actualPM03_plant', null=True, blank=True)
+    plant = models.CharField(verbose_name='plant', max_length=100, null=True, blank=True)
 
     year = models.IntegerField(verbose_name='year', default=0, null=True, blank=True)
     jan = models.DecimalField(verbose_name='jan', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
@@ -146,7 +146,7 @@ class ActualPM04(models.Model):
 
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='actualPM04_companyCode', null=True, blank=True)
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='actualPM04_companyName', null=True, blank=True)
-    plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='actualPM04_plant', null=True, blank=True)
+    plant = models.CharField(verbose_name='plant', max_length=100, null=True, blank=True)
 
     year = models.IntegerField(verbose_name='year', default=0, null=True, blank=True)
     jan = models.DecimalField(verbose_name='jan', max_digits=12, decimal_places=2,default=0,null=True, blank=True)
@@ -214,7 +214,7 @@ class ActualPM05(models.Model):
 
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='actualPM05_companyCode', null=True, blank=True)
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='actualPM05_companyName', null=True, blank=True)
-    plant = models.ForeignKey(Plant, on_delete=models.CASCADE,related_name='actualPM05_plant', null=True, blank=True)
+    plant = models.CharField(verbose_name='plant', max_length=100, null=True, blank=True)
 
     year = models.IntegerField(verbose_name='year', default=0, null=True, blank=True)
     jan = models.DecimalField(verbose_name='jan', max_digits=12, decimal_places=2,default=0,null=True, blank=True)

@@ -1,8 +1,11 @@
 <template>
-  <div class="chart-container">
-      <div id="rpcPM04P"></div>
-  </div>
+    <div class="chart-container">
+        <div class="aspect-ratio-box">
+            <div id="rpcPM05P"></div>
+        </div>
+    </div>
 </template>
+
 
 <script>
 import Plotly from 'plotly.js-dist-min';
@@ -26,7 +29,7 @@ export default {
       const getRepairingCostData = async () => {
           try {
               // axiosを使用してデータを取得
-              const response = await axios.get('http://127.0.0.1:8000/api/repairingCost/APM04ByCompany/', {
+              const response = await axios.get('http://127.0.0.1:8000/api/repairingCost/APM05ByCompany/', {
                   params: {
                       companyCode: companyCode // クエリパラメータとしてcompanyCodeを設定
                   }
@@ -44,34 +47,34 @@ export default {
                   return;
               }
 
-              // 各会社の `actualPM04List` を取り出して処理
+              // 各会社の `actualPM05List` を取り出して処理
               for (const company of repairingCostData) {
-                  const actualPM04List = company.actualPM04List;
-                  if (!actualPM04List || actualPM04List.length === 0) {
-                      console.warn(`No actualPM04 data for company ${company.companyCode}`);
+                  const actualPM05List = company.actualPM05List;
+                  if (!actualPM05List || actualPM05List.length === 0) {
+                      console.warn(`No actualPM05 data for company ${company.companyCode}`);
                       continue;
                   }
 
-                  // 各プラントの `actualPM04` データを取り出す
-                  for (const plantData of actualPM04List) {
-                      const actualPM04 = plantData;
+                  // 各プラントの `actualPM05` データを取り出す
+                  for (const plantData of actualPM05List) {
+                      const actualPM05 = plantData;
 
                       // データが全て `null` の場合はスキップ
                       if (
-                          !actualPM04.jan &&
-                          !actualPM04.feb &&
-                          !actualPM04.mar &&
-                          !actualPM04.apr &&
-                          !actualPM04.may &&
-                          !actualPM04.jun &&
-                          !actualPM04.jul &&
-                          !actualPM04.aug &&
-                          !actualPM04.sep &&
-                          !actualPM04.oct &&
-                          !actualPM04.nov &&
-                          !actualPM04.dec &&
-                          !actualPM04.commitment &&
-                          !actualPM04.totalCost
+                          !actualPM05.jan &&
+                          !actualPM05.feb &&
+                          !actualPM05.mar &&
+                          !actualPM05.apr &&
+                          !actualPM05.may &&
+                          !actualPM05.jun &&
+                          !actualPM05.jul &&
+                          !actualPM05.aug &&
+                          !actualPM05.sep &&
+                          !actualPM05.oct &&
+                          !actualPM05.nov &&
+                          !actualPM05.dec &&
+                          !actualPM05.commitment &&
+                          !actualPM05.totalCost
                       ) {
                           console.warn('No actual data available for this entry');
                           continue;
@@ -81,22 +84,22 @@ export default {
                       const transformedData = {
                           x: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Commitment', 'Total'],
                           y: [
-                              parseFloat(actualPM04.jan) || 0,
-                              parseFloat(actualPM04.feb) || 0,
-                              parseFloat(actualPM04.mar) || 0,
-                              parseFloat(actualPM04.apr) || 0,
-                              parseFloat(actualPM04.may) || 0,
-                              parseFloat(actualPM04.jun) || 0,
-                              parseFloat(actualPM04.jul) || 0,
-                              parseFloat(actualPM04.aug) || 0,
-                              parseFloat(actualPM04.sep) || 0,
-                              parseFloat(actualPM04.oct) || 0,
-                              parseFloat(actualPM04.nov) || 0,
-                              parseFloat(actualPM04.dec) || 0,
-                              parseFloat(actualPM04.commitment) || 0, // commitment データを追加
-                              parseFloat(actualPM04.totalCost) || 0 // totalCost データを追加
+                              parseFloat(actualPM05.jan) || 0,
+                              parseFloat(actualPM05.feb) || 0,
+                              parseFloat(actualPM05.mar) || 0,
+                              parseFloat(actualPM05.apr) || 0,
+                              parseFloat(actualPM05.may) || 0,
+                              parseFloat(actualPM05.jun) || 0,
+                              parseFloat(actualPM05.jul) || 0,
+                              parseFloat(actualPM05.aug) || 0,
+                              parseFloat(actualPM05.sep) || 0,
+                              parseFloat(actualPM05.oct) || 0,
+                              parseFloat(actualPM05.nov) || 0,
+                              parseFloat(actualPM05.dec) || 0,
+                              parseFloat(actualPM05.commitment) || 0, // commitment データを追加
+                              parseFloat(actualPM05.totalCost) || 0 // totalCost データを追加
                           ],
-                          name: `${plantData.plant || 'Unknown Plant'}, ${actualPM04.year || 'Unknown Year'}` // 凡例にプラント名と年を表示
+                          name: `${plantData.plant || 'Unknown Plant'}, ${actualPM05.year || 'Unknown Year'}` // 凡例にプラント名と年を表示
                       };
 
                       console.log('Transformed Data:', transformedData); // 変換されたデータを表示
@@ -161,11 +164,11 @@ export default {
           };
 
           // グラフを描画
-          Plotly.newPlot('rpcPM04P', plotData, layout, config);
+          Plotly.newPlot('rpcPM05P', plotData, layout, config);
 
           // ウィンドウリサイズ時にグラフを更新
           window.addEventListener('resize', () => {
-              Plotly.Plots.resize(document.getElementById('rpcPM04P'));
+              Plotly.Plots.resize(document.getElementById('rpcPM05P'));
           });
       } catch (error) {
           console.error('Error plotting Repairing Cost graph:', error);
@@ -176,15 +179,24 @@ export default {
 
 <style scoped>
 .chart-container {
-  width: 100%; /* 親要素の幅に合わせる */
-  height: 100%; /* 親要素の高さに合わせる */
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    width: 100%; /* 親要素の幅に合わせる */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative; /* 子要素を絶対配置にするために設定 */
 }
 
-#rpcPM04P {
-  width: 100%;
-  height: 100%;
+#rpcPM05P {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+}
+
+.aspect-ratio-box {
+    width: 100%;
+    padding-bottom: 56.25%; /* 16:9 のアスペクト比を設定 */
+    position: relative;
 }
 </style>
