@@ -2,17 +2,11 @@
   <div class="daily-report-container">
     <div class="surface-ground">
       <div class="p-fluid flex flex-column lg:flex-row">
-        <ul
-          class="sidebar list-none m-0 p-0 flex flex-row lg:flex-column justify-content-evenly md:justify-content-between lg:justify-content-start mb-5 lg:pr-8 lg:mb-0"
-        >
+        <ul class="sidebar list-none m-0 p-0 flex flex-row lg:flex-column justify-content-evenly md:justify-content-between lg:justify-content-start mb-5 lg:pr-8 lg:mb-0">
           <li>
             <a
               @click="selectTab('dailyReport')"
-              :class="[
-                'flex align-items-center cursor-pointer p-3 border-round',
-                selectedTab === 'dailyReport' ? 'text-primary' : 'text-800',
-                'hover:surface-hover transition-duration-150 transition-colors'
-              ]"
+              :class="['flex align-items-center cursor-pointer p-3 border-round custom-rounded', selectedTab === 'dailyReport' ? 'text-primary' : 'text-800', 'hover:surface-hover transition-duration-150 transition-colors']"
             >
               <i class="pi pi-book sidebar-icon"></i>
               <span class="sidebar-text">Daily Report</span>
@@ -25,7 +19,7 @@
               <h2 class="mb-4 form-title">Daily Report</h2>
               <div class="field recorder-field">
                 <label for="recorder">Recorder</label>
-                <InputText id="recorder" v-model="recorder" placeholder="Enter recorder name" />
+                <InputText id="recorder" v-model="recorder" :value="userStore.userName" placeholder="Enter recorder name" readonly />
                 <span class="date">{{ formattedDate }}</span>
               </div>
             </div>
@@ -67,10 +61,10 @@
             <div class="field">
               <label>Handwritten Notes</label>
               <canvas ref="signatureCanvas" width="500" height="200" class="signature-pad"></canvas>
-              <Button label="Clear" class="clear-button" @click="clearSignature" />
             </div>
             <div class="field button-container">
               <Button label="Save" icon="pi pi-save" class="save-button" @click="saveReport" />
+              <Button label="Clear" icon="pi pi-times" class="clear-button" @click="clearSignature" />
             </div>
           </div>
         </div>
@@ -80,28 +74,31 @@
 </template>
 
 <script>
-import { ref, onMounted } from "vue";
-import InputText from "primevue/inputtext";
-import Textarea from "primevue/textarea";
-import Button from "primevue/button";
-import SignaturePad from "signature_pad";
+import { ref, onMounted } from 'vue';
+import InputText from 'primevue/inputtext';
+import Textarea from 'primevue/textarea';
+import Button from 'primevue/button';
+import SignaturePad from 'signature_pad';
+import axios from 'axios';
+import { useUserStore } from '@/stores/userStore';
 
 export default {
   components: {
     InputText,
     Textarea,
-    Button,
+    Button
   },
   setup() {
-    const selectedTab = ref("dailyReport");
-    const recorder = ref(""); // 記録者の名前を保存する
-    const activity = ref("");
-    const workOrder = ref("");
-    const maintenanceType = ref("");
-    const maintenanceDescription = ref("");
-    const situation = ref("");
-    const cause = ref("");
-    const spareParts = ref("");
+    const userStore = useUserStore(); // Piniaストアのインスタンスを取得
+    const selectedTab = ref('dailyReport');
+    const recorder = ref(userStore.userName); // Piniaストアからユーザー名を取得
+    const activity = ref('');
+    const workOrder = ref('');
+    const maintenanceType = ref('');
+    const maintenanceDescription = ref('');
+    const situation = ref('');
+    const cause = ref('');
+    const spareParts = ref('');
     const photoPreview = ref(null); // 写真プレビューのURLを保存する
     const signaturePad = ref(null);
 
@@ -134,7 +131,7 @@ export default {
 
     const saveReport = () => {
       const reportData = {
-        recorder: recorder.value,
+        recorder: userStore.userName, // Piniaストアからユーザー名を使用
         activity: activity.value,
         workOrder: workOrder.value,
         maintenanceType: maintenanceType.value,
@@ -142,21 +139,27 @@ export default {
         situation: situation.value,
         cause: cause.value,
         spareParts: spareParts.value,
-        photo: photoPreview.value, // 写真のデータを保存
-        handwrittenNotes: signaturePad.value.toDataURL(),
-        date: formattedDate.value, // 日付を保存
+        photo: photoPreview.value, // 写真のデータを保存（base64形式）
+        handwrittenNotes: signaturePad.value.toDataURL(), // 手書きノートのデータ（base64形式）
+        date: formattedDate.value // 日付を保存
       };
 
-      console.log("Report Data:", reportData);
-      // ここに保存処理を追加
-      // 例: API呼び出しやローカルストレージへの保存
+      // POSTリクエストでデータをサーバーに送信
+      axios
+        .post('http://127.0.0.1:8000/api/daily_reports/', reportData)
+        .then((response) => {
+          console.log('Report saved successfully:', response.data);
+        })
+        .catch((error) => {
+          console.error('Error saving report:', error);
+        });
     };
 
     onMounted(() => {
-      const canvas = document.querySelector("canvas");
+      const canvas = document.querySelector('canvas');
       signaturePad.value = new SignaturePad(canvas, {
-        penColor: "black",
-        backgroundColor: "rgba(255, 255, 255, 0)",
+        penColor: 'black',
+        backgroundColor: 'rgba(255, 255, 255, 0)'
       });
     });
 
@@ -176,8 +179,9 @@ export default {
       clearSignature,
       saveReport,
       formattedDate,
+      userStore // Piniaストアを返す
     };
-  },
+  }
 };
 </script>
 
@@ -254,24 +258,37 @@ export default {
 }
 
 .button-container {
-  text-align: right;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px; /* ボタン間のスペース */
 }
 
-.save-button,
-.clear-button {
-  background-color: #007bff;
+.save-button {
+  background-color: #007bff; /* 青色 */
   color: white;
   font-weight: bold;
-  padding: 10px 20px;
+  padding: 8px 16px; /* ボタンの横幅を狭く */
   border: none;
   border-radius: 4px;
   transition: background-color 0.3s ease;
-  margin-top: 10px;
 }
 
-.save-button:hover,
+.clear-button {
+  background-color: #ff6347; /* トマト色 */
+  color: white;
+  font-weight: bold;
+  padding: 8px 16px; /* ボタンの横幅を狭く */
+  border: none;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.save-button:hover {
+  background-color: #0056b3; /* 濃い青色 */
+}
+
 .clear-button:hover {
-  background-color: #0056b3;
+  background-color: #d94e3b; /* 濃いトマト色 */
 }
 
 .photo-preview {
@@ -286,9 +303,13 @@ export default {
 }
 
 .sidebar {
-  background-color: #87CEEB; /* 青空のような青色 */
+  background-color: #87ceeb; /* 青空のような青色 */
   padding: 10px;
-  border-radius: 8px;
+  border-radius: 8px; /* 角を丸める */
+}
+
+.custom-rounded {
+  border-top-left-radius: 16px !important; /* aタグの左上角を丸める */
 }
 
 .sidebar-text {

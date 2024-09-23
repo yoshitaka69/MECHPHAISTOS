@@ -214,3 +214,45 @@ class CompanyCodeWorkOrderManagementViewSet(viewsets.ModelViewSet):
         if company_code:
             queryset = queryset.filter(companyCode=company_code)
         return queryset
+    
+
+
+#--------------------------------------------------------------
+
+
+from rest_framework import viewsets, status
+from rest_framework.response import Response
+from django.core.files.base import ContentFile
+import base64
+from .models import DailyReport, CompanyCode
+from .serializers import DailyReportSerializer, CompanyCodeWithReportsSerializer
+
+class DailyReportViewSet(viewsets.ModelViewSet):
+    queryset = DailyReport.objects.all()
+    serializer_class = DailyReportSerializer
+
+    def create(self, request, *args, **kwargs):
+        data = request.data
+        # 写真がある場合はデータを処理
+        photo = data.get('photo')
+        if photo and isinstance(photo, str) and 'base64,' in photo:
+            format, imgstr = photo.split(';base64,') 
+            ext = format.split('/')[-1] 
+            # 保存用のファイル名を設定（例: recorder_date.jpg）
+            data['photo'] = ContentFile(base64.b64decode(imgstr), name=f"{data['recorder']}_{data['date']}.{ext}")
+
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+class CompanyCodeViewSet(viewsets.ModelViewSet):
+    serializer_class = CompanyCodeWithReportsSerializer  # シリアライザーを指定
+
+    def get_queryset(self):
+        queryset = CompanyCode.objects.prefetch_related('dailyReport_companyCode').all()
+        company_code = self.request.query_params.get('companyCode', None)
+        if company_code:
+            queryset = queryset.filter(companyCode=company_code)
+        return queryset

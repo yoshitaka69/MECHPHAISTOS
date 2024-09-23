@@ -119,3 +119,26 @@ class WorkOrderManagement(models.Model):
         return str('Work Order Management')
 
 
+
+
+#----------------------------------------------------------------------------------------------------------------------------
+
+
+from django.db import models
+
+class DailyReport(models.Model):
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='dailyReport_companyCode', null=True, blank=True)
+    recorder = models.CharField(max_length=100)  # 記録者
+    activity = models.TextField()  # 活動内容
+    workOrder = models.CharField(max_length=100, blank=True, null=True)  # 作業指示番号
+    maintenanceType = models.CharField(max_length=100, blank=True, null=True)  # 保全の種類
+    maintenanceDescription = models.TextField(blank=True, null=True)  # 保全の説明
+    situation = models.TextField(blank=True, null=True)  # 状況の説明
+    cause = models.TextField(blank=True, null=True)  # 原因の説明
+    spareParts = models.CharField(max_length=255, blank=True, null=True)  # 使ったスペアパーツ
+    photo = models.ImageField(upload_to='photos/', blank=True, null=True)  # 写真
+    handwrittenNotes = models.TextField(blank=True, null=True)  # 手書きノートのデータ（Base64など）
+    date = models.DateField()  # 日付
+
+    def __str__(self):
+        return f"{self.recorder} - {self.date}"

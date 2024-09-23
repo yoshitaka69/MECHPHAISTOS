@@ -76,3 +76,24 @@ class CompanyCodeWorkOrderManagementSerializer(serializers.ModelSerializer):
     class Meta:
         model = CompanyCode
         fields = ['companyCode', 'WorkOrderManagement']
+
+
+
+
+
+#---------------------------------------------------------------------------------------------------------------
+
+from rest_framework import serializers
+from .models import DailyReport, CompanyCode
+
+class DailyReportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DailyReport
+        fields = '__all__'
+
+class CompanyCodeWithReportsSerializer(serializers.ModelSerializer):
+    dailyReports = DailyReportSerializer(many=True, read_only=True, source='dailyReport_companyCode')
+
+    class Meta:
+        model = CompanyCode
+        fields = ['companyCode', 'dailyReports']
