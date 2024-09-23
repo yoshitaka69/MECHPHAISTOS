@@ -157,6 +157,8 @@ def update_or_create_cal_table(sender, instance, **kwargs):
 
 
 
+
+
 #taskListPPM03
 @receiver(post_save, sender=TaskListPPM03)
 def update_or_create_cal_table(sender, instance, **kwargs):
@@ -225,6 +227,7 @@ def update_or_create_cal_table(sender, instance, **kwargs):
     # CalTablePlannedPM03のレコードを更新
     cal_table.save()
     print("CalTablePlannedPM03 のレコードが更新されました")
+
 
 
 
@@ -573,57 +576,67 @@ def planned_pm_post_delete(sender, instance, **kwargs):
 
 
 
-#total Actual Cost
-def update_summed_actual_cost(instance):
-    print(f'Updating summed actual cost for {instance}')
+# #total Actual Cost
+# from django.db.models.signals import post_save, post_delete
+# from django.dispatch import receiver
+# from .models import ActualPM02, ActualPM03, ActualPM04, ActualPM05, SummedActualCost
 
-    months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Commitment']
-    totals = {f'sum{month}': 0 for month in months}
+# def update_summed_actual_cost(instance):
+#     print(f'Updating summed actual cost for {instance}')
 
-    # actualPM02とactualPM03から値を取得し合計
-    for pm_model in [ActualPM02, ActualPM03,ActualPM04,ActualPM05]:
-        pm_records = pm_model.objects.filter(year=instance.year, companyCode=instance.companyCode, plant=instance.plant)
-        print(f'Found {pm_records.count()} records in {pm_model.__name__} for year {instance.year}, companyCode {instance.companyCode}, plant {instance.plant}')
+#     # `plant` が `None` の場合はスキップ
+#     if instance.plant is None:
+#         print(f"Skipping update for instance {instance} because plant is None.")
+#         return
 
-        for obj in pm_records:
-            for month in months:
-                field_name = month.lower()
-                value = getattr(obj, field_name, 0)
-                totals[f'sum{month}'] += value
-                print(f'Adding {value} to sum{month} from {obj} in {pm_model.__name__}')
+#     months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Commitment']
+#     totals = {f'sum{month}': 0 for month in months}
 
-    # SummedActualCostオブジェクトの取得または作成
-    sac, created = SummedActualCost.objects.get_or_create(
-        companyCode=instance.companyCode,
-        plant=instance.plant,
-        year=instance.year
-    )
-    print(f'{"Created" if created else "Retrieved"} SummedActualCost instance: {sac}')
+#     # actualPM02, actualPM03, actualPM04, actualPM05から値を取得し合計
+#     for pm_model in [ActualPM02, ActualPM03, ActualPM04, ActualPM05]:
+#         pm_records = pm_model.objects.filter(year=instance.year, companyCode=instance.companyCode, plant=instance.plant)
+#         print(f'Found {pm_records.count()} records in {pm_model.__name__} for year {instance.year}, companyCode {instance.companyCode}, plant {instance.plant}')
 
-    # 合計値の更新
-    for month, total in totals.items():
-        setattr(sac, month, total)
-        print(f'Set {month} to {total} in SummedActualCost')
+#         for obj in pm_records:
+#             for month in months:
+#                 field_name = month.lower()  # 例: 'jan', 'feb'など
+#                 value = getattr(obj, field_name, 0)
+#                 totals[f'sum{month}'] += value
+#                 print(f'Adding {value} to sum{month} from {obj} in {pm_model.__name__}')
 
-    sac.save()
-    print(f'SummedActualCost instance saved: {sac}')
+#     # SummedActualCostオブジェクトの取得または作成
+#     sac, created = SummedActualCost.objects.get_or_create(
+#         companyCode=instance.companyCode,
+#         plant=instance.plant,
+#         year=instance.year,
+#         defaults={f'sum{month}': 0 for month in months}  # 新しいオブジェクトの場合に初期化
+#     )
+#     print(f'{"Created" if created else "Retrieved"} SummedActualCost instance: {sac}')
 
-# actualPM02またはactualPM03が保存・更新された際に呼び出されるシグナル
-@receiver(post_save, sender=ActualPM02)
-@receiver(post_save, sender=ActualPM03)
-@receiver(post_save, sender=ActualPM04)
-@receiver(post_save, sender=ActualPM05)
+#     # 合計値の更新
+#     for month, total in totals.items():
+#         setattr(sac, month, total)
+#         print(f'Set {month} to {total} in SummedActualCost')
 
-def actual_pm_post_save(sender, instance, **kwargs):
-    print(f'post_save signal received for {sender.__name__} with instance {instance}')
-    update_summed_actual_cost(instance)
+#     sac.save()
+#     print(f'SummedActualCost instance saved: {sac}')
 
 
-# ActualPM02またはActualPM03が削除された際に実行
-@receiver(post_delete, sender=ActualPM02)
-@receiver(post_delete, sender=ActualPM03)
-@receiver(post_delete, sender=ActualPM04)
-@receiver(post_delete, sender=ActualPM05)
-def actual_pm_post_delete(sender, instance, **kwargs):
-    print(f'post_delete signal received for {sender.__name__} with instance {instance}')
-    update_summed_actual_cost(instance)
+# # actualPM02, actualPM03, actualPM04, actualPM05が保存・更新された際に呼び出されるシグナル
+# @receiver(post_save, sender=ActualPM02)
+# @receiver(post_save, sender=ActualPM03)
+# @receiver(post_save, sender=ActualPM04)
+# @receiver(post_save, sender=ActualPM05)
+# def actual_pm_post_save(sender, instance, **kwargs):
+#     print(f'post_save signal received for {sender.__name__} with instance {instance}')
+#     update_summed_actual_cost(instance)
+
+
+# # ActualPM02, ActualPM03, ActualPM04, ActualPM05が削除された際に実行
+# @receiver(post_delete, sender=ActualPM02)
+# @receiver(post_delete, sender=ActualPM03)
+# @receiver(post_delete, sender=ActualPM04)
+# @receiver(post_delete, sender=ActualPM05)
+# def actual_pm_post_delete(sender, instance, **kwargs):
+#     print(f'post_delete signal received for {sender.__name__} with instance {instance}')
+#     update_summed_actual_cost(instance)

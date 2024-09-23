@@ -1,246 +1,141 @@
 <template>
-    <div id="TaskList">
-        <!-- 成功時または失敗時のアラート表示 -->
+    <div id="PM02actualtable">
         <Save_Alert v-if="showAlert" :type="alertType" :message="alertMessage" :errorMessages="errorMessages" />
-
-        <!-- companyCode 表示 -->
-        <div class="company-code-container">
-            <span>Company Code: {{ companyCode }}</span>
+        <hot-table ref="hotTableComponent" :settings="hotSettings"></hot-table>
+        <p>*You cannot enter the same plant name and year more than once.</p>
+        <!-- エラーメッセージを表示 -->
+        <div v-if="errorMessages.length" class="error-message-container">
+            <p v-for="(error, index) in errorMessages" :key="index" class="error-message">{{ error }}</p>
         </div>
-
-        <div class="legend">
-            <div class="legend-item">
-                <div class="color-box" style="background-color: #f0a0a0"></div>
-                <span>Form input format is incorrect</span>
-            </div>
-            <div class="legend-item">
-                <div class="color-box" style="background-color: #f0f0f0"></div>
-                <span>Input not allowed. Value is automatically filled.</span>
-            </div>
-        </div>
-
-        <!-- 行数選択ドロップダウン -->
-        <div class="row-count-container">
-            <span>表示する行数:</span>
-            <select v-model="rowsToShow" @change="updateRowCount">
-                <option value="10">10行</option>
-                <option value="30">30行</option>
-                <option value="50">50行</option>
-                <option value="100">100行</option>
-            </select>
-        </div>
-
-        <hot-table ref="hotTableComponent" :settings="hotSettings"></hot-table><br />
-
         <div class="button-container">
-            <input type="number" v-model="rowsToAdd" placeholder="Number of rows" />
-            <Button label="Add Rows" icon="pi pi-plus" class="p-button-primary blue-button" @click="addRows" />
-            <Button label="Save Data" icon="pi pi-save" class="p-button-primary blue-button ml-3" @click="saveData" />
-            <Button label="Export CSV" icon="pi pi-file-excel" class="p-button-primary green-button ml-3" @click="exportCSV" />
-            <!-- 行番号入力と計算ボタン -->
-            <input type="number" v-model="rowToRecalculate" placeholder="Row number to recalculate (1-based)" class="row-input" />
-            <Button label="Recalculate Row" icon="pi pi-refresh" class="p-button-primary orange-button ml-3" @click="recalculateRowByInput" />
+            <input type="number" v-model="rowsToAdd" placeholder="Number of rows" class="row-input" />
+            <button class="p-button-primary blue-button" @click="addRows"><i class="pi pi-plus"></i> Add Rows</button>
+            <button class="p-button-primary blue-button ml-3" @click="saveData"><i class="pi pi-save"></i> Save Data</button>
+            <button class="p-button-primary green-button ml-3" @click="exportCSV"><i class="pi pi-file-excel"></i> Export CSV</button>
         </div>
     </div>
 </template>
 
 <script>
-import Handsontable from 'handsontable';
 import { defineComponent } from 'vue';
 import { HotTable } from '@handsontable/vue3';
 import { registerAllModules } from 'handsontable/registry';
 import 'handsontable/dist/handsontable.full.css';
 import axios from 'axios';
 import { useUserStore } from '@/stores/userStore';
-import Button from 'primevue/button';
 import Save_Alert from '@/components/Alert/Save_Alert.vue';
-import moment from 'moment'; // 日付計算のために moment.js を使用
 
-// register Handsontable's modules
 registerAllModules();
 
-const TaskListComponent = defineComponent({
+// totalCostの計算と表示のためのカスタムレンダラー
+function totalCostRenderer(monthColumnIndices, instance, td, row, col, prop, value, cellProperties) {
+    const rowData = instance.getDataAtRow(row);
+    const totalCost = Object.keys(monthColumnIndices)
+        .map((month) => parseFloat(rowData[monthColumnIndices[month]]) || 0)
+        .reduce((sum, amount) => sum + amount, 0);
+
+    td.innerText = totalCost.toFixed(2); // 2桁の小数点で表示
+    td.style.backgroundColor = '#f0f0f0'; // より薄い灰色
+    return td;
+}
+
+const monthColumnIndices = {
+    jan: 2,
+    feb: 3,
+    mar: 4,
+    apr: 5,
+    may: 6,
+    jun: 7,
+    jul: 8,
+    aug: 9,
+    sep: 10,
+    oct: 11,
+    nov: 12,
+    dec: 13,
+    commitment: 14
+};
+
+// PlantとYearの組み合わせをチェックするバリデーション関数
+function plantYearValidator(hotInstance, row, col) {
+    if (!hotInstance) {
+        console.error('HotTable instance is not defined in validator.');
+        return false;
+    }
+
+    const currentRowData = hotInstance.getDataAtRow(row);
+    if (!currentRowData) {
+        console.error(`No data found for row ${row}.`);
+        return false;
+    }
+
+    const currentPlant = currentRowData[0]; // 'Plant' 列
+    let currentYear = parseInt(currentRowData[1], 10); // 'Year' 列
+
+    // nullや空文字の場合はバリデーションをスキップ
+    if (!currentPlant || isNaN(currentYear)) {
+        console.log(`Skipping validation for row ${row}: Plant or Year is null or invalid.`);
+        return true; // バリデーションを通す
+    }
+
+    const tableData = hotInstance.getData();
+    if (!tableData || !Array.isArray(tableData)) {
+        console.error('Invalid table data:', tableData);
+        return false;
+    }
+
+    console.log('Validating Plant and Year:', currentPlant, currentYear);
+
+    let duplicateFound = false;
+
+    // 現在の行を除外して他の行と同じPlantとYearの組み合わせを持っているか確認
+    tableData.forEach((rowData, index) => {
+        if (index !== row) {
+            const plant = rowData[0];
+            let year = parseInt(rowData[1], 10);
+            if (plant === currentPlant && year === currentYear) {
+                console.log(`Duplicate found at row ${index} for Plant: ${currentPlant}, Year: ${currentYear}`);
+                duplicateFound = true;
+            }
+        }
+    });
+
+    return !duplicateFound;
+}
+
+const TableComponent = defineComponent({
     data() {
         return {
+            hotInstance: null,
             hotSettings: {
-                data: [],
-                colHeaders: this.generateColHeaders(),
+                data: [['', '', '', '', '', '', '', '', '', '', '', '', '', '', '']],
+                colHeaders: ['Plant', 'Year', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Commitment', 'Total'],
                 columns: [
+                    { type: 'text' }, // 'Plant'
+                    { type: 'numeric' }, // 'Year'
+                    { type: 'numeric' }, // 'Jan'
+                    { type: 'numeric' }, // 'Feb'
+                    { type: 'numeric' }, // 'Mar'
+                    { type: 'numeric' }, // 'Apr'
+                    { type: 'numeric' }, // 'May'
+                    { type: 'numeric' }, // 'Jun'
+                    { type: 'numeric' }, // 'Jul'
+                    { type: 'numeric' }, // 'Aug'
+                    { type: 'numeric' }, // 'Sep'
+                    { type: 'numeric' }, // 'Oct'
+                    { type: 'numeric' }, // 'Nov'
+                    { type: 'numeric' }, // 'Dec'
+                    { type: 'numeric' }, // 'Commitment'
                     {
-                        data: 'taskListNo',
-                        type: 'text',
-                        readOnly: true,
-                        renderer: this.taskListNoRenderer
-                    },
-                    {
-                        data: 'taskName',
-                        type: 'text'
-                    },
-                    {
-                        data: 'plant',
-                        type: 'text'
-                    },
-                    {
-                        data: 'equipment',
-                        type: 'text'
-                    },
-                    {
-                        data: 'machineName',
-                        type: 'text'
-                    },
-                    {
-                        data: 'pmType',
-                        type: 'dropdown',
-                        source: ['PM01', 'PM02', 'PM03', 'PM04', 'PM05'],
-                        strict: true,
-                        allowInvalid: false
-                    },
-                    {
-                        data: 'maintenanceType',
-                        type: 'dropdown',
-                        source: ['Overhaul', 'Regular Maintenance', 'Inspection and Check', 'Adjustment', 'Parts Replacement', 'Calibration', 'Cleaning', 'Lubrication', 'Balancing', 'Testing and Trial Operation'],
-                        strict: true,
-                        allowInvalid: false
-                    },
-                    {
-                        data: 'latestEventDate',
-                        type: 'date',
-                        dateFormat: 'YYYY-MM-DD',
-                        correctFormat: false
-                    },
-                    {
-                        data: 'taskPeriod',
-                        type: 'numeric'
-                    },
-                    {
-                        data: 'taskLaborCost',
-                        type: 'numeric'
-                    },
-                    {
-                        data: 'bomCode',
-                        type: 'text'
-                    },
-                    {
-                        data: 'bomCost',
-                        type: 'numeric'
-                    },
-                    {
-                        data: 'totalCost',
                         type: 'numeric',
-                        readOnly: true
-                    },
-                    {
-                        data: 'nextEventDate',
-                        type: 'text',
-                        readOnly: true
-                    },
-                    {
-                        data: 'situation',
-                        type: 'text',
-                        readOnly: true
-                    },
-                    {
-                        data: 'thisYear',
-                        type: 'checkbox',
-                        className: 'htCenter'
-                    },
-                    {
-                        data: 'thisYear1later',
-                        type: 'checkbox',
-                        className: 'htCenter'
-                    },
-                    {
-                        data: 'thisYear2later',
-                        type: 'checkbox',
-                        className: 'htCenter'
-                    },
-                    {
-                        data: 'thisYear3later',
-                        type: 'checkbox',
-                        className: 'htCenter'
-                    },
-                    {
-                        data: 'thisYear4later',
-                        type: 'checkbox',
-                        className: 'htCenter'
-                    },
-                    {
-                        data: 'thisYear5later',
-                        type: 'checkbox',
-                        className: 'htCenter'
-                    },
-                    {
-                        data: 'thisYear6later',
-                        type: 'checkbox',
-                        className: 'htCenter'
-                    },
-                    {
-                        data: 'thisYear7later',
-                        type: 'checkbox',
-                        className: 'htCenter'
-                    },
-                    {
-                        data: 'thisYear8later',
-                        type: 'checkbox',
-                        className: 'htCenter'
-                    },
-                    {
-                        data: 'thisYear9later',
-                        type: 'checkbox',
-                        className: 'htCenter'
-                    },
-                    {
-                        data: 'thisYear10later',
-                        type: 'checkbox',
-                        className: 'htCenter'
-                    }
+                        readOnly: true,
+                        renderer: (instance, td, row, col, prop, value, cellProperties) => totalCostRenderer(monthColumnIndices, instance, td, row, col, prop, value, cellProperties)
+                    } // 'Total'
                 ],
-
                 afterGetColHeader: (col, TH) => {
                     if (col === -1) return;
-                    TH.style.backgroundColor = '#FFFFCC';
+                    TH.style.backgroundColor = '#FFCC99';
                     TH.style.color = 'black';
                     TH.style.fontWeight = 'bold';
-                },
-
-                afterChange: (changes, source) => {
-                    if (source === 'edit' || source === 'autofill') {
-                        changes.forEach(([row, prop, oldValue, newValue]) => {
-                            if (['taskLaborCost', 'bomCost'].includes(prop)) {
-                                this.calculateTotalCost(row);
-                            }
-                            if (['latestEventDate', 'taskPeriod'].includes(prop)) {
-                                this.calculateNextEventDate(row);
-                                this.calculateYears(row);
-                            }
-                        });
-                    }
-                },
-
-                cells: function (row, col, prop) {
-                    const cellProperties = {};
-
-                    const readOnlyColumns = ['taskListNo', 'situation', 'totalCost', 'nextEventDate'];
-
-                    if (readOnlyColumns.includes(this.columns[col].data)) {
-                        cellProperties.readOnly = true;
-                    }
-
-                    return cellProperties;
-                },
-
-                afterRenderer: function (TD, row, col, prop, value, cellProperties) {
-                    const readOnlyColumns = ['taskListNo', 'situation', 'totalCost', 'nextEventDate'];
-
-                    if (readOnlyColumns.includes(cellProperties.prop)) {
-                        TD.style.backgroundColor = '#f5f5f5';
-                        TD.style.color = 'black';
-                    }
-
-                    if (prop === 'situation' && value === 'delay') {
-                        TD.style.backgroundColor = '#ffcccc';
-                        TD.style.color = 'black';
-                    }
                 },
                 rowHeaders: true,
                 width: '100%',
@@ -248,81 +143,139 @@ const TaskListComponent = defineComponent({
                 contextMenu: true,
                 autoWrapRow: true,
                 autoWrapCol: true,
-                fixedColumnsStart: 2,
-                fixedRowsTop: 0,
+                fixedRowsTop: 2,
                 manualColumnFreeze: true,
                 manualColumnResize: true,
                 manualRowResize: true,
                 filters: true,
                 dropdownMenu: true,
                 comments: true,
-                fillHandle: {
-                    autoInsertRow: true
-                },
-                licenseKey: 'non-commercial-and-evaluation'
+                fillHandle: { autoInsertRow: true },
+                licenseKey: 'non-commercial-and-evaluation',
+                afterChange: null,
+                afterValidate: (isValid, value, row, prop) => {
+                    const cell = this.hotInstance.getCell(row, this.hotInstance.propToCol(prop));
+                    console.log(`AfterValidate: row ${row}, prop ${prop}, value: ${value}, isValid: ${isValid}`);
+                    cell.style.backgroundColor = isValid ? '' : '#ffcccc';
+                }
             },
             rowsToAdd: 1,
-            dataStore: [],
             showAlert: false,
             alertType: 'success',
-            alertMessage: 'データが正常に保存されました。',
-            errorMessages: [],
-            companyCode: '',
-            rowsToShow: 10,
-            rowToRecalculate: 1 // 再計算する行番号を格納（1-based index）
+            alertMessage: '',
+            errorMessages: []
         };
     },
+    mounted() {
+        this.hotInstance = this.$refs.hotTableComponent.hotInstance;
+        if (!this.hotInstance) {
+            console.error('HotTable instance could not be initialized.');
+        } else {
+            console.log('HotTable instance initialized:', this.hotInstance);
 
+            // `afterChange` フックの設定
+            this.hotInstance.addHook('afterChange', (changes, source) => {
+                if (source !== 'loadData' && changes) {
+                    changes.forEach(([row, prop, oldValue, newValue]) => {
+                        console.log(`Change detected: row ${row}, prop ${prop}, oldValue: ${oldValue}, newValue: ${newValue}`);
+
+                        if (prop === 'plant' || prop === 'year') {
+                            const plantColIndex = this.hotInstance.propToCol('plant');
+                            const yearColIndex = this.hotInstance.propToCol('year');
+
+                            // エラーメッセージをクリア
+                            this.errorMessages = [];
+
+                            if (!plantYearValidator(this.hotInstance, row, plantColIndex)) {
+                                // エラーメッセージをエラーメッセージ配列に追加
+                                this.errorMessages.push(`Validation error at row ${row}: Duplicate Plant and Year combination detected.`);
+
+                                // PlantとYearのセルの背景色を赤に設定
+                                const plantCell = this.hotInstance.getCell(row, plantColIndex);
+                                const yearCell = this.hotInstance.getCell(row, yearColIndex);
+                                plantCell.style.backgroundColor = '#ffcccc';
+                                yearCell.style.backgroundColor = '#ffcccc';
+
+                                // アラートメッセージを設定
+                                this.showAlert = true;
+                                this.alertType = 'error';
+                                this.alertMessage = 'Duplicate Plant name and Year exist. Please correct it.';
+                            } else {
+                                // バリデーションが通った場合、セルの背景色をリセット
+                                const plantCell = this.hotInstance.getCell(row, plantColIndex);
+                                const yearCell = this.hotInstance.getCell(row, yearColIndex);
+                                plantCell.style.backgroundColor = '';
+                                yearCell.style.backgroundColor = '';
+                            }
+                        }
+                    });
+                }
+            });
+        }
+    },
     created() {
         this.getDataAxios();
     },
-
     methods: {
-        generateColHeaders() {
-            const currentYear = new Date().getFullYear();
-            const futureYears = Array.from({ length: 11 }, (_, index) => (currentYear + index).toString());
-
-            return [
-                'TaskListNo',
-                'TaskName',
-                'Plant',
-                'Equipment',
-                'MachineName',
-                'PM <br> type',
-                'Maintenance <br> type',
-                'LatestEvent<br>Date',
-                'Task<br>Period',
-                'TaskLabor<br>Cost',
-                'BomCode',
-                'BomCost',
-                'TotalCost',
-                'Next Even<br>Date',
-                'Situation',
-                ...futureYears
-            ];
-        },
-
-        taskListNoRenderer(instance, td, row, col, prop, value, cellProperties) {
-            Handsontable.renderers.TextRenderer.apply(this, arguments);
-            if (value) {
-                const link = document.createElement('a');
-                link.href = `/task_list_detail/${value}`;
-                link.target = '_blank';
-                link.textContent = value;
-                link.style.color = 'blue';
-                td.innerHTML = '';
-                td.appendChild(link);
-            }
-        },
-
-        updateRowCount() {
-            const hotInstance = this.$refs.hotTableComponent.hotInstance;
-            const newData = this.dataStore.slice(0, this.rowsToShow);
-
-            hotInstance.loadData(newData);
-        },
-
         getDataAxios() {
+            const userStore = useUserStore();
+            const userCompanyCode = userStore.companyCode;
+            if (!userCompanyCode) {
+                console.error('Error: No company code found for the user.');
+                return;
+            }
+
+            const url = `http://127.0.0.1:8000/api/repairingCost/APM02ByCompany/?format=json&companyCode=${userCompanyCode}`;
+            console.log('Request URL:', url);
+
+            axios
+                .get(url, { headers: { 'Content-Type': 'application/json' }, withCredentials: true })
+                .then((response) => {
+                    const actualCostData = response.data;
+                    const months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec', 'commitment'];
+                    const tableData = actualCostData.flatMap((companyData) =>
+                        companyData.actualPM02List.map((plantData) => {
+                            const rowData = {
+                                plant: plantData.plant || 'Unknown Plant',
+                                year: plantData.year || 'Unknown Year'
+                            };
+                            months.forEach((month) => {
+                                rowData[month] = parseFloat(plantData[month]) || 0;
+                            });
+                            return rowData;
+                        })
+                    );
+
+                    const columns = [
+                        { data: 'plant', type: 'text' },
+                        { data: 'year' },
+                        ...months.map((month) => ({ data: month })),
+                        {
+                            data: 'totalCost',
+                            readOnly: true,
+                            renderer: (instance, td, row, col, prop, value, cellProperties) => totalCostRenderer(monthColumnIndices, instance, td, row, col, prop, value, cellProperties)
+                        }
+                    ];
+
+                    console.log('Table Data:', tableData);
+
+                    const blankRows = Array.from({ length: 5 }, () => ({}));
+                    const newData = tableData.concat(blankRows);
+
+                    if (this.hotInstance) {
+                        this.hotInstance.updateSettings({
+                            data: newData,
+                            columns
+                        });
+                    } else {
+                        console.error('HotTable instance is not defined when updating settings.');
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error fetching data:', error);
+                });
+        },
+        saveData() {
             const userStore = useUserStore();
             const userCompanyCode = userStore.companyCode;
 
@@ -331,366 +284,121 @@ const TaskListComponent = defineComponent({
                 return;
             }
 
-            const url = `http://127.0.0.1:8000/api/task/taskListByCompany/?format=json&companyCode=${userCompanyCode}`;
+            const tableData = this.hotInstance.getData();
+            console.log('Table Data to be posted:', tableData);
 
-            axios
-                .get(url, {
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    withCredentials: true
-                })
-                .then((response) => {
-                    const taskListData = response.data.flatMap((companyData) => companyData.taskList);
-
-                    if (response.data.length > 0) {
-                        this.companyCode = response.data[0].companyCode;
+            let actualPM02List = tableData
+                .filter((row) => row.some((cell) => cell !== null && cell !== ''))
+                .map((row) => {
+                    let year = parseInt(row[1]);
+                    if (isNaN(year) || year < 2000 || year > 2100) {
+                        console.warn(`Invalid year detected: ${row[1]}. Setting to 0.`);
+                        year = 0;
                     }
 
-                    this.dataStore = taskListData;
-
-                    if (taskListData.length < 15) {
-                        const blankRows = Array.from({ length: 15 - taskListData.length }, () => ({}));
-                        this.dataStore = this.dataStore.concat(blankRows);
-                    }
-
-                    this.$refs.hotTableComponent.hotInstance.updateSettings({
-                        data: this.dataStore
-                    });
-                })
-                .catch((error) => {
-                    console.error('Error fetching data:', error);
-                });
-        },
-
-        addRows() {
-            const hotInstance = this.$refs.hotTableComponent.hotInstance;
-            const blankRows = Array.from({ length: this.rowsToAdd }, () => {
-                return {
-                    taskListNo: '',
-                    taskName: '',
-                    plant: '',
-                    equipment: '',
-                    machineName: '',
-                    pmType: 'PM01',
-                    maintenanceType: 'Overhaul',
-                    latestEventDate: '',
-                    taskPeriod: 0,
-                    taskLaborCost: 0,
-                    bomCode: '',
-                    bomCost: 0,
-                    totalCost: 0,
-                    nextEventDate: '',
-                    situation: '',
-                    thisYear: false,
-                    thisYear1later: false,
-                    thisYear2later: false,
-                    thisYear3later: false,
-                    thisYear4later: false,
-                    thisYear5later: false,
-                    thisYear6later: false,
-                    thisYear7later: false,
-                    thisYear8later: false,
-                    thisYear9later: false,
-                    thisYear10later: false
-                };
-            });
-
-            this.dataStore = this.dataStore.concat(blankRows);
-
-            hotInstance.updateSettings({
-                data: this.dataStore
-            });
-        },
-
-        saveData() {
-            try {
-                const userStore = useUserStore();
-                const userCompanyCode = userStore.companyCode;
-
-                if (!userCompanyCode) {
-                    console.error('Error: No company code found for the user.');
-                    return;
-                }
-
-                const hotInstance = this.$refs.hotTableComponent.hotInstance;
-                const dataToSave = hotInstance.getData();
-
-                const formattedData = dataToSave.map((row, index) => {
                     return {
                         companyCode: userCompanyCode,
-                        taskListNo: row[0] || null,
-                        taskName: row[1],
-                        plant: row[2],
-                        equipment: row[3],
-                        machineName: row[4],
-                        pmType: row[5],
-                        maintenanceType: row[6],
-                        latestEventDate: row[7],
-                        taskPeriod: row[8],
-                        taskLaborCost: row[9],
-                        bomCode: row[10],
-                        bomCost: row[11],
-                        totalCost: row[12],
-                        nextEventDate: row[13],
-                        situation: row[14],
-                        thisYear: row[15] !== null ? row[15] : false,
-                        thisYear1later: row[16] !== null ? row[16] : false,
-                        thisYear2later: row[17] !== null ? row[17] : false,
-                        thisYear3later: row[18] !== null ? row[18] : false,
-                        thisYear4later: row[19] !== null ? row[19] : false,
-                        thisYear5later: row[20] !== null ? row[20] : false,
-                        thisYear6later: row[21] !== null ? row[21] : false,
-                        thisYear7later: row[22] !== null ? row[22] : false,
-                        thisYear8later: row[23] !== null ? row[23] : false,
-                        thisYear9later: row[24] !== null ? row[24] : false,
-                        thisYear10later: row[25] !== null ? row[25] : false
+                        plant: row[0] || null,
+                        year: year,
+                        jan: (row[2] || 0).toString(),
+                        feb: (row[3] || 0).toString(),
+                        mar: (row[4] || 0).toString(),
+                        apr: (row[5] || 0).toString(),
+                        may: (row[6] || 0).toString(),
+                        jun: (row[7] || 0).toString(),
+                        jul: (row[8] || 0).toString(),
+                        aug: (row[9] || 0).toString(),
+                        sep: (row[10] || 0).toString(),
+                        oct: (row[11] || 0).toString(),
+                        nov: (row[12] || 0).toString(),
+                        dec: (row[13] || 0).toString(),
+                        commitment: (row[14] || 0).toString(),
+                        totalCost: row
+                            .slice(2, 15)
+                            .reduce((acc, val) => acc + (parseFloat(val) || 0), 0)
+                            .toFixed(2)
                     };
                 });
 
-                console.log('送信するデータ:', JSON.stringify(formattedData, null, 2));
+            console.log('Post Data:', actualPM02List);
 
-                const url = `http://127.0.0.1:8000/api/task/taskList/`;
-
-                axios
-                    .post(url, formattedData, {
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        withCredentials: true
-                    })
-                    .then((response) => {
-                        console.log('Data saved successfully:', response.data);
-                        this.alertType = 'success';
-                        this.alertMessage = 'データが正常に保存されました。';
-                        this.showAlert = true;
-                        setTimeout(() => {
-                            this.showAlert = false;
-                        }, 3000);
-                    })
-                    .catch((error) => {
-                        console.error('Error saving data:', error);
-
-                        if (error.response) {
-                            console.error('Error response status:', error.response.status);
-                            console.error('Error response headers:', error.response.headers);
-                            console.error('Error response data:', error.response.data);
-                        } else if (error.request) {
-                            console.error('Error request data:', error.request);
-                        } else {
-                            console.error('Error message:', error.message);
-                        }
-
-                        console.error('Error config:', error.config);
-                        this.alertType = 'error';
-                        this.alertMessage = 'データの保存に失敗しました。エラーを確認してください。';
-                        this.errorMessages = ['Quis commodo odio aenean sed adipiscing diam.', 'Risus pretium quam vulputate dignissim suspendisse.', 'Bibendum enim facilisis gravida neque convallis a cras semper。'];
-                        this.showAlert = true;
-                        setTimeout(() => {
-                            this.showAlert = false;
-                        }, 5000);
-                    });
-            } catch (err) {
-                console.error('An error occurred in saveData:', err);
-            }
+            axios
+                .post('http://127.0.0.1:8000/api/repairingCost/actualPM02/', actualPM02List)
+                .then((response) => {
+                    console.log('Data posted successfully', response.data);
+                    this.alertType = 'success';
+                    this.alertMessage = 'データが正常に保存されました。';
+                    this.showAlert = true;
+                    setTimeout(() => {
+                        this.showAlert = false;
+                    }, 3000);
+                })
+                .catch((error) => {
+                    console.error('Error in posting data', error);
+                    this.alertType = 'error';
+                    this.alertMessage = 'データの保存に失敗しました。エラーを確認してください。';
+                    this.errorMessages = [error.response.data.detail || 'Unknown error'];
+                    this.showAlert = true;
+                    setTimeout(() => {
+                        this.showAlert = false;
+                    }, 5000);
+                });
         },
-
-        // totalCost を計算する関数
-        calculateTotalCost(row) {
-            const hotInstance = this.$refs.hotTableComponent.hotInstance;
-
-            // taskLaborCost と bomCost を数値に変換
-            const taskLaborCost = parseFloat(hotInstance.getDataAtRowProp(row, 'taskLaborCost')) || 0;
-            const bomCost = parseFloat(hotInstance.getDataAtRowProp(row, 'bomCost')) || 0;
-
-            // 合計を計算
-            const totalCost = taskLaborCost + bomCost;
-
-            // 計算結果を totalCost に設定
-            hotInstance.setDataAtRowProp(row, 'totalCost', totalCost);
-        },
-
-        // nextEventDate を計算する関数
-        calculateNextEventDate(row) {
-            const hotInstance = this.$refs.hotTableComponent.hotInstance;
-            const latestEventDate = hotInstance.getDataAtRowProp(row, 'latestEventDate');
-            const taskPeriod = hotInstance.getDataAtRowProp(row, 'taskPeriod');
-
-            if (!taskPeriod || taskPeriod === 0) {
-                hotInstance.setDataAtRowProp(row, 'nextEventDate', '');
-                this.calculateSituation(row);
-                return;
-            }
-
-            if (latestEventDate) {
-                const nextEventDate = moment(latestEventDate).add(taskPeriod, 'days').format('YYYY-MM-DD');
-                hotInstance.setDataAtRowProp(row, 'nextEventDate', nextEventDate);
-                this.calculateSituation(row);
-            }
-        },
-
-        // 年次チェックボックスを更新する関数
-        calculateYears(row) {
-            const hotInstance = this.$refs.hotTableComponent.hotInstance;
-            const latestEventDate = hotInstance.getDataAtRowProp(row, 'latestEventDate');
-            const taskPeriod = hotInstance.getDataAtRowProp(row, 'taskPeriod');
-            const startYear = moment().year();
-            const endYear = startYear + 10;
-
-            if (taskPeriod && taskPeriod <= 365) {
-                for (let i = 0; i <= 10; i++) {
-                    hotInstance.setDataAtRowProp(row, `thisYear${i === 0 ? '' : `${i}later`}`, true);
-                }
-                return;
-            }
-
-            for (let i = 0; i <= 10; i++) {
-                hotInstance.setDataAtRowProp(row, `thisYear${i === 0 ? '' : `${i}later`}`, false);
-            }
-
-            if (!latestEventDate || !taskPeriod) {
-                return;
-            }
-
-            let currentEventDate = moment(latestEventDate);
-            while (currentEventDate.year() <= endYear) {
-                const currentYear = currentEventDate.year();
-                if (currentYear >= startYear && currentYear <= endYear) {
-                    const yearIndex = currentYear - startYear;
-                    hotInstance.setDataAtRowProp(row, `thisYear${yearIndex === 0 ? '' : `${yearIndex}later`}`, true);
-                }
-                currentEventDate.add(taskPeriod, 'days');
-            }
-        },
-
-        // situation を計算する関数
-        calculateSituation(row) {
-            const hotInstance = this.$refs.hotTableComponent.hotInstance;
-            const nextEventDate = hotInstance.getDataAtRowProp(row, 'nextEventDate');
-            const today = moment().format('YYYY-MM-DD');
-
-            if (nextEventDate && moment(nextEventDate).isBefore(today)) {
-                hotInstance.setDataAtRowProp(row, 'situation', 'delay');
-            } else {
-                hotInstance.setDataAtRowProp(row, 'situation', '');
-            }
-        },
-
-        // 入力された行番号で再計算を行う関数
-        recalculateRowByInput() {
-            const hotInstance = this.$refs.hotTableComponent.hotInstance;
-            // 1-based index から 0-based index に変換
-            const row = this.rowToRecalculate - 1;
-
-            if (row < 0 || row >= this.dataStore.length) {
-                console.error(`Invalid row number: ${row + 1}`);
-                return;
-            }
-
-            console.log(`Recalculating for row: ${row + 1}`);
-            this.calculateTotalCost(row);
-            this.calculateNextEventDate(row);
-            this.calculateYears(row);
-        },
-
-        exportCSV() {
-            const headers = [
-                'TaskListNo',
-                'TaskName',
-                'Plant',
-                'Equipment',
-                'MachineName',
-                'PM Type',
-                'Maintenance Type',
-                'LatestEvent Date',
-                'Task Period',
-                'TaskLabor Cost',
-                'BomCode',
-                'BomCost',
-                'TotalCost',
-                'Next Event Date',
-                'Situation',
-                ...Array.from({ length: 11 }, (_, index) => `Year ${index + 1}`)
-            ];
-
-            const csvContent = [headers];
-
-            this.dataStore.forEach((item) => {
-                csvContent.push([
-                    item.taskListNo,
-                    item.taskName,
-                    item.plant,
-                    item.equipment,
-                    item.machineName,
-                    item.pmType,
-                    item.maintenanceType,
-                    item.latestEventDate,
-                    item.taskPeriod,
-                    item.taskLaborCost,
-                    item.bomCode,
-                    item.bomCost,
-                    item.totalCost,
-                    item.nextEventDate,
-                    item.situation,
-                    item.thisYear,
-                    item.thisYear1later,
-                    item.thisYear2later,
-                    item.thisYear3later,
-                    item.thisYear4later,
-                    item.thisYear5later,
-                    item.thisYear6later,
-                    item.thisYear7later,
-                    item.thisYear8later,
-                    item.thisYear9later,
-                    item.thisYear10later
-                ]);
+        addRows() {
+            const blankRows = Array.from({ length: this.rowsToAdd }, () => {
+                return {
+                    plant: '',
+                    year: '',
+                    jan: 0,
+                    feb: 0,
+                    mar: 0,
+                    apr: 0,
+                    may: 0,
+                    jun: 0,
+                    jul: 0,
+                    aug: 0,
+                    sep: 0,
+                    oct: 0,
+                    nov: 0,
+                    dec: 0,
+                    commitment: 0,
+                    totalCost: 0
+                };
             });
 
-            const csvString = csvContent.map((row) => row.join(',')).join('\n');
-            const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+            const newData = this.hotInstance.getData().concat(blankRows);
+            this.hotInstance.updateSettings({
+                data: newData
+            });
+        },
+        exportCSV() {
+            const data = this.hotInstance.getData();
+            const headers = this.hotInstance.getColHeader();
+            const csvData = [headers, ...data].map((row) => row.join(',')).join('\n');
 
+            const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
-            const url = URL.createObjectURL(blob);
-            link.href = url;
-            link.setAttribute('download', 'task_list.csv');
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            if (link.download !== undefined) {
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', 'PM02_actual_data.csv');
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
         }
     },
     components: {
         HotTable,
-        Button,
         Save_Alert
     }
 });
-export default TaskListComponent;
+
+export default TableComponent;
 </script>
 
 <style scoped>
-#TaskList {
-    padding: 20px;
-}
-
-.company-code-container {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 10px;
-    font-weight: bold;
-}
-
-.row-count-container {
-    margin-bottom: 15px;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-}
-
-.row-count-container span {
-    margin-right: 10px;
-    font-weight: bold;
-}
-
 .button-container {
     display: flex;
     justify-content: flex-end;
@@ -698,23 +406,10 @@ export default TaskListComponent;
     margin-top: 20px;
 }
 
-.legend {
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-}
-
-.legend-item {
-    display: flex;
-    align-items: center;
-    margin-right: 15px;
-}
-
-.color-box {
-    width: 20px;
-    height: 20px;
+.row-input {
+    width: 150px;
+    padding: 5px;
     margin-right: 10px;
-    border: 1px solid #000;
 }
 
 .blue-button {
@@ -729,20 +424,17 @@ export default TaskListComponent;
     color: white;
 }
 
-.orange-button {
-    background-color: #ff7f0e;
-    border-color: #ff7f0e;
-    color: white;
+.ml-3 {
+    margin-left: 1rem;
 }
 
-.row-input {
-    width: 150px;
-    padding: 5px;
-    margin-right: 10px;
+.error-message-container {
+    margin-top: 10px;
 }
 
-.read-only-cell {
-    background-color: #f5f5f5;
-    color: black;
+.error-message {
+    color: red;
+    font-weight: bold;
 }
+
 </style>

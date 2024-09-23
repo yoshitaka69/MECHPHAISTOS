@@ -1,88 +1,190 @@
 <template>
-  <div style="width: 100%; height: 100%;">
-    PM03 Actual cost
-    <div id="rpcPM03A" style="width: 100%; height: 100%;"></div>
+  <div class="chart-container">
+      <div id="rpcPM03P"></div>
   </div>
 </template>
 
 <script>
-import Plotly from "plotly.js-dist-min";
-import axios from "axios";
-import { useUserStore } from '@/stores/userStore'; // Piniaストアをインポート
+import Plotly from 'plotly.js-dist-min';
+import axios from 'axios';
+import { useUserStore } from '@/stores/userStore'; // Piniaのstoreをインポート
 
 export default {
   data() {
-    return {
-      RepairingCostData: [],
-    };
+      return {
+          RepairingCostData: []
+      };
   },
 
-  mounted() {
-    this.getRepairingCostData().then(data => {
-      this.RepairingCostData = data;
-      this.plotGraph(); // データ取得後にグラフを描画
-    }).catch(error => {
-      console.error('Error during data fetching or plotting:', error);
-    });
+  async mounted() {
+      const userStore = useUserStore(); // Piniaのストアを取得
+      const companyCode = userStore.companyCode; // companyCodeを取得
 
-    const graphContainer = document.getElementById('rpcPM03A');
-    const resizeObserver = new ResizeObserver(() => {
-      this.plotGraph(); // サイズ変更時にグラフを再描画
-    });
-    resizeObserver.observe(graphContainer);
-  },
+      console.log('companyCode:', companyCode); // companyCodeをコンソールに表示
 
-  methods: {
-    async getRepairingCostData() {
-      const userStore = useUserStore();
-      const userCompanyCode = userStore.companyCode;
+      // データを取得する関数
+      const getRepairingCostData = async () => {
+          try {
+              // axiosを使用してデータを取得
+              const response = await axios.get('http://127.0.0.1:8000/api/repairingCost/APM03ByCompany/', {
+                  params: {
+                      companyCode: companyCode // クエリパラメータとしてcompanyCodeを設定
+                  }
+              });
 
-      if (!userCompanyCode) {
-        throw new Error("Error: No company code found for the user.");
-      }
+              console.log('API Response:', response); // APIのレスポンス全体をログに表示
+              console.log('Response Data:', response.data); // レスポンスデータのみをログに表示
 
-      const url = `http://127.0.0.1:8000/api/repairingCost/APM03ByCompany/?format=json&companyCode=${userCompanyCode}`;
-      const response = await axios.get(url);
+              // RepairingCostデータを取り出す
+              const repairingCostData = response.data;
 
-      return response.data.flatMap(companyData =>
-        companyData.actualPM03List.flatMap(plantData =>
-          plantData.actualPM03.map(yearData => {
-            const months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec", "commitment", "totalCost"];
-            return {
-              plant: plantData.plant,
-              data: months.map(month => ({
-                month: month,
-                cost: parseFloat(yearData[month]) || 0
-              })).filter(monthData => monthData.cost !== 0)
-            };
-          })
-        )
-      );
-    },
+              // 各工場のデータが存在するか確認
+              if (!repairingCostData || repairingCostData.length === 0) {
+                  console.warn('No repairing cost data available'); // データがない場合の警告を表示
+                  return;
+              }
 
-    plotGraph() {
-      const plotData = this.RepairingCostData.map(plantData => ({
-        x: plantData.data.map(entry => entry.month),
-        y: plantData.data.map(entry => entry.cost),
-        name: plantData.plant,
-        type: 'scatter'
-      }));
+              // 各会社の `actualPM03List` を取り出して処理
+              for (const company of repairingCostData) {
+                  const actualPM03List = company.actualPM03List;
+                  if (!actualPM03List || actualPM03List.length === 0) {
+                      console.warn(`No actualPM03 data for company ${company.companyCode}`);
+                      continue;
+                  }
 
-      const graphContainer = document.getElementById('rpcPM03A');
-      const layout = {
-        height: graphContainer.clientHeight,
-        width: graphContainer.clientWidth,
-        title: 'Repairing Cost PM03 Actual'
+                  // 各プラントの `actualPM03` データを取り出す
+                  for (const plantData of actualPM03List) {
+                      const actualPM03 = plantData;
+
+                      // データが全て `null` の場合はスキップ
+                      if (
+                          !actualPM03.jan &&
+                          !actualPM03.feb &&
+                          !actualPM03.mar &&
+                          !actualPM03.apr &&
+                          !actualPM03.may &&
+                          !actualPM03.jun &&
+                          !actualPM03.jul &&
+                          !actualPM03.aug &&
+                          !actualPM03.sep &&
+                          !actualPM03.oct &&
+                          !actualPM03.nov &&
+                          !actualPM03.dec &&
+                          !actualPM03.commitment &&
+                          !actualPM03.totalCost
+                      ) {
+                          console.warn('No actual data available for this entry');
+                          continue;
+                      }
+
+                      // データが `null` の場合は0に置き換え
+                      const transformedData = {
+                          x: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Commitment', 'Total'],
+                          y: [
+                              parseFloat(actualPM03.jan) || 0,
+                              parseFloat(actualPM03.feb) || 0,
+                              parseFloat(actualPM03.mar) || 0,
+                              parseFloat(actualPM03.apr) || 0,
+                              parseFloat(actualPM03.may) || 0,
+                              parseFloat(actualPM03.jun) || 0,
+                              parseFloat(actualPM03.jul) || 0,
+                              parseFloat(actualPM03.aug) || 0,
+                              parseFloat(actualPM03.sep) || 0,
+                              parseFloat(actualPM03.oct) || 0,
+                              parseFloat(actualPM03.nov) || 0,
+                              parseFloat(actualPM03.dec) || 0,
+                              parseFloat(actualPM03.commitment) || 0, // commitment データを追加
+                              parseFloat(actualPM03.totalCost) || 0 // totalCost データを追加
+                          ],
+                          name: `${plantData.plant || 'Unknown Plant'}, ${actualPM03.year || 'Unknown Year'}` // 凡例にプラント名と年を表示
+                      };
+
+                      console.log('Transformed Data:', transformedData); // 変換されたデータを表示
+
+                      // Vueのdataに追加
+                      this.RepairingCostData.push(transformedData);
+                  }
+              }
+          } catch (error) {
+              console.error('Error fetching RepairingCost data:', error);
+              throw error;
+          }
       };
 
-      Plotly.newPlot('rpcPM03A', plotData, layout);
-    }
-  },
+      // データ取得とグラフ描画
+      try {
+          await getRepairingCostData();
+          console.log('RepairingCostData:', this.RepairingCostData); // 修理コストデータを表示
 
-  beforeDestroy() {
-    if (resizeObserver) {
-      resizeObserver.disconnect();
-    }
+          if (this.RepairingCostData.length === 0) {
+              console.warn('No data to plot'); // データがない場合の警告を表示
+              return;
+          }
+
+          // グラフデータを作成
+          const plotData = this.RepairingCostData.map((plantData) => ({
+              x: plantData.x,
+              y: plantData.y,
+              name: plantData.name,
+              type: 'scatter', // ラインチャートに変更
+              mode: 'lines+markers', // 線とマーカーを表示
+              line: {
+                  shape: 'linear' // 線の形状を設定（必要に応じて変更可能）
+              }
+          }));
+
+          const layout = {
+              // titleプロパティを削除
+              xaxis: { title: 'Month & Total' },
+              yaxis: {
+                  title: 'Cost',
+                  showticklabels: true, // y軸のラベルを表示
+                  showline: true, // y軸の線を表示
+                  linecolor: 'black', // y軸の線を黒に設定
+                  linewidth: 1 // y軸の線の太さを設定
+              },
+              showlegend: true, // 凡例の表示
+              autosize: true, // 自動リサイズを有効にする
+              paper_bgcolor: '#FFE5CC', // グラフの外側の背景色をさらに薄いオレンジ色に設定
+              plot_bgcolor: 'white', // グラフの内側の背景色を白に設定
+              margin: {
+                  l: 50, // 左マージンを狭める
+                  r: 30, // 右マージンを狭める
+                  t: 10, // 上マージンを小さく設定
+                  b: 50 // 下マージンはデフォルト
+              }
+          };
+
+          const config = {
+              responsive: true, // グラフが親要素に応じてリサイズされるように設定
+              displayModeBar: false // グラフのツールバーを非表示
+          };
+
+          // グラフを描画
+          Plotly.newPlot('rpcPM03P', plotData, layout, config);
+
+          // ウィンドウリサイズ時にグラフを更新
+          window.addEventListener('resize', () => {
+              Plotly.Plots.resize(document.getElementById('rpcPM03P'));
+          });
+      } catch (error) {
+          console.error('Error plotting Repairing Cost graph:', error);
+      }
   }
 };
 </script>
+
+<style scoped>
+.chart-container {
+  width: 100%; /* 親要素の幅に合わせる */
+  height: 100%; /* 親要素の高さに合わせる */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#rpcPM03P {
+  width: 100%;
+  height: 100%;
+}
+</style>

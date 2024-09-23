@@ -5,6 +5,7 @@ from django.utils import timezone
 from accounts.models import CompanyCode,CompanyName,Plant
 
 
+
 #RepairingCostPM02 項目が多くなるけど将来的にいろいろな企業が入ってきた際に、このように細かく振り分けておいたほうがわかり易くなるはず…
 class PlannedPM02(models.Model):
 
@@ -37,15 +38,10 @@ class PlannedPM02(models.Model):
 
 
 
-
-
-
-
-
 class ActualPM02(models.Model):
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='actualPM02_companyCode', null=True, blank=True)
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='actualPM02_companyName', null=True, blank=True)
-    plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='actualPM02_plant', null=True, blank=True)
+    plant = models.CharField(verbose_name='plant', max_length=100, null=True, blank=True)
 
     year = models.IntegerField(verbose_name='year', default=0, null=True, blank=True)
     jan = models.DecimalField(verbose_name='jan', max_digits=12, decimal_places=2,default=0,null=True, blank=True)

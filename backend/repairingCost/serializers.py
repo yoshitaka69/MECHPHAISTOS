@@ -150,120 +150,58 @@ class CompanyCodePPM02Serializer(serializers.ModelSerializer):
 
 
 #Actual PM02 cost
-class ActualPM02Serializer(serializers.ModelSerializer):
-    class Meta:
-        model = ActualPM02
-        fields = ['companyCode', 'plant', 'year', 'jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec', 'commitment', 'totalCost']
+#----------------------------------------------------------------------------------------
 
+# serializers.py
+# serializers.py
+from rest_framework import serializers
+from .models import ActualPM02, CompanyCode
+
+class ActualPM02Serializer(serializers.ModelSerializer):
     companyCode = serializers.SlugRelatedField(
         slug_field='companyCode',
         queryset=CompanyCode.objects.all()
     )
-    plant = serializers.SlugRelatedField(
-        slug_field='plant',
-        queryset=Plant.objects.all()
-    )
-
-    def create(self, validated_data):
-        return self._create_or_update(validated_data)
-
-    def update(self, instance, validated_data):
-        return self._create_or_update(validated_data, instance)
-
-    def _create_or_update(self, validated_data, instance=None):
-        company_code = validated_data.pop('companyCode', None)
-        plant_name = validated_data.pop('plant', None)
-
-        if instance:
-            for attr, value in validated_data.items():
-                setattr(instance, attr, value)
-            if company_code:
-                instance.companyCode = company_code
-            if plant_name:
-                instance.plant = plant_name
-            instance.save()
-            return instance
-        else:
-            return ActualPM02.objects.create(
-                companyCode=company_code,
-                plant=plant_name,
-                **validated_data
-            )
-
-class PlantAPM02Serializer(serializers.ModelSerializer):
-    actualPM02 = ActualPM02Serializer(many=True, source='actualPM02_plant') 
 
     class Meta:
-        model = Plant
-        fields = ['plant', 'actualPM02']
-    
-    def create(self, validated_data):
-        return self._create_or_update(validated_data)
+        model = ActualPM02
+        fields = [
+            'companyCode', 'plant', 'year', 'jan', 'feb', 'mar', 'apr', 
+            'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec', 
+            'commitment', 'totalCost'
+        ]
 
-    def update(self, instance, validated_data):
-        return self._create_or_update(validated_data, instance)
+    def validate(self, data):
+        print("Validating Data:", data)  # バリデーション前のデータをログに出力
 
-    def _create_or_update(self, validated_data, instance=None):
-        actual_pm02_data = validated_data.pop('actualPM02_plant', [])
-        
-        if instance:
-            for attr, value in validated_data.items():
-                setattr(instance, attr, value)
-            instance.save()
-        else:
-            instance = Plant.objects.create(**validated_data)
+        # バリデーションのロジックをここから削除
+        # 例: フロントエンドで年の範囲チェックを行うため、ここでは不要
 
-        for actual_pm02 in actual_pm02_data:
-            actual_pm02['plant'] = instance
-            actual_pm02_instance, created = ActualPM02.objects.get_or_create(
-                plant=instance,
-                year=actual_pm02.get('year'),
-                defaults=actual_pm02
-            )
+        # totalCostが月々の合計と一致するかをチェック
+        total_cost = sum([
+            float(data.get('jan', 0)), float(data.get('feb', 0)), float(data.get('mar', 0)),
+            float(data.get('apr', 0)), float(data.get('may', 0)), float(data.get('jun', 0)),
+            float(data.get('jul', 0)), float(data.get('aug', 0)), float(data.get('sep', 0)),
+            float(data.get('oct', 0)), float(data.get('nov', 0)), float(data.get('dec', 0)),
+            float(data.get('commitment', 0))
+        ])
 
-            if not created:
-                ActualPM02Serializer().update(actual_pm02_instance, actual_pm02)
-        
-        return instance
+        if abs(total_cost - float(data['totalCost'])) > 0.01:  # 小数点以下の誤差を考慮
+            print("Total Cost Validation Error: Expected", total_cost, "Received", data['totalCost'])  # 合計コストのバリデーションエラー
+            raise serializers.ValidationError({"totalCost": "Total cost does not match the sum of monthly costs."})
 
+        return data
+
+
+
+
+# `CompanyCodeAPM02Serializer` is adjusted to remove `PlantAPM02Serializer`.
 class CompanyCodeAPM02Serializer(serializers.ModelSerializer):
-    actualPM02List = PlantAPM02Serializer(many=True, source='plant_companyCode')
+    actualPM02List = ActualPM02Serializer(many=True, source='actualPM02_companyCode')
 
     class Meta:
         model = CompanyCode
         fields = ['companyCode', 'actualPM02List']
-
-    def create(self, validated_data):
-        return self._create_or_update(validated_data)
-
-    def update(self, instance, validated_data):
-        return self._create_or_update(validated_data, instance)
-
-    def _create_or_update(self, validated_data, instance=None):
-        plant_data_list = validated_data.pop('plant_companyCode', [])
-        
-        if instance:
-            for attr, value in validated_data.items():
-                setattr(instance, attr, value)
-            instance.save()
-        else:
-            instance = CompanyCode.objects.create(**validated_data)
-
-        for plant_data in plant_data_list:
-            plant_data['companyCode'] = instance
-            plant_instance, created = Plant.objects.get_or_create(
-                companyCode=instance,
-                plant=plant_data.get('plant'),
-                defaults=plant_data
-            )
-
-            if not created:
-                PlantAPM02Serializer().update(plant_instance, plant_data)
-            else:
-                PlantAPM02Serializer().create(plant_data)
-        
-        return instance
-
 
 
 
@@ -519,11 +457,10 @@ class CompanyCodeAPM03Serializer(serializers.ModelSerializer):
 
 #PM04-actual
 #----------------------------------------------------------------------------------------
-class ActualPM04Serializer(serializers.ModelSerializer):
-    class Meta:
-        model = ActualPM04
-        fields = ['companyCode', 'plant', 'year', 'jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec', 'commitment', 'totalCost']
+from rest_framework import serializers
+from .models import ActualPM04, CompanyCode, Plant
 
+class ActualPM04Serializer(serializers.ModelSerializer):
     companyCode = serializers.SlugRelatedField(
         slug_field='companyCode',
         queryset=CompanyCode.objects.all()
@@ -532,6 +469,10 @@ class ActualPM04Serializer(serializers.ModelSerializer):
         slug_field='plant',
         queryset=Plant.objects.all()
     )
+
+    class Meta:
+        model = ActualPM04
+        fields = ['companyCode', 'plant', 'year', 'jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec', 'commitment', 'totalCost']
 
     def create(self, validated_data):
         return self._create_or_update(validated_data)
@@ -544,6 +485,7 @@ class ActualPM04Serializer(serializers.ModelSerializer):
         plant_name = validated_data.pop('plant', None)
 
         if instance:
+            # 既存インスタンスを更新
             for attr, value in validated_data.items():
                 setattr(instance, attr, value)
             if company_code:
@@ -553,11 +495,15 @@ class ActualPM04Serializer(serializers.ModelSerializer):
             instance.save()
             return instance
         else:
-            return ActualPM04.objects.create(
-                companyCode=company_code,
-                plant=plant_name,
-                **validated_data
-            )
+            # 新規インスタンスを作成
+            if company_code and plant_name:
+                return ActualPM04.objects.create(
+                    companyCode=company_code,
+                    plant=plant_name,
+                    **validated_data
+                )
+            else:
+                raise serializers.ValidationError("companyCode and plant are required.")
 
 class PlantAPM04Serializer(serializers.ModelSerializer):
     actualPM04 = ActualPM04Serializer(many=True, source='actualPM04_plant') 
@@ -576,12 +522,15 @@ class PlantAPM04Serializer(serializers.ModelSerializer):
         actual_pm04_data = validated_data.pop('actualPM04_plant', [])
         
         if instance:
+            # 既存インスタンスの更新
             for attr, value in validated_data.items():
                 setattr(instance, attr, value)
             instance.save()
         else:
+            # 新規インスタンスの作成
             instance = Plant.objects.create(**validated_data)
 
+        # ネストされたActualPM04のデータを更新または作成
         for actual_pm04 in actual_pm04_data:
             actual_pm04['plant'] = instance
             actual_pm04_instance, created = ActualPM04.objects.get_or_create(
@@ -591,6 +540,7 @@ class PlantAPM04Serializer(serializers.ModelSerializer):
             )
 
             if not created:
+                # 既存のActualPM04を更新
                 ActualPM04Serializer().update(actual_pm04_instance, actual_pm04)
         
         return instance
@@ -612,12 +562,15 @@ class CompanyCodeAPM04Serializer(serializers.ModelSerializer):
         plant_data_list = validated_data.pop('plant_companyCode', [])
         
         if instance:
+            # 既存インスタンスの更新
             for attr, value in validated_data.items():
                 setattr(instance, attr, value)
             instance.save()
         else:
+            # 新規インスタンスの作成
             instance = CompanyCode.objects.create(**validated_data)
 
+        # ネストされたPlantのデータを更新または作成
         for plant_data in plant_data_list:
             plant_data['companyCode'] = instance
             plant_instance, created = Plant.objects.get_or_create(
@@ -627,11 +580,14 @@ class CompanyCodeAPM04Serializer(serializers.ModelSerializer):
             )
 
             if not created:
+                # 既存のPlantを更新
                 PlantAPM04Serializer().update(plant_instance, plant_data)
             else:
+                # 新規Plantを作成
                 PlantAPM04Serializer().create(plant_data)
         
         return instance
+
 #----------------------------------------------------------------------------------------
 
 

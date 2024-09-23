@@ -238,6 +238,7 @@ class SummedPlannedCost(models.Model):
 
 
 
+
 class SummedActualCost(models.Model):
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='summedActualCost_companyCode')
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='summedActualCost_plant')
