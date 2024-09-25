@@ -227,25 +227,26 @@ import base64
 from .models import DailyReport, CompanyCode
 from .serializers import DailyReportSerializer, CompanyCodeWithReportsSerializer
 
+from rest_framework import viewsets, status
+from rest_framework.response import Response
+from .models import DailyReport, CompanyCode
+from .serializers import DailyReportSerializer
+
 class DailyReportViewSet(viewsets.ModelViewSet):
     queryset = DailyReport.objects.all()
     serializer_class = DailyReportSerializer
 
     def create(self, request, *args, **kwargs):
         data = request.data
-        # 写真がある場合はデータを処理
-        photo = data.get('photo')
-        if photo and isinstance(photo, str) and 'base64,' in photo:
-            format, imgstr = photo.split(';base64,') 
-            ext = format.split('/')[-1] 
-            # 保存用のファイル名を設定（例: recorder_date.jpg）
-            data['photo'] = ContentFile(base64.b64decode(imgstr), name=f"{data['recorder']}_{data['date']}.{ext}")
+        # デバッグ用: companyCodeの値を表示
+        print("companyCode received:", data.get('companyCode'))
 
         serializer = self.get_serializer(data=data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        if serializer.is_valid():
+            self.perform_create(serializer)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class CompanyCodeViewSet(viewsets.ModelViewSet):
     serializer_class = CompanyCodeWithReportsSerializer  # シリアライザーを指定

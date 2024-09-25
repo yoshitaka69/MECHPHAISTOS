@@ -1,6 +1,8 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import WorkOrderViewSet,WorkPermissionViewSet,WorkOrderManagementViewSet,CompanyCodeWorkOrderViewSet,CompanyCodeWorkPermissionViewSet,CompanyCodeWorkOrderManagementViewSet
+from .views import (WorkOrderViewSet,WorkPermissionViewSet,WorkOrderManagementViewSet,CompanyCodeWorkOrderViewSet,
+                    CompanyCodeWorkPermissionViewSet,CompanyCodeWorkOrderManagementViewSet,
+                    DailyReportViewSet,CompanyCodeViewSet)
 
 
 
@@ -13,6 +15,11 @@ router.register(r'workPermissionByCompany', CompanyCodeWorkPermissionViewSet, ba
 
 router.register(r'workOrderManagement', WorkOrderManagementViewSet, basename='workOrderManagement')
 router.register(r'workOrderManagementByCompany', CompanyCodeWorkOrderManagementViewSet, basename='companyCode-workOrderManagement')
+
+# 新しいエンドポイント
+router.register(r'daily_reports', DailyReportViewSet, basename='dailyReport')
+router.register(r'company_codes', CompanyCodeViewSet, basename='companyCode')
+
 
 
 urlpatterns = [

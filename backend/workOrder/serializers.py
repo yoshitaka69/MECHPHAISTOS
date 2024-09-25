@@ -87,9 +87,15 @@ from rest_framework import serializers
 from .models import DailyReport, CompanyCode
 
 class DailyReportSerializer(serializers.ModelSerializer):
+    companyCode = serializers.SlugRelatedField(
+        slug_field='companyCode',  # companyCodeフィールドをキーに使用
+        queryset=CompanyCode.objects.all()  # バリデーション用のクエリセット
+    )
+
     class Meta:
         model = DailyReport
         fields = '__all__'
+
 
 class CompanyCodeWithReportsSerializer(serializers.ModelSerializer):
     dailyReports = DailyReportSerializer(many=True, read_only=True, source='dailyReport_companyCode')
