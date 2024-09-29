@@ -32,23 +32,11 @@
               </div>
             </div>
           </TabPanel>
-
-          <TabPanel header="Risk-Matrix">
-            <p class="line-height-3 m-0"></p>
-            <div class="risk-matrix-container">
-              <div class="risk-matrix-item">
-                <Risk_Matrix_impact_for_production />
-              </div>
-              <div class="risk-matrix-item">
-                <Risk_matrix_possibility_Of_Failure />
-              </div>
-            </div>
-          </TabPanel>
         </TabView>
       </div>
     </section>
 
-    <!-- RiskMatrixImpact Modal -->
+    <!-- Impact Matrix Modal -->
     <Dialog v-if="showImpactMatrixModal" :visible="showImpactMatrixModal" modal @hide="closeImpactMatrixModal" :style="{ width: '70vw' }" :closable="false">
       <template #header>
         <h3>Impact Matrix</h3>
@@ -59,7 +47,7 @@
       </template>
     </Dialog>
 
-    <!-- RiskMatrixPossibility Modal -->
+    <!-- Possibility Matrix Modal -->
     <Dialog v-if="showPossibilityMatrixModal" :visible="showPossibilityMatrixModal" modal @hide="closePossibilityMatrixModal" :style="{ width: '50vw' }" :closable="false">
       <template #header>
         <h3>Possibility Matrix</h3>
@@ -80,8 +68,6 @@ import Dialog from 'primevue/dialog';
 import Button from 'primevue/button';
 import Assessment_rate from '@/components/Critical_equipment_list/Assessment_rate.vue';
 import Top20_priority_task from '@/components/Critical_equipment_list/Top20_priority_task.vue';
-import Risk_Matrix_impact_for_production from '@/components/Risk_Matrix/Risk_Matrix_impact_for_production.vue';
-import Risk_matrix_possibility_Of_Failure from '@/components/Risk_Matrix/Risk_matrix_possibility_Of_Failure.vue';
 
 export default {
   components: {
@@ -90,8 +76,6 @@ export default {
     RiskMatrixPossibility,
     Assessment_rate,
     Top20_priority_task,
-    Risk_Matrix_impact_for_production,
-    Risk_matrix_possibility_Of_Failure,
     Dialog,
     Button,
   },
@@ -116,7 +100,6 @@ export default {
     handleInputChange(data) {
       console.log('Input changed in CriticalEquipmentList:', data);
       this.emittedData = data;
-      // ここでモーダルにデータを渡す処理を実行できます
       if (this.showImpactMatrixModal) {
         this.$refs.impactMatrix.updateData(data);
       }
@@ -164,18 +147,6 @@ export default {
 .row {
   display: flex;
   flex-wrap: wrap;
-}
-
-.risk-matrix-container {
-  display: flex;
-  flex-direction: column;
-  gap: 40px;
-}
-
-.risk-matrix-item {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
 }
 
 .mb-3 {
