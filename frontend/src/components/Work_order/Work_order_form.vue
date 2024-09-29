@@ -1,202 +1,239 @@
 <template>
-  <Toast />
-  <Dialog :visible="visible" @hide="hideModal" modal :closable="false" style="width: 70vw">
-    <template #header>
-      <div class="flex justify-content-between align-items-center">
-        <span class="text-lg font-bold">Work Order</span>
-        <Button icon="pi pi-times" class="p-button-text" @click="hideModal" />
-      </div>
-    </template>
-    <div class="surface-ground px-4 py-8 md:px-6 lg:px-8">
-      <div class="p-fluid flex flex-column lg:flex-row">
-        <ul class="list-none m-0 p-0 flex flex-row lg:flex-column justify-content-evenly md:justify-content-between lg:justify-content-start mb-5 lg:pr-8 lg:mb-0" style="background-color: #e0f7fa">
-          <li @click="currentTab = 'form'">
-            <a v-ripple class="flex align-items-center cursor-pointer p-3 border-round text-800 hover:surface-hover transition-duration-150 transition-colors p-ripple">
-              <i class="pi pi-file md:mr-2"></i>
-              <span class="font-medium hidden md:block">Work Order Form</span>
-            </a>
-          </li>
-          <li @click="currentTab = 'history'">
-            <a v-ripple class="flex align-items-center cursor-pointer p-3 border-round text-800 hover:surface-hover transition-duration-150 transition-colors p-ripple">
-              <i class="pi pi-clock md:mr-2"></i>
-              <span class="font-medium hidden md:block">History</span>
-            </a>
-          </li>
-        </ul>
-        <div v-if="currentTab === 'form'" class="surface-card p-5 shadow-2 border-round flex-auto">
-          <div class="text-900 font-semibold text-lg mt-3 flex align-items-center justify-content-between">
-            <span>Work Order Entry</span>
-            <span v-if="workOrderNo" class="text-sm">Work Order No: {{ workOrderNo }}</span>
-          </div>
-          <Divider></Divider>
-          <div class="flex gap-5 flex-column-reverse md:flex-row">
-            <div class="flex-auto p-fluid">
-              <div class="mb-4">
-                <label for="title" class="block font-medium text-900 mb-2">Title</label>
-                <Textarea id="title" v-model="localEntry.title" autoResize class="w-full" />
-              </div>
-              <div class="flex mb-4 gap-4">
-                <div class="flex-auto">
-                  <label for="plant" class="block font-medium text-900 mb-2">Plant</label>
-                  <Dropdown id="plant" v-model="localEntry.plant" :options="plantOptions" optionLabel="label" optionValue="value" placeholder="Select a Plant" />
-                </div>
-                <div class="flex-auto">
-                  <label for="equipment" class="block font-medium text-900 mb-2">Equipment</label>
-                  <Dropdown id="equipment" v-model="localEntry.equipment" :options="equipmentOptions" optionLabel="label" optionValue="value" placeholder="Select Equipment" />
-                </div>
-              </div>
-
-              <!-- Request Order と Working Order のセクション -->
-              <div class="flex mb-4 gap-4">
-                <!-- Request Order セクション -->
-                <div class="flex-auto p-3 border-round shadow-1" style="background-color: #e3f2fd;">
-                  <h3 class="text-center text-lg mb-3">Request Order</h3>
-                  <div class="mb-4">
-                    <label for="requestType" class="block font-medium text-900 mb-2">Request Type</label>
-                    <Textarea id="requestType" v-model="localEntry.requestType" autoResize class="w-full" />
-                  </div>
-                  <div class="mb-4">
-                    <label for="requestDate" class="block font-medium text-900 mb-2">Request Date</label>
-                    <InputText id="requestDate" v-model="localEntry.requestDate" type="date" class="w-full" />
-                  </div>
-                  <div class="mb-4">
-                    <label for="requestedBy" class="block font-medium text-900 mb-2">Requested By</label>
-                    <Textarea id="requestedBy" v-model="localEntry.requestedBy" autoResize class="w-full" />
-                  </div>
-
-                  <!-- Failure Type をここに移動 -->
-                  <div class="mb-4">
-                    <label class="block font-medium text-900 mb-2">Failure Type</label>
-                    <div v-for="type in failureTypes" :key="type.value" class="flex align-items-center">
-                      <Checkbox v-model="localEntry.failureTypes" :value="type.value" class="mr-2" />
-                      <label>{{ type.label }}</label>
-                    </div>
-                  </div>
-
-                  <!-- Situation チェックリスト -->
-                  <div class="mb-4">
-                    <label class="block font-medium text-900 mb-2">Situation</label>
-                    <div v-for="situation in situations" :key="situation.value" class="flex align-items-center">
-                      <Checkbox v-model="localEntry.situations" :value="situation.value" class="mr-2" />
-                      <label>{{ situation.label }}</label>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Working Order セクション -->
-                <div class="flex-auto p-3 border-round shadow-1" style="background-color: #fce4ec;">
-                  <!-- PM Type を Working Order の上に配置 -->
-                  <div class="mb-4">
-                    <label class="block font-medium text-900 mb-2">PM Type</label>
-                    <div v-for="pmType in pmTypes" :key="pmType.value" class="flex align-items-center">
-                      <Checkbox v-model="localEntry.pmTypes" :value="pmType.value" class="mr-2" />
-                      <label>{{ pmType.label }}</label>
-                    </div>
-                  </div>
-
-                  <h3 class="text-center text-lg mb-3">Working Order</h3>
-                  <div class="mb-4">
-                    <label for="workingType" class="block font-medium text-900 mb-2">Working Type</label>
-                    <Textarea id="workingType" v-model="localEntry.workingType" autoResize class="w-full" />
-                  </div>
-
-                  <!-- Failure Mode を Working Type の下に配置 -->
-                  <div class="mb-4">
-                    <label class="block font-medium text-900 mb-2">Failure Mode</label>
-                    <div v-for="mode in failureModes" :key="mode.value" class="flex align-items-center">
-                      <Checkbox v-model="localEntry.failureModes" :value="mode.value" class="mr-2" />
-                      <label>{{ mode.label }}</label>
-                    </div>
-                  </div>
-
-                  <div class="mb-4">
-                    <label for="workingDate" class="block font-medium text-900 mb-2">Working Date</label>
-                    <InputText id="workingDate" v-model="localEntry.workingDate" type="date" class="w-full" />
-                  </div>
-                  <div class="mb-4">
-                    <label for="workingBy" class="block font-medium text-900 mb-2">Working By</label>
-                    <Textarea id="workingBy" v-model="localEntry.workingBy" autoResize class="w-full" />
-                  </div>
-                </div>
-              </div>
-
-              <!-- Failure Checkboxes の追加 -->
-              <div class="mb-4">
-                <label class="block font-medium text-900 mb-2">Failure Cause</label>
-                <div v-for="cause in failureCauses" :key="cause.value" class="flex align-items-center">
-                  <Checkbox v-model="localEntry.failureCauses" :value="cause.value" class="mr-2" />
-                  <label>{{ cause.label }}</label>
-                </div>
-              </div>
-
-              <div class="mb-4">
-                <label for="failureDescription" class="block font-medium text-900 mb-2">Failure Description</label>
-                <Textarea id="failureDescription" v-model="localEntry.failureDescription" autoResize type="text" rows="5" class="w-full"></Textarea>
-              </div>
-              <div class="mb-4">
-                <label for="failureDate" class="block font-medium text-900 mb-2">Failure Date</label>
-                <InputText id="failureDate" v-model="localEntry.failureDate" type="date" />
-              </div>
-              <div class="mb-4">
-                <label for="description" class="block font-medium text-900 mb-2">Description</label>
-                <Textarea id="description" v-model="localEntry.description" autoResize type="text" rows="5" class="w-full"></Textarea>
-              </div>
-              <div class="mb-4">
-                <label for="status" class="block font-medium text-900 mb-2">Status</label>
-                <Dropdown id="status" v-model="localEntry.status" :options="statuses" optionLabel="label" optionValue="value" placeholder="Select a Status" />
-              </div>
-              <div class="mb-4">
-                <label for="registrationDate" class="block font-medium text-900 mb-2">Registration Date</label>
-                <InputText id="registrationDate" v-model="localEntry.registrationDate" type="date" />
-              </div>
-              <div class="flex justify-content-end">
-                <Button label="Save" icon="pi pi-check" @click="submitEntry" class="mr-2" />
-                <Button label="Cancel" icon="pi pi-times" @click="cancelNewEntry" class="p-button-secondary" />
-              </div>
+    <Toast />
+    <Dialog :visible="visible" @hide="hideModal" modal :closable="false" style="width: 70vw">
+        <template #header>
+            <div class="flex justify-content-between align-items-center">
+                <span class="text-lg font-bold">Work Order</span>
+                <Button icon="pi pi-times" class="p-button-text" @click="hideModal" />
             </div>
-            <div class="flex flex-column align-items-center flex-or">
-              <span class="font-medium text-900 mb-2">Picture 1</span>
-              <img :src="pictureSrc1" class="h-10rem w-10rem border-black mb-4" @click="enlargeImage1" />
-              <Button type="button" icon="pi pi-pencil" class="p-button-rounded -mt-4"></Button>
+        </template>
+        <div class="surface-ground px-4 py-8 md:px-6 lg:px-8">
+            <div class="p-fluid flex flex-column lg:flex-row">
+                <ul class="list-none m-0 p-0 flex flex-row lg:flex-column justify-content-evenly md:justify-content-between lg:justify-content-start mb-5 lg:pr-8 lg:mb-0" style="background-color: #e0f7fa">
+                    <li @click="currentTab = 'form'">
+                        <a v-ripple class="flex align-items-center cursor-pointer p-3 border-round text-800 hover:surface-hover transition-duration-150 transition-colors p-ripple">
+                            <i class="pi pi-file md:mr-2"></i>
+                            <span class="font-medium hidden md:block">Work Order Form</span>
+                        </a>
+                    </li>
+                    <li @click="currentTab = 'history'">
+                        <a v-ripple class="flex align-items-center cursor-pointer p-3 border-round text-800 hover:surface-hover transition-duration-150 transition-colors p-ripple">
+                            <i class="pi pi-clock md:mr-2"></i>
+                            <span class="font-medium hidden md:block">History</span>
+                        </a>
+                    </li>
+                </ul>
+                <div v-if="currentTab === 'form'" class="surface-card p-5 shadow-2 border-round flex-auto">
+                    <div class="text-900 font-semibold text-lg mt-3 flex justify-content-end">
+                        <div class="flex gap-3 items-center">
+                            <!-- Registration Date -->
+                            <div class="flex align-items-center">
+                                <label for="registrationDate" class="block font-medium text-sm mb-0 mr-2">Registration Date:</label>
+                                <InputText id="registrationDate" v-model="localEntry.registrationDate" type="date" class="w-full text-sm" />
+                            </div>
+                            <!-- Work Order No -->
+                            <div class="flex align-items-center">
+                                <span v-if="workOrderNo" class="text-sm">Work Order No: {{ workOrderNo }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <Divider></Divider>
+                    <div class="flex gap-5 flex-column-reverse md:flex-row">
+                        <div class="flex-auto p-fluid">
+                            <div class="mb-4">
+                                <label for="title" class="block font-medium text-900 mb-2">Title</label>
+                                <Textarea id="title" v-model="localEntry.title" autoResize class="w-full" />
+                            </div>
+                            <div class="flex mb-4 gap-4">
+                                <div class="flex-auto">
+                                    <label for="plant" class="block font-medium text-900 mb-2">Plant</label>
+                                    <Dropdown id="plant" v-model="localEntry.plant" :options="plantOptions" optionLabel="label" optionValue="value" placeholder="Select a Plant" />
+                                </div>
+                                <div class="flex-auto">
+                                    <label for="equipment" class="block font-medium text-900 mb-2">Equipment</label>
+                                    <Dropdown id="equipment" v-model="localEntry.equipment" :options="equipmentOptions" optionLabel="label" optionValue="value" placeholder="Select Equipment" />
+                                </div>
+                            </div>
 
-              <span class="font-medium text-900 mb-2">Picture 2</span>
-              <img :src="pictureSrc2" class="h-10rem w-10rem border-black mb-4" @click="enlargeImage2" />
-              <Button type="button" icon="pi pi-pencil" class="p-button-rounded -mt-4"></Button>
+                            <!-- Request Order と Working Order のセクション -->
+                            <div class="flex mb-4 gap-4">
+                                <!-- Request Order セクション -->
+                                <div class="flex-auto p-3 border-round shadow-1" style="background-color: #e3f2fd">
+                                    <h3 class="text-center text-lg mb-3">Request Order</h3>
+                                    <div class="mb-4">
+                                        <label for="requestType" class="block font-medium text-900 mb-2">Request Type</label>
+                                        <Textarea id="requestType" v-model="localEntry.requestType" placeholder="例: メンテナンス依頼の内容を入力してください" autoResize class="w-full" />
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label for="failureDate" class="block font-medium text-900 mb-2">Failure Date</label>
+                                        <InputText id="failureDate" v-model="localEntry.failureDate" type="date" />
+                                    </div>
+                                    <div class="mb-4">
+                                        <label for="requestedBy" class="block font-medium text-900 mb-2">Requested By</label>
+                                        <Textarea id="requestedBy" v-model="localEntry.requestedBy" autoResize class="w-full" />
+                                    </div>
+
+                                    <!-- Failure Type をここに移動 -->
+                                    <!-- Failure Type -->
+                                    <div class="mb-4">
+                                        <label class="block font-medium text-900 mb-2">Failure Type</label>
+                                        <div class="flex flex-row gap-4">
+                                            <!-- Electrical -->
+                                            <div class="flex align-items-center">
+                                                <Checkbox v-model="localEntry.failureTypes" :value="failureTypes[0].value" class="mr-2" />
+                                                <label>{{ failureTypes[0].label }}</label>
+                                            </div>
+                                            <!-- Mechanical -->
+                                            <div class="flex align-items-center">
+                                                <Checkbox v-model="localEntry.failureTypes" :value="failureTypes[1].value" class="mr-2" />
+                                                <label>{{ failureTypes[1].label }}</label>
+                                            </div>
+                                            <!-- Software -->
+                                            <div class="flex align-items-center">
+                                                <Checkbox v-model="localEntry.failureTypes" :value="failureTypes[2].value" class="mr-2" />
+                                                <label>{{ failureTypes[2].label }}</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Situation チェックリスト -->
+                                    <div class="mb-4">
+                                        <label class="block font-medium text-900 mb-2">Situation</label>
+                                        <div v-for="situation in situations" :key="situation.value" class="flex align-items-center">
+                                            <Checkbox v-model="localEntry.situations" :value="situation.value" class="mr-2" />
+                                            <label>{{ situation.label }}</label>
+                                        </div>
+                                    </div>
+                                    <!-- Is it urgent? question and checkbox -->
+                                    <div class="mb-4">
+                                        <label class="block font-medium text-900 mb-2">Is it urgent?</label>
+                                        <div class="flex align-items-center">
+                                            <Checkbox v-model="localEntry.isUrgent" class="mr-2" />
+                                            <label>Yes</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Working Order セクション -->
+                                <div class="flex-auto p-3 border-round shadow-1" style="background-color: #fce4ec">
+                                    <h3 class="text-center text-lg mb-3">Working Order</h3>
+                                    <!-- PM Type を横並びで表示 -->
+                                    <div class="mb-4">
+                                        <label class="block font-medium text-900 mb-2">PM Type</label>
+                                        <div class="flex flex-wrap">
+                                            <div v-for="pmType in pmTypes" :key="pmType.value" class="flex align-items-center mr-4">
+                                                <Checkbox v-model="localEntry.pmTypes" :value="pmType.value" class="mr-2" />
+                                                <label>{{ pmType.label }}</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Failure Mode -->
+                                    <div class="mb-4">
+                                        <label class="block font-medium text-900 mb-2">Failure Mode</label>
+                                        <div v-for="mode in failureModes" :key="mode.value" class="flex align-items-center">
+                                            <Checkbox v-model="localEntry.failureModes" :value="mode.value" class="mr-2" />
+                                            <label>{{ mode.label }}</label>
+                                        </div>
+                                    </div>
+
+                                    <!-- Working Date のStart DateとEnd Dateの追加 -->
+                                    <div class="flex flex-row gap-4 mb-4">
+                                        <!-- Start Date -->
+                                        <div class="flex-auto">
+                                            <label for="workingStartDate" class="block font-medium text-900 mb-2">Start Date</label>
+                                            <InputText id="workingStartDate" v-model="localEntry.workingStartDate" type="date" class="w-full" />
+                                        </div>
+
+                                        <!-- End Date -->
+                                        <div class="flex-auto">
+                                            <label for="workingEndDate" class="block font-medium text-900 mb-2">End Date</label>
+                                            <InputText id="workingEndDate" v-model="localEntry.workingEndDate" type="date" class="w-full" />
+                                        </div>
+                                    </div>
+
+                                    <!-- Working By にuserNameをデフォルトで表示 -->
+                                    <div class="mb-4">
+                                        <label for="workingBy" class="block font-medium text-900 mb-2">Working By</label>
+                                        <Textarea id="workingBy" v-model="localEntry.workingBy" :value="userStore.userName" autoResize class="w-full" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Failure Description の統合 -->
+                            <div class="mb-4">
+                                <label class="block font-medium text-900 mb-2">Failure Description</label>
+                                <div class="flex flex-wrap">
+                                    <div v-for="cause in failureCauses" :key="cause.value" class="flex align-items-center mr-4">
+                                        <Checkbox v-model="localEntry.failureCauses" :value="cause.value" class="mr-2" />
+                                        <label>{{ cause.label }}</label>
+                                    </div>
+                                </div>
+                                <!-- Failure Description 用のテキストエリア -->
+                                <Textarea id="failureDescription" v-model="localEntry.failureDescription" autoResize type="text" rows="5" class="w-full"></Textarea>
+                            </div>
+
+                            <!-- "Spare Parts Used?" question and Yes/No buttons -->
+                            <!-- "Spare Parts Used?" question and Yes/No buttons -->
+                            <div class="mb-4">
+                                <label class="block font-medium text-900 mb-2">Did you use spare parts?</label>
+                                <div class="spare-parts-selection">
+                                    <!-- Yesボタン -->
+                                    <Button label="Yes" class="yes-button custom-button-width" @click="toggleSparePartsUsage(true)" :class="{ selected: sparePartsUsed }" />
+                                    <!-- Noボタン -->
+                                    <Button label="No" class="no-button custom-button-width" @click="toggleSparePartsUsage(false)" :class="{ selected: !sparePartsUsed }" />
+                                    <!-- Noが選択された場合にチェックを表示 -->
+                                    <span v-if="!sparePartsUsed" class="checkmark">✔</span>
+                                </div>
+                            </div>
+
+                            <!-- SparePartsFormコンポーネントの表示 -->
+                            <SparePartsForm v-if="sparePartsUsed" v-model="spareParts" />
+
+                            <div class="flex flex-row justify-content-start align-items-center mb-4 gap-4">
+                                <!-- Picture 1 -->
+                                <div class="flex flex-column align-items-center">
+                                    <span class="font-medium text-900 mb-2">Picture 1</span>
+                                    <img :src="pictureSrc1" class="h-10rem w-10rem border-black mb-4" @click="enlargeImage1" />
+                                    <Button type="button" icon="pi pi-pencil" class="p-button-rounded -mt-4"></Button>
+                                </div>
+
+                                <!-- Picture 2 -->
+                                <div class="flex flex-column align-items-center">
+                                    <span class="font-medium text-900 mb-2">Picture 2</span>
+                                    <img :src="pictureSrc2" class="h-10rem w-10rem border-black mb-4" @click="enlargeImage2" />
+                                    <Button type="button" icon="pi pi-pencil" class="p-button-rounded -mt-4"></Button>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="description" class="block font-medium text-900 mb-2">Description</label>
+                                <Textarea id="description" v-model="localEntry.description" autoResize type="text" rows="5" class="w-full"></Textarea>
+                            </div>
+                            <div class="flex justify-content-end">
+                                <!-- Saveボタンを青色、文字を白色に設定 -->
+                                <Button label="Save" icon="pi pi-save" class="mr-2 p-button-primary" style="background-color: blue; border-color: blue; color: white" @click="submitEntry" />
+
+                                <!-- Cancelボタンをオレンジ色、文字を白色に設定 -->
+                                <Button label="Cancel" icon="pi pi-times" class="p-button-secondary" style="background-color: #ff6347; border-color: #ff6347; color: white" @click="cancelNewEntry" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
+    </Dialog>
+    <Dialog v-model:visible="imageDialogVisible1" modal :closable="false">
+        <img :src="pictureSrc1" class="w-full h-auto" />
+        <Button label="Close" icon="pi pi-times" @click="imageDialogVisible1 = false" class="p-button-secondary mt-2" />
+    </Dialog>
 
-        <div v-if="currentTab === 'history'" class="surface-card p-5 shadow-2 border-round flex-auto">
-          <div class="text-900 font-semibold text-lg mt-3">Work Order History</div>
-          <Divider></Divider>
-          <ul>
-            <li v-for="history in sampleHistory" :key="history.id" class="mb-2">
-              <div class="flex justify-content-between">
-                <span>{{ history.date }}</span>
-                <span>{{ history.workOrderNo }}</span>
-                <span>{{ history.status }}</span>
-              </div>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </Dialog>
-
-  <Dialog v-model:visible="imageDialogVisible1" modal :closable="false">
-    <img :src="pictureSrc1" class="w-full h-auto" />
-    <Button label="Close" icon="pi pi-times" @click="imageDialogVisible1 = false" class="p-button-secondary mt-2" />
-  </Dialog>
-
-  <Dialog v-model:visible="imageDialogVisible2" modal :closable="false">
-    <img :src="pictureSrc2" class="w-full h-auto" />
-    <Button label="Close" icon="pi pi-times" @click="imageDialogVisible2 = false" class="p-button-secondary mt-2" />
-  </Dialog>
+    <Dialog v-model:visible="imageDialogVisible2" modal :closable="false">
+        <img :src="pictureSrc2" class="w-full h-auto" />
+        <Button label="Close" icon="pi pi-times" @click="imageDialogVisible2 = false" class="p-button-secondary mt-2" />
+    </Dialog>
 </template>
-
-
-
-
 
 <script setup>
 import { ref, watch, onMounted, defineEmits, defineProps } from 'vue';
@@ -217,26 +254,27 @@ import { useToast } from 'primevue/usetoast'; // Toast用のフックをイン�
 const props = defineProps(['visible', 'statuses', 'entry']);
 const emit = defineEmits(['update:visible', 'submit', 'cancel']);
 
-// 各種データの初期化
-// 各種データの初期化
 const localEntry = ref({
-    pmTypes: [],
-    failureTypes: [],
-    failureModes: [],
-    title: '',
-    plant: '',
-    equipment: '',
-    requestType: '',
-    requestDate: '',
-    requestedBy: '',
-    workingType: '',
-    workingDate: '',
-    workingBy: '',
-    failureDescription: '',
-    failureDate: '',
-    description: '',
-    status: '',
-    registrationDate: ''
+    pmTypes: [], // PMタイプの初期化
+    failureTypes: [], // 故障タイプの初期化
+    failureModes: [], // 故障モードの初期化
+    failureCauses: [], // 故障原因の初期化
+    situations: [], // 状況の初期化
+    title: '', // タイトル
+    plant: '', // プラント
+    equipment: '', // 設備
+    requestType: '', // 要求タイプ
+    requestedBy: '', // 要求者
+    workingType: '', // 作業タイプ
+    workingDate: '', // 作業日
+    workingBy: '', // 作業者
+    failureDescription: '', // 故障説明
+    failureDate: new Date().toISOString().split('T')[0], // デフォルトで本日の日付を設定
+    description: '', // 説明
+    status: '', // 状態
+    registrationDate: new Date().toISOString().split('T')[0], // 登録日
+    isUrgent: false, // Added this property
+    sparePartsUsed: null // スペアパーツ使用のYes/No
 });
 
 const pmTypes = ref([
@@ -250,8 +288,7 @@ const pmTypes = ref([
 const failureTypes = ref([
     { label: 'Electrical', value: 'electrical' },
     { label: 'Mechanical', value: 'mechanical' },
-    { label: 'Software', value: 'software' },
-    { label: 'Human Error', value: 'human_error' }
+    { label: 'Software', value: 'software' }
 ]);
 
 // 更新されたfailureModesリスト
@@ -280,29 +317,30 @@ const failureModes = ref([
 ]);
 
 const failureCauses = ref([
-  { label: 'Human Error (人的ミス)', value: 'human_error' },
-  { label: 'Fatigue Failure (疲労破壊)', value: 'fatigue_failure' },
-  { label: 'Overheating/Overload (過熱 / 過負荷)', value: 'overheating_overload' },
-  { label: 'Misuse (誤使用)', value: 'misuse' },
-  { label: 'Operational Error (操作ミス)', value: 'operational_error' },
-  { label: 'Manufacturing Defect (製造欠陥)', value: 'manufacturing_defect' },
-  { label: 'Inadequate Maintenance (不適切な保守)', value: 'inadequate_maintenance' },
-  { label: 'Improper Installation (不適切な設置)', value: 'improper_installation' },
-  { label: 'Material Defect (材料欠陥)', value: 'material_defect' },
-  { label: 'Progressive Damage (進行的な損傷)', value: 'progressive_damage' },
-  { label: 'Corrosion (腐食)', value: 'corrosion' },
-  { label: 'Control System Failure (制御系の異常)', value: 'control_system_failure' },
-  { label: 'Process Defect (工程の欠陥)', value: 'process_defect' },
-  { label: 'Material Issue (材料の問題)', value: 'material_issue' },
-  { label: 'External Factor (外部要因)', value: 'external_factor' }
+    { label: 'Human Error (人的ミス)', value: 'human_error' },
+    { label: 'Fatigue Failure (疲労破壊)', value: 'fatigue_failure' },
+    { label: 'Overheating/Overload (過熱 / 過負荷)', value: 'overheating_overload' },
+    { label: 'Misuse (誤使用)', value: 'misuse' },
+    { label: 'Operational Error (操作ミス)', value: 'operational_error' },
+    { label: 'Manufacturing Defect (製造欠陥)', value: 'manufacturing_defect' },
+    { label: 'Inadequate Maintenance (不適切な保守)', value: 'inadequate_maintenance' },
+    { label: 'Improper Installation (不適切な設置)', value: 'improper_installation' },
+    { label: 'Material Defect (材料欠陥)', value: 'material_defect' },
+    { label: 'Progressive Damage (進行的な損傷)', value: 'progressive_damage' },
+    { label: 'Corrosion (腐食)', value: 'corrosion' },
+    { label: 'Control System Failure (制御系の異常)', value: 'control_system_failure' },
+    { label: 'Process Defect (工程の欠陥)', value: 'process_defect' },
+    { label: 'Material Issue (材料の問題)', value: 'material_issue' },
+    { label: 'External Factor (外部要因)', value: 'external_factor' },
+    { label: 'Other (その他)', value: 'other' } // ここでOtherを追加
 ]);
 
 const situations = ref([
-  { label: 'Normal Operation (正常運転)', value: 'normal_operation' },
-  { label: 'Abnormal Operation (異常運転)', value: 'abnormal_operation' },
-  { label: 'Stopped (停止)', value: 'stopped' },
-  { label: 'Maintenance Ongoing (保全中)', value: 'maintenance_ongoing' },
-  { label: 'Under Investigation (調査中)', value: 'under_investigation' }
+    { label: 'Normal Operation (正常運転)', value: 'normal_operation' },
+    { label: 'Abnormal Operation (異常運転)', value: 'abnormal_operation' },
+    { label: 'Stopped (停止)', value: 'stopped' },
+    { label: 'Maintenance Ongoing (保全中)', value: 'maintenance_ongoing' },
+    { label: 'Under Investigation (調査中)', value: 'under_investigation' }
 ]);
 
 const pictureSrc1 = ref(noImage); // 1枚目の画像を初期状態として設定
@@ -326,6 +364,13 @@ const companyCode = userStore.companyCode;
 
 // Toastインスタンスを作成
 const toast = useToast();
+
+const sparePartsUsed = ref(false); // スペアパーツ使用のフラグ
+
+// スペアパーツ使用フラグの切り替え
+const toggleSparePartsUsage = (isUsed) => {
+    sparePartsUsed.value = isUsed;
+};
 
 // axiosを使用してプラントのリストを取得するメソッド
 const fetchPlantOptions = async () => {
@@ -475,11 +520,32 @@ const enlargeImage2 = () => {
 };
 
 // モーダルのvisibleが変更されたときにlocalEntryをリセット
+// モーダルのvisibleが変更されたときにlocalEntryをリセット
 watch(
     () => props.visible,
     (newValue) => {
         if (!newValue) {
-            localEntry.value = { ...(props.entry || {}) };
+            localEntry.value = {
+                pmTypes: [],
+                failureTypes: [],
+                failureModes: [],
+                failureCauses: [],
+                situations: [],
+                title: '',
+                plant: '',
+                equipment: '',
+                requestType: '',
+                requestDate: '',
+                requestedBy: '',
+                workingType: '',
+                workingDate: '',
+                workingBy: '',
+                failureDescription: '',
+                failureDate: '',
+                description: '',
+                status: '',
+                registrationDate: ''
+            };
         }
     }
 );
@@ -512,5 +578,58 @@ input[type='text'] {
 .history-list {
     list-style-type: none;
     padding: 0;
+}
+
+/* Yes/Noボタンの色と幅のカスタマイズ */
+.custom-button-width {
+    width: 100px;
+}
+
+.yes-button {
+    background-color: #28a745;
+    color: white;
+    font-weight: bold;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.no-button {
+    background-color: #dc3545;
+    color: white;
+    font-weight: bold;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.yes-button:hover {
+    background-color: #218838;
+}
+
+.no-button:hover {
+    background-color: #c82333;
+}
+
+/* Noボタンが選択されたときのチェックマーク */
+.checkmark {
+    font-size: 18px;
+    color: #dc3545;
+    margin-left: 10px;
+    font-weight: bold;
+    vertical-align: middle;
+}
+
+/* 選択中のボタンのスタイル */
+.no-button.selected {
+    background-color: #c82333;
+    color: white;
+}
+.yes-button.selected {
+    background-color: #218838;
 }
 </style>
