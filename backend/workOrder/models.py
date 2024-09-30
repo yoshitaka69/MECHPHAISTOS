@@ -17,7 +17,7 @@ from django.utils import timezone
 
 class WorkOrder(models.Model):
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='workOrder_companyCode', null=True, blank=True)
-    plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='workOrder_plant', null=True, blank=True)
+    plant = models.CharField(max_length=100, null=True, blank=True)
     equipment = models.CharField(max_length=100, null=True, blank=True)
 
     workOrderNo = models.CharField(max_length=100, null=True, blank=True)

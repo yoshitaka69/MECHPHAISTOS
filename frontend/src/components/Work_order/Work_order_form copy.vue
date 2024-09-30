@@ -47,12 +47,11 @@
                             <div class="flex mb-4 gap-4">
                                 <div class="flex-auto">
                                     <label for="plant" class="block font-medium text-900 mb-2">Plant</label>
-                                    <!-- Plant Dropdown -->
-                                    <Dropdown id="plant" v-model="localEntry.plant" :options="plantOptions" optionLabel="label" optionValue="label" placeholder="Select a Plant" />
+                                    <Dropdown id="plant" v-model="localEntry.plant" :options="plantOptions" optionLabel="label" optionValue="value" placeholder="Select a Plant" />
                                 </div>
                                 <div class="flex-auto">
                                     <label for="equipment" class="block font-medium text-900 mb-2">Equipment</label>
-                                    <Dropdown id="equipment" v-model="localEntry.equipment" :options="equipmentOptions" optionLabel="label" optionValue="label" placeholder="Select Equipment" />
+                                    <Dropdown id="equipment" v-model="localEntry.equipment" :options="equipmentOptions" optionLabel="label" optionValue="value" placeholder="Select Equipment" />
                                 </div>
                             </div>
 
@@ -502,8 +501,8 @@ const submitEntry = async () => {
             registrationDate: localEntry.value.registrationDate || null,
             workOrderNo: workOrderNo.value,
             title: localEntry.value.title || null,
-            plant: localEntry.value.plant || null, // Plantを文字列として登録
-            equipment: localEntry.value.equipment || null, // Equipmentを文字列として登録
+            plant: localEntry.value.plant || null,
+            equipment: localEntry.value.equipment || null,
             requestType: localEntry.value.requestType || null,
             failureDate: localEntry.value.failureDate || null,
             requestedBy: localEntry.value.requestedBy || null,
@@ -520,9 +519,6 @@ const submitEntry = async () => {
             failureDescription: localEntry.value.failureDescription || null,
             remark: localEntry.value.remark || null, // Remark を POST データに追加
         };
-
-        // ここでPOSTデータをコンソールに出力
-        console.log("POSTデータ:", postData);
 
         // no_image.jpg が選択されている場合は、picture1 と picture2 を除外
         if (pictureSrc1.value !== noImage) {
@@ -542,7 +538,6 @@ const submitEntry = async () => {
         toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to save work order!', life: 3000 });
     }
 };
-
 
 // モーダルを閉じる処理
 const hideModal = () => {
