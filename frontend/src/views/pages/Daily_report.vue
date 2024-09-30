@@ -143,7 +143,7 @@ import SignaturePad from 'signature_pad';
 import axios from 'axios';
 import { useUserStore } from '@/stores/userStore';
 import Save_Alert from '@/components/Alert/Save_Alert.vue';
-import SparePartsForm from './SparePartsForm.vue';
+import SparePartsForm from '@/components/Spare_parts_form/SparePartsForm.vue';
 import WorkOrderForm from './WorkOrderForm.vue';
 import Checkbox from 'primevue/checkbox'; // チェックボックスのインポート
 

@@ -55,6 +55,19 @@
                                 </div>
                             </div>
 
+                            <!-- Task List 表示セクション -->
+                            <div class="mb-4">
+                                <label class="block font-medium text-900 mb-2">Task List</label>
+                                <div v-if="taskList.length > 0">
+                                    <ul>
+                                        <li v-for="task in taskList" :key="task.id">{{ task.name }} - {{ task.description }}</li>
+                                    </ul>
+                                </div>
+                                <div v-else>
+                                    <p>該当なし</p>
+                                </div>
+                            </div>
+
                             <!-- Request Order と Working Order のセクション -->
                             <div class="flex mb-4 gap-4">
                                 <!-- Request Order セクション -->
@@ -75,7 +88,6 @@
                                     </div>
 
                                     <!-- Failure Type をここに移動 -->
-                                    <!-- Failure Type -->
                                     <div class="mb-4">
                                         <label class="block font-medium text-900 mb-2">Failure Type</label>
                                         <div class="flex flex-row gap-4">
@@ -105,11 +117,14 @@
                                             <label>{{ situation.label }}</label>
                                         </div>
                                     </div>
-                                    <!-- Is it urgent? question and checkbox -->
+
+                                    <!-- "Is it urgent?" question and checkbox -->
+                                    <!-- "Is it urgent?" question and checkbox -->
                                     <div class="mb-4">
                                         <label class="block font-medium text-900 mb-2">Is it urgent?</label>
                                         <div class="flex align-items-center">
-                                            <Checkbox v-model="localEntry.isUrgent" class="mr-2" />
+                                            <!-- ここを修正 -->
+                                            <Checkbox v-model="localEntry.isUrgent" binary class="mr-2" />
                                             <label>Yes</label>
                                         </div>
                                     </div>
@@ -152,6 +167,17 @@
                                             <InputText id="workingEndDate" v-model="localEntry.workingEndDate" type="date" class="w-full" />
                                         </div>
                                     </div>
+                                    <!-- Status ラジオボタンに変更 -->
+                                    <div class="mb-4">
+                                        <label class="block font-medium text-900 mb-2">Status</label>
+                                        <div class="flex flex-wrap">
+                                            <!-- Statusの選択肢をRadioButtonに変更 -->
+                                            <div v-for="statusOption in statuses" :key="statusOption.value" class="flex align-items-center mr-4">
+                                                <RadioButton v-model="localEntry.status" :value="statusOption.value" class="mr-2" />
+                                                <label>{{ statusOption.label }}</label>
+                                            </div>
+                                        </div>
+                                    </div>
 
                                     <!-- Working By にuserNameをデフォルトで表示 -->
                                     <div class="mb-4">
@@ -170,26 +196,23 @@
                                         <label>{{ cause.label }}</label>
                                     </div>
                                 </div>
-                                <!-- Failure Description 用のテキストエリア -->
                                 <Textarea id="failureDescription" v-model="localEntry.failureDescription" autoResize type="text" rows="5" class="w-full"></Textarea>
                             </div>
 
-                            <!-- "Spare Parts Used?" question and Yes/No buttons -->
                             <!-- "Spare Parts Used?" question and Yes/No buttons -->
                             <div class="mb-4">
                                 <label class="block font-medium text-900 mb-2">Did you use spare parts?</label>
                                 <div class="spare-parts-selection">
                                     <!-- Yesボタン -->
-                                    <Button label="Yes" class="yes-button custom-button-width" @click="toggleSparePartsUsage(true)" :class="{ selected: sparePartsUsed }" />
+                                    <Button label="Yes" class="yes-button custom-button-width mr-2" @click="toggleSparePartsUsage(true)" :class="{ selected: localEntry.sparePartsUsed }" />
                                     <!-- Noボタン -->
-                                    <Button label="No" class="no-button custom-button-width" @click="toggleSparePartsUsage(false)" :class="{ selected: !sparePartsUsed }" />
+                                    <Button label="No" class="no-button custom-button-width" @click="toggleSparePartsUsage(false)" :class="{ selected: !localEntry.sparePartsUsed }" />
                                     <!-- Noが選択された場合にチェックを表示 -->
-                                    <span v-if="!sparePartsUsed" class="checkmark">✔</span>
+                                    <span v-if="!localEntry.sparePartsUsed" class="checkmark">✔</span>
                                 </div>
                             </div>
-
                             <!-- SparePartsFormコンポーネントの表示 -->
-                            <SparePartsForm v-if="sparePartsUsed" v-model="spareParts" />
+                            <SparePartsForm v-if="localEntry.sparePartsUsed" v-model="localEntry.spareParts" />
 
                             <div class="flex flex-row justify-content-start align-items-center mb-4 gap-4">
                                 <!-- Picture 1 -->
@@ -207,15 +230,13 @@
                                 </div>
                             </div>
 
+                            <!-- Description を Remark に変更 -->
                             <div class="mb-4">
-                                <label for="description" class="block font-medium text-900 mb-2">Description</label>
-                                <Textarea id="description" v-model="localEntry.description" autoResize type="text" rows="5" class="w-full"></Textarea>
+                                <label for="remark" class="block font-medium text-900 mb-2">Remark</label>
+                                <Textarea id="remark" v-model="localEntry.remark" autoResize type="text" rows="5" class="w-full"></Textarea>
                             </div>
                             <div class="flex justify-content-end">
-                                <!-- Saveボタンを青色、文字を白色に設定 -->
                                 <Button label="Save" icon="pi pi-save" class="mr-2 p-button-primary" style="background-color: blue; border-color: blue; color: white" @click="submitEntry" />
-
-                                <!-- Cancelボタンをオレンジ色、文字を白色に設定 -->
                                 <Button label="Cancel" icon="pi pi-times" class="p-button-secondary" style="background-color: #ff6347; border-color: #ff6347; color: white" @click="cancelNewEntry" />
                             </div>
                         </div>
@@ -249,6 +270,7 @@ import noImage from '@/assets/no_image.jpg';
 import { useUserStore } from '@/stores/userStore';
 import Toast from 'primevue/toast';
 import { useToast } from 'primevue/usetoast'; // Toast用のフックをインポート
+import SparePartsForm from '@/components/Spare_parts_form/SparePartsForm.vue'; // スペアパーツフォームのインポート
 
 // コンポーネントに渡される props とイベント emit の設定
 const props = defineProps(['visible', 'statuses', 'entry']);
@@ -270,13 +292,15 @@ const localEntry = ref({
     workingBy: '', // 作業者
     failureDescription: '', // 故障説明
     failureDate: new Date().toISOString().split('T')[0], // デフォルトで本日の日付を設定
-    description: '', // 説明
+    remark: '', // 説明のフィールドを remark に変更
     status: '', // 状態
     registrationDate: new Date().toISOString().split('T')[0], // 登録日
-    isUrgent: false, // Added this property
-    sparePartsUsed: null // スペアパーツ使用のYes/No
+    isUrgent: false, // 緊急フラグ
+    sparePartsUsed: false, // スペアパーツ使用フラグ
+    spareParts: [] // スペアパーツのデータ
 });
 
+// PMタイプ、故障タイプ、故障モード、故障原因などのオプション
 const pmTypes = ref([
     { label: 'PM01', value: 'PM01' },
     { label: 'PM02', value: 'PM02' },
@@ -291,7 +315,6 @@ const failureTypes = ref([
     { label: 'Software', value: 'software' }
 ]);
 
-// 更新されたfailureModesリスト
 const failureModes = ref([
     { label: 'Wear (摩耗)', value: 'wear' },
     { label: 'Fatigue Failure (疲労破壊)', value: 'fatigue_failure' },
@@ -343,20 +366,22 @@ const situations = ref([
     { label: 'Under Investigation (調査中)', value: 'under_investigation' }
 ]);
 
-const pictureSrc1 = ref(noImage); // 1枚目の画像を初期状態として設定
-const pictureSrc2 = ref(noImage); // 2枚目の画像を初期状態として設定
+const statuses = ref([
+    { label: 'Completed', value: 'COMPLETED' },
+    { label: 'Ongoing', value: 'Ongoing' },
+    { label: 'Delayed', value: 'Delayed' }
+]);
+
+// 画像、タブ、装置などの状態
+const pictureSrc1 = ref(noImage);
+const pictureSrc2 = ref(noImage);
 const imageDialogVisible1 = ref(false);
 const imageDialogVisible2 = ref(false);
 const currentTab = ref('form');
-const sampleHistory = ref([
-    { id: 1, date: '2024-08-01', workOrderNo: 'WO-001', status: 'Completed' },
-    { id: 2, date: '2024-07-28', workOrderNo: 'WO-002', status: 'Ongoing' },
-    { id: 3, date: '2024-07-20', workOrderNo: 'WO-003', status: 'Delayed' }
-]);
-
-const plantOptions = ref([]); // プラントの選択肢を格納する状態
-const equipmentOptions = ref([]); // 装置の選択肢を格納する状態
-const workOrderNo = ref(''); // Work Order Noを格納する状態
+const plantOptions = ref([]);
+const equipmentOptions = ref([]);
+const taskList = ref([]); // タスクリスト
+const workOrderNo = ref('');
 
 // PiniaストアからcompanyCodeを取得
 const userStore = useUserStore();
@@ -365,76 +390,72 @@ const companyCode = userStore.companyCode;
 // Toastインスタンスを作成
 const toast = useToast();
 
-const sparePartsUsed = ref(false); // スペアパーツ使用のフラグ
-
-// スペアパーツ使用フラグの切り替え
-const toggleSparePartsUsage = (isUsed) => {
-    sparePartsUsed.value = isUsed;
-};
-
-// axiosを使用してプラントのリストを取得するメソッド
+// プラントの選択肢を取得
 const fetchPlantOptions = async () => {
     try {
         const response = await axios.get('http://127.0.0.1:8000/api/ceList/ceListByCompany/', {
-            params: {
-                companyCode: companyCode // クエリパラメータとしてcompanyCodeを渡す
-            }
+            params: { companyCode: companyCode }
         });
-
         const companyData = response.data.find((company) => company.companyCode === companyCode);
         if (companyData) {
             plantOptions.value = [...new Set(companyData.ceList.map((item) => item.plant))].map((plant) => ({
-                label: `Plant ${plant}`, // 表示名
-                value: plant // 実際の値
+                label: `Plant ${plant}`,
+                value: plant
             }));
         }
     } catch (error) {
-        console.error('Failed to fetch plant options:', error); // エラー時のコンソールログ
+        console.error('Failed to fetch plant options:', error);
     }
 };
 
-// axiosを使用して装置のリストを取得するメソッド
+// 選択されたプラントに対応する装置のリストを取得
 const fetchEquipmentOptions = async (selectedPlant) => {
     try {
         const response = await axios.get('http://127.0.0.1:8000/api/ceList/ceListByCompany/', {
-            params: {
-                companyCode: companyCode, // クエリパラメータとしてcompanyCodeを渡す
-                plant: selectedPlant // 選択されたplantをクエリパラメータとして渡す
-            }
+            params: { companyCode: companyCode, plant: selectedPlant }
         });
-
         const companyData = response.data.find((company) => company.companyCode === companyCode);
         if (companyData) {
             equipmentOptions.value = companyData.ceList
                 .filter((item) => item.plant === selectedPlant)
                 .map((equipment) => ({
-                    label: `Equipment ${equipment.equipment}`, // 表示名
-                    value: equipment.equipment // 実際の値
+                    label: `Equipment ${equipment.equipment}`,
+                    value: equipment.equipment
                 }));
         }
     } catch (error) {
-        console.error('Failed to fetch equipment options:', error); // エラー時のコンソールログ
+        console.error('Failed to fetch equipment options:', error);
     }
 };
 
-// axiosを使用してWork Order Noを取得し、最大値+1を設定するメソッド
+// 選択された装置に対応するタスクリストを取得
+const fetchTaskList = async (selectedEquipment) => {
+    try {
+        const response = await axios.get('http://127.0.0.1:8000/api/task/taskListByEquipment/', {
+            params: { companyCode: companyCode, equipment: selectedEquipment }
+        });
+        taskList.value = response.data.length > 0 ? response.data : [];
+    } catch (error) {
+        console.error('Failed to fetch task list:', error);
+        taskList.value = [];
+    }
+};
+
+// Work Order Noを取得し、最大値+1を設定
 const fetchAndIncrementWorkOrderNo = async () => {
     try {
         const response = await axios.get('http://127.0.0.1:8000/api/workOrder/workOrderByCompany/', {
-            params: {
-                companyCode: companyCode // クエリパラメータとしてcompanyCodeを渡す
-            }
+            params: { companyCode: companyCode }
         });
-
         const companyData = response.data.find((company) => company.companyCode === companyCode);
         if (companyData && companyData.workOrderList.length > 0) {
             const maxWorkOrderNo = Math.max(...companyData.workOrderList.map((order) => parseInt(order.workOrderNo, 10)));
             workOrderNo.value = (maxWorkOrderNo + 1).toString();
         } else {
-            workOrderNo.value = '1'; // データがない場合は '1' を初期値とする
+            workOrderNo.value = '1';
         }
     } catch (error) {
-        console.error('Failed to fetch and increment work order no:', error); // エラー時のコンソールログ
+        console.error('Failed to fetch and increment work order no:', error);
     }
 };
 
@@ -454,72 +475,86 @@ watch(
     }
 );
 
+// equipmentが選択されたときにタスクリストを取得
+watch(
+    () => localEntry.value.equipment,
+    (newEquipment) => {
+        if (newEquipment) {
+            fetchTaskList(newEquipment);
+        } else {
+            taskList.value = [];
+        }
+    }
+);
+
 // SaveボタンがクリックされたときにPOSTリクエストを送信
 const submitEntry = async () => {
     try {
-        // registrationDateがnullなら、本日の日付を設定
         if (!localEntry.value.registrationDate) {
-            const today = new Date().toISOString().split('T')[0]; // 本日の日付をYYYY-MM-DD形式で取得
+            const today = new Date().toISOString().split('T')[0];
             localEntry.value.registrationDate = today;
         }
 
-        // POSTリクエストに送信するデータ
+        // POSTデータの準備
         const postData = {
             companyCode: companyCode,
+            registrationDate: localEntry.value.registrationDate || null,
+            workOrderNo: workOrderNo.value,
+            title: localEntry.value.title || null,
             plant: localEntry.value.plant || null,
             equipment: localEntry.value.equipment || null,
-            workOrderNo: workOrderNo.value,
-            workOrderDesc: localEntry.value.workOrderDesc || null,
-            status: localEntry.value.status || null,
-            title: localEntry.value.title || null,
-            failureTypes: localEntry.value.failureTypes && localEntry.value.failureTypes.length > 0 ? localEntry.value.failureTypes : null,
-            failureModes: localEntry.value.failureModes && localEntry.value.failureModes.length > 0 ? localEntry.value.failureModes : null,
-            failureDescription: localEntry.value.failureDescription || null,
+            requestType: localEntry.value.requestType || null,
             failureDate: localEntry.value.failureDate || null,
-            description: localEntry.value.description || null,
-            registrationDate: localEntry.value.registrationDate || null // 登録日を追加
+            requestedBy: localEntry.value.requestedBy || null,
+            failureTypes: localEntry.value.failureTypes.length > 0 ? localEntry.value.failureTypes : null,
+            situations: localEntry.value.situations.length > 0 ? localEntry.value.situations : null,
+            isUrgent: localEntry.value.isUrgent || false,
+            pmTypes: localEntry.value.pmTypes.length > 0 ? localEntry.value.pmTypes : null,
+            failureModes: localEntry.value.failureModes.length > 0 ? localEntry.value.failureModes : null,
+            workingStartDate: localEntry.value.workingStartDate || null,
+            workingEndDate: localEntry.value.workingEndDate || null,
+            status: localEntry.value.status || null,
+            workingBy: localEntry.value.workingBy || null,
+            failureCauses: localEntry.value.failureCauses.length > 0 ? localEntry.value.failureCauses : null,
+            failureDescription: localEntry.value.failureDescription || null,
+            remark: localEntry.value.remark || null, // Remark を POST データに追加
         };
 
-        // POSTリクエストを送信
-        const response = await axios.post('http://127.0.0.1:8000/api/workOrder/workOrder/', postData);
-        console.log('POST request successful:', response.data);
-
-        toast.add({ severity: 'success', summary: 'Success', detail: 'Work order saved successfully!', life: 3000 }); // 成功メッセージ
-        emit('submit', localEntry.value); // 成功したら親コンポーネントにデータを送信
-        emit('update:visible', false); // モーダルを閉じる
-    } catch (error) {
-        if (error.response) {
-            console.error('Error during submitEntry execution:', error.response.data);
-        } else if (error.request) {
-            console.error('No response received:', error.request);
-        } else {
-            console.error('Error during submitEntry execution:', error.message);
+        // no_image.jpg が選択されている場合は、picture1 と picture2 を除外
+        if (pictureSrc1.value !== noImage) {
+            postData.picture1 = pictureSrc1.value;
         }
-        toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to save work order!', life: 3000 }); // エラーメッセージ追加
+
+        if (pictureSrc2.value !== noImage) {
+            postData.picture2 = pictureSrc2.value;
+        }
+
+        // POSTリクエスト
+        const response = await axios.post('http://127.0.0.1:8000/api/workOrder/workOrder/', postData);
+        toast.add({ severity: 'success', summary: 'Success', detail: 'Work order saved successfully!', life: 3000 });
+        emit('submit', localEntry.value);
+        emit('update:visible', false);
+    } catch (error) {
+        toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to save work order!', life: 3000 });
     }
 };
 
 // モーダルを閉じる処理
 const hideModal = () => {
-    emit('update:visible', false); // visibleをfalseにしてモーダルを閉じる
+    emit('update:visible', false);
 };
 
 // キャンセルボタンを押したときの処理
 const cancelNewEntry = () => {
-    emit('cancel'); // 親にキャンセルイベントを伝える
-    emit('update:visible', false); // visibleをfalseにしてモーダルを閉じる
+    emit('cancel');
+    emit('update:visible', false);
 };
 
-// 画像を拡大表示
-const enlargeImage1 = () => {
-    imageDialogVisible1.value = true;
+// スペアパーツ使用フラグの切り替え
+const toggleSparePartsUsage = (isUsed) => {
+    localEntry.value.sparePartsUsed = isUsed;
 };
 
-const enlargeImage2 = () => {
-    imageDialogVisible2.value = true;
-};
-
-// モーダルのvisibleが変更されたときにlocalEntryをリセット
 // モーダルのvisibleが変更されたときにlocalEntryをリセット
 watch(
     () => props.visible,
@@ -549,9 +584,19 @@ watch(
         }
     }
 );
+
+// 画像の拡大表示
+const enlargeImage1 = () => {
+    imageDialogVisible1.value = true;
+};
+
+const enlargeImage2 = () => {
+    imageDialogVisible2.value = true;
+};
 </script>
 
 <style scoped>
+/* Dialogのスタイル */
 .surface-ground {
     padding: 1rem;
 }
@@ -575,18 +620,31 @@ input[type='text'] {
     overflow: auto; /* オーバーフロー時にスクロールバーを表示 */
 }
 
+/* History listのスタイル */
 .history-list {
     list-style-type: none;
     padding: 0;
 }
 
-/* Yes/Noボタンの色と幅のカスタマイズ */
+/* Task listのスタイル */
+.task-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.task-list li {
+    padding: 8px 0;
+    border-bottom: 1px solid #ccc;
+}
+
+/* Yes/Noボタンのカスタマイズ */
 .custom-button-width {
     width: 100px;
 }
 
-.yes-button {
-    background-color: #28a745;
+.yes-button,
+.no-button {
     color: white;
     font-weight: bold;
     padding: 6px 12px;
@@ -596,22 +654,28 @@ input[type='text'] {
     transition: background-color 0.3s ease;
 }
 
-.no-button {
-    background-color: #dc3545;
-    color: white;
-    font-weight: bold;
-    padding: 6px 12px;
-    border: none;
-    border-radius: 4px;
-    font-size: 14px;
-    transition: background-color 0.3s ease;
+.yes-button {
+    background-color: #28a745;
 }
 
 .yes-button:hover {
     background-color: #218838;
 }
 
+.no-button {
+    background-color: #dc3545;
+}
+
 .no-button:hover {
+    background-color: #c82333;
+}
+
+/* Yes/Noボタン選択時のスタイル */
+.yes-button.selected {
+    background-color: #218838;
+}
+
+.no-button.selected {
     background-color: #c82333;
 }
 
@@ -624,12 +688,8 @@ input[type='text'] {
     vertical-align: middle;
 }
 
-/* 選択中のボタンのスタイル */
-.no-button.selected {
-    background-color: #c82333;
-    color: white;
-}
-.yes-button.selected {
-    background-color: #218838;
+/* Yes/Noボタンの間に隙間を追加 */
+.spare-parts-selection .mr-2 {
+    margin-right: 1rem; /* ボタン間に1remの隙間を追加 */
 }
 </style>

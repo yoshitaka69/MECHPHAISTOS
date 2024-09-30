@@ -26,9 +26,24 @@ class WorkOrder(models.Model):
     title = models.CharField(max_length=255, null=True, blank=True)
     failureTypes = models.JSONField(null=True, blank=True)
     failureModes = models.JSONField(null=True, blank=True)
+    failureCauses = models.JSONField(null=True, blank=True)  # 新しく追加
     failureDescription = models.TextField(null=True, blank=True)
     failureDate = models.DateField(null=True, blank=True)
-    description = models.TextField(null=True, blank=True)
+    remark = models.TextField(null=True, blank=True)
+    
+    # 新しく追加されたフィールド
+    requestType = models.CharField(max_length=100, null=True, blank=True)  # 要求タイプ
+    requestedBy = models.CharField(max_length=100, null=True, blank=True)  # 要求者
+    situations = models.JSONField(null=True, blank=True)  # 状況
+    isUrgent = models.BooleanField(default=False)  # 緊急フラグ
+    pmTypes = models.JSONField(null=True, blank=True)  # PMタイプ
+    workingStartDate = models.DateField(null=True, blank=True)  # 作業開始日
+    workingEndDate = models.DateField(null=True, blank=True)  # 作業終了日
+    workingBy = models.CharField(max_length=100, null=True, blank=True)  # 作業者
+
+    picture1 = models.TextField(null=True, blank=True)  # 画像1
+    picture2 = models.TextField(null=True, blank=True)  # 画像2
+
     registrationDate = models.DateField(default=timezone.now)
 
     class Meta:
@@ -37,6 +52,7 @@ class WorkOrder(models.Model):
         unique_together = ('companyCode', 'workOrderNo')
 
     def save(self, *args, **kwargs):
+        # workOrderNo が未設定の場合、自動で連番を生成
         if not self.workOrderNo:
             existing_work_order_nos = WorkOrder.objects.filter(companyCode=self.companyCode).values_list('workOrderNo', flat=True).order_by('workOrderNo')
             for i in range(1, len(existing_work_order_nos) + 2):

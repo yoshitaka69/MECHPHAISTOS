@@ -1,7 +1,7 @@
 <template>
     <div class="table-container custom-work-order-table-v2">
         <p class="description-text">
-            This is the Work Order page. Here, you can issue work orders for maintenance tasks such as repair requests, modification work, and inspections. <br>The more detailed you fill out the work order form, the more accurate the equipment
+            This is the Work Order page. Here, you can issue work orders for maintenance tasks such as repair requests, modification work, and inspections. <br />The more detailed you fill out the work order form, the more accurate the equipment
             information and equipment lifespan data will be.
         </p>
         <div class="header-container-v2">
@@ -106,9 +106,28 @@
                         <InputText v-model="filterModel.value" type="text" placeholder="Search by Failure Date" />
                     </template>
                 </Column>
-                <Column field="description" header="Description" sortable filter filterMatchMode="contains">
+                <Column field="remark" header="Remark" sortable filter filterMatchMode="contains">
                     <template #filter="{ filterModel }">
-                        <InputText v-model="filterModel.value" type="text" placeholder="Search by Description" />
+                        <InputText v-model="filterModel.value" type="text" placeholder="Search by Remark" />
+                    </template>
+                </Column>
+                <!-- Picture 1 の表示 -->
+                <Column field="picture1" header="Picture 1">
+                    <template #body="slotProps">
+                        <span v-if="slotProps.data.picture1">
+                            <img :src="slotProps.data.picture1" class="thumbnail" alt="Picture 1" />
+                        </span>
+                        <span v-else>No picture</span>
+                    </template>
+                </Column>
+
+                <!-- Picture 2 の表示 -->
+                <Column field="picture2" header="Picture 2">
+                    <template #body="slotProps">
+                        <span v-if="slotProps.data.picture2">
+                            <img :src="slotProps.data.picture2" class="thumbnail" alt="Picture 2" />
+                        </span>
+                        <span v-else>No picture</span>
                     </template>
                 </Column>
                 <Column header="Operation">
@@ -120,17 +139,16 @@
                     </template>
                 </Column>
             </DataTable>
-             <!-- 削除確認モーダル -->
-        <Dialog v-model:visible="isDeleteModalVisible" modal>
-            <template #header>削除確認</template>
-            <div>
-                本当に {{ currentEntry?.workOrderNo }} を削除しますか？
-            </div>
-            <template #footer>
-                <Button label="いいえ" @click="isDeleteModalVisible = false" />
-                <Button label="はい" @click="deleteItem" class="p-button-danger" />
-            </template>
-        </Dialog>
+
+            <!-- 削除確認モーダル -->
+            <Dialog v-model:visible="isDeleteModalVisible" modal>
+                <template #header>削除確認</template>
+                <div>本当に {{ currentEntry?.workOrderNo }} を削除しますか？</div>
+                <template #footer>
+                    <Button label="いいえ" @click="isDeleteModalVisible = false" />
+                    <Button label="はい" @click="deleteItem" class="p-button-danger" />
+                </template>
+            </Dialog>
         </div>
         <WorkOrderForm v-if="isModalVisible && currentEntry" v-model:visible="isModalVisible" :statuses="statuses" :entry="currentEntry" @submit="onSubmit" @cancel="onCancel" />
     </div>
@@ -148,19 +166,18 @@ import WorkOrderForm from '@/components/Work_order/Work_order_form.vue'; // 修�
 
 const userStore = useUserStore(); // Piniaストアを使用
 
-const products = ref([]);
-const editingRows = ref([]);
+const products = ref([]); // サーバーから取得するWork Orderのリスト
 const statuses = ref([
     { label: 'Completed', value: 'COMPLETED' },
     { label: 'Ongoing', value: 'Ongoing' },
     { label: 'Delayed', value: 'Delayed' }
 ]);
 
-const currentEntry = ref(null); // 編集するエントリー
+const currentEntry = ref(null); // 編集または削除するエントリー
 const isModalVisible = ref(false); // モーダル表示の状態
-const isDeleteModalVisible = ref(false); // 削除確認モーダルの表示状態を管理するフラグ
-const isAddingNew = ref(false);
-const isEditing = ref(false);
+const isDeleteModalVisible = ref(false); // 削除確認モーダルの表示状態
+const isAddingNew = ref(false); // 新しいエントリーの追加フラグ
+const isEditing = ref(false); // 編集中かどうかのフラグ
 const newEntry = ref({
     workOrderNo: '',
     plant: '',
@@ -172,30 +189,32 @@ const newEntry = ref({
     failureModes: [],
     failureDescription: '',
     failureDate: null,
-    description: '',
-    registrationDate: null // 登録日を追加
+    remark: '', // Description を remark に変更
+    registrationDate: null, // 登録日を追加
+    picture1: null, // 画像1
+    picture2: null // 画像2
 });
-const editingItem = ref({});
+const editingItem = ref({}); // 編集中のエントリー
 
+// Work Orderのデータをサーバーから取得
 onMounted(async () => {
     const response = await axios.get(`http://127.0.0.1:8000/api/workOrder/workOrderByCompany/?format=json&companyCode=${userStore.companyCode}`);
     const flattenedData = response.data.flatMap((company) => company.workOrderList);
     products.value = flattenedData; // データをproductsにセット
 });
 
-
-const serverItemsLength = computed(() => products.value.length);
+const serverItemsLength = computed(() => products.value.length); // サーバー上のアイテム数
 const serverOptions = ref({
     page: 1,
     rowsPerPage: 30
 });
-const loading = ref(false);
-const sortField = ref(null);
-const sortOrder = ref(null);
+const loading = ref(false); // ローディング状態の管理
+const sortField = ref(null); // ソート対象のフィールド
+const sortOrder = ref(null); // ソート順序
 const filters = ref({
     global: { value: null, matchMode: 'contains' },
     workOrderNo: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
-    registrationDate: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] }, // 登録日フィルターを追加
+    registrationDate: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
     plant: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
     equipment: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
     workOrderDesc: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
@@ -205,7 +224,7 @@ const filters = ref({
     failureModes: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
     failureDescription: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
     failureDate: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
-    description: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] }
+    remark: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] }
 });
 
 const sortedItems = computed(() => {
@@ -222,7 +241,7 @@ const sortedItems = computed(() => {
         items.push({
             id: '',
             workOrderNo: '',
-            registrationDate: null, // 登録日を追加
+            registrationDate: null,
             plant: '',
             equipment: '',
             workOrderDesc: '',
@@ -232,12 +251,13 @@ const sortedItems = computed(() => {
             failureModes: [],
             failureDescription: '',
             failureDate: null,
-            description: ''
+            remark: '', // Description を remark に変更
+            picture1: null,
+            picture2: null
         });
     }
     return items;
 });
-
 
 // 削除確認モーダルを表示
 const confirmDelete = (item) => {
@@ -249,7 +269,7 @@ const confirmDelete = (item) => {
 const deleteItem = async () => {
     try {
         await axios.delete(`http://127.0.0.1:8000/api/workOrder/workOrder/${currentEntry.value.id}/`);
-        products.value = products.value.filter(item => item.id !== currentEntry.value.id); // リストから削除
+        products.value = products.value.filter((item) => item.id !== currentEntry.value.id); // リストから削除
         isDeleteModalVisible.value = false; // モーダルを閉じる
         currentEntry.value = null; // currentEntryをリセット
         console.log('Deleted item successfully');
@@ -258,12 +278,13 @@ const deleteItem = async () => {
     }
 };
 
-
+// ソート処理
 const onSort = (event) => {
     sortField.value = event.sortField;
     sortOrder.value = event.sortOrder;
 };
 
+// フィルター処理
 const onFilter = (event) => {
     filters.value = event.filters;
 };
@@ -281,13 +302,12 @@ const editItem = (item) => {
     }
 };
 
-
-
+// 保存・更新処理
 const onSubmit = (entry) => {
     if (isEditing.value) {
         const item = products.value.find((i) => i.id === entry.id);
         if (item) {
-            Object.assign(item, entry);
+            Object.assign(item, entry); // エントリーを更新
         }
         isEditing.value = false;
     } else {
@@ -297,12 +317,12 @@ const onSubmit = (entry) => {
     isModalVisible.value = false; // モーダルを閉じる
 };
 
+// モーダルを閉じる
 const onCancel = () => {
     isModalVisible.value = false; // モーダルを閉じる
 };
 
-
-
+// 新規エントリーフォームを表示
 const showNewEntryForm = () => {
     isAddingNew.value = true;
     currentEntry.value = {
@@ -317,21 +337,25 @@ const showNewEntryForm = () => {
         failureModes: [],
         failureDescription: '',
         failureDate: null,
-        description: ''
+        remark: '', // Description を remark に変更
+        picture1: null, // 画像1
+        picture2: null // 画像2
     };
     isModalVisible.value = true; // 新規エントリ用のモーダルを表示
 };
 
+// ページ処理
 const onPage = (event) => {
     serverOptions.value.page = event.page + 1;
     serverOptions.value.rowsPerPage = event.rows;
 };
 
+// フィルターをクリア
 const clearFilter = () => {
     filters.value = {
         global: { value: null, matchMode: 'contains' },
         workOrderNo: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
-        registrationDate: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] }, // 登録日フィルターを追加
+        registrationDate: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
         plant: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
         equipment: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
         workOrderDesc: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
@@ -341,14 +365,16 @@ const clearFilter = () => {
         failureModes: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
         failureDescription: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
         failureDate: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
-        description: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] }
+        remark: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] }
     };
 };
 
+// 行クラスのスタイルを設定
 const rowClass = (data, index) => {
     return index % 2 === 0 ? 'even-row' : 'odd-row';
 };
 
+// ステータスラベルを取得
 const getStatusLabel = (status) => {
     switch (status) {
         case 'COMPLETED':
@@ -365,6 +391,7 @@ const getStatusLabel = (status) => {
     }
 };
 
+// 行編集の保存処理
 const onRowEditSave = (event) => {
     let { newData, index } = event;
     products.value[index] = newData;
@@ -413,5 +440,17 @@ const onRowEditSave = (event) => {
 
 .table-container.custom-work-order-table-v2 .p-datatable-thead > tr > th {
     border-right: none;
+}
+
+.thumbnail {
+    width: 100px; /* サムネイルサイズに設定 */
+    height: auto; /* アスペクト比を保持 */
+    border: 1px solid #ccc; /* 枠線を追加（任意） */
+    padding: 5px; /* パディングを追加（任意） */
+    cursor: pointer; /* クリック可能な場合はポインターを表示 */
+}
+
+.thumbnail:hover {
+    border-color: #999; /* ホバー時の枠線色を変更（任意） */
 }
 </style>
