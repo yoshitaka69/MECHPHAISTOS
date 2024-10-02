@@ -150,7 +150,7 @@
                 </template>
             </Dialog>
         </div>
-        <WorkOrderForm v-if="isModalVisible && currentEntry" v-model:visible="isModalVisible" :statuses="statuses" :entry="currentEntry" @submit="onSubmit" @cancel="onCancel" />
+        <WorkOrderForm v-if="isModalVisible" :visible="isModalVisible" :entry="currentEntry" @submit="onSubmit" @cancel="onCancel" @update:visible="isModalVisible = $event" />
     </div>
 </template>
 
@@ -291,16 +291,23 @@ const onFilter = (event) => {
 
 // 編集アイテムを設定し、モーダルを開く
 const editItem = (item) => {
-    const existingEntry = products.value.find((i) => i.workOrderNo === item.workOrderNo); // workOrderNoで既存データを検索
-    if (existingEntry) {
-        currentEntry.value = { ...existingEntry }; // 編集するエントリーをセット
-        isEditing.value = true; // 編集フラグをセット
-        isModalVisible.value = true; // モーダルを表示
-        console.log('Editing existing item:', currentEntry.value);
-    } else {
-        console.error('Work Order No not found:', item.workOrderNo);
-    }
+  // workOrderNoで既存データを検索
+  const existingEntry = products.value.find((i) => i.workOrderNo === item.workOrderNo);
+
+  if (existingEntry) {
+    // 編集するエントリーをセット
+    currentEntry.value = { ...existingEntry };
+    // 編集フラグをセット
+    isEditing.value = true;
+    // モーダルを表示
+    isModalVisible.value = true;
+    console.log('Editing existing item:', currentEntry.value);
+  } else {
+    // データが見つからない場合のエラーメッセージ
+    console.error('Work Order No not found:', item.workOrderNo);
+  }
 };
+
 
 // 保存・更新処理
 const onSubmit = (entry) => {
