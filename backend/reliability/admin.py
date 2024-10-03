@@ -5,27 +5,16 @@ from .models import Reliability,TroubleHistory,FailurePredictionPoint
 
 class ReliabilityAdmin(admin.ModelAdmin):
     list_display = (
-        'companyCode', 'ceListNo', 'plant', 'equipment', 'machineName', 'maintenanceTitle', 
-        'mttr', 'mtbf', 'mttf', 'totalOperatingTime', 'failureCount', 'failureDate'
+        'companyCode', 'ceListNo', 'plant', 'equipment', 'machineName',
+        'failureType', 'operationalCondition', 'PMType', 'maintenanceMethod', 
+        'maintenanceFrequency', 'failureMode', 'failureCause', 'componentCondition', 
+        'mttr', 'mtbf', 'mttf', 'totalOperatingTime', 'failureCount', 'failureDate', 'record_date'
     )
-    search_fields = ('equipment__name', 'machineName__name', 'plant')
-    list_filter = ('companyCode', 'ceListNo', 'plant', 'maintenanceMethod', 'failureType', 'operationalCondition', 'PMType')
-    ordering = ('-mttr',)
+    list_filter = ('failureType', 'operationalCondition', 'PMType', 'failureMode', 'failureCause')
+    search_fields = ('plant', 'machineName__name', )  # 外部キーのフィールドを指定する場合は__で連結
+    ordering = ['-mttr']  # `Meta`の設定を反映させる
     save_on_top = True
     list_per_page = 50
-
-    # 補足説明用フィールドも表示できるようにします
-    fieldsets = (
-        (None, {
-            'fields': (
-                'companyCode', 'ceListNo', 'plant', 'equipment', 'machineName', 'maintenanceTitle',
-                'mttr', 'mtbf', 'mttf', 'totalOperatingTime', 'failureCount', 'failureDate',
-                'failureType', 'failureTypeDetail', 'operationalCondition', 'operationalConditionDetail',
-                'PMType', 'maintenanceMethod', 'maintenanceMethodDetail', 'failureMode', 'failureModeDetail',
-                'failureCause', 'failureCauseDetail', 'remark', 'record_date'
-            )
-        }),
-    )
 
 
 

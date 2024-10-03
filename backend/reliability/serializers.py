@@ -20,12 +20,15 @@ class ReliabilitySerializer(serializers.ModelSerializer):
     class Meta:
         model = Reliability
         fields = [
-            'companyCode', 'ceListNo', 'plant', 'equipment', 'machineName', 'maintenanceTitle',
-            'mttr', 'mtbf', 'mttf', 'totalOperatingTime', 'failureCount', 'failureDate',
-            'failureType', 'failureTypeDetail', 'operationalCondition', 'operationalConditionDetail',
-            'PMType', 'maintenanceMethod', 'maintenanceMethodDetail', 'failureMode', 'failureModeDetail',
-            'failureCause', 'failureCauseDetail', 'remark', 'record_date'
+            'companyCode', 'ceListNo', 'plant', 'equipment', 'machineName', 
+            'failureType',  'operationalCondition', 
+            'PMType', 'maintenanceMethod', 'maintenanceFrequency', 
+            'failureMode', 'failureCause', 
+            'componentCondition', 'mttr', 'mtbf', 'mttf', 
+            'totalOperatingTime', 'failureCount', 'failureDate', 'record_date'
         ]
+
+        
 
 class CompanyReliabilitySerializer(serializers.ModelSerializer):
     # related_name='reliability_companyCode'を正しく使用

@@ -1,269 +1,304 @@
 <template>
-    <BlockViewer header="Sidebar" :code="block1">
-        <div class="surface-section px-4 py-8 md:px-6 lg:px-8">
-            <div class="text-900 font-bold text-3xl text-center">Category Title</div>
-            <p class="text-600 font-normal text-xl text-center">Nullam faucibus, sem et bibendum finibus, sapien ipsum congue felis, sit amet pretium ex nisl ut eros.</p>
-            <Divider class="w-full"></Divider>
-            <div class="flex flex-wrap lg:flex-nowrap">
-                <div class="col-fixed lg:col-2 mr-4 flex p-0 flex-column w-full lg:w-3">
-                    <div class="flex flex-column p-0">
-                        <a tabindex="0" class="cursor-pointer text-900 font-medium mb-3 hover:text-primary transition-duration-150">Denim</a>
-                        <a tabindex="0" class="cursor-pointer text-900 font-medium mb-3 hover:text-primary transition-duration-150">Sweaters</a>
-                        <a tabindex="0" class="cursor-pointer text-900 font-medium mb-3 hover:text-primary transition-duration-150">T-Shirt</a>
-                        <a tabindex="0" class="cursor-pointer text-900 font-medium mb-3 hover:text-primary transition-duration-150">Pants & Shorts</a>
-                        <a tabindex="0" class="cursor-pointer text-900 font-medium mb-3 hover:text-primary transition-duration-150">Outwear</a>
-                        <a tabindex="0" class="cursor-pointer text-900 font-medium mb-3 hover:text-primary transition-duration-150">Shoes</a>
-                        <a tabindex="0" class="cursor-pointer text-900 font-medium mb-3 hover:text-primary transition-duration-150">Accessories</a>
-                    </div>
-                    <Divider class="w-full m-0 p-0"></Divider>
-
-                    <Accordion :multiple="true" class="-mb-1 mt-3" :activeIndex="[0, 1, 2, 3]">
-                        <AccordionTab :header="'Brand (' + (selectedBrand_1.length !== 0 ? selectedBrand_1.length : '0') + ')'">
-                            <div class="ransition-all transition-duration-400 transition-ease-in-out">
-                                <div class="mb-3">
-                                    <span class="p-input-icon-right w-full">
-                                        <i class="pi pi-search"></i>
-                                        <InputText placeholder="Search" class="w-full" />
-                                    </span>
-                                </div>
-                                <div class="flex w-full justify-content-between">
-                                    <div class="field-checkbox">
-                                        <Checkbox value="Alfred" id="alfred" v-model="selectedBrand_1"></Checkbox>
-                                        <label for="alfred" class="text-900">Alfred</label>
-                                    </div>
-                                    <Badge value="42" class="mr-2 bg-gray-200 text-gray-900 p-0 border-circle"></Badge>
-                                </div>
-                                <div class="flex w-full justify-content-between">
-                                    <div class="field-checkbox">
-                                        <Checkbox value="Hyper" id="hyper" v-model="selectedBrand_1"></Checkbox>
-                                        <label for="hyper" class="text-900">Hyper</label>
-                                    </div>
-                                    <Badge value="18" class="mr-2 bg-gray-200 text-gray-900 p-0 border-circle"></Badge>
-                                </div>
-                                <div class="flex w-full justify-content-between">
-                                    <div class="field-checkbox">
-                                        <Checkbox value="Bastion" id="bastion" v-model="selectedBrand_1"></Checkbox>
-                                        <label for="bastion" class="text-900">Bastion</label>
-                                    </div>
-                                    <Badge value="7" class="mr-2 bg-gray-200 text-gray-900 p-0 border-circle"></Badge>
-                                </div>
-                                <div class="flex w-full justify-content-between">
-                                    <div class="field-checkbox">
-                                        <Checkbox value="Peak" id="peak" v-model="selectedBrand_1"></Checkbox>
-                                        <label for="peak" class="text-900">Peak</label>
-                                    </div>
-                                    <Badge value="36" class="mr-2 bg-gray-200 text-gray-900 p-0 border-circle"></Badge>
-                                </div>
-                                <a tabindex="0" class="block cursor-pointer my-3 text-primary font-medium">Show all...</a>
-                            </div>
-                        </AccordionTab>
-                        <AccordionTab header="Price Range">
-                            <div class="transition-all transition-duration-400 transition-ease-in-out">
-                                <Slider v-model="rangeValues" :range="true" class="mt-3 mx-auto" style="{'max-width':'93%'}"></Slider>
-                                <div class="flex my-4">
-                                    <InputNumber placeholder="$10" v-model="rangeValues[0]" :min="10" inputClass="w-full mr-3"></InputNumber>
-                                    <InputNumber placeholder="$10000" :max="10000" v-model="rangeValues[1]" inputClass="w-full"></InputNumber>
-                                </div>
-                            </div>
-                        </AccordionTab>
-                        <AccordionTab :header="'Color (' + selectedColors.length + ')'">
-                            <div class="transition-all transition-duration-400 transition-ease-in-out">
-                                <div class="grid mb-3">
-                                    <div class="col-4 flex flex-column align-items-center">
-                                        <div
-                                            class="w-3rem h-3rem border-circle bg-gray-900 cursor-pointer border-none flex justify-content-center align-items-center"
-                                            @click="selectedColors.indexOf('Black') == -1 ? selectedColors.push('Black') : selectedColors.splice(selectedColors.indexOf('Black'), 1)"
-                                        >
-                                            <i class="pi pi-check text-2xl text-white" v-if="selectedColors.indexOf('Black') !== -1"></i>
-                                        </div>
-                                        <p class="text-900 text-sm text-center mt-1">Black</p>
-                                    </div>
-                                    <div class="col-4 flex flex-column align-items-center">
-                                        <div
-                                            class="w-3rem h-3rem border-circle bg-orange-500 cursor-pointer border-none flex justify-content-center align-items-center"
-                                            @click="selectedColors.indexOf('Orange') == -1 ? selectedColors.push('Orange') : selectedColors.splice(selectedColors.indexOf('Orange'), 1)"
-                                        >
-                                            <i class="pi pi-check text-2xl text-white" v-if="selectedColors.indexOf('Orange') !== -1"></i>
-                                        </div>
-                                        <p class="text-900 text-sm text-center mt-1">Orange</p>
-                                    </div>
-                                    <div class="col-4 flex flex-column align-items-center">
-                                        <div
-                                            class="w-3rem h-3rem border-circle bg-indigo-500 cursor-pointer border-none flex justify-content-center align-items-center"
-                                            @click="selectedColors.indexOf('Indigo') == -1 ? selectedColors.push('Indigo') : selectedColors.splice(selectedColors.indexOf('Indigo'), 1)"
-                                        >
-                                            <i class="pi pi-check text-2xl text-white" v-if="selectedColors.indexOf('Indigo') !== -1"></i>
-                                        </div>
-                                        <p class="text-900 text-sm text-center mt-1">Indigo</p>
-                                    </div>
-                                    <div class="col-4 flex flex-column align-items-center">
-                                        <div
-                                            class="w-3rem h-3rem border-circle bg-gray-500 cursor-pointer border-none flex justify-content-center align-items-center"
-                                            @click="selectedColors.indexOf('Gray') == -1 ? selectedColors.push('Gray') : selectedColors.splice(selectedColors.indexOf('Gray'), 1)"
-                                        >
-                                            <i class="pi pi-check text-2xl text-white" v-if="selectedColors.indexOf('Gray') !== -1"></i>
-                                        </div>
-                                        <p class="text-900 text-sm text-center mt-1">Gray</p>
-                                    </div>
-                                    <div class="col-4 flex flex-column align-items-center">
-                                        <div
-                                            class="w-3rem h-3rem border-circle bg-cyan-500 cursor-pointer border-none flex justify-content-center align-items-center"
-                                            @click="selectedColors.indexOf('Cyan') == -1 ? selectedColors.push('Cyan') : selectedColors.splice(selectedColors.indexOf('Cyan'), 1)"
-                                        >
-                                            <i class="pi pi-check text-2xl text-white" v-if="selectedColors.indexOf('Cyan') !== -1"></i>
-                                        </div>
-                                        <p class="text-900 text-center mt-1">Cyan</p>
-                                    </div>
-                                    <div class="col-4 flex flex-column align-items-center">
-                                        <div
-                                            class="w-3rem h-3rem border-circle bg-pink-500 cursor-pointer border-none flex justify-content-center align-items-center"
-                                            @click="selectedColors.indexOf('Pink') == -1 ? selectedColors.push('Pink') : selectedColors.splice(selectedColors.indexOf('Pink'), 1)"
-                                        >
-                                            <i class="pi pi-check text-2xl text-white" v-if="selectedColors.indexOf('Pink') !== -1"></i>
-                                        </div>
-                                        <p class="text-900 text-sm text-center mt-1">Pink</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </AccordionTab>
-                        <AccordionTab header="Size">
-                            <div class="transition-all transition-duration-400 transition-ease-in-out">
-                                <Galleria :value="sizes" :responsiveOptions="responsiveOptions" containerClass="h-full" :numVisible="2" :showThumbnails="false" :showIndicators="true">
-                                    <template #item="slotProps">
-                                        <div class="flex flex-wrap w-full h-auto overflow-hidden justify-content-center" style="column-gap: 5px; row-gap: 5px">
-                                            <div
-                                                v-ripple
-                                                class="w-4rem h-2rem text-900 flex justify-content-center align-items-center text-sm cursor-pointer border-round p-ripple"
-                                                v-for="size of slotProps.item.page"
-                                                :key="size"
-                                                @click="selectedSizes1.indexOf(size.value) == -1 ? selectedSizes1.push(size.value) : selectedSizes1.splice(selectedSizes1.indexOf(size.value.toString()), 1)"
-                                                :class="{
-                                                    'surface-100': selectedSizes1.indexOf(size.value) == -1,
-                                                    'bg-blue-200': selectedSizes1.indexOf(size.value) !== -1
-                                                }"
-                                            >
-                                                {{ size.value }}
-                                            </div>
-                                        </div>
-                                    </template>
-                                </Galleria>
-                            </div>
-                        </AccordionTab>
-                    </Accordion>
-                </div>
-                <!-- 統合されたCAD Drawing Ledgerセクション -->
-                <div class="w-full border-2 border-dashed border-round surface-border surface-section mt-3 lg:mt-0" style="min-height: 25rem">
-                    <section class="content">
-                        <div class="card card-solid">
-                            <p class="line-height-3 m-0 description-text">This table displays management information related to CAD design drawings.</p>
-                            <CAD_Drawing_ledger />
-                        </div>
-                    </section>
-                </div>
-            </div>
+    <div class="container">
+      <!-- 描画ツールのボタン -->
+      <div class="toolbar">
+        <!-- 描画モードが選択されているボタンに "active" クラスを付与 -->
+        <button :class="{ active: drawingMode === 'line' }" @click="setDrawingMode('line')">Draw Line</button>
+        <button :class="{ active: drawingMode === 'spline' }" @click="setDrawingMode('spline')">Draw Spline</button>
+        <button :class="{ active: drawingMode === 'circle' }" @click="setDrawingMode('circle')">Draw Circle</button>
+        <button :class="{ active: drawingMode === 'rect' }" @click="setDrawingMode('rect')">Draw Rectangle</button>
+        <button :class="{ active: drawingMode === 'text' }" @click="setDrawingMode('text')">Draw Text</button>
+        <button @click="zoomIn">Zoom In</button>
+        <button @click="zoomOut">Zoom Out</button>
+      </div>
+      <div class="main-content">
+        <!-- キャンバスエリアとサイドバーは変更なし -->
+        <div class="sidebar">
+          <img :src="pumpIconSrc" @click="addPumpIconToCanvas" class="icon" alt="Pump Icon" />
         </div>
-    </BlockViewer>
+        <div class="canvas-container">
+          <v-stage ref="stage" :config="stageConfig">
+            <v-layer ref="layer">
+              <v-rect :config="backgroundConfig" />
+              <v-line v-for="(line, index) in lines" :key="index" :config="line" @dragend="onDragEnd(index, 'line')" draggable />
+              <v-rect v-for="(rect, index) in rects" :key="index" :config="rect" @dragend="onDragEnd(index, 'rect')" draggable />
+              <v-circle v-for="(circle, index) in circles" :key="index" :config="circle" @dragend="onDragEnd(index, 'circle')" draggable />
+              <v-text v-for="(text, index) in texts" :key="index" :config="text" @dragend="onDragEnd(index, 'text')" draggable />
+              <v-image v-for="(pump, index) in pumps" :key="index" :config="pump.config" @dragend="onDragEnd(index, 'pump')" />
+            </v-layer>
+          </v-stage>
+        </div>
+      </div>
+  
+      <!-- フッター領域に選択された描画モードを表示 -->
+      <div class="footer">
+        <p>現在の描画モード: <strong>{{ drawingModeDisplay }}</strong></p>
+      </div>
+    </div>
 </template>
 
 <script>
-import CAD_Drawing_ledger from '@/components/Drawing_ledger/Drawing_ledger.vue';
+import pumpIcon from '@/assets/pump_icon.png';
 
 export default {
-    components: {
-        CAD_Drawing_ledger
-    },
     data() {
         return {
-            selectedBrand_1: [],
-            selectedColors: [],
-            selectedSizes1: [],
-            sizes: [
-                {
-                    page: [
-                        { value: '28x28' },
-                        { value: '28x30' },
-                        { value: '28x32' },
-                        { value: '28x34' },
-                        { value: '29x28' },
-                        { value: '29x30' },
-                        { value: '29x32' },
-                        { value: '29x34' },
-                        { value: '30x28' },
-                        { value: '30x30' },
-                        { value: '30x32' },
-                        { value: '30x34' },
-                        { value: '31x28' },
-                        { value: '31x30' },
-                        { value: '31x32' },
-                        { value: '31x34' }
-                    ]
-                },
-                {
-                    page: [
-                        { value: '32x28' },
-                        { value: '32x30' },
-                        { value: '32x32' },
-                        { value: '32x34' },
-                        { value: '33x28' },
-                        { value: '33x30' },
-                        { value: '33x32' },
-                        { value: '33x34' },
-                        { value: '34x28' },
-                        { value: '34x30' },
-                        { value: '34x32' },
-                        { value: '34x34' },
-                        { value: '35x28' },
-                        { value: '35x30' },
-                        { value: '35x32' },
-                        { value: '35x34' }
-                    ]
-                },
-                {
-                    page: [
-                        { value: '28x28' },
-                        { value: '28x30' },
-                        { value: '28x32' },
-                        { value: '28x34' },
-                        { value: '29x28' },
-                        { value: '29x30' },
-                        { value: '29x32' },
-                        { value: '29x34' },
-                        { value: '30x28' },
-                        { value: '30x30' },
-                        { value: '30x32' },
-                        { value: '30x34' },
-                        { value: '31x28' },
-                        { value: '31x30' },
-                        { value: '31x32' },
-                        { value: '31x34' }
-                    ]
-                }
-            ],
-            responsiveOptions: [
-                {
-                    breakpoint: '1024px',
-                    numVisible: 3,
-                    numScroll: 3
-                },
-                {
-                    breakpoint: '768px',
-                    numVisible: 2,
-                    numScroll: 2
-                },
-                {
-                    breakpoint: '560px',
-                    numVisible: 1,
-                    numScroll: 1
-                }
-            ],
-            rangeValues: [20, 80]
+            // 初期データ設定
+            stageConfig: {
+                width: window.innerWidth - 100,
+                height: window.innerHeight - 100, // フッター領域分の高さを引く
+                scaleX: 1,
+                scaleY: 1
+            },
+            backgroundConfig: {
+                x: 0,
+                y: 0,
+                width: window.innerWidth - 100,
+                height: window.innerHeight - 100, // フッター領域分の高さを引く
+                fill: 'white'
+            },
+            drawingMode: 'none',
+            isDrawing: false,
+            lines: [],
+            rects: [],
+            circles: [],
+            texts: [],
+            pumps: [],
+            currentShape: null,
+            pumpIconSrc: pumpIcon
         };
+    },
+
+    computed: {
+        // 描画モードを日本語表記で返すコンピューテッドプロパティ
+        drawingModeDisplay() {
+            switch (this.drawingMode) {
+                case 'line':
+                    return '線を描画';
+                case 'spline':
+                    return 'スプラインを描画';
+                case 'circle':
+                    return '円を描画';
+                case 'rect':
+                    return '矩形を描画';
+                case 'text':
+                    return 'テキストを描画';
+                default:
+                    return 'なし';
+            }
+        }
+    },
+    methods: {
+        setDrawingMode(mode) {
+            this.drawingMode = mode;
+        },
+        // キャンバス上にアイコンを配置するメソッド
+        addPumpIconToCanvas() {
+            const stage = this.$refs.stage.getStage();
+            const pointerPosition = stage.getPointerPosition();
+            const img = new window.Image();
+            img.src = this.pumpIconSrc;
+            img.onload = () => {
+                this.pumps.push({
+                    config: {
+                        x: pointerPosition.x,
+                        y: pointerPosition.y,
+                        image: img,
+                        width: 50,
+                        height: 50,
+                        draggable: true
+                    }
+                });
+            };
+        },
+        // 描画開始時の処理
+        startDrawing(e) {
+            if (this.drawingMode === 'none') return;
+            this.isDrawing = true;
+            const stage = this.$refs.stage.getStage();
+            const pointerPosition = stage.getPointerPosition();
+
+            if (this.drawingMode === 'line' || this.drawingMode === 'spline') {
+                this.currentShape = [{ x: pointerPosition.x, y: pointerPosition.y }];
+            } else if (this.drawingMode === 'rect') {
+                this.currentShape = {
+                    x: pointerPosition.x,
+                    y: pointerPosition.y,
+                    width: 0,
+                    height: 0,
+                    fill: 'transparent',
+                    stroke: 'black',
+                    strokeWidth: 2
+                };
+                this.rects.push(this.currentShape);
+            } else if (this.drawingMode === 'circle') {
+                this.currentShape = {
+                    x: pointerPosition.x,
+                    y: pointerPosition.y,
+                    radius: 0,
+                    fill: 'transparent',
+                    stroke: 'black',
+                    strokeWidth: 2
+                };
+                this.circles.push(this.currentShape);
+            } else if (this.drawingMode === 'text') {
+                this.currentShape = {
+                    x: pointerPosition.x,
+                    y: pointerPosition.y,
+                    text: 'Sample Text',
+                    fontSize: 20,
+                    fill: 'black'
+                };
+                this.texts.push(this.currentShape);
+            }
+        },
+        // 描画中の処理
+        draw(e) {
+            if (!this.isDrawing) return;
+            const stage = this.$refs.stage.getStage();
+            const pointerPosition = stage.getPointerPosition();
+
+            if (this.drawingMode === 'line' || this.drawingMode === 'spline') {
+                const startX = this.currentShape[0].x;
+                const startY = this.currentShape[0].y;
+
+                if (this.drawingMode === 'line') {
+                    const dx = Math.abs(pointerPosition.x - startX);
+                    const dy = Math.abs(pointerPosition.y - startY);
+                    if (dx > dy) {
+                        pointerPosition.y = startY; // 水平線
+                    } else {
+                        pointerPosition.x = startX; // 垂直線
+                    }
+                }
+
+                // 線やスプラインの形を更新
+                this.currentShape.push({ x: pointerPosition.x, y: pointerPosition.y });
+                this.lines = [
+                    ...this.lines.slice(0, -1),
+                    {
+                        points: this.currentShape.flatMap((point) => [point.x, point.y]),
+                        stroke: 'black',
+                        strokeWidth: 2,
+                        lineCap: 'round',
+                        lineJoin: this.drawingMode === 'spline' ? 'round' : 'miter'
+                    }
+                ];
+            } else if (this.drawingMode === 'rect') {
+                const rect = this.currentShape;
+                rect.width = pointerPosition.x - rect.x;
+                rect.height = pointerPosition.y - rect.y;
+            } else if (this.drawingMode === 'circle') {
+                const circle = this.currentShape;
+                const dx = pointerPosition.x - circle.x;
+                const dy = pointerPosition.y - circle.y;
+                circle.radius = Math.sqrt(dx * dx + dy * dy);
+            }
+        },
+        // 描画終了時の処理
+        endDrawing() {
+            if (!this.isDrawing) return;
+            this.isDrawing = false;
+
+            if (this.drawingMode === 'line' || this.drawingMode === 'spline') {
+                this.lines.push({
+                    points: this.currentShape.flatMap((point) => [point.x, point.y]),
+                    stroke: 'black',
+                    strokeWidth: 2,
+                    lineCap: 'round',
+                    lineJoin: this.drawingMode === 'spline' ? 'round' : 'miter'
+                });
+            }
+
+            this.currentShape = null;
+        },
+        onDragEnd(index, type) {
+            const shape = this[type + 's'][index].config;
+            const stage = this.$refs.stage.getStage();
+            const pointerPosition = stage.getPointerPosition();
+            shape.x = pointerPosition.x;
+            shape.y = pointerPosition.y;
+        },
+        zoomIn() {
+            this.stageConfig.scaleX *= 1.2;
+            this.stageConfig.scaleY *= 1.2;
+        },
+        zoomOut() {
+            this.stageConfig.scaleX /= 1.2;
+            this.stageConfig.scaleY /= 1.2;
+        }
+    },
+    mounted() {
+        const stage = this.$refs.stage.getStage();
+        stage.on('mousedown touchstart', this.startDrawing);
+        stage.on('mousemove touchmove', this.draw);
+        stage.on('mouseup touchend', this.endDrawing);
     }
 };
 </script>
 
 <style>
-.description-text {
-    font-size: 1.2rem; /* フォントサイズを一回り大きく設定 */
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+}
+
+.toolbar {
+    width: 100%;
+    height: 50px;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 10px;
+    border-bottom: 1px solid black;
+}
+
+.main-content {
+    display: flex;
+    flex-grow: 1;
+}
+
+.sidebar {
+    width: 100px;
+    background-color: #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 20px;
+    height: 100%;
+    border-right: 1px solid black;
+}
+
+.icon {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 20px;
+    cursor: pointer;
+}
+
+.canvas-container {
+    flex-grow: 1;
+}
+
+.footer {
+    width: 100%;
+    height: 50px;
+    background-color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    border-top: 1px solid black;
 }
 </style>

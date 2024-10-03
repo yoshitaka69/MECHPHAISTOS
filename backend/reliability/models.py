@@ -17,7 +17,6 @@ class Reliability(models.Model):
     plant = models.CharField(max_length=100, verbose_name='Plant', null=True, blank=True)
     equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='reliability_equipment', null=True, blank=True)
     machineName = models.ForeignKey(Machine, on_delete=models.CASCADE, related_name='reliability_machine', null=True, blank=True)
-    maintenanceTitle = models.CharField(max_length=200, verbose_name='Maintenance Title', null=True, blank=True)  # Maintenance Title フィールド
 
     failureType = models.IntegerField(
         choices=[
@@ -31,11 +30,6 @@ class Reliability(models.Model):
         verbose_name='Failure Type'
     )
 
-    # 補足説明用のテキストフィールド
-    failureTypeDetail = models.TextField(
-        verbose_name='Failure Type Detail',
-        null=True, blank=True
-    )
 
     operationalCondition = models.IntegerField(
         choices=[
@@ -47,12 +41,6 @@ class Reliability(models.Model):
         ],
         null=True, blank=True,
         verbose_name='Operational Conditions'
-    )
-
-    # 補足説明用のテキストフィールド
-    operationalConditionDetail = models.TextField(
-        verbose_name='Operational Condition Detail',
-        null=True, blank=True
     )
 
 
@@ -93,11 +81,6 @@ class Reliability(models.Model):
         verbose_name='Maintenance Method'
     )
 
-    # 補足説明用のテキストフィールド
-    maintenanceMethodDetail = models.TextField(
-        verbose_name='Maintenance Method Detail',
-        null=True, blank=True
-    )
 
     maintenanceFrequency = models.IntegerField(verbose_name='maintenanceFrequency', null=True, blank=True)
 
@@ -134,12 +117,6 @@ class Reliability(models.Model):
         verbose_name='Failure Mode'
     )
 
-    # 補足説明用のテキストフィールド
-    failureModeDetail = models.TextField(
-        verbose_name='Failure Mode Detail',
-        null=True, blank=True
-    )
-
 
 
     failureCause = models.IntegerField(
@@ -165,11 +142,6 @@ class Reliability(models.Model):
         verbose_name='Failure Cause'
     )
 
-    # 補足説明用のテキストフィールド
-    failureCauseDetail = models.TextField(
-        verbose_name='Failure Cause Detail',
-        null=True, blank=True
-    )
 
     componentCondition = models.IntegerField(
         choices=[
@@ -181,12 +153,6 @@ class Reliability(models.Model):
         verbose_name='Component Condition'
     )
 
-    # 補足説明用のテキストフィールド
-    componentConditionDetail = models.TextField(
-        verbose_name='Component Condition Detail',
-        null=True, blank=True
-    )
-
     
     mttr = models.IntegerField(verbose_name='MTTR', null=True, blank=True)
     mtbf = models.IntegerField(verbose_name='MTBF', null=True, blank=True)
@@ -195,14 +161,10 @@ class Reliability(models.Model):
     failureCount = models.IntegerField(verbose_name='Failure Count', null=True, blank=True)
     failureDate = models.DateField(verbose_name='Failure Date', null=True, blank=True)
     
-
-    remark = models.TextField(verbose_name='Remark', null=True, blank=True)  # Remark フィールド
     record_date = models.DateField(verbose_name='Record Date', default=date.today)
 
     class Meta:
         ordering = ['-mttr']
-
-
 
 
 #-------------------------------------------------------------------------------------------------------------------------------------
