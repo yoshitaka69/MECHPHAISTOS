@@ -16,12 +16,15 @@ class ReliabilitySerializer(serializers.ModelSerializer):
         slug_field='companyCode',
         queryset=CompanyCode.objects.all()
     )
-    
+
     class Meta:
         model = Reliability
         fields = [
-            'companyCode', 'ceListNo', 'equipment', 'machineName',
-            'mttr', 'mtbf', 'mttf', 'totalOperatingTime', 'failureCount'
+            'companyCode', 'ceListNo', 'plant', 'equipment', 'machineName', 'maintenanceTitle',
+            'mttr', 'mtbf', 'mttf', 'totalOperatingTime', 'failureCount', 'failureDate',
+            'failureType', 'failureTypeDetail', 'operationalCondition', 'operationalConditionDetail',
+            'PMType', 'maintenanceMethod', 'maintenanceMethodDetail', 'failureMode', 'failureModeDetail',
+            'failureCause', 'failureCauseDetail', 'remark', 'record_date'
         ]
 
 class CompanyReliabilitySerializer(serializers.ModelSerializer):

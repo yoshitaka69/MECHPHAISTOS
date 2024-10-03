@@ -4,12 +4,28 @@ from .models import Reliability,TroubleHistory,FailurePredictionPoint
 
 
 class ReliabilityAdmin(admin.ModelAdmin):
-    list_display = ('companyCode', 'ceListNo', 'equipment', 'machineName', 'mttr', 'mtbf', 'mttf', 'totalOperatingTime', 'failureCount')
-    search_fields = ('equipment__name', 'machineName__name')
-    list_filter = ('companyCode', 'ceListNo')
+    list_display = (
+        'companyCode', 'ceListNo', 'plant', 'equipment', 'machineName', 'maintenanceTitle', 
+        'mttr', 'mtbf', 'mttf', 'totalOperatingTime', 'failureCount', 'failureDate'
+    )
+    search_fields = ('equipment__name', 'machineName__name', 'plant')
+    list_filter = ('companyCode', 'ceListNo', 'plant', 'maintenanceMethod', 'failureType', 'operationalCondition', 'PMType')
     ordering = ('-mttr',)
     save_on_top = True
     list_per_page = 50
+
+    # 補足説明用フィールドも表示できるようにします
+    fieldsets = (
+        (None, {
+            'fields': (
+                'companyCode', 'ceListNo', 'plant', 'equipment', 'machineName', 'maintenanceTitle',
+                'mttr', 'mtbf', 'mttf', 'totalOperatingTime', 'failureCount', 'failureDate',
+                'failureType', 'failureTypeDetail', 'operationalCondition', 'operationalConditionDetail',
+                'PMType', 'maintenanceMethod', 'maintenanceMethodDetail', 'failureMode', 'failureModeDetail',
+                'failureCause', 'failureCauseDetail', 'remark', 'record_date'
+            )
+        }),
+    )
 
 
 
