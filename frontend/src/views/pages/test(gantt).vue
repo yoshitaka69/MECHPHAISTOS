@@ -5,6 +5,8 @@
         <!-- タスク追加ボタン -->
         <div class="buttons-container">
             <button @click="addTask" class="task-add-button">タスク追加</button>
+            <!-- サブタスク追加ボタンを追加 -->
+            <button @click="addSubtask" class="task-subtask-button">サブタスク追加</button>
             <!-- タスク削除ボタンを追加 -->
             <button @click="deleteTask" class="task-delete-button">タスク削除</button>
             <!-- 保存ボタン -->
@@ -18,7 +20,8 @@
             <div class="task-inputs">
                 <!-- ヘッダー -->
                 <div class="task-input-header">
-                    <div class="task-header-item task-checkbox"></div> <!-- チェックボックス用 -->
+                    <div class="task-header-item task-checkbox"></div>
+                    <!-- チェックボックス用 -->
                     <div class="task-header-item task-name">タスク名</div>
                     <div class="task-header-item task-plant">プラント</div>
                     <div class="task-header-item task-pm-type">PM Type</div>
@@ -27,13 +30,17 @@
                 </div>
 
                 <!-- 入力フォーム -->
-                <div v-for="(task, index) in tasks" :key="task.id" class="task-input-row">
-                    <input type="checkbox" v-model="task.selected" class="task-checkbox" /> <!-- チェックボックス -->
-                    <input type="text" v-model="task.name" placeholder="タスク名" class="task-input task-name" @change="updateTaskName(index, task.name)" />
-                    <input type="text" v-model="task.plant" placeholder="プラント" class="task-input task-plant" />
-                    <input type="text" v-model="task.pmType" placeholder="PM Type" class="task-input task-pm-type" />
-                    <input type="date" v-model="task.startDate" class="task-input task-date" @change="updateTaskDates(index)" />
-                    <input type="date" v-model="task.endDate" class="task-input task-date" @change="updateTaskDates(index)" />
+                <div v-for="(task, rowIndex) in tasks" :key="task.id" class="task-input-row">
+                    <input type="checkbox" v-model="task.selected" class="task-checkbox" />
+                    <input type="text" v-model="task.name" placeholder="タスク名" class="task-input task-name" @keydown="moveToNextCell($event, rowIndex, 0)" />
+
+                    <!-- サブタスク名は存在する場合のみ表示 -->
+                    <input v-if="task.subtaskName" type="text" v-model="task.subtaskName" placeholder="サブタスク名" class="task-input task-subtask-name" @keydown="moveToNextCell($event, rowIndex, 1)" />
+
+                    <input type="text" v-model="task.plant" placeholder="プラント" class="task-input task-plant" @keydown="moveToNextCell($event, rowIndex, 2)" />
+                    <input type="text" v-model="task.pmType" placeholder="PM Type" class="task-input task-pm-type" @keydown="moveToNextCell($event, rowIndex, 3)" />
+                    <input type="date" v-model="task.startDate" class="task-input task-date" @keydown="moveToNextCell($event, rowIndex, 4)" />
+                    <input type="date" v-model="task.endDate" class="task-input task-date" @keydown="moveToNextCell($event, rowIndex, 5)" />
                 </div>
             </div>
 
@@ -58,7 +65,8 @@ import axios from 'axios';
 // 追加: 現在の日付を取得し、その前後1か月の日付範囲を計算
 const today = dayjs(); // 今日の日付
 const startDate = today.subtract(1, 'month'); // 1か月前
-const endDate = today.add(1, 'month'); // 1か月後
+const endDate = today.add(2, 'month').endOf('month'); // 10月の末日までに拡張
+
 
 const tasks = ref([]); // タスクデータ
 
@@ -101,14 +109,29 @@ onMounted(() => {
     drawDayOfWeekHeader();
 });
 
+// 入力セルでEnterキーが押された場合、次のセルに移動する関数
+function moveToNextCell(event: KeyboardEvent, rowIndex: number, columnIndex: number) {
+    if (event.key === 'Enter') {
+        // 各行のすべての入力セルを取得
+        const row = document.querySelectorAll('.task-input-row')[rowIndex];
+        if (row) {
+            const inputs = row.querySelectorAll('input'); // 行内の全てのinput要素を取得
+            if (columnIndex + 1 < inputs.length) {
+                const nextInput = inputs[columnIndex + 1] as HTMLInputElement;
+                nextInput.focus();
+            }
+        }
+    }
+}
+
 // ガントチャート描画関数
 function drawGanttChart() {
     const svg = d3
         .select('#gantt-chart')
-        .attr('width', blockWidth * totalDays) // 修正: 表示する日数に応じた幅
-        .attr('height', tasks.value.length * rowHeight);
+        .attr('width', blockWidth * totalDays) // ガントチャートの横幅に一致
+        .attr('height', tasks.value.length * rowHeight); // 高さはタスクの数に依存
 
-    drawVerticalGridLines(svg);
+    drawVerticalGridLines(svg); // 縦グリッド線を描画
 
     svg.selectAll('.row-grid-line')
         .data(tasks.value)
@@ -130,12 +153,11 @@ function drawGanttChart() {
     const bars = svg.selectAll('g').data(tasks.value).enter().append('g');
 
     bars.append('rect')
-        .attr('x', (d) => xScale(dayjs(d.startDate).toDate())) // 修正: 日付範囲に基づいてバーの位置を調整
-        .attr('y', (d, i) => i * rowHeight)
-        .attr('width', (d) => xScale(dayjs(d.endDate).toDate()) - xScale(dayjs(d.startDate).toDate()))
-        .attr('height', rowHeight)
-        .attr('fill', 'steelblue')
-        .call(drag);
+        .attr('x', (d) => xScale(dayjs(d.startDate).toDate())) // タスクの開始日をx座標に設定
+        .attr('y', (d, i) => i * rowHeight) // タスクの位置をy座標に設定
+        .attr('width', (d) => xScale(dayjs(d.endDate).toDate()) - xScale(dayjs(d.startDate).toDate())) // 開始日と終了日で幅を計算
+        .attr('height', rowHeight) // 各タスクバーの高さを設定
+        .attr('fill', 'steelblue'); // タスクバーの色を設定
 
     // 左側のリサイズハンドルを追加
     bars.append('rect')
@@ -145,7 +167,7 @@ function drawGanttChart() {
         .attr('height', rowHeight)
         .attr('fill', 'gray')
         .attr('cursor', 'ew-resize')
-        .call(resizeLeft); // 左端のリサイズハンドルを追加
+        .call(d3.drag().on('drag', resizingLeft)); // 左端のリサイズハンドルのドラッグイベント
 
     // 右側のリサイズハンドルを追加
     bars.append('rect')
@@ -155,8 +177,9 @@ function drawGanttChart() {
         .attr('height', rowHeight)
         .attr('fill', 'gray')
         .attr('cursor', 'ew-resize')
-        .call(resizeRight); // 右端のリサイズハンドルを追加
+        .call(d3.drag().on('drag', resizingRight)); // 右端のリサイズハンドルのドラッグイベント
 
+    // タスク名のテキストを表示
     svg.selectAll('text')
         .data(tasks.value)
         .enter()
@@ -164,7 +187,7 @@ function drawGanttChart() {
         .attr('x', (d) => xScale(dayjs(d.startDate).toDate()) + 5)
         .attr('y', (d, i) => i * rowHeight + rowHeight / 2 + 5)
         .text((d) => d.name)
-        .attr('fill', 'white');
+        .attr('fill', 'white'); // テキスト色を設定
 }
 
 // ドラッグ開始時の処理
@@ -237,42 +260,102 @@ function resizeEnded(event, d) {
 
 // 月のヘッダーを表示する関数
 function drawMonthHeader() {
-    // 修正: currentMonthではなく、startDateを使用
     const monthHeader = d3.select('#month-header');
 
+    // 月ごとの区切りを描画するために使用するデータを作成
+    const monthData = [];
+    let currentMonth = startDate.clone(); // startDateをコピーしてcurrentMonthとして使用
+    while (currentMonth.isBefore(endDate)) {
+        monthData.push(currentMonth.format('MMMM YYYY')); // 月と年をフォーマットして追加
+        currentMonth = currentMonth.add(1, 'month'); // 1か月進める
+    }
+
     monthHeader
+        .style('width', `${blockWidth * totalDays}px`) // ガントチャートの横幅に一致
+        .style('display', 'flex') // フレックスボックスで横並びにする
+        .style('overflow', 'hidden'); // はみ出しを防ぐ
+
+    // 各月の表示部分を作成
+    const monthWidth = blockWidth * 30; // 仮に各月30日間とする
+    monthHeader.selectAll('div')
+        .data(monthData)
+        .enter()
         .append('div')
-        .style('display', 'inline-block')
-        .style('width', `${blockWidth * totalDays}px`) // 表示する日数に基づいて幅を設定
+        .style('width', `${monthWidth}px`) // 各月の横幅を設定
         .style('text-align', 'center')
+        .style('border-right', '1px solid black')
         .style('font-weight', 'bold')
-        .text(startDate.format('MMMM YYYY')); // 開始日の月と年を表示
+        .text((d) => d); // 月と年を表示
 }
+
+
+
+const todayIndex = dayjs().diff(startDate, 'day'); // 今日の日付のインデックスを取得
 
 // 日付のヘッダーを表示する関数
 function drawDateHeader() {
     const dateHeader = d3.select('#date-header');
 
-    for (let i = 0; i < totalDays; i++) {
-        const currentDay = startDate.add(i, 'day');
-        const dayOfWeek = currentDay.day();
-
-        dateHeader.append('div').style('display', 'inline-block').style('width', `${blockWidth}px`).style('text-align', 'center').style('color', getDayColor(dayOfWeek)).style('border-right', '1px solid black').text(currentDay.format('D'));
+    // 日ごとのデータを作成
+    const dateData = [];
+    let currentDate = startDate.clone(); // startDateをコピーしてcurrentDateとして使用
+    while (currentDate.isBefore(endDate) || currentDate.isSame(endDate, 'day')) {
+        dateData.push(currentDate.format('D')); // 日付をフォーマットして追加
+        currentDate = currentDate.add(1, 'day'); // 1日進める
     }
+
+    dateHeader
+        .style('width', `${blockWidth * totalDays}px`) // ガントチャートの横幅に一致
+        .style('display', 'flex') // フレックスボックスで横並びにする
+        .style('overflow', 'hidden'); // はみ出しを防ぐ
+
+    // 各日付の表示部分を作成
+    dateHeader.selectAll('div')
+        .data(dateData)
+        .enter()
+        .append('div')
+        .style('width', `${blockWidth}px`) // 各日の横幅を設定
+        .style('text-align', 'center')
+        .style('border-right', '1px solid black')
+        .style('color', (d, i) => getDayColor(dayjs(startDate).add(i, 'day').day())) // 曜日に応じた色付け
+        .style('background-color', (d, i) => dayjs(startDate).add(i, 'day').isSame(dayjs(), 'day') ? '#ffe6e6' : '#f0f0f0') // 今日の日付をピンクに
+        .text((d) => d); // 日付を表示
 }
+
+
+
 
 // 曜日ヘッダーを表示する関数
 function drawDayOfWeekHeader() {
     const dayOfWeekHeader = d3.select('#day-of-week-header');
 
-    // 修正: currentMonthではなくstartDateを使用し、表示する日数分ループ
-    for (let i = 0; i < totalDays; i++) {
-        const currentDay = startDate.add(i, 'day');
-        const dayOfWeek = currentDay.day();
-
-        dayOfWeekHeader.append('div').style('display', 'inline-block').style('width', `${blockWidth}px`).style('text-align', 'center').style('color', getDayColor(dayOfWeek)).style('border-right', '1px solid black').text(currentDay.format('dd')); // 修正: 曜日を表示
+    // 日ごとの曜日データを作成
+    const dayOfWeekData = [];
+    let currentDate = startDate.clone(); // startDateをコピーしてcurrentDateとして使用
+    while (currentDate.isBefore(endDate) || currentDate.isSame(endDate, 'day')) {
+        dayOfWeekData.push(currentDate.format('dd')); // 曜日をフォーマットして追加
+        currentDate = currentDate.add(1, 'day'); // 1日進める
     }
+
+    dayOfWeekHeader
+        .style('width', `${blockWidth * totalDays}px`) // ガントチャートの横幅に一致
+        .style('display', 'flex') // フレックスボックスで横並びにする
+        .style('overflow', 'hidden'); // はみ出しを防ぐ
+
+    // 各曜日の表示部分を作成
+    dayOfWeekHeader.selectAll('div')
+        .data(dayOfWeekData)
+        .enter()
+        .append('div')
+        .style('width', `${blockWidth}px`) // 各曜日の横幅を設定
+        .style('text-align', 'center')
+        .style('border-right', '1px solid black')
+        .style('color', (d, i) => getDayColor(dayjs(startDate).add(i, 'day').day())) // 曜日に応じた色付け
+        .style('background-color', (d, i) => dayjs(startDate).add(i, 'day').isSame(dayjs(), 'day') ? '#ffe6e6' : '#f0f0f0') // 今日の日付をピンクに
+        .text((d) => d); // 曜日を表示
 }
+
+
 
 // 曜日に応じて色を決定
 function getDayColor(dayOfWeek) {
@@ -304,15 +387,20 @@ function updateChart() {
 // 縦グリッド線の描画
 function drawVerticalGridLines(svg) {
     const daysArray = Array.from({ length: totalDays }, (_, i) => i + 1);
+    const todayDate = dayjs().format('YYYY-MM-DD'); // 今日の日付を取得
 
     svg.selectAll('.column-grid-line')
         .data(daysArray)
         .enter()
-        .append('line')
-        .attr('x1', (d) => d * blockWidth)
-        .attr('x2', (d) => d * blockWidth)
-        .attr('y1', 0)
-        .attr('y2', tasks.value.length * rowHeight)
+        .append('rect')
+        .attr('x', (d) => (d - 1) * blockWidth)
+        .attr('y', 0)
+        .attr('width', blockWidth)
+        .attr('height', tasks.value.length * rowHeight)
+        .attr('fill', (d) => {
+            const currentDay = startDate.clone().add(d - 1, 'day'); // cloneで日付の安全性を確保
+            return currentDay.format('YYYY-MM-DD') === todayDate ? '#ffe6e6' : 'none'; // 今日ならピンクに
+        })
         .attr('stroke', '#ccc');
 }
 
@@ -330,14 +418,81 @@ function addTask() {
     updateChart(); // ガントチャートを更新
 }
 
-
 // タスク削除の実際の処理
 function deleteTask() {
     tasks.value = tasks.value.filter((task) => !task.selected); // チェックが入っていないタスクのみ残す
     updateChart(); // ガントチャートを更新
 }
 
+// サブタスク追加の実際の関数
+function addSubtask() {
+    // 1. チェックされた行を検出
+    const selectedTaskIndex = tasks.value.findIndex((task) => task.selected);
+    if (selectedTaskIndex === -1) {
+        console.log('サブタスクを追加するタスクが選択されていません');
+        return;
+    }
 
+    // 2. サブタスクを追加
+    const newSubtask = {
+        id: tasks.value.length + 1,
+        name: tasks.value[selectedTaskIndex].name, // 元のタスク名をコピー
+        subtaskName: '', // サブタスク名は空で追加
+        plant: tasks.value[selectedTaskIndex].plant, // プラント名もコピー
+        pmType: tasks.value[selectedTaskIndex].pmType,
+        startDate: tasks.value[selectedTaskIndex].startDate,
+        endDate: tasks.value[selectedTaskIndex].endDate,
+        selected: false, // チェック状態を初期化
+        isSubtask: true // サブタスクであることを示すフラグ
+    };
+
+    // チェックされた行の下にサブタスクを挿入
+    tasks.value.splice(selectedTaskIndex + 1, 0, newSubtask);
+
+    // 3. ヘッダーに「サブタスク名」を追加し、既に存在しているか確認
+    const subtaskHeaderExists = document.querySelector('.task-header-item.task-subtask-name');
+    if (!subtaskHeaderExists) {
+        const header = document.querySelector('.task-input-header');
+        if (header) {
+            // ヘッダーが存在する場合にのみ処理
+            const subtaskHeader = document.createElement('div');
+            subtaskHeader.className = 'task-header-item task-subtask-name';
+            subtaskHeader.textContent = 'サブタスク名';
+            header.insertBefore(subtaskHeader, header.querySelector('.task-plant'));
+        }
+
+        // 4. 全ての既存の行に「サブタスク名」の入力フォームを追加
+        document.querySelectorAll('.task-input-row').forEach((row) => {
+            if (row) {
+                // 各行が存在する場合にのみ処理
+                const subtaskCell = document.createElement('input');
+                subtaskCell.type = 'text';
+                subtaskCell.placeholder = 'サブタスク名';
+                subtaskCell.className = 'task-input task-subtask-name';
+                row.insertBefore(subtaskCell, row.querySelector('.task-plant'));
+            }
+        });
+    }
+
+    // 5. 新しく追加したサブタスク行に「サブタスク名」のセルを追加
+    const subtaskRow = document.querySelectorAll('.task-input-row')[selectedTaskIndex + 1]; // 新しく追加したサブタスク行
+    if (subtaskRow) {
+        // サブタスク行が存在する場合にのみ処理
+        const subtaskCellForNewRow = document.createElement('input');
+        subtaskCellForNewRow.type = 'text';
+        subtaskCellForNewRow.placeholder = 'サブタスク名';
+        subtaskCellForNewRow.className = 'task-input task-subtask-name';
+        subtaskRow.insertBefore(subtaskCellForNewRow, subtaskRow.querySelector('.task-plant'));
+    }
+
+    // 6. チェックされた行と新しいサブタスク行の「タスク名」を結合して表示
+    tasks.value[selectedTaskIndex].name = newSubtask.name;
+    tasks.value[selectedTaskIndex].subtaskName = newSubtask.subtaskName;
+    tasks.value[selectedTaskIndex + 1].name = newSubtask.name; // サブタスクの名前を親タスク名に統一
+    tasks.value[selectedTaskIndex + 1].subtaskName = newSubtask.subtaskName; // サブタスク名を設定
+
+    updateChart(); // ガントチャートを更新
+}
 </script>
 
 <style scoped>
@@ -350,8 +505,8 @@ function deleteTask() {
 
 .gantt-title {
     font-size: 2rem; /* 文字サイズを大きく */
-    font-weight: bold; /* 太字に変更 */
-    text-align: center; /* 中央揃え */
+    font-weight: bold; /* 太字 */
+    text-align: left; /* 左寄せに変更 */
     margin-bottom: 20px; /* ボタンとの間に余白を追加 */
 }
 
@@ -508,5 +663,28 @@ function deleteTask() {
     width: 30px;
     height: 30px;
     margin: 5px;
+}
+
+/* サブタスク追加ボタンのスタイルを追加 */
+.task-subtask-button {
+    margin-bottom: 10px;
+    padding: 8px 16px;
+    background-color: #ffc107; /* イエロー系の色 */
+    color: black;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.task-subtask-button:hover {
+    background-color: #e0a800;
+}
+
+/* サブタスク名の入力セルのスタイル */
+.task-subtask-name {
+    width: 150px;
+    padding: 5px;
+    border-right: 1px solid black;
+    height: 100%;
 }
 </style>

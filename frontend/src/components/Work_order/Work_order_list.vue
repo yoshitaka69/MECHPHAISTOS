@@ -72,7 +72,7 @@
                 </Column>
                 <Column field="status" header="Status" sortable filter filterMatchMode="contains">
                     <template #body="slotProps">
-                        <Tag :value="slotProps.data.status" :severity="getStatusLabel(slotProps.data.status)" />
+                        <Tag :value="slotProps.data.status" :class="getStatusLabel(slotProps.data.status)" />
                     </template>
                     <template #filter="{ filterModel }">
                         <Dropdown v-model="filterModel.value" :options="statuses" optionLabel="label" optionValue="value" placeholder="Select a Status" />
@@ -291,23 +291,22 @@ const onFilter = (event) => {
 
 // 編集アイテムを設定し、モーダルを開く
 const editItem = (item) => {
-  // workOrderNoで既存データを検索
-  const existingEntry = products.value.find((i) => i.workOrderNo === item.workOrderNo);
+    // workOrderNoで既存データを検索
+    const existingEntry = products.value.find((i) => i.workOrderNo === item.workOrderNo);
 
-  if (existingEntry) {
-    // 編集するエントリーをセット
-    currentEntry.value = { ...existingEntry };
-    // 編集フラグをセット
-    isEditing.value = true;
-    // モーダルを表示
-    isModalVisible.value = true;
-    console.log('Editing existing item:', currentEntry.value);
-  } else {
-    // データが見つからない場合のエラーメッセージ
-    console.error('Work Order No not found:', item.workOrderNo);
-  }
+    if (existingEntry) {
+        // 編集するエントリーをセット
+        currentEntry.value = { ...existingEntry };
+        // 編集フラグをセット
+        isEditing.value = true;
+        // モーダルを表示
+        isModalVisible.value = true;
+        console.log('Editing existing item:', currentEntry.value);
+    } else {
+        // データが見つからない場合のエラーメッセージ
+        console.error('Work Order No not found:', item.workOrderNo);
+    }
 };
-
 
 // 保存・更新処理
 const onSubmit = (entry) => {
@@ -385,18 +384,28 @@ const rowClass = (data, index) => {
 const getStatusLabel = (status) => {
     switch (status) {
         case 'COMPLETED':
-            return 'success';
+            return 'status-completed';
 
         case 'Ongoing':
-            return 'warning';
+            return 'status-ongoing';
 
         case 'Delayed':
-            return 'danger';
+            return 'status-delayed';
+
+        case 'ON_HOLD': // 一旦保留
+            return 'status-on-hold';
+
+        case 'TEMP_COMPLETED': // 一旦完了
+            return 'status-temp-completed';
+
+        case 'HELP': // HELP
+            return 'status-help';
 
         default:
             return null;
     }
 };
+
 
 // 行編集の保存処理
 const onRowEditSave = (event) => {
@@ -412,6 +421,47 @@ const onRowEditSave = (event) => {
     margin-bottom: 20px;
     color: #333;
 }
+
+.table-container.custom-work-order-table-v2 .status-completed {
+    background-color: #39ff14 !important; /* 蛍光グリーン */
+    color: black !important;
+}
+
+.table-container.custom-work-order-table-v2 .status-ongoing {
+    background-color: #00ffff !important; /* 蛍光ブルー */
+    color: black !important;
+}
+
+.table-container.custom-work-order-table-v2 .status-delayed {
+    background-color: #ff00ff !important; /* 蛍光ピンク */
+    color: black !important;
+    animation: blink 2s step-start infinite; /* 点滅 */
+    animation-iteration-count: 4; /* 8秒で4回点滅 */
+}
+
+.table-container.custom-work-order-table-v2 .status-on-hold {
+    background-color: #ffd700 !important; /* ゴールド色 */
+    color: black !important;
+}
+
+.table-container.custom-work-order-table-v2 .status-temp-completed {
+    background-color: #ff6347 !important; /* トマト色 */
+    color: white !important;
+}
+
+.table-container.custom-work-order-table-v2 .status-help {
+    background-color: #ff4500 !important; /* オレンジレッド色 */
+    color: white !important;
+    animation: blink 2s step-start infinite; /* HELPの場合も点滅 */
+    animation-iteration-count: 4; /* 8秒で4回点滅 */
+}
+
+@keyframes blink {
+    50% {
+        opacity: 0;
+    }
+}
+
 
 .table-container.custom-work-order-table-v2 .header-content {
     display: flex;
@@ -460,4 +510,5 @@ const onRowEditSave = (event) => {
 .thumbnail:hover {
     border-color: #999; /* ホバー時の枠線色を変更（任意） */
 }
+
 </style>

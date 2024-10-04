@@ -1,64 +1,93 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, status  # 必要なモジュールを一度にインポート
+from rest_framework.response import Response
+from django.db.models import Max
 
-from accounts.models import CompanyCode
-from .models import WorkOrder, WorkPermission, WorkOrderManagement
-from .serializers import WorkOrderSerializer, CompanyCodeWorkOrderSerializer, WorkPermissionSerializer, CompanyCodeWorkPermissionSerializer, WorkOrderManagementSerializer, CompanyCodeWorkOrderManagementSerializer
-
-
+from accounts.models import CompanyCode  # CompanyCodeのモデルインポート
+from .models import WorkOrder, WorkPermission, WorkOrderManagement  # 使用する全てのモデルをまとめてインポート
+from .serializers import (  # シリアライザーもまとめてインポート
+    WorkOrderSerializer, 
+    CompanyCodeWorkOrderSerializer, 
+    WorkPermissionSerializer, 
+    CompanyCodeWorkPermissionSerializer, 
+    WorkOrderManagementSerializer, 
+    CompanyCodeWorkOrderManagementSerializer
+)
 
 
 
 #--------------------------------------------------------------
 
-from rest_framework import viewsets, status
-from rest_framework.response import Response
-from .models import WorkOrder, CompanyCode
-from .serializers import WorkOrderSerializer
-from django.db.models import Max
+
 
 class WorkOrderViewSet(viewsets.ModelViewSet):
+    # WorkOrderモデルの全てのインスタンスを対象にしたクエリセットを設定
     queryset = WorkOrder.objects.all()
+    # シリアライザとしてWorkOrderSerializerを使用
     serializer_class = WorkOrderSerializer
 
-    # POSTリクエスト時の処理 (作成)
+    # POSTリクエスト時の処理 (新規作成または更新)
     def create(self, request, *args, **kwargs):
+        # リクエストデータを取得
         data = request.data
         print(f"Received data: {data}")
 
+        # companyCodeとworkOrderNoを取得
         company_code_str = data.get('companyCode')
-        print(f"Received companyCode: {company_code_str}")
+        work_order_no = data.get('workOrderNo')
 
-        if company_code_str:
-            try:
-                company_code_obj = CompanyCode.objects.get(companyCode=company_code_str)
-                data['companyCode'] = company_code_obj.id
-                print(f"Converted companyCode to ID: {data['companyCode']}")
-            except CompanyCode.DoesNotExist:
-                return Response(
-                    {"error": f"CompanyCode '{company_code_str}' does not exist."},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-
-        serializer = self.get_serializer(data=data)
-        serializer.is_valid(raise_exception=True)
-
-        # perform_createを通してWorkOrderインスタンスを作成
-        work_order = self.perform_create(serializer)
-
-        if work_order is None:
+        # companyCodeまたはworkOrderNoが存在しない場合はエラーレスポンスを返す
+        if not company_code_str or not work_order_no:
             return Response(
-                {"error": "Work order could not be created."},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                {"error": "companyCode and workOrderNo are required."},
+                status=status.HTTP_400_BAD_REQUEST
             )
 
-        print(f"Work order created with No: {work_order.workOrderNo}")
+        print(f"Received companyCode: {company_code_str}, workOrderNo: {work_order_no}")
 
-        return Response({
-            "workOrderNo": work_order.workOrderNo,
-            "message": "Work order created successfully."
-        }, status=status.HTTP_201_CREATED)
+        # companyCodeをCompanyCodeオブジェクトに変換し、データに設定
+        try:
+            company_code_obj = CompanyCode.objects.get(companyCode=company_code_str)
+            data['companyCode'] = company_code_obj.id
+            print(f"Converted companyCode to ID: {data['companyCode']}")
+        except CompanyCode.DoesNotExist:
+            # companyCodeが存在しない場合はエラーレスポンスを返す
+            return Response(
+                {"error": f"CompanyCode '{company_code_str}' does not exist."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
-    # perform_createメソッドで保存処理
+        # companyCodeとworkOrderNoでWorkOrderの存在を確認
+        try:
+            existing_work_order = WorkOrder.objects.get(companyCode=company_code_obj, workOrderNo=work_order_no)
+            print(f"Work order found: {existing_work_order}")
+
+            # 既存のWorkOrderが存在する場合、更新処理を行う
+            serializer = self.get_serializer(existing_work_order, data=data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_update(serializer)
+
+            # 更新が成功したことを返す
+            return Response({
+                "workOrderNo": existing_work_order.workOrderNo,
+                "message": "Work order updated successfully."
+            }, status=status.HTTP_200_OK)
+
+        except WorkOrder.DoesNotExist:
+            # WorkOrderが存在しない場合、新規作成を行う
+            print("No existing work order found. Creating a new one.")
+
+            # シリアライザにデータを渡し、バリデーションを実行
+            serializer = self.get_serializer(data=data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+
+            # 作成が成功したことを返す
+            return Response({
+                "workOrderNo": serializer.data['workOrderNo'],
+                "message": "Work order created successfully."
+            }, status=status.HTTP_201_CREATED)
+
+    # perform_createメソッドで新規作成の保存処理を実行
     def perform_create(self, serializer):
         try:
             # WorkOrderインスタンスを保存
@@ -66,42 +95,53 @@ class WorkOrderViewSet(viewsets.ModelViewSet):
             print(f"Successfully created work order: {work_order}")
             return work_order
         except Exception as e:
+            # エラー発生時の処理
             print(f"Error during serializer.save(): {e}")
             raise e
 
+    # perform_updateメソッドで更新処理を実行
+    def perform_update(self, serializer):
+        try:
+            # WorkOrderインスタンスを更新
+            work_order = serializer.save()
+            print(f"Successfully updated work order: {work_order}")
+            return work_order
+        except Exception as e:
+            # エラー発生時の処理
+            print(f"Error during serializer.save(): {e}")
+            raise e
+
+    # PUT/PATCHリクエスト時の更新処理
     def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
-        instance = self.get_object()
+        partial = kwargs.pop('partial', False)  # PATCHリクエストなら部分更新
+        instance = self.get_object()  # 対象のWorkOrderインスタンスを取得
         data = request.data
 
+        # companyCodeがリクエストデータに含まれている場合は変換する
         company_code_str = data.get('companyCode')
         if company_code_str:
             try:
                 company_code_obj = CompanyCode.objects.get(companyCode=company_code_str)
                 data['companyCode'] = company_code_obj.id
             except CompanyCode.DoesNotExist:
+                # companyCodeが存在しない場合はエラーレスポンスを返す
                 return Response(
                     {"error": f"CompanyCode '{company_code_str}' does not exist."},
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
+        # シリアライザでバリデーションを行い、更新処理を実行
         serializer = self.get_serializer(instance, data=data, partial=partial)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
 
+        # 更新成功後のレスポンスを返す
         return Response(serializer.data)
 
+    # 更新処理を行うperform_updateメソッド
     def perform_update(self, serializer):
+        # データを保存 (更新)
         serializer.save()
-
-
-
-
-
-
-
-
-
 
 
 
@@ -117,6 +157,9 @@ class CompanyCodeWorkOrderViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(companyCode=company_code)
         return queryset
     
+
+
+
 
 
 #--------------------------------------------------------------
