@@ -145,24 +145,40 @@ const onFileChange = (event) => {
   filePreviewURL.value = URL.createObjectURL(formData.value.file); // ファイルプレビューURLを作成
 };
 
+
+
+
 const submitForm = async () => {
   try {
-    // 送信するデータを準備
-    const data = {
-      project_name: formData.value.project_name,
-      name: formData.value.name,
-      categories: formData.value.categories,
-      uploaded_by: formData.value.uploaded_by,
-      registration_date: formData.value.registration_date.toISOString(),
-      tag: formData.value.tag,
-      companyCode: companyCode.value  // companyCodeを追加
-    };
+    // Pinia storeからcompanyCodeを取得
+    const userStore = useUserStore();
+    const companyCode = userStore.companyCode;  // companyCodeを取得
+
+    // FormData形式で送信データを作成
+    const formDataToSend = new FormData();
+    formDataToSend.append('projectName', formData.value.project_name);
+    formDataToSend.append('name', formData.value.name);
+    
+    // ファイルが選択されている場合のみ追加
+    if (formData.value.file) {
+      formDataToSend.append('file', formData.value.file);  // ファイルを追加
+    }
+
+    formDataToSend.append('categories', JSON.stringify(formData.value.categories));  // JSON文字列に変換して送信
+    formDataToSend.append('uploadedBy', formData.value.uploaded_by);
+    formDataToSend.append('registrationDate', formData.value.registration_date.toISOString().split('T')[0]);
+    formDataToSend.append('tag', formData.value.tag);
+    formDataToSend.append('companyCode', companyCode);  // companyCodeを追加
 
     // データをコンソールに表示
-    console.log('Form data to be posted:', data);
+    console.log('Form data to be posted:', formDataToSend);
 
-    // ポスト処理
-    await axios.post('/api/upload-cad-file', data);
+    // ポストリクエスト
+    const response = await axios.post('http://127.0.0.1:8000/api/projectManagement/projectManagement/', formDataToSend, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
 
     // 成功時のアラート
     toast.add({ severity: 'success', summary: 'Success', detail: 'File uploaded successfully!', life: 3000 });
@@ -171,9 +187,12 @@ const submitForm = async () => {
   } catch (error) {
     // エラー時のアラート
     toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to upload file!', life: 3000 });
-    console.error('Error uploading file:', error);
+    console.error('POSTリクエスト失敗:', error.response ? error.response.data : error.message);
   }
 };
+
+
+
 
 const cancelForm = () => {
   emit('update:visible', false);

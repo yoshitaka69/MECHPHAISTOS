@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'workingReport',
     'test_app',
     'simulation',
+    'projectManagement',
+    
 ]
 
 # INSTALLED_APPSから無効にするアプリを除外
