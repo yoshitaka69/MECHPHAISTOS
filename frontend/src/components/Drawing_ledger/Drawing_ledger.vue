@@ -38,7 +38,11 @@
             </template>
 
             <!-- 各列の定義（プロジェクト名、ファイル、カテゴリ、ファイル名、登録日、登録者、タグ） -->
-            <Column field="project_name" header="プロジェクト名" sortable filter filterMatchMode="contains">
+            <!-- プロジェクト名の列 -->
+            <Column field="projectName" header="プロジェクト名" sortable filter filterMatchMode="contains">
+                <template #body="slotProps">
+                    {{ slotProps.data.projectName || 'N/A' }}
+                </template>
                 <template #filter="{ filterModel }">
                     <InputText v-model="filterModel.value" type="text" placeholder="Search by Project Name" class="custom-input" />
                 </template>
@@ -46,13 +50,15 @@
 
             <Column field="file" header="ファイル" sortable filter filterMatchMode="contains">
                 <template #body="slotProps">
-                    <a :href="`/api/cad_files/${slotProps.data.file}`" download class="file-link">{{ slotProps.data.file }}</a>
+                    <a v-if="slotProps.data.file" :href="`/api/cad_files/${slotProps.data.file}`" download class="file-link">{{ slotProps.data.file }}</a>
+                    <span v-else>N/A</span>
                 </template>
             </Column>
 
             <Column field="category" header="カテゴリ" sortable filter filterMatchMode="contains">
-                <template #filter="{ filterModel }">
-                    <InputText v-model="filterModel.value" type="text" placeholder="Search by Category" class="custom-input" />
+                <template #body="slotProps">
+                    <span v-if="slotProps.data && slotProps.data.categories">{{ slotProps.data.categories.join(', ') }}</span>
+                    <span v-else>N/A</span>
                 </template>
             </Column>
 
@@ -62,19 +68,28 @@
                 </template>
             </Column>
 
-            <Column field="uploaded_at" header="登録日" sortable filter filterMatchMode="contains">
+            <Column field="registrationDate" header="登録日" sortable filter filterMatchMode="contains">
                 <template #body="slotProps">
-                    {{ new Date(slotProps.data.uploaded_at).toLocaleDateString() }}
+                    {{ new Date(slotProps.data.registrationDate).toLocaleDateString() || 'N/A' }}
+                </template>
+                <template #filter="{ filterModel }">
+                    <InputText v-model="filterModel.value" type="text" placeholder="Search by Registration Date" class="custom-input" />
                 </template>
             </Column>
 
-            <Column field="uploaded_by" header="登録者" sortable filter filterMatchMode="contains">
+            <Column field="uploadedBy" header="登録者" sortable filter filterMatchMode="contains">
+                <template #body="slotProps">
+                    {{ slotProps.data.uploadedBy || 'N/A' }}
+                </template>
                 <template #filter="{ filterModel }">
                     <InputText v-model="filterModel.value" type="text" placeholder="Search by Uploader" class="custom-input" />
                 </template>
             </Column>
 
             <Column field="tag" header="タグ" sortable filter filterMatchMode="contains">
+                <template #body="slotProps">
+                    {{ slotProps.data.tag || 'N/A' }}
+                </template>
                 <template #filter="{ filterModel }">
                     <InputText v-model="filterModel.value" type="text" placeholder="Search by Tag" class="custom-input" />
                 </template>
@@ -117,27 +132,28 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'; // refとonMounted, computedをインポート
+import { ref, onMounted, computed } from 'vue'; // ref, onMounted, computedをインポート
 import axios from 'axios'; // axiosをインポートしてAPIリクエストに使用
 import { useUserStore } from '@/stores/userStore'; // Piniaストアをインポート
 import DataUploadForm from '@/components/Drawing_ledger/Data_upload_form.vue'; // データアップロードフォームコンポーネント
 import CardView from '@/components/Drawing_ledger/CardView.vue'; // カードビューコンポーネント
 
-const userStore = useUserStore(); // Piniaストアのインスタンスを作成
+// Piniaストアのインスタンスを作成
+const userStore = useUserStore();
 
 // データと状態を管理する変数を定義
 const files = ref([]); // ファイルデータのリスト
 const editingRows = ref([]); // 編集中の行
 const isAddingNew = ref(false); // 新規エントリーモードかどうか
 const isEditing = ref(false); // 編集モードかどうか
-const newEntry = ref({ // 新規エントリーフォーム用の初期値
+const newEntry = ref({
     name: '',
     file: '',
     uploaded_at: '',
     uploaded_by: '',
     category: ''
 });
-const editingItem = ref({ // 編集フォーム用の初期値
+const editingItem = ref({
     name: '',
     file: '',
     uploaded_at: '',
@@ -147,16 +163,15 @@ const editingItem = ref({ // 編集フォーム用の初期値
 const viewMode = ref('list'); // リスト表示かカード表示かを管理するフラグ
 
 // カードビューに関連する状態変数
-const selectedBrand_1 = ref([]); // カテゴリ選択
-const rangeValues = ref([new Date(2020, 0, 1).getTime(), new Date(2024, 11, 31).getTime()]); // 日付範囲の初期値
-const minDate = ref(new Date(2020, 0, 1)); // 日付範囲の最小値
-const maxDate = ref(new Date(2024, 11, 31)); // 日付範囲の最大値
+const selectedBrand_1 = ref([]);
+const rangeValues = ref([new Date(2020, 0, 1).getTime(), new Date(2024, 11, 31).getTime()]);
+const minDate = ref(new Date(2020, 0, 1));
+const maxDate = ref(new Date(2024, 11, 31));
 const oneDay = ref(24 * 60 * 60 * 1000); // 1日のミリ秒数
-const formattedStartDate = ref(''); // フォーマットされた開始日
-const formattedEndDate = ref(''); // フォーマットされた終了日
-const selectedCategories = ref([]); // 選択されたカテゴリ
-const sizes = ref([{ value: '28x28' }, { value: '28x30' }, { value: '28x32' }, { value: '28x34' }, { value: '29x28' }]); // サイズオプション
-const selectedSizes1 = ref([]); // 選択されたサイズ
+const formattedStartDate = ref('');
+const formattedEndDate = ref('');
+const selectedCategories = ref([]);
+const selectedSizes1 = ref([]);
 
 // ビューをトグルする関数
 const toggleView = () => {
@@ -164,39 +179,35 @@ const toggleView = () => {
 };
 
 // サーバーからファイルデータを取得する関数
-onMounted(async () => {
-    const response = await axios.get(`http://127.0.0.1:8000/api/cad_files/?format=json&companyCode=${userStore.companyCode}`);
-    files.value = response.data;
-});
-
-// カードビューからのイベントを処理する関数（カテゴリやサイズの選択変更など）
-const updateSelectedBrand_1 = (newSelection) => {
-    selectedBrand_1.value = newSelection;
-};
-
-const updateRangeValues = (newRangeValues) => {
-    rangeValues.value = newRangeValues;
-    formattedStartDate.value = new Date(newRangeValues[0]).toLocaleDateString();
-    formattedEndDate.value = new Date(newRangeValues[1]).toLocaleDateString();
-};
-
-const updateSelectedCategories = (newCategories) => {
-    selectedCategories.value = newCategories;
-};
-
-const updateSelectedSizes1 = (newSizes) => {
-    selectedSizes1.value = newSizes;
+const fetchFiles = async () => {
+    loading.value = true;
+    try {
+        const response = await axios.get('http://127.0.0.1:8000/api/projectManagement/projectManagementByCompany/', {
+            params: {
+                companyCode: userStore.companyCode // companyCodeをクエリパラメータとして設定
+            }
+        });
+        console.log(response.data); // 取得したデータをログに表示
+        if (response.data && response.data.length > 0) {
+            const companyData = response.data[0];
+            files.value = companyData.projectManagementList;
+        }
+    } catch (error) {
+        console.error('Error fetching project management data:', error);
+    } finally {
+        loading.value = false;
+    }
 };
 
 // サーバーデータに関する計算済みプロパティ
-const serverItemsLength = computed(() => files.value.length);
+const serverItemsLength = computed(() => files.value.length); // データ数を計算
 const serverOptions = ref({
     page: 1,
-    rowsPerPage: 10
+    rowsPerPage: 5 // デフォルトで5件表示
 });
-const loading = ref(false);
-const sortField = ref(null);
-const sortOrder = ref(null);
+const loading = ref(false); // ロード状態のフラグ
+const sortField = ref(null); // ソートに使用するフィールド
+const sortOrder = ref(null); // ソートの順序
 const filters = ref({
     global: { value: null, matchMode: 'contains' },
     name: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
@@ -204,7 +215,7 @@ const filters = ref({
     uploaded_by: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] }
 });
 
-// ファイルのソートロジック
+// **sortedItemsの定義**
 const sortedItems = computed(() => {
     let items = [...files.value];
     if (sortField.value) {
@@ -222,7 +233,8 @@ const sortedItems = computed(() => {
             name: '',
             file: '',
             uploaded_at: '',
-            uploaded_by: ''
+            uploaded_by: '',
+            categories: [] // カテゴリも初期化
         });
     }
     return items;
@@ -277,7 +289,8 @@ const showNewEntryForm = () => {
         name: '',
         file: '',
         uploaded_at: '',
-        uploaded_by: ''
+        uploaded_by: '',
+        categories: []
     };
 };
 
@@ -287,7 +300,7 @@ const onPage = (event) => {
     serverOptions.value.rowsPerPage = event.rows;
 };
 
-// 行のスタイルを設定（奇数行と偶数行で異なる背景色）
+// 行のスタイルを設定
 const rowClass = (data, index) => {
     return index % 2 === 0 ? 'even-row' : 'odd-row';
 };
@@ -296,6 +309,9 @@ const rowClass = (data, index) => {
 const updateVisible = (value) => {
     isAddingNew.value = isEditing.value = value;
 };
+
+// サーバーからデータを取得する処理を実行
+onMounted(fetchFiles);
 </script>
 
 <style>
@@ -332,11 +348,11 @@ const updateVisible = (value) => {
 }
 
 .p-datatable-custom .p-datatable-tbody > tr:nth-child(odd) > td {
-    background-color: #ecf0f1; /* 奇数行は薄い灰色 */
+    background-color: #ecf0f1;
 }
 
 .p-datatable-custom .p-datatable-tbody > tr:nth-child(even) > td {
-    background-color: #f7f7f7; /* 偶数行はさらに薄い灰色 */
+    background-color: #f7f7f7;
 }
 
 .p-datatable-custom .p-datatable-tbody > tr > td {

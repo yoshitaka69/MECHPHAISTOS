@@ -1,7 +1,7 @@
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from .models import ProjectManagement
-from .serializers import ProjectManagementSerializer
+from .serializers import ProjectManagementSerializer,CompanyCodePMSerializer
 from accounts.models import CompanyCode
 
 
@@ -77,3 +77,14 @@ class ProjectManagementViewSet(viewsets.ModelViewSet):
             raise e
 
 
+class CompanyCodePMViewSet(viewsets.ModelViewSet):
+    queryset = CompanyCode.objects.all()
+    serializer_class = CompanyCodePMSerializer
+
+    # クエリパラメータに基づいてクエリセットをフィルタリング
+    def get_queryset(self):
+        queryset = CompanyCode.objects.prefetch_related('projectManagement_companyCode').all()
+        company_code = self.request.query_params.get('companyCode', None)
+        if company_code:
+            queryset = queryset.filter(companyCode=company_code)
+        return queryset
