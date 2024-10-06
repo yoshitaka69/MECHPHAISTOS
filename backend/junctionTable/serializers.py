@@ -155,9 +155,9 @@ class CompanyCodeGapOfRepairingCostSerializer(serializers.ModelSerializer):
 
 
 
+
+#scheduleForCalendarモデル
 #----------------------------------------------------------------------------------------------------------------------------------------------
-
-
 from rest_framework import serializers
 from .models import ScheduleForGantt
 
@@ -172,6 +172,9 @@ class CompanyCodeScheduleForGanttSerializer(serializers.ModelSerializer):
     class Meta:
         model = CompanyCode
         fields = ['companyCode', 'ScheduleForGanttList']
+
+
+
 
 
 

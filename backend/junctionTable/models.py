@@ -403,6 +403,7 @@ class GapOfRepairingCost(models.Model):
 from django.db import models
 
 class ScheduleForGantt(models.Model):
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='scheduleForGantt_companyCode', null=True, blank=True)
     name = models.CharField(max_length=100)
     pmType = models.CharField(max_length=50)
     startDate = models.DateField()

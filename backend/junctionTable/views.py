@@ -296,10 +296,8 @@ class CompanyCodeGapOfRepairingCostViewSet(viewsets.ModelViewSet):
 
 
 
-
+#scheduleForCGanttモデル
 #-------------------------------------------------------------------------------------------------------------------
-
-
 from rest_framework import viewsets
 from .models import ScheduleForGantt
 from .serializers import ScheduleForGanttSerializer,CompanyCodeScheduleForGanttSerializer
@@ -320,9 +318,14 @@ class CompanyCodeScheduleForGanttViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(companyCode=company_code)
         return queryset
 
+
+
+
+
+
+
+
 #-------------------------------------------------------------------------------------------------------------------
-
-
 from rest_framework import viewsets
 from .models import ScheduleForCalendar
 from .serializers import ScheduleForCalendarSerializer,CompanyCodeScheduleForCalendarSerializer
