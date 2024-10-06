@@ -296,28 +296,92 @@ class CompanyCodeGapOfRepairingCostViewSet(viewsets.ModelViewSet):
 
 
 
+
+#-------------------------------------------------------------------------------------------------------------------
+
+
+from rest_framework import viewsets
+from .models import ScheduleForGantt
+from .serializers import ScheduleForGanttSerializer,CompanyCodeScheduleForGanttSerializer
+
+class ScheduleForGanttViewSet(viewsets.ModelViewSet):
+    queryset = ScheduleForGantt.objects.all()
+    serializer_class = ScheduleForGanttSerializer
+    
+
+class CompanyCodeScheduleForGanttViewSet(viewsets.ModelViewSet):
+    serializer_class = CompanyCodeScheduleForGanttSerializer
+
+#クエリパラメータでのフィルターリング
+    def get_queryset(self):
+        queryset = CompanyCode.objects.prefetch_related('scheduleForGantt_companyCode').all()
+        company_code = self.request.query_params.get('companyCode', None)
+        if company_code:
+            queryset = queryset.filter(companyCode=company_code)
+        return queryset
+
+#-------------------------------------------------------------------------------------------------------------------
+
+
+from rest_framework import viewsets
+from .models import ScheduleForCalendar
+from .serializers import ScheduleForCalendarSerializer,CompanyCodeScheduleForCalendarSerializer
+
+from rest_framework import viewsets
+from .models import ScheduleForCalendar
+from .serializers import ScheduleForCalendarSerializer
 from rest_framework.response import Response
-from rest_framework.views import APIView
-from rest_framework import status  # ステータスコードを使用するためのインポート
-from .models import Schedule
-from .serializers import ScheduleSerializer
+from rest_framework import status
 
-# タスクを取得するビュー
-class ScheduleListView(APIView):
-    def get(self, request):
-        schedules = Schedule.objects.all()
-        serializer = ScheduleSerializer(schedules, many=True)
-        return Response(serializer.data)
+class ScheduleForCalendarViewSet(viewsets.ModelViewSet):
+    queryset = ScheduleForCalendar.objects.all()
+    serializer_class = ScheduleForCalendarSerializer
 
-# 新しいタスクを保存するビュー
-class ScheduleSaveView(APIView):
-    def post(self, request):
-        # 複数のタスクを一度に保存する
-        serializer = ScheduleSerializer(data=request.data, many=True)
+    def create(self, request, *args, **kwargs):
+        # リクエストからデータを取得
+        data = request.data
+        company_code_str = data.get('companyCode')
+
+        # companyCode の処理
+        try:
+            company_code_obj = CompanyCode.objects.get(companyCode=company_code_str)
+            data['companyCode'] = company_code_obj.id  # IDを設定
+        except CompanyCode.DoesNotExist:
+            return Response(
+                {"error": f"CompanyCode '{company_code_str}' does not exist."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # シリアライザを使ってデータを保存
+        serializer = self.get_serializer(data=data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
 
 
+    def update(self, request, *args, **kwargs):
+        # eventDataNoで特定のイベントを取得
+        eventDataNo = kwargs.get('pk')
+        instance = ScheduleForCalendar.objects.get(eventDataNo=eventDataNo)
+
+        # シリアライザで更新処理
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
+
+class CompanyCodeScheduleForCalendarViewSet(viewsets.ModelViewSet):
+    serializer_class = CompanyCodeScheduleForCalendarSerializer
+
+#クエリパラメータでのフィルターリング
+    def get_queryset(self):
+        queryset = CompanyCode.objects.prefetch_related('scheduleForCalendar_companyCode').all()
+        company_code = self.request.query_params.get('companyCode', None)
+        if company_code:
+            queryset = queryset.filter(companyCode=company_code)
+        return queryset

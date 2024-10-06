@@ -153,13 +153,46 @@ class CompanyCodeGapOfRepairingCostSerializer(serializers.ModelSerializer):
 
 
 
-# serializers.py
+
+
+#----------------------------------------------------------------------------------------------------------------------------------------------
+
+
 from rest_framework import serializers
-from .models import Schedule
+from .models import ScheduleForGantt
 
-class ScheduleSerializer(serializers.ModelSerializer):
+class ScheduleForGanttSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Schedule
-        fields = ['id', 'name', 'pmType', 'startDate', 'endDate']
+        model = ScheduleForGantt
+        fields = '__all__'  # すべてのフィールドを自動的にシリアライズ
+
+class CompanyCodeScheduleForGanttSerializer(serializers.ModelSerializer):
+    ScheduleForGanttList = ScheduleForGanttSerializer(many=True, read_only=True, source='scheduleForGantt_companyCode')
+
+    class Meta:
+        model = CompanyCode
+        fields = ['companyCode', 'ScheduleForGanttList']
 
 
+
+#----------------------------------------------------------------------------------------------------------------------------------------------
+
+
+from rest_framework import serializers
+from .models import ScheduleForCalendar
+
+class ScheduleForCalendarSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ScheduleForCalendar
+        fields = '__all__'  # 必要なフィールドが含まれていることを確認
+
+
+class CompanyCodeScheduleForCalendarSerializer(serializers.ModelSerializer):
+    ScheduleForCalendarList = ScheduleForCalendarSerializer(many=True, read_only=True, source='scheduleForCalendar_companyCode')
+
+    class Meta:
+        model = CompanyCode
+        fields = ['companyCode', 'ScheduleForCalendarList']
+        
+
+#----------------------------------------------------------------------------------------------------------------------------------------------

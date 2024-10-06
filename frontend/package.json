@@ -30,6 +30,7 @@
     "fabric": "^6.4.2",
     "handsontable": "^14.2.0",
     "html2canvas": "^1.4.1",
+    "html2pdf.js": "^0.10.2",
     "jspdf": "^2.5.1",
     "konva": "^9.3.15",
     "mathjs": "^13.0.3",

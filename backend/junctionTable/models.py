@@ -397,10 +397,12 @@ class GapOfRepairingCost(models.Model):
 
 
 
+#----------------------------------------------------------------------------------------------------------------------------------------------
+
 # models.py
 from django.db import models
 
-class Schedule(models.Model):
+class ScheduleForGantt(models.Model):
     name = models.CharField(max_length=100)
     pmType = models.CharField(max_length=50)
     startDate = models.DateField()
@@ -408,5 +410,37 @@ class Schedule(models.Model):
 
     def __str__(self):
         return self.name
+
     
+#----------------------------------------------------------------------------------------------------------------------------------------------
+
     
+from django.db import models
+
+class ScheduleForCalendar(models.Model):
+    eventDataNo = models.IntegerField(null=True, blank=True)  
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='scheduleForCalendar_companyCode', null=True, blank=True)
+    title = models.CharField(max_length=200, verbose_name='eventTitle')  # イベントのタイトル
+
+    eventType = models.CharField(
+        max_length=50,
+        choices=[
+            ('work order', 'Work Order'),
+            ('daily report', 'Daily Report'),
+            ('task', 'Task'),
+            ('failure date', 'Failure Date')
+        ],
+        verbose_name='eventType',
+        null=True, blank=True
+    )
+
+    startDatetime = models.DateTimeField(verbose_name='startDate&Time')  # イベントの開始日時
+    endDatetime = models.DateTimeField(verbose_name='endDate&Time')  # イベントの終了日時
+    description = models.TextField(blank=True, null=True, verbose_name='eventDescription')  # イベントの説明（オプション）
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        ordering = ['startDatetime']
+

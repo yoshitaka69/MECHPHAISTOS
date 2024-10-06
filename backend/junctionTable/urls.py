@@ -5,9 +5,12 @@ from .views import (MasterDataTableViewSet,CompanyCodeMDTViewSet,
                     CeListAndTaskViewSet,CompanyCodeCeListAndTaskViewSet,
                     BadActorManagementViewSet,CompanyCodeBadActorViewSet,
                     EventYearPPMViewSet,CompanyCodeEventYearPPMViewSet,
-                    GapOfRepairingCostViewSet,CompanyCodeGapOfRepairingCostViewSet)
+                    GapOfRepairingCostViewSet,CompanyCodeGapOfRepairingCostViewSet,
+                    ScheduleForGanttViewSet,CompanyCodeScheduleForGanttViewSet,
+                    ScheduleForCalendarViewSet,CompanyCodeScheduleForCalendarViewSet
+                    )
 
-from .views import ScheduleListView
+
 
 
 
@@ -31,9 +34,14 @@ router.register(r'gapOfRepairingCost', GapOfRepairingCostViewSet, basename='gapO
 router.register(r'gapOfRepairingCostByCompany', CompanyCodeGapOfRepairingCostViewSet, basename='companyCode-gapOfRepairingCost')
 
 
+router.register(r'scheduleForGantt', ScheduleForGanttViewSet, basename='scheduleForGantt')
+router.register(r'scheduleForGanttByCompany',CompanyCodeScheduleForGanttViewSet, basename='companyCode-scheduleForGantt')
+
+router.register(r'scheduleForCalendar', ScheduleForCalendarViewSet, basename='scheduleForCalendar')
+router.register(r'scheduleForCalendarByCompany',CompanyCodeScheduleForCalendarViewSet, basename='companyCode-scheduleForCalendar')
+
+
 urlpatterns = [
     path('junctionTable/', include(router.urls)),
-    path('schedules/', ScheduleListView.as_view(), name='schedule-list'),
-    path('schedules/save/', ScheduleListView.as_view()),
 
 ]

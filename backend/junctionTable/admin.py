@@ -1,6 +1,6 @@
 from django.contrib import admin
-from .models import MasterDataTable,BomAndTask,CeListAndTask,BadActorManagement,EventYearPPM,GapOfRepairingCost
-from .models import Schedule
+from .models import MasterDataTable,BomAndTask,CeListAndTask,BadActorManagement,EventYearPPM,GapOfRepairingCost,ScheduleForGantt
+
 
 class MasterDataTableAdmin(admin.ModelAdmin):
 
@@ -84,10 +84,20 @@ class GapOfRepairingCostAdmin(admin.ModelAdmin):
 
 
 
-class ScheduleAdmin(admin.ModelAdmin):
+class ScheduleForGanttAdmin(admin.ModelAdmin):
     list_display = ('name', 'pmType', 'startDate', 'endDate')  # 管理画面に表示するフィールド
     search_fields = ('name', 'pmType')  # 検索可能なフィールド
     list_filter = ('pmType', 'startDate')  # フィルタリングできるフィールド
+
+
+from django.contrib import admin
+from .models import ScheduleForCalendar
+
+@admin.register(ScheduleForCalendar)
+class ScheduleForCalendarAdmin(admin.ModelAdmin):
+    list_display = ('title', 'eventType', 'startDatetime', 'endDatetime')
+    list_filter = ('eventType',)
+    search_fields = ('title', 'description')
 
 
 
@@ -101,5 +111,5 @@ admin.site.register(CeListAndTask,CeListAndTaskAdmin)
 admin.site.register(BadActorManagement,BadActorManagementAdmin)
 admin.site.register(EventYearPPM,EventYearPPMAdmin)
 admin.site.register(GapOfRepairingCost,GapOfRepairingCostAdmin)
-admin.site.register(Schedule,ScheduleAdmin)
+admin.site.register(ScheduleForGantt,ScheduleForGanttAdmin)
 
