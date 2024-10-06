@@ -14,6 +14,7 @@ from accounts.models import CompanyCode, CompanyName,Plant
 
 from django.db import models
 from django.utils import timezone
+from junctionTable.models import ScheduleForCalendar
 
 class WorkOrder(models.Model):
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='workOrder_companyCode', null=True, blank=True)
@@ -52,16 +53,33 @@ class WorkOrder(models.Model):
         unique_together = ('companyCode', 'workOrderNo')
 
     def save(self, *args, **kwargs):
-        # workOrderNo が未設定の場合、自動で連番を生成
+        # workOrderNoが未設定の場合、連番を生成する
         if not self.workOrderNo:
             existing_work_order_nos = WorkOrder.objects.filter(companyCode=self.companyCode).values_list('workOrderNo', flat=True).order_by('workOrderNo')
             for i in range(1, len(existing_work_order_nos) + 2):
-                candidate = str(i).zfill(5)
+                candidate = str(i).zfill(5)  # 連番を生成
                 if candidate not in existing_work_order_nos:
                     self.workOrderNo = candidate
                     break
 
+        # まず、WorkOrderインスタンスを保存する
+        # WorkOrderインスタンスを保存
         super(WorkOrder, self).save(*args, **kwargs)
+
+        # ScheduleForCalendarのデータを作成/更新する際に、failureDateをタイムゾーン付きに変換
+        aware_failure_date = timezone.make_aware(timezone.datetime.combine(self.failureDate, timezone.datetime.min.time()))
+
+        # ScheduleForCalendarのエントリを作成または更新
+        ScheduleForCalendar.objects.update_or_create(
+            eventDataNo=self.id,
+            defaults={
+                'companyCode': self.companyCode,
+                'title': self.title,
+                'startDatetime': aware_failure_date,  # awareなdatetimeを使用
+                'endDatetime': aware_failure_date,  # awareなdatetimeを使用
+                'eventType': 'work order'
+            }
+        )
 
     def __str__(self):
         return f'Work Order {self.workOrderNo}'

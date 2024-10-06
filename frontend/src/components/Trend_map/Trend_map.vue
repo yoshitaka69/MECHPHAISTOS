@@ -100,36 +100,41 @@ const renderPlot = (data) => {
       tickfont: { color: 'yellow' } // カラーバーの目盛りフォントを黄色に変更
     }
   };
-
   const layout = {
-    title: {
-      text: 'Monthly Parts Count by Country',
-      font: {
-        family: 'Arial',
-        size: 18,
-        color: 'yellow' // タイトルのフォントを黄色に変更
-      }
-    },
-    geo: {
-      projection: {
-        type: 'natural earth'
-      },
-      bgcolor: 'rgb(0, 0, 0)' // 地図部分の背景色を黒に設定
-    },
-    width: 600,  // 幅の設定
-    height: 500,  // 高さの設定
-    margin: {
-      l: 20,  // 左マージン
-      r: 20,  // 右マージン
-      t: 50,  // 上マージン
-      b: 50   // 下マージン
-    },
-    paper_bgcolor: 'rgb(0, 0, 0)', // 全体の背景色を黒に設定
-    plot_bgcolor: 'rgb(0, 0, 0)', // プロット領域の背景色を黒に設定
+  title: {
+    text: 'Monthly Parts Count by Country',
     font: {
-      color: 'yellow' // 全体のフォントを黄色に設定
+      family: 'Arial',
+      size: 18,
+      color: 'yellow' // タイトルのフォントを黄色に変更
     }
-  };
+  },
+  geo: {
+    projection: {
+      type: 'natural earth'
+    },
+    bgcolor: 'rgb(0, 0, 0)' // 地図部分の背景色を黒に設定
+  },
+  margin: {
+    l: 20,  // 左マージン
+    r: 20,  // 右マージン
+    t: 50,  // 上マージン
+    b: 50   // 下マージン
+  },
+  paper_bgcolor: 'rgb(0, 0, 0)', // 全体の背景色を黒に設定
+  plot_bgcolor: 'rgb(0, 0, 0)', // プロット領域の背景色を黒に設定
+  font: {
+    color: 'yellow' // 全体のフォントを黄色に設定
+  },
+  autosize: true, // サイズを自動調整
+  width: null, // 親要素に合わせるためnullに設定
+  height: null, // 高さも自動調整
+  aspectratio: {
+    x: 16,  // アスペクト比（16:9）
+    y: 9
+  }
+};
+
 
   const config = {
     displayModeBar: false // 右上のツールバーを非表示にする
