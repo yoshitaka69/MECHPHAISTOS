@@ -1,8 +1,7 @@
 <template>
-  <div>
-    Total Graph (Planned vs Actual)
-    <div id="Totalrpc" style="width: 100%; height: 100%"></div>
-  </div>
+    <div>
+        <div id="Totalrpc" style="width: 100%; height: 100%"></div>
+    </div>
 </template>
 
 <script>
@@ -12,257 +11,288 @@ import { useUserStore } from '@/stores/userStore';
 import { onMounted, onUnmounted, ref } from 'vue';
 
 export default {
-  setup() {
-    const userStore = useUserStore();
-    const repairingCostData = ref([]);
-    const actualCostData = ref([]);
-    const plannedCostDataStack = ref([]);
-    const actualCostDataStack = ref([]);
+    setup() {
+        const userStore = useUserStore();
+        const repairingCostData = ref([]);
+        const actualCostData = ref([]);
+        const plannedCostDataStack = ref([]);
+        const actualCostDataStack = ref([]);
 
-    const getRepairingCostData = async () => {
-      const companyCode = userStore.companyCode;
-      if (!companyCode) {
-        console.error('No company code found.');
-        return;
-      }
+        const getRepairingCostData = async () => {
+            const companyCode = userStore.companyCode;
+            if (!companyCode) {
+                console.error('No company code found.');
+                return;
+            }
 
-      const url = `http://127.0.0.1:8000/api/repairingCost/PPM02ByCompany/?format=json&companyCode=${companyCode}`;
-      try {
-        const response = await axios.get(url);
-        if (response.data[0]?.plannedPM02List) {
-          repairingCostData.value = response.data[0].plannedPM02List.filter((plant) => plant.plannedPM02 && plant.plannedPM02.length > 0);
-        }
-      } catch (error) {
-        console.error('Error fetching Repairing Cost data:', error);
-      }
-    };
-
-    const getActualCostData = async () => {
-      const companyCode = userStore.companyCode;
-      if (!companyCode) {
-        console.error('No company code found.');
-        return;
-      }
-
-      const url = `http://127.0.0.1:8000/api/calculation/summedActualCostByCompany/?format=json&companyCode=${companyCode}`;
-      try {
-        const response = await axios.get(url);
-        const currentYear = new Date().getFullYear().toString();
-        if (response.data.length > 0 && response.data[0].summedActualCostList) {
-          actualCostData.value = response.data[0].summedActualCostList.filter((item) => item.year.toString() === currentYear);
-        }
-      } catch (error) {
-        console.error('Error fetching actual cost data:', error);
-      }
-    };
-
-    const fetchData = async () => {
-      const companyCode = userStore.companyCode;
-      if (!companyCode) {
-        console.error('No company code found.');
-        return;
-      }
-
-      const currentYear = new Date().getFullYear().toString();
-      const plannedURL = `http://127.0.0.1:8000/api/calculation/summedPlannedCostByCompany/?format=json&companyCode=${companyCode}`;
-      const actualURL = `http://127.0.0.1:8000/api/calculation/summedActualCostByCompany/?format=json&companyCode=${companyCode}`;
-
-      try {
-        const [plannedResponse, actualResponse] = await Promise.all([axios.get(plannedURL), axios.get(actualURL)]);
-
-        plannedCostDataStack.value = plannedResponse.data.flatMap((company) => company.summedPlannedCostList.filter((item) => item.year.toString() === currentYear));
-
-        actualCostDataStack.value = actualResponse.data.flatMap((company) => company.summedActualCostList.filter((item) => item.year.toString() === currentYear));
-      } catch (error) {
-        console.error('Error fetching cost data:', error);
-      }
-    };
-
-    const updateGraphSize = () => {
-      const graphContainer = document.getElementById('Totalrpc').parentElement;
-      graphContainer.style.height = window.innerHeight + 'px';
-      const layout = {
-        title: 'Total Graph (Planned vs Actual)',
-        barmode: 'stack',
-        height: graphContainer.offsetHeight,
-        width: graphContainer.offsetWidth
-      };
-
-      Plotly.newPlot('Totalrpc', [...lineTraces, ...barTraces, ...barTracesStack], layout);
-    };
-
-    let lineTraces = [];
-    let barTraces = [];
-    let barTracesStack = [];
-
-    onMounted(async () => {
-      await getRepairingCostData();
-      await getActualCostData();
-      await fetchData();
-
-      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Commitment', 'TotalCost'];
-      lineTraces = repairingCostData.value.map((plant) => {
-        const pmData = plant.plannedPM02[0];
-        const yValues = months.map((month) => (pmData[`sum${month}`] ? parseFloat(pmData[`sum${month}`]) : 0));
-        return {
-          x: months,
-          y: yValues,
-          type: 'scatter',
-          mode: 'lines+markers',
-          name: plant.plant
+            const url = `http://127.0.0.1:8000/api/repairingCost/PPM02ByCompany/?format=json&companyCode=${companyCode}`;
+            try {
+                const response = await axios.get(url);
+                if (response.data[0]?.plannedPM02List) {
+                    repairingCostData.value = response.data[0].plannedPM02List.filter((plant) => plant.plannedPM02 && plant.plannedPM02.length > 0);
+                }
+            } catch (error) {
+                console.error('Error fetching Repairing Cost data:', error);
+            }
         };
-      });
 
-      const colorScale = [
-        [0, 'rgba(31, 119, 180, 0.7)'],
-        [1, 'rgba(174, 199, 232, 0.7)']
-      ];
+        const getActualCostData = async () => {
+            const companyCode = userStore.companyCode;
+            if (!companyCode) {
+                console.error('No company code found.');
+                return;
+            }
 
-      barTraces = actualCostData.value.map((costData) => {
-        const xValues = Object.keys(costData).filter((key) => key.startsWith('sum') || key === 'totalActualCost');
-        const formattedXValues = xValues.map((key) => key.replace('sum', '').replace('totalActualCost', 'TotalCost'));
-        const yValues = xValues.map((key) => parseFloat(costData[key] || 0));
+            const url = `http://127.0.0.1:8000/api/calculation/summedActualCostByCompany/?format=json&companyCode=${companyCode}`;
+            try {
+                const response = await axios.get(url);
+                const currentYear = new Date().getFullYear().toString();
+
+                if (response.data.length > 0 && response.data[0].summedActualCostList) {
+                    actualCostData.value = response.data[0].summedActualCostList.filter((item) => {
+                        // `item.year` が存在するかをチェック
+                        return item.year && item.year.toString() === currentYear;
+                    });
+                }
+            } catch (error) {
+                console.error('Error fetching actual cost data:', error);
+            }
+        };
+
+        const fetchData = async () => {
+            const companyCode = userStore.companyCode;
+            if (!companyCode) {
+                console.error('No company code found.');
+                return;
+            }
+
+            const currentYear = new Date().getFullYear().toString();
+            const plannedURL = `http://127.0.0.1:8000/api/calculation/summedPlannedCostByCompany/?format=json&companyCode=${companyCode}`;
+            const actualURL = `http://127.0.0.1:8000/api/calculation/summedActualCostByCompany/?format=json&companyCode=${companyCode}`;
+
+            try {
+                const [plannedResponse, actualResponse] = await Promise.all([axios.get(plannedURL), axios.get(actualURL)]);
+
+                plannedCostDataStack.value = plannedResponse.data.flatMap((company) =>
+                    company.summedPlannedCostList.filter((item) => {
+                        // `item.year`が存在するかをチェック
+                        return item.year && item.year.toString() === currentYear;
+                    })
+                );
+
+                actualCostDataStack.value = actualResponse.data.flatMap((company) =>
+                    company.summedActualCostList.filter((item) => {
+                        // `item.year`が存在するかをチェック
+                        return item.year && item.year.toString() === currentYear;
+                    })
+                );
+            } catch (error) {
+                console.error('Error fetching cost data:', error);
+            }
+        };
+
+        const updateGraphSize = () => {
+  const graphContainer = document.getElementById('Totalrpc').parentElement;
+  graphContainer.style.height = window.innerHeight + 'px';
+
+  const layout = {
+    barmode: 'stack',
+    height: graphContainer.offsetHeight,
+    width: graphContainer.offsetWidth,
+    paper_bgcolor: '#f0f8ff', // グラフの外側の背景色
+    plot_bgcolor: '#ffffff',  // グラフの内側の背景色
+    margin: {
+      l: 50,  // 左側のマージン
+      r: 50,  // 右側のマージン
+      t: 25,  // 上側のマージン
+      b: 50   // 下側のマージン
+    },
+    xaxis: {
+      showgrid: true, // 縦方向のグリッド線を表示
+      gridcolor: '#e0e0e0' // グリッド線の色（任意で設定）
+    }
+  };
+
+  const config = {
+    displayModeBar: false // ツールバーを非表示
+  };
+
+  Plotly.newPlot('Totalrpc', [...lineTraces, ...barTraces, ...barTracesStack], layout, config);
+};
+
+
+        let lineTraces = [];
+        let barTraces = [];
+        let barTracesStack = [];
+
+        onMounted(async () => {
+            await getRepairingCostData();
+            await getActualCostData();
+            await fetchData();
+
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Commitment', 'TotalCost'];
+            lineTraces = repairingCostData.value.map((plant) => {
+                const pmData = plant.plannedPM02[0];
+                const yValues = months.map((month) => (pmData[`sum${month}`] ? parseFloat(pmData[`sum${month}`]) : 0));
+                return {
+                    x: months,
+                    y: yValues,
+                    type: 'scatter',
+                    mode: 'lines+markers',
+                    name: plant.plant
+                };
+            });
+
+            const colorScale = [
+                [0, 'rgba(31, 119, 180, 0.7)'],
+                [1, 'rgba(174, 199, 232, 0.7)']
+            ];
+
+            barTraces = actualCostData.value.map((costData) => {
+                const xValues = Object.keys(costData).filter((key) => key.startsWith('sum') || key === 'totalActualCost');
+                const formattedXValues = xValues.map((key) => key.replace('sum', '').replace('totalActualCost', 'TotalCost'));
+                const yValues = xValues.map((key) => parseFloat(costData[key] || 0));
+
+                return {
+                    x: formattedXValues,
+                    y: yValues,
+                    type: 'bar',
+                    name: costData.plant || 'Total Cost',
+                    marker: {
+                        opacity: 0.7,
+                        color: yValues,
+                        colorscale: colorScale,
+                        line: {
+                            color: 'black',
+                            width: 1
+                        }
+                    }
+                };
+            });
+
+            barTracesStack = [];
+
+            plannedCostDataStack.value.forEach((data) => {
+                barTracesStack.push({
+                    x: ['Planned'],
+                    y: [parseFloat(data.totalPlannedPM02)],
+                    name: 'Planned PM02',
+                    type: 'bar',
+                    marker: {
+                        opacity: 0.7,
+                        color: 'rgba(31, 119, 180, 0.7)',
+                        line: {
+                            color: 'black',
+                            width: 1
+                        }
+                    }
+                });
+                barTracesStack.push({
+                    x: ['Planned'],
+                    y: [parseFloat(data.totalPlannedPM03)],
+                    name: 'Planned PM03',
+                    type: 'bar',
+                    marker: {
+                        opacity: 0.7,
+                        color: 'rgba(60, 186, 159, 0.7)',
+                        line: {
+                            color: 'black',
+                            width: 1
+                        }
+                    }
+                });
+                barTracesStack.push({
+                    x: ['Planned'],
+                    y: [parseFloat(data.totalPlannedPM05)],
+                    name: 'Planned PM05',
+                    type: 'bar',
+                    marker: {
+                        opacity: 0.7,
+                        color: 'rgba(255, 127, 14, 0.7)',
+                        line: {
+                            color: 'black',
+                            width: 1
+                        }
+                    }
+                });
+            });
+
+            actualCostDataStack.value.forEach((data) => {
+                barTracesStack.push({
+                    x: ['Actual'],
+                    y: [parseFloat(data.totalActualPM02)],
+                    name: 'Actual PM02',
+                    type: 'bar',
+                    marker: {
+                        opacity: 0.7,
+                        color: 'rgba(214, 39, 40, 0.7)',
+                        line: {
+                            color: 'black',
+                            width: 1
+                        }
+                    }
+                });
+                barTracesStack.push({
+                    x: ['Actual'],
+                    y: [parseFloat(data.totalActualPM03)],
+                    name: 'Actual PM03',
+                    type: 'bar',
+                    marker: {
+                        opacity: 0.7,
+                        color: 'rgba(148, 103, 189, 0.7)',
+                        line: {
+                            color: 'black',
+                            width: 1
+                        }
+                    }
+                });
+                barTracesStack.push({
+                    x: ['Actual'],
+                    y: [parseFloat(data.totalActualPM04)],
+                    name: 'Actual PM04',
+                    type: 'bar',
+                    marker: {
+                        opacity: 0.7,
+                        color: 'rgba(140, 86, 75, 0.7)',
+                        line: {
+                            color: 'black',
+                            width: 1
+                        }
+                    }
+                });
+                barTracesStack.push({
+                    x: ['Actual'],
+                    y: [parseFloat(data.totalActualPM05)],
+                    name: 'Actual PM05',
+                    type: 'bar',
+                    marker: {
+                        opacity: 0.7,
+                        color: 'rgba(227, 119, 194, 0.7)',
+                        line: {
+                            color: 'black',
+                            width: 1
+                        }
+                    }
+                });
+            });
+
+            console.log([...lineTraces, ...barTraces, ...barTracesStack]);
+
+            // Call once to set initial size
+            updateGraphSize();
+            window.addEventListener('resize', updateGraphSize);
+        });
+
+        onUnmounted(() => {
+            window.removeEventListener('resize', updateGraphSize);
+        });
 
         return {
-          x: formattedXValues,
-          y: yValues,
-          type: 'bar',
-          name: costData.plant || 'Total Cost',
-          marker: {
-            opacity: 0.7,
-            color: yValues,
-            colorscale: colorScale,
-            line: {
-              color: 'black',
-              width: 1
-            }
-          }
+            repairingCostData,
+            actualCostData,
+            plannedCostDataStack,
+            actualCostDataStack
         };
-      });
-
-      barTracesStack = [];
-
-      plannedCostDataStack.value.forEach((data) => {
-        barTracesStack.push({
-          x: ['Planned'],
-          y: [parseFloat(data.totalPlannedPM02)],
-          name: 'Planned PM02',
-          type: 'bar',
-          marker: {
-            opacity: 0.7,
-            color: 'rgba(31, 119, 180, 0.7)',
-            line: {
-              color: 'black',
-              width: 1
-            }
-          }
-        });
-        barTracesStack.push({
-          x: ['Planned'],
-          y: [parseFloat(data.totalPlannedPM03)],
-          name: 'Planned PM03',
-          type: 'bar',
-          marker: {
-            opacity: 0.7,
-            color: 'rgba(60, 186, 159, 0.7)',
-            line: {
-              color: 'black',
-              width: 1
-            }
-          }
-        });
-        barTracesStack.push({
-          x: ['Planned'],
-          y: [parseFloat(data.totalPlannedPM05)],
-          name: 'Planned PM05',
-          type: 'bar',
-          marker: {
-            opacity: 0.7,
-            color: 'rgba(255, 127, 14, 0.7)',
-            line: {
-              color: 'black',
-              width: 1
-            }
-          }
-        });
-      });
-
-      actualCostDataStack.value.forEach((data) => {
-        barTracesStack.push({
-          x: ['Actual'],
-          y: [parseFloat(data.totalActualPM02)],
-          name: 'Actual PM02',
-          type: 'bar',
-          marker: {
-            opacity: 0.7,
-            color: 'rgba(214, 39, 40, 0.7)',
-            line: {
-              color: 'black',
-              width: 1
-            }
-          }
-        });
-        barTracesStack.push({
-          x: ['Actual'],
-          y: [parseFloat(data.totalActualPM03)],
-          name: 'Actual PM03',
-          type: 'bar',
-          marker: {
-            opacity: 0.7,
-            color: 'rgba(148, 103, 189, 0.7)',
-            line: {
-              color: 'black',
-              width: 1
-            }
-          }
-        });
-        barTracesStack.push({
-          x: ['Actual'],
-          y: [parseFloat(data.totalActualPM04)],
-          name: 'Actual PM04',
-          type: 'bar',
-          marker: {
-            opacity: 0.7,
-            color: 'rgba(140, 86, 75, 0.7)',
-            line: {
-              color: 'black',
-              width: 1
-            }
-          }
-        });
-        barTracesStack.push({
-          x: ['Actual'],
-          y: [parseFloat(data.totalActualPM05)],
-          name: 'Actual PM05',
-          type: 'bar',
-          marker: {
-            opacity: 0.7,
-            color: 'rgba(227, 119, 194, 0.7)',
-            line: {
-              color: 'black',
-              width: 1
-            }
-          }
-        });
-      });
-
-      console.log([...lineTraces, ...barTraces, ...barTracesStack]);
-
-      // Call once to set initial size
-      updateGraphSize();
-      window.addEventListener('resize', updateGraphSize);
-    });
-
-    onUnmounted(() => {
-      window.removeEventListener('resize', updateGraphSize);
-    });
-
-    return {
-      repairingCostData,
-      actualCostData,
-      plannedCostDataStack,
-      actualCostDataStack
-    };
-  }
+    }
 };
 </script>

@@ -107,7 +107,8 @@ const TableComponent = defineComponent({
         return {
             hotInstance: null,
             hotSettings: {
-                data: [['', '', '', '', '', '', '', '', '', '', '', '', '', '', '']],
+                data: Array.from({ length: 15 }, () => ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '']),
+                minRows: 10, // デフォルトで15行を表示
                 colHeaders: ['Plant', 'Year', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Commitment', 'Total'],
                 columns: [
                     { type: 'text' }, // 'Plant'
@@ -133,7 +134,7 @@ const TableComponent = defineComponent({
                 ],
                 afterGetColHeader: (col, TH) => {
                     if (col === -1) return;
-                    TH.style.backgroundColor = '#FFCC99';
+                    TH.style.backgroundColor = '#add8e6';
                     TH.style.color = 'black';
                     TH.style.fontWeight = 'bold';
                 },

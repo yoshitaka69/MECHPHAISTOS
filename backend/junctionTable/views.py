@@ -301,24 +301,44 @@ class CompanyCodeGapOfRepairingCostViewSet(viewsets.ModelViewSet):
 from rest_framework import viewsets
 from .models import ScheduleForGantt
 from .serializers import ScheduleForGanttSerializer,CompanyCodeScheduleForGanttSerializer
+from datetime import datetime, timedelta
+from django.db.models import Prefetch
 
 class ScheduleForGanttViewSet(viewsets.ModelViewSet):
     queryset = ScheduleForGantt.objects.all()
     serializer_class = ScheduleForGanttSerializer
     
 
+
+
 class CompanyCodeScheduleForGanttViewSet(viewsets.ModelViewSet):
     serializer_class = CompanyCodeScheduleForGanttSerializer
 
-#クエリパラメータでのフィルターリング
     def get_queryset(self):
-        queryset = CompanyCode.objects.prefetch_related('scheduleForGantt_companyCode').all()
+        queryset = CompanyCode.objects.all()
+        
         company_code = self.request.query_params.get('companyCode', None)
+        selected_year = self.request.query_params.get('year', None)
+        selected_month = self.request.query_params.get('month', None)
+
         if company_code:
             queryset = queryset.filter(companyCode=company_code)
+        
+        if selected_year and selected_month:
+            # 選択された年と月の範囲を計算
+            start_date = datetime(int(selected_year), int(selected_month), 1)
+            next_month = start_date.replace(day=28) + timedelta(days=4)  # 翌月初めを取得
+            end_date = next_month - timedelta(days=next_month.day)  # 当月の最終日
+
+            # フィルタリング用の条件をリレーション先で実行
+            queryset = queryset.prefetch_related(
+                Prefetch(
+                    'scheduleForGantt_companyCode',
+                    queryset=ScheduleForGantt.objects.filter(startDate__lte=end_date, endDate__gte=start_date)
+                )
+            )
+        
         return queryset
-
-
 
 
 

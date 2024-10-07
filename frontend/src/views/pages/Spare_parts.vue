@@ -3,8 +3,6 @@
         <TabView v-model:activeIndex="activeIndex" @tab-change="onTabChange">
             <TabPanel header="Spare Parts List">
                 <div class="line-height-3 m-0">
-  
-                    The below table is Spare parts List. Please input a your spare parts list.
                     <BOM />
                     <div class="text-center">
                         <h3>Table. Spare Parts List</h3>

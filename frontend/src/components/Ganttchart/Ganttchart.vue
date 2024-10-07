@@ -1,6 +1,18 @@
 <template>
   <div class="gantt-container">
       <div class="gantt-title">ガントチャート</div>
+      <!-- 年と月の選択ボタンを追加 -->
+      <div class="date-selector">
+          <label for="year-select">年</label>
+          <select v-model="selectedYear" @change="updateChart">
+              <option v-for="year in yearOptions" :key="year" :value="year">{{ year }}</option>
+          </select>
+
+          <label for="month-select">月</label>
+          <select v-model="selectedMonth" @change="updateChart">
+              <option v-for="month in monthOptions" :key="month" :value="month">{{ month }}</option>
+          </select>
+      </div>
 
       <!-- タスク追加ボタン -->
       <div class="buttons-container">
@@ -63,42 +75,67 @@ import dayjs from 'dayjs';
 import axios from 'axios';
 import { useUserStore } from '@/stores/userStore'; // Piniaのストアをインポート
 
+// 選択可能な年と月のオプション
+const yearOptions = ref([2022, 2023, 2024, 2025]); // 必要に応じて年を追加
+const monthOptions = ref([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
+
+// デフォルトの年と月
+const selectedYear = ref(dayjs().year());
+const selectedMonth = ref(dayjs().month() + 1); // dayjsのmonthは0始まりなので+1
+
 // 追加: 現在の日付を取得し、その前後1か月の日付範囲を計算
 const today = dayjs(); // 今日の日付
-const startDate = today.subtract(1, 'month'); // 1か月前
-const endDate = today.add(2, 'month').endOf('month'); // 10月の末日までに拡張
 
+// 日付範囲を表す変数を let に変更
+let startDate = dayjs(`${selectedYear.value}-${selectedMonth.value}-01`);
+let endDate = startDate.endOf('month');
 
 const tasks = ref([]); // タスクデータ
 
 const rowHeight = 40;
 const blockWidth = 30;
-const totalDays = endDate.diff(startDate, 'day') + 1; // 表示する合計日数
+let totalDays = endDate.diff(startDate, 'day') + 1;
 
-// xScaleの修正: 現在の日付を基準に前後1か月のスケールを計算
+// 年と月が変更されたときにガントチャートを更新する
+function updateChart() {
+  startDate = dayjs(`${selectedYear.value}-${selectedMonth.value}-01`); // 月初
+  endDate = startDate.endOf('month'); // 月末
+  totalDays = endDate.diff(startDate, 'day') + 1;
+
+  // ガントチャートの日付スケールを更新
+  xScale.domain([startDate.toDate(), endDate.toDate()]).range([0, blockWidth * totalDays]);
+
+  // チャートを再描画
+  fetchTasks(); // 年と月に基づいてタスクデータを取得
+}
+
+// xScaleの設定
 const xScale = d3
   .scaleTime()
-  .domain([startDate.toDate(), endDate.toDate()]) // 追加: 前後1か月の日付範囲を設定
-  .range([0, blockWidth * totalDays]); // 表示する日数に応じて幅を設定
+  .domain([startDate.toDate(), endDate.toDate()])
+  .range([0, blockWidth * totalDays]);
 
-// タスクデータを取得する関数
+// タスクデータの取得
 async function fetchTasks() {
-    const userStore = useUserStore(); // ユーザーストアにアクセス
-    const companyCode = userStore.companyCode; // ストアからcompanyCodeを取得
+  const userStore = useUserStore();
+  const companyCode = userStore.companyCode;
 
-    try {
-        const response = await axios.get('http://127.0.0.1:8000/api/junctionTable/scheduleForGanttByCompany/', {
-            params: { companyCode: companyCode } // companyCodeをクエリパラメータとして渡す
-        });
+  try {
+      const response = await axios.get('http://127.0.0.1:8000/api/junctionTable/scheduleForGanttByCompany/', {
+          params: {
+              companyCode: companyCode,
+              year: selectedYear.value, // 選択された年を渡す
+              month: selectedMonth.value // 選択された月を渡す
+          }
+      });
 
-        // 特定のcompanyCodeに対応するスケジュールリストを探す
-        const companyData = response.data.find((company) => company.companyCode === companyCode);
-        tasks.value = companyData ? companyData.ScheduleForGanttList : [];
+      const companyData = response.data.find((company) => company.companyCode === companyCode);
+      tasks.value = companyData ? companyData.ScheduleForGanttList : [];
 
-        updateChart();
-    } catch (error) {
-        console.error('タスクの取得エラー:', error);
-    }
+      updateChartContent(); // ガントチャートを描画
+  } catch (error) {
+      console.error('タスクの取得エラー:', error);
+  }
 }
 
 // 保存処理
@@ -111,15 +148,36 @@ async function saveTasks() {
   }
 }
 
+
+
+// チャートの描画内容を更新する関数
+function updateChartContent() {
+  const svg = d3.select('#gantt-chart'); // svgを再定義
+  svg.selectAll('*').remove(); // 既存のチャートをクリア
+
+  drawGanttChart();  // ガントチャートの描画
+  drawMonthHeader(); // 月ヘッダーの描画
+  drawDateHeader();  // 日ヘッダーの描画
+  drawDayOfWeekHeader();  // 曜日ヘッダーの描画
+
+  const daysInMonth = dayjs(`${selectedYear.value}-${selectedMonth.value}`).daysInMonth(); // 選択された月の日数
+  drawGridLines(svg, daysInMonth); // 縦と横のグリッド線を描画
+}
+
+
+
 onMounted(() => {
-  fetchTasks();
+  fetchTasks(); // 初回描画時にタスクを取得
   drawGanttChart();
   drawMonthHeader();
   drawDateHeader();
   drawDayOfWeekHeader();
 });
 
+
+//-----------------------------------------------------------------------------------
 // 入力セルでEnterキーが押された場合、次のセルに移動する関数
+//-----------------------------------------------------------------------------------
 function moveToNextCell(event: KeyboardEvent, rowIndex: number, columnIndex: number) {
   if (event.key === 'Enter') {
       // 各行のすべての入力セルを取得
@@ -134,105 +192,109 @@ function moveToNextCell(event: KeyboardEvent, rowIndex: number, columnIndex: num
   }
 }
 
-// ガントチャート描画関数
+
+//-----------------------------------------------------------------------------------
+
+
 // ガントチャート描画関数
 function drawGanttChart() {
-  // 月のヘッダー（#month-header）の幅を取得
-  const monthHeaderWidth = d3.select('#month-header').node().getBoundingClientRect().width;
+  const daysInMonth = dayjs(`${selectedYear.value}-${selectedMonth.value}`).daysInMonth(); // 選択された月の日数
+  const monthHeaderWidth = blockWidth * daysInMonth; // ブロック幅×月の日数で幅を計算
 
-  // 今日の日付に基づいてずらしを計算
-  const offsetDaysInMonth = today.date(); // 今日の日付（6日など）
-  const offsetWidth = (offsetDaysInMonth - 1) * blockWidth; // 1日目から数えて幅を計算（1日分の補正）
-
-  const svg = d3
-      .select('#gantt-chart')
-      .attr('width', monthHeaderWidth) // 月のヘッダーと同じ幅をガントチャートに設定
-      .attr('height', tasks.value.length * rowHeight) // 高さはタスクの数に依存
-      .attr('transform', `translate(-${offsetWidth}, 0)`); // 幅だけ左にずらす
-
-  drawVerticalGridLines(svg); // 縦グリッド線を描画
-
-  svg.selectAll('.row-grid-line')
-      .data(tasks.value)
-      .enter()
-      .append('line')
-      .attr('x1', 0)
-      .attr('x2', monthHeaderWidth) // 月表示の幅に応じたグリッド線の幅
-      .attr('y1', (d, i) => (i + 1) * rowHeight)
-      .attr('y2', (d, i) => (i + 1) * rowHeight)
-      .attr('stroke', 'black');
-
-  const drag = d3.drag().on('start', dragStarted).on('drag', dragged).on('end', dragEnded);
-
-  const resizeLeft = d3.drag().on('start', resizeStarted).on('drag', resizingLeft).on('end', resizeEnded);
-
-  const resizeRight = d3.drag().on('start', resizeStarted).on('drag', resizingRight).on('end', resizeEnded);
+  const svg = d3.select('#gantt-chart')
+      .attr('width', monthHeaderWidth)
+      .attr('height', tasks.value.length * rowHeight); // タスクの数に基づいて高さを設定
 
   // タスクバーの描画
   const bars = svg.selectAll('g').data(tasks.value).enter().append('g');
 
   bars.append('rect')
-      .attr('x', (d) => xScale(dayjs(d.startDate).toDate())) // タスクの開始日をx座標に設定
-      .attr('y', (d, i) => i * rowHeight) // タスクの位置をy座標に設定
-      .attr('width', (d) => Math.max(1, xScale(dayjs(d.endDate).toDate()) - xScale(dayjs(d.startDate).toDate()))) // 開始日と終了日で幅を計算、幅が0以下にならないように調整
-      .attr('height', rowHeight) // 各タスクバーの高さを設定
-      .attr('fill', 'steelblue') // タスクバーの色を設定
-      .attr('cursor', 'move') // ドラッグカーソル
-      .call(drag); // ドラッグイベントを追加
+      .attr('x', (d) => xScale(dayjs(d.startDate).toDate())) // タスク開始日をx座標に
+      .attr('y', (d, i) => i * rowHeight) // タスクの位置をy座標に
+      .attr('width', (d) => Math.max(1, xScale(dayjs(d.endDate).toDate()) - xScale(dayjs(d.startDate).toDate()))) // タスク期間の幅を計算
+      .attr('height', rowHeight) // 各タスクバーの高さ
+      .attr('fill', 'steelblue'); // タスクバーの色
 
-  // 左側のリサイズハンドルを追加
+  // 左側のリサイズハンドル
   bars.append('rect')
-      .attr('x', (d) => xScale(dayjs(d.startDate).toDate()) - 5) // 開始日からの位置
+      .attr('x', (d) => xScale(dayjs(d.startDate).toDate()) - 5)
       .attr('y', (d, i) => i * rowHeight)
-      .attr('width', 10) // ツマミの幅を調整
+      .attr('width', 10)
       .attr('height', rowHeight)
-      .attr('fill', 'gray') // ツマミの色
-      .attr('cursor', 'ew-resize') // リサイズカーソル
-      .call(resizeLeft); // 左側リサイズイベント
+      .attr('fill', 'gray')
+      .attr('cursor', 'ew-resize');
 
-  // 右側のリサイズハンドルを追加
+  // 右側のリサイズハンドル
   bars.append('rect')
-      .attr('x', (d) => xScale(dayjs(d.endDate).toDate()) - 5) // 終了日からの位置
+      .attr('x', (d) => xScale(dayjs(d.endDate).toDate()) - 5)
       .attr('y', (d, i) => i * rowHeight)
-      .attr('width', 10) // ツマミの幅を調整
+      .attr('width', 10)
       .attr('height', rowHeight)
-      .attr('fill', 'gray') // ツマミの色
-      .attr('cursor', 'ew-resize') // リサイズカーソル
-      .call(resizeRight); // 右側リサイズイベント
+      .attr('fill', 'gray')
+      .attr('cursor', 'ew-resize');
 
-  // タスク名のテキストを表示
+  // タスク名を表示
   svg.selectAll('text')
       .data(tasks.value)
       .enter()
       .append('text')
-      .attr('x', (d) => xScale(dayjs(d.startDate).toDate()) + 5) // テキストの位置を補正
+      .attr('x', (d) => xScale(dayjs(d.startDate).toDate()) + 5)
       .attr('y', (d, i) => i * rowHeight + rowHeight / 2 + 5)
       .text((d) => d.name)
-      .attr('fill', 'white'); // テキスト色を設定
+      .attr('fill', 'white');
 }
 
 
 
-
-// 縦グリッド線の描画
-function drawVerticalGridLines(svg) {
-  const daysArray = Array.from({ length: totalDays }, (_, i) => i + 1);
+// 縦および横のグリッド線の描画
+function drawGridLines(svg, daysInMonth) {
+  const daysArray = Array.from({ length: daysInMonth }, (_, i) => i + 1); // 月の日数を取得
+  const chartHeight = tasks.value.length * rowHeight; // タスク数に基づいてチャートの高さを計算
   const todayDate = dayjs().format('YYYY-MM-DD'); // 今日の日付を取得
 
+  // 縦グリッド線の描画
   svg.selectAll('.column-grid-line')
       .data(daysArray)
       .enter()
+      .append('line')
+      .attr('x1', (d) => (d - 1) * blockWidth) // グリッド線の開始x座標
+      .attr('x2', (d) => (d - 1) * blockWidth) // グリッド線の終了x座標
+      .attr('y1', 0) // グリッド線の開始y座標
+      .attr('y2', chartHeight) // グリッド線の終了y座標
+      .attr('stroke', '#ccc') // グリッド線の色
+      .attr('stroke-width', 1) // グリッド線の太さ
+      .attr('class', 'column-grid-line');
+
+  // 今日の日付をハイライト
+  svg.selectAll('.today-highlight')
+      .data(daysArray)
+      .enter()
       .append('rect')
-      .attr('x', (d) => (d - 1) * blockWidth)
+      .attr('x', (d) => (d - 1) * blockWidth) // 今日の日付のx座標
       .attr('y', 0)
-      .attr('width', blockWidth)
-      .attr('height', tasks.value.length * rowHeight)
+      .attr('width', blockWidth) // 1日のブロック幅
+      .attr('height', chartHeight) // タスク数に基づくチャートの高さ
       .attr('fill', (d) => {
-          const currentDay = startDate.clone().add(d - 1, 'day'); // cloneで日付の安全性を確保
-          return currentDay.format('YYYY-MM-DD') === todayDate ? '#ffe6e6' : 'none'; // 今日ならピンクに
+          const currentDay = dayjs(`${selectedYear.value}-${selectedMonth.value}-${d}`);
+          return currentDay.format('YYYY-MM-DD') === todayDate ? '#ffe6e6' : 'none'; // 今日の日付をピンクに
       })
-      .attr('stroke', '#ccc');
+      .attr('class', 'today-highlight');
+
+  // 横グリッド線の描画（タスクごとの水平線）
+  svg.selectAll('.row-grid-line')
+      .data(tasks.value)
+      .enter()
+      .append('line')
+      .attr('x1', 0) // 水平線の開始x座標
+      .attr('x2', blockWidth * daysInMonth) // 水平線の終了x座標（1ヶ月分の幅）
+      .attr('y1', (d, i) => (i + 1) * rowHeight) // 各タスクの位置に応じてy座標を設定
+      .attr('y2', (d, i) => (i + 1) * rowHeight) // 同じy座標で水平線を引く
+      .attr('stroke', '#ccc') // グリッド線の色
+      .attr('stroke-width', 1) // グリッド線の太さ
+      .attr('class', 'row-grid-line');
 }
+
+
 
 
 //-----------------------------------------------------------------------------------
@@ -256,8 +318,8 @@ function dragged(event, d) {
 
   // バーの位置を更新
   d3.select(this)
-    .attr('x', newX) // 新しいx座標
-    .attr('width', blockWidth * (taskDuration + 1)); // バーの幅を期間に応じて設定
+      .attr('x', newX) // 新しいx座標
+      .attr('width', blockWidth * (taskDuration + 1)); // バーの幅を期間に応じて設定
 }
 
 // ドラッグ終了時の処理
@@ -280,9 +342,9 @@ function resizingLeft(event, d) {
 
   // バーの位置と幅を更新
   d3.select(this.parentNode)
-    .select('rect')
-    .attr('x', newX)
-    .attr('width', xScale(dayjs(d.endDate).toDate()) - xScale(dayjs(d.startDate).toDate()));
+      .select('rect')
+      .attr('x', newX)
+      .attr('width', xScale(dayjs(d.endDate).toDate()) - xScale(dayjs(d.startDate).toDate()));
 }
 
 // 右端リサイズ中の処理
@@ -294,8 +356,8 @@ function resizingRight(event, d) {
 
   // バーの幅を更新
   d3.select(this.parentNode)
-    .select('rect')
-    .attr('width', xScale(dayjs(d.endDate).toDate()) - xScale(dayjs(d.startDate).toDate()));
+      .select('rect')
+      .attr('width', xScale(dayjs(d.endDate).toDate()) - xScale(dayjs(d.startDate).toDate()));
 }
 
 // リサイズ終了時の処理
@@ -304,144 +366,76 @@ function resizeEnded(event, d) {
   updateTaskDates(d.id); // 日付をフォームに反映
 }
 
-
-
-
+//月、日、曜日の表示関数
 //-----------------------------------------------------------------------------------
 
 
 
-
-// 月のヘッダーを表示する関数
+// 月ヘッダー
 function drawMonthHeader() {
-    const monthHeader = d3.select('#month-header');
+  const monthHeader = d3.select('#month-header');
+  const monthData = [{ month: `${selectedYear.value}年 ${selectedMonth.value}月`, daysInMonth: dayjs(`${selectedYear.value}-${selectedMonth.value}`).daysInMonth() }];
 
-    // 月ごとの区切りを描画するために使用するデータを作成
-    const monthData = [];
-    let currentMonth = startDate.clone(); // startDateをコピーしてcurrentMonthとして使用
-    while (currentMonth.isBefore(endDate)) {
-        const firstDayOfMonth = currentMonth.startOf('month'); // 各月の最初の日
-        const lastDayOfMonth = currentMonth.endOf('month'); // 各月の最後の日
-        const monthDays = lastDayOfMonth.diff(firstDayOfMonth, 'day') + 1; // 月の日数を計算
+  monthHeader.style('width', `${blockWidth * monthData[0].daysInMonth}px`).style('display', 'flex').style('overflow', 'hidden');
 
-        // データに追加
-        monthData.push({
-            month: currentMonth.format('MMMM YYYY'), // 月と年をフォーマット
-            daysInMonth: monthDays // 月の日数
-        });
-
-        currentMonth = currentMonth.add(1, 'month'); // 1か月進める
-    }
-
-    // 今日の日付をstartDateからの差分で計算
-    const todayIndex = today.diff(startDate, 'day'); // 今日の日付までの差分（開始日から今日までの日数）
-
-    // 月の描画
-    monthHeader
-        .style('width', `${blockWidth * totalDays}px`) // 全体の横幅を設定
-        .style('display', 'flex')
-        .style('overflow', 'hidden');
-
-    // 境界線の調整ロジック
-    const offsetDaysInFirstMonth = today.date(); // 今月の「開始」位置を調整するために使う
-    let cumulativeDays = 0;
-
-    // 各月の表示部分を作成
-    monthHeader.selectAll('div')
-        .data(monthData)
-        .enter()
-        .append('div')
-        .style('width', (d, i) => {
-            // 最初の月は今日の日を基準にずらす
-            if (i === 0) {
-                return `${(d.daysInMonth - offsetDaysInFirstMonth + 1) * blockWidth}px`;
-            } else {
-                return `${d.daysInMonth * blockWidth}px`; // 通常の月の幅
-            }
-        })
-        .style('text-align', 'center')
-        .style('border-right', '1px solid black') // 境界線を追加
-        .style('font-weight', 'bold')
-        .text((d) => d.month);
-
-    // 今日の日付の位置を調整する
-    monthHeader.style('transform', `translateX(-${offsetDaysInFirstMonth * blockWidth}px)`); // 本日の日付に基づき位置をずらす
+  monthHeader.selectAll('div')
+      .data(monthData)
+      .enter()
+      .append('div')
+      .style('width', `${blockWidth * monthData[0].daysInMonth}px`)
+      .text((d) => d.month)
+      .style('text-align', 'center')
+      .style('border-right', '1px solid black');
 }
 
-// 日付のヘッダーを表示する関数
+// 日ヘッダー
 function drawDateHeader() {
-    const dateHeader = d3.select('#date-header');
+  const dateHeader = d3.select('#date-header');
+  const daysInMonth = dayjs(`${selectedYear.value}-${selectedMonth.value}`).daysInMonth();
+  const dateData = Array.from({ length: daysInMonth }, (_, i) => i + 1);
 
-    // 日ごとのデータを作成
-    const dateData = [];
-    let currentDate = startDate.clone(); // startDateをコピーしてcurrentDateとして使用
-    while (currentDate.isBefore(endDate) || currentDate.isSame(endDate, 'day')) {
-        dateData.push(currentDate.format('D')); // 日付をフォーマットして追加
-        currentDate = currentDate.add(1, 'day'); // 1日進める
-    }
+  dateHeader.style('width', `${blockWidth * daysInMonth}px`).style('display', 'flex').style('overflow', 'hidden');
 
-    // 日付の描画
-    dateHeader
-        .style('width', `${blockWidth * totalDays}px`) // ガントチャートの横幅に一致
-        .style('display', 'flex')
-        .style('overflow', 'hidden')
-        .style('transform', `translateX(-${today.date() * blockWidth}px)`); // 本日の日付に基づき位置を調整
-
-    // 各日付の表示部分を作成
-    dateHeader.selectAll('div')
-        .data(dateData)
-        .enter()
-        .append('div')
-        .style('width', `${blockWidth}px`) // 各日の横幅を設定
-        .style('text-align', 'center')
-        .style('border-right', '1px solid black')
-        .style('background-color', (d, i) => dayjs(startDate).add(i, 'day').isSame(dayjs(), 'day') ? '#ffe6e6' : '#f0f0f0') // 今日の日付をピンクに
-        .text((d) => d); // 日付を表示
+  dateHeader.selectAll('div')
+      .data(dateData)
+      .enter()
+      .append('div')
+      .style('width', `${blockWidth}px`)
+      .style('text-align', 'center')
+      .style('border-right', '1px solid black')
+      .style('background-color', (d) => {
+          const currentDate = dayjs(`${selectedYear.value}-${selectedMonth.value}-${d}`);
+          return currentDate.isSame(dayjs(), 'day') ? '#ffe6e6' : '#f0f0f0';
+      })
+      .text((d) => d);
 }
 
-
-// 曜日ヘッダーを表示する関数
+// 曜日ヘッダー
 function drawDayOfWeekHeader() {
-    const dayOfWeekHeader = d3.select('#day-of-week-header');
+  const dayOfWeekHeader = d3.select('#day-of-week-header');
+  const daysInMonth = dayjs(`${selectedYear.value}-${selectedMonth.value}`).daysInMonth();
+  const dayOfWeekData = Array.from({ length: daysInMonth }, (_, i) => {
+      const date = dayjs(`${selectedYear.value}-${selectedMonth.value}-${i + 1}`);
+      return date.format('dd');
+  });
 
-    // 日ごとの曜日データを作成
-    const dayOfWeekData = [];
-    let currentDate = startDate.clone(); // startDateをコピーしてcurrentDateとして使用
-    while (currentDate.isBefore(endDate) || currentDate.isSame(endDate, 'day')) {
-        dayOfWeekData.push(currentDate.format('dd')); // 曜日をフォーマットして追加
-        currentDate = currentDate.add(1, 'day'); // 1日進める
-    }
+  dayOfWeekHeader.style('width', `${blockWidth * daysInMonth}px`).style('display', 'flex').style('overflow', 'hidden');
 
-    // 曜日の描画
-    dayOfWeekHeader
-        .style('width', `${blockWidth * totalDays}px`) // ガントチャートの横幅に一致
-        .style('display', 'flex')
-        .style('overflow', 'hidden')
-        .style('transform', `translateX(-${today.date() * blockWidth}px)`); // 本日の日付に基づき位置を調整
-
-    // 各曜日の表示部分を作成
-    dayOfWeekHeader.selectAll('div')
-        .data(dayOfWeekData)
-        .enter()
-        .append('div')
-        .style('width', `${blockWidth}px`) // 各曜日の横幅を設定
-        .style('text-align', 'center')
-        .style('border-right', '1px solid black')
-        .style('color', (d, i) => getDayColor(dayjs(startDate).add(i, 'day').day())) // 曜日に応じた色付け
-        .style('background-color', (d, i) => dayjs(startDate).add(i, 'day').isSame(dayjs(), 'day') ? '#ffe6e6' : '#f0f0f0') // 今日の日付をピンクに
-        .text((d) => d); // 曜日を表示
+  dayOfWeekHeader.selectAll('div')
+      .data(dayOfWeekData)
+      .enter()
+      .append('div')
+      .style('width', `${blockWidth}px`)
+      .style('text-align', 'center')
+      .style('border-right', '1px solid black')
+      .style('color', (d) => (d === 'Sun' ? 'red' : d === 'Sat' ? 'blue' : 'black'))
+      .style('background-color', (d, i) => {
+          const currentDate = dayjs(`${selectedYear.value}-${selectedMonth.value}-${i + 1}`);
+          return currentDate.isSame(dayjs(), 'day') ? '#ffe6e6' : '#f0f0f0';
+      })
+      .text((d) => d);
 }
 
-// 曜日に応じて色を決定
-function getDayColor(dayOfWeek) {
-    if (dayOfWeek === 0) {
-        return 'red'; // 日曜日
-    } else if (dayOfWeek === 6) {
-        return 'blue'; // 土曜日
-    } else {
-        return 'black'; // 平日
-    }
-}
 
 
 // 日付の更新時にガントチャートを再描画
@@ -453,13 +447,6 @@ function updateTaskDates(id) {
       updateChart();
   }
 }
-
-// ガントチャートを更新
-function updateChart() {
-  d3.select('#gantt-chart').selectAll('*').remove();
-  drawGanttChart();
-}
-
 
 //-----------------------------------------------------------------------------------
 
@@ -553,6 +540,9 @@ function addSubtask() {
   updateChart(); // ガントチャートを更新
 }
 </script>
+
+
+
 
 <style scoped>
 .gantt-container {

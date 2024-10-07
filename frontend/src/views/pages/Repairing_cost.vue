@@ -6,6 +6,8 @@
                     <TabPanel header="Repairing cost">
                         <div class="col-12 xl:col-12">
                             <div class="card" style="background-color: #f2f2f2">
+                                <div class="total-cost-label">Total Graph (Planned vs Actual)</div>
+                                
                                 <total_graph />
                                 <Display_repairing_cost />
                                 <p>Planned cost</p>
@@ -219,6 +221,14 @@ h3 {
 
 .card-mb0 {
   background-color: #e0f7e0; /* Light green background color */
+}
+
+/* PM02 Actual cost ラベルのスタイルを追加 */
+.total-cost-label {
+  font-weight: bold;  /* 太字に設定 */
+  font-size: 2rem;  /* フォントサイズを調整 */
+  color: #2c3e50;     /* 目立つ色を設定 (必要に応じて変更) */
+  margin-bottom: 0.5rem; /* 下に余白を追加 */
 }
 
 /* PM02 Actual cost ラベルのスタイルを追加 */
