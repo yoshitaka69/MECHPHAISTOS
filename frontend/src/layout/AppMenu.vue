@@ -25,12 +25,14 @@ const model = ref([
             { label: 'Safety', icon: 'pi pi-fw pi-bookmark', to: '/Safety' },
             { label: 'Badactor management', icon: 'pi pi-fw pi-bookmark', to: '/badactor_management' },
             { label: 'Spare_parts', icon: 'pi pi-fw pi-exclamation-circle', to: '/spare_parts' },
+            /*
             { label: 'Communications',icon: 'pi pi-fw pi-exclamation-circle', 
               items:[
                 {label:'Minutes',icon:'pi pi-fw pi-bookmark', to: '/communications/minutes'},
                 {label:'Whiteboard',icon:'pi pi-fw pi-bookmark', to: '/communications/whiteboard'},
               ]
             },
+            */
             { label: 'Schedule',icon: 'pi pi-fw pi-exclamation-circle', 
               items:[
                 {label:'Calendar',icon:'pi pi-fw pi-bookmark', to: '/schedule/calendar'},
