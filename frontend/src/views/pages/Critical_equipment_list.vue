@@ -21,12 +21,13 @@
             <div class="row">
               <div class="col-12 xl:col-8">
                 <div class="card" style="background-color: #f2f2f2">
-                  priority tasks top 20
+                  <span class="priority-tasks-label">Priority tasks top 20</span>
                   <Top20_priority_task />
                 </div>
               </div>
               <div class="col-12 xl:col-4">
                 <div class="card" style="background-color: #f2f2f2">
+                  <span class="assessment-rate-label">Assessment rate</span>
                   <Assessment_rate />
                 </div>
               </div>
@@ -156,4 +157,20 @@ export default {
 .mr-3 {
   margin-right: 1rem;
 }
+
+.priority-tasks-label {
+  font-weight: bold;
+  font-size: 2rem;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+}
+
+.assessment-rate-label {
+  font-weight: bold;
+  font-size: 2rem;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+}
+
+
 </style>

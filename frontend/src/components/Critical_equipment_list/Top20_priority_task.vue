@@ -126,6 +126,8 @@ const getAssessmentClass = (assessment) => {
 };
 </script>
 
+
+
 <style>
 .styled-table .p-datatable-thead > tr > th {
   background-color: #003366;
@@ -134,14 +136,17 @@ const getAssessmentClass = (assessment) => {
   padding: 10px;
   text-align: center;
   border-bottom: 2px solid #006699;
+  font-size: 14px; /* フォントサイズを14pxに */
 }
 
 .styled-table .p-datatable-tbody > tr:nth-child(even) {
   background-color: #f0f8ff;
+  font-size: 14px; /* フォントサイズを14pxに */
 }
 
 .styled-table .p-datatable-tbody > tr:nth-child(odd) {
   background-color: #ffffff;
+  font-size: 14px; /* フォントサイズを14pxに */
 }
 
 .styled-table .p-datatable-tbody > tr:hover {
@@ -152,7 +157,7 @@ const getAssessmentClass = (assessment) => {
   border-collapse: collapse;
   width: 100%;
   font-family: Arial, sans-serif;
-  font-size: 14px;
+  font-size: 14px; /* フォントサイズを14pxに */
   color: #333;
 }
 
@@ -160,6 +165,8 @@ const getAssessmentClass = (assessment) => {
   padding: 12px 8px;
   text-align: left;
   border-bottom: 1px solid #dddddd;
+  font-weight: bold; /* 文字を太字に */
+  font-size: 14px; /* フォントサイズを14pxに */
 }
 
 .styled-table .p-datatable-tbody > tr > td:first-child {
@@ -170,28 +177,42 @@ const getAssessmentClass = (assessment) => {
   border: 1px solid #cccccc;
 }
 
+/* High+ の点滅アニメーション */
 .assessment-high-plus {
   background-color: red;
   color: white;
+  font-size: 14px; /* フォントサイズを14pxに */
+  animation: blink 1s step-start 5; /* 1秒周期で8回点滅 */
 }
 
 .assessment-high {
   background-color: orange;
   color: white;
+  font-size: 14px; /* フォントサイズを14pxに */
 }
 
 .assessment-middle {
   background-color: yellow;
   color: black;
+  font-size: 14px; /* フォントサイズを14pxに */
 }
 
 .assessment-low {
   background-color: green;
   color: white;
+  font-size: 14px; /* フォントサイズを14pxに */
 }
 
 .assessment-review {
   background-color: #4c7c04;
   color: white;
+  font-size: 14px; /* フォントサイズを14pxに */
+}
+
+/* 点滅アニメーションの設定 */
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
 }
 </style>

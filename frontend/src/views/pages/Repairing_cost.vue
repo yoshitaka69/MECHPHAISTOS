@@ -7,13 +7,20 @@
                         <div class="col-12 xl:col-12">
                             <div class="card" style="background-color: #f2f2f2">
                                 <div class="total-cost-label">Total Graph (Planned vs Actual)</div>
-                                
+
                                 <total_graph />
                                 <Display_repairing_cost />
-                                <p>Planned cost</p>
-                                <Total_cost_table />
-                                <p>actual summary cost (readOnly)</p>
-                                <Actual_summary_table />
+
+                                <div class="cost-section">
+                                    <p>Planned cost</p>
+                                    <Total_cost_table />
+                                </div>
+
+                                <div class="cost-section">
+                                    <p>actual summary cost (readOnly)</p>
+                                    <Actual_summary_table />
+                                </div>
+
                                 <Message :closable="false">
                                     AI recommendation
                                     <br />
@@ -139,7 +146,6 @@
     </div>
 </template>
 
-
 <script>
 import Total_graph from '@/components/Repairing_cost/Total_graph.vue';
 
@@ -206,68 +212,51 @@ export default {
 </script>
 
 <style scoped>
+/* 共通スタイル */
 .row {
-  display: flex;
-  flex-wrap: wrap;
+    display: flex;
+    flex-wrap: wrap;
 }
 
 .text-center {
-  text-align: center;
+    text-align: center;
 }
 
 h3 {
-  font-size: 1.25rem; /* Adjust the font size as needed */
+    font-size: 1.25rem; /* 必要に応じてフォントサイズを調整 */
 }
 
 .card-mb0 {
-  background-color: #e0f7e0; /* Light green background color */
+    background-color: #e0f7e0; /* 薄い緑色の背景色 */
 }
 
-/* PM02 Actual cost ラベルのスタイルを追加 */
-.total-cost-label {
-  font-weight: bold;  /* 太字に設定 */
-  font-size: 2rem;  /* フォントサイズを調整 */
-  color: #2c3e50;     /* 目立つ色を設定 (必要に応じて変更) */
-  margin-bottom: 0.5rem; /* 下に余白を追加 */
-}
-
-/* PM02 Actual cost ラベルのスタイルを追加 */
-.pm02-actual-cost-label {
-  font-weight: bold;  /* 太字に設定 */
-  font-size: 2rem;  /* フォントサイズを調整 */
-  color: #2c3e50;     /* 目立つ色を設定 (必要に応じて変更) */
-  margin-bottom: 0.5rem; /* 下に余白を追加 */
-}
-
-.pm03-actual-cost-label {
-  font-weight: bold;  /* 太字に設定 */
-  font-size: 2rem;  /* フォントサイズを調整 */
-  color: #2c3e50;     /* 目立つ色を設定 (必要に応じて変更) */
-  margin-bottom: 0.5rem; /* 下に余白を追加 */
-}
-
-.pm04-actual-cost-label {
-  font-weight: bold;  /* 太字に設定 */
-  font-size: 2rem;  /* フォントサイズを調整 */
-  color: #2c3e50;     /* 目立つ色を設定 (必要に応じて変更) */
-  margin-bottom: 0.5rem; /* 下に余白を追加 */
-}
-
+/* 各コンポーネントのラベルのスタイル */
+.total-cost-label,
+.pm02-actual-cost-label,
+.pm03-actual-cost-label,
+.pm04-actual-cost-label,
 .pm05-actual-cost-label {
-  font-weight: bold;  /* 太字に設定 */
-  font-size: 2rem;  /* フォントサイズを調整 */
-  color: #2c3e50;     /* 目立つ色を設定 (必要に応じて変更) */
-  margin-bottom: 0.5rem; /* 下に余白を追加 */
+    font-weight: bold;  /* 太字に設定 */
+    font-size: 2rem;  /* フォントサイズを調整 */
+    color: #2c3e50;  /* 目立つ色を設定 */
+    margin-bottom: 0.5rem;  /* 下に余白を追加 */
 }
 
-/* card の高さを固定 */
+/* テーブル配置用のスタイル */
+.cost-section {
+    text-align: center; /* 横方向のセンター配置 */
+    margin-bottom: 2rem; /* 要素間の余白を調整 */
+}
+
+/* カードの高さを固定 */
 .card.fixed-height {
-    height: 1200px; /* 固定の高さを指定 */
-    overflow-y: auto; /* 高さを超えた場合のスクロールを有効化 */
+    height: 1200px; /* 固定の高さ */
+    overflow-y: auto; /* スクロールを有効に */
 }
 
-/* メッセージコンテンツのマージン調整（オプション） */
+/* メッセージコンテンツのマージン調整 */
 .card.fixed-height .Message {
-    margin-top: auto; /* コンテンツの最後にメッセージを固定 */
+    margin-top: auto; /* 最後にメッセージを固定 */
 }
+
 </style>
