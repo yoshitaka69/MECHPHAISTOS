@@ -68,6 +68,8 @@ class TaskListPPM02(models.Model):
 
 
 
+#------------------------------------------------------------
+
 
 #TaskListActualPM02
 class TaskListAPM02(models.Model):

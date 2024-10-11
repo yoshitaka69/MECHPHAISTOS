@@ -12,17 +12,12 @@ const logoUrl = computed(() => {
         <ul class="list-none p-0 mb-0 flex flex-column md:flex-row flex-order-1 lg:flex-order-0 mt-4 lg:mt-0">
             <li class="mr-4 mt-3 lg:mt-0 flex items-end">
                 <img :src="logoUrl" alt="MECHPHAISTOS ロゴ" style="width: 50px; height: auto;" class="mr-2" />
-                <a tabindex="0" class="cursor-pointer text-0">Investor Relations</a>
+                <!-- Data Privacy のリンクを http://localhost:4001/Privacy_policy に設定 -->
+                <a href="http://localhost:4001/Privacy_policy" target="_blank" tabindex="0" class="cursor-pointer text-0">Data Privacy</a>
             </li>
             <li class="mr-4 mt-3 lg:mt-0 flex items-end">
-                <a tabindex="0" class="cursor-pointer text-0">Data Privacy</a>
-            </li>
-            <li class="mr-4 mt-3 lg:mt-0 flex items-end">
-                <a tabindex="0" class="cursor-pointer text-0">Terms of Service</a>
-            </li>
-            <!-- ここに align-items-end を追加して a タグを下揃えに -->
-            <li class="mr-4 mt-3 lg:mt-0 flex items-end">
-                <a tabindex="0" class="cursor-pointer text-0 flex items-end">Legal Information</a>
+                <!-- Terms of Service のリンクを http://localhost:4001/Privacy_policy に設定 -->
+                <a href="http://localhost:4001/Privacy_policy" target="_blank" tabindex="0" class="cursor-pointer text-0">Terms of Service</a>
             </li>
         </ul>
 

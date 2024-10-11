@@ -269,6 +269,11 @@ const router = createRouter({
 			name:'what_is_pm_type',
 			component: () => import('@/components/How_to_use/What_is_PM_type.vue')
 		},
+		{
+			path: '/privacy_policy',
+			name:'privacy_policy',
+			component: () => import('@/components/Privacy_policy/Privacy_policy.vue')
+		},
 	],
 })
 

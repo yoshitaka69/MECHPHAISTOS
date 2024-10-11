@@ -250,14 +250,20 @@ class CeListAndTask(models.Model):
     def __str__(self):
         return str('CeList And Task')
     
- 
+
+
+from django.db.models import Case, When, IntegerField  # 必要なクラスをインポート
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from .models import MasterDataTable, CeListAndTask, TaskListPPM02, Machine, CompanyCode  # 必要なモデルをインポート
+
 # assessment の優先度を定義
 ASSESSMENT_PRIORITY = {
-    "Very High": 5,
+    "High+": 5,
     "High": 4,
     "Middle": 3,
     "Low": 2,
-    "Very Low": 1
+    "Review": 1
 }
 
 @receiver(post_save, sender=MasterDataTable)
@@ -265,32 +271,61 @@ def update_ceListAndTask(sender, instance, **kwargs):
     if settings.DEBUG:
         print(f"MasterDataTable instance saved: {instance}")
 
-    # assessment が "Very High", "High", "Middle", "Low", "Very Low" のエントリを抽出し、優先度の高い順にソート
+    # assessment が "High+", "High", "Middle", "Low", "Review" のエントリを抽出し、優先度の高い順にソート
     assessment_entries = MasterDataTable.objects.filter(
-        assessment__in=ASSESSMENT_PRIORITY.keys()
-    ).order_by('-assessment')
+        assessment__in=ASSESSMENT_PRIORITY.keys(),
+        companyCode=instance.companyCode  # companyCode をフィルタリング
+    ).annotate(
+        # 各エントリに対して優先度を評価し、ソートのための priority を付与
+        priority=Case(
+            *[When(assessment=key, then=value) for key, value in ASSESSMENT_PRIORITY.items()],
+            output_field=IntegerField()
+        )
+    ).order_by('-priority')  # 優先度でソート
 
+    # エントリが存在しない場合の処理
     if not assessment_entries.exists():
         if settings.DEBUG:
-            print("No relevant assessment entries found for companyCode: ", instance.companyCode)
+            print(f"No relevant assessment entries found for companyCode: {instance.companyCode}")
         return
 
-    # CeListAndTaskの対応するインスタンスを取得または作成
+    # CeListAndTask のインスタンスを取得または作成し、companyCode も保存
     ce_list_and_task, created = CeListAndTask.objects.get_or_create(companyCode=instance.companyCode)
-    
-    # 優先度の高い順に各マシンとタスクを設定
-    for idx, entry in enumerate(assessment_entries[:20], 1):  # 最初の20エントリのみを取得
-        machine_name = entry.machineName.machineName  # Machine インスタンスから machineName 属性を取得
-        task_name = entry.typicalTaskName.typicalTaskName if entry.typicalTaskName else "No Task"  # None チェックを追加
+
+    # 優先度の高い順に最大20件までのマシンとタスクを設定
+    for idx, entry in enumerate(assessment_entries[:20], 1):  # 最初の20エントリまで更新
+        machine_name = entry.machineName if entry.machineName else "Unknown Machine"  # machineName が存在しない場合の対応
+
+        # Machine モデルから machineName に対応するインスタンスを取得
+        machine_instance = Machine.objects.filter(machineName=machine_name).first()
+
+        # machine_instance が存在する場合にのみタスクを取得
+        if machine_instance:
+            # TaskListPPM02 から machine インスタンスに対応するタスク名を取得
+            task_entries = TaskListPPM02.objects.filter(machineName=machine_instance.id, companyCode=instance.companyCode)
+        else:
+            task_entries = TaskListPPM02.objects.none()  # 該当する machine_instance がない場合は空のクエリセットを返す
+
+        # タスクが存在するか確認
+        if task_entries.exists():
+            # 複数のタスクがある場合、すべてのタスク名を連結して1つの文字列にする
+            task_names = ', '.join(task.taskName for task in task_entries if task.taskName)
+        else:
+            task_names = "No Task"
+
+        # ce_list_and_task にマシン名とタスク名を設定
         setattr(ce_list_and_task, f'no{idx}HighLevelMachine', machine_name)
-        setattr(ce_list_and_task, f'no{idx}HighPriorityTaskName', task_name)
-        
+        setattr(ce_list_and_task, f'no{idx}HighPriorityTaskName', task_names)
+
+        # デバッグ用の出力
         if settings.DEBUG:
             print(f'Set no{idx}HighLevelMachine to {machine_name}')
-            print(f'Set no{idx}HighPriorityTaskName to {task_name}')
+            print(f'Set no{idx}HighPriorityTaskName to {task_names}')
 
+    # CeListAndTask インスタンスを保存
     ce_list_and_task.save()
 
+    # 保存後のデバッグ情報
     if settings.DEBUG:
         print("CeListAndTask instance updated with new machine and task names.")
 
