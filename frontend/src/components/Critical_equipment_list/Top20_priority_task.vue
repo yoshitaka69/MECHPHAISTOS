@@ -1,6 +1,25 @@
 <template>
   <DataTable :value="sortedTasks" tableStyle="min-width: 50rem" class="styled-table">
-      <Column v-for="col of columns" :key="col.field" :field="col.field" :header="col.header" sortable></Column>
+    <!-- No. 列をスロットで追加し、slotProps.index を使用 -->
+    <Column header="No.">
+      <template #body="slotProps">
+        <span>{{ slotProps.index + 1 }}</span>
+      </template>
+    </Column>
+    <!-- 他の列を表示 -->
+    <Column field="plant" header="Plant" sortable></Column>
+    <Column field="machine" header="Machine Name" sortable></Column>
+    <Column field="taskName" header="Task Name" sortable></Column>
+    <Column field="equipment" header="Equipment" sortable></Column>
+    <Column field="pmType" header="PM Type" sortable></Column>
+    <Column field="cost" header="Cost" sortable></Column>
+
+    <!-- Assessment 列をslotで表示 -->
+    <Column field="assessment" header="Assessment">
+      <template #body="slotProps">
+        <Tag :value="slotProps.data.assessment" :class="getAssessmentClass(slotProps.data.assessment)" />
+      </template>
+    </Column>
   </DataTable>
 </template>
 
@@ -8,77 +27,103 @@
 import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
 import { useUserStore } from '@/stores/userStore';
+import Tag from 'primevue/tag';
 
+// 列の定義
 const columns = [
-  { field: 'typicalTaskName', header: 'Top20 Priority Tasks' },
   { field: 'plant', header: 'Plant' },
+  { field: 'machine', header: 'Machine Name' },
+  { field: 'taskName', header: 'Task Name' },
   { field: 'equipment', header: 'Equipment' },
-  { field: 'machineName', header: 'Machine Name' },
   { field: 'pmType', header: 'PM Type' },
-  { field: 'typicalTaskCost', header: 'Cost' },
+  { field: 'cost', header: 'Cost' },
   { field: 'assessment', header: 'Assessment' }
 ];
 
+// ユーザー情報の取得
 const userStore = useUserStore();
 const companyCode = userStore.companyCode;
 
+// デフォルトのタスクデータ
 const defaultTask = () => ({
-  typicalTaskName: 'ー',
   plant: 'ー',
+  machine: 'ー',
+  taskName: 'ー',
   equipment: 'ー',
-  machineName: 'ー',
   pmType: 'ー',
-  typicalTaskCost: 'ー',
+  cost: 'ー',
   assessment: 'ー'
 });
 
 const priorityTasks = ref([]);
 
+// データ取得処理
 onMounted(async () => {
-  console.log('Mounted. Company code:', companyCode); 
+  console.log('Mounted. Company code:', companyCode);
   if (!companyCode) {
-      console.error('No company code found.');
-      priorityTasks.value = Array(20).fill(defaultTask());
-      return;
+    console.error('No company code found.');
+    priorityTasks.value = Array(20).fill(defaultTask());
+    return;
   }
 
   try {
-      const response = await axios.get(`http://127.0.0.1:8000/api/junctionTable/ceListAndTaskByCompany/?companyCode=${companyCode}`);
-      console.log('API response:', response);
-      if (response.data && response.data.length > 0) {
-          const companyData = response.data.find((d) => d.companyCode === companyCode);
-          console.log('Filtered companyData:', companyData);
-          if (companyData && companyData.CeListAndTaskList) {
-              if (companyData.CeListAndTaskList.length > 0) {
-                  priorityTasks.value = companyData.CeListAndTaskList.map((item) => ({
-                      typicalTaskName: item?.no1HighPriorityTaskName || 'ー',
-                      plant: item?.plant || 'ー',
-                      equipment: item?.equipment || 'ー',
-                      machineName: item?.no1HighLevelMachine || 'ー',
-                      pmType: 'ー',
-                      typicalTaskCost: 'ー',
-                      assessment: 'ー'
-                  }));
-              } else {
-                  console.warn('CeListAndTaskList is empty. Setting default tasks.');
-                  priorityTasks.value = Array(20).fill(defaultTask());
-              }
-          }
+    const response = await axios.get(
+      `http://127.0.0.1:8000/api/junctionTable/ceListAndTaskByCompany/?companyCode=${companyCode}`
+    );
+    console.log('API response:', response);
+    if (response.data && response.data.length > 0) {
+      const companyData = response.data.find(d => d.companyCode === companyCode);
+      console.log('Filtered companyData:', companyData);
+      if (companyData && companyData.CeListAndTaskList.length > 0) {
+        const taskList = [];
+        for (let i = 1; i <= 20; i++) {
+          taskList.push({
+            plant: companyData.CeListAndTaskList[0][`no${i}Plant`] || 'ー',
+            machine: companyData.CeListAndTaskList[0][`no${i}HighLevelMachine`] || 'ー',
+            taskName: companyData.CeListAndTaskList[0][`no${i}HighPriorityTaskName`] || 'ー',
+            equipment: companyData.CeListAndTaskList[0][`no${i}Equipment`] || 'ー',
+            pmType: companyData.CeListAndTaskList[0][`no${i}PMType`] || 'ー',
+            cost: companyData.CeListAndTaskList[0][`no${i}Cost`] || 'ー',
+            assessment: companyData.CeListAndTaskList[0][`no${i}Assessment`] || 'ー'
+          });
+        }
+        priorityTasks.value = taskList;
       }
-
-      const itemsNeeded = 20 - priorityTasks.value.length;
-      if (itemsNeeded > 0) {
-          priorityTasks.value.push(...Array(itemsNeeded).fill(defaultTask()));
-      }
+    }
   } catch (error) {
-      console.error('Error fetching data:', error); 
-      priorityTasks.value = Array(20).fill(defaultTask());
+    console.error('Error fetching data:', error);
+    priorityTasks.value = Array(20).fill(defaultTask());
+  }
+
+  // 常に20行になるように足りない分をデフォルト値で埋める
+  const itemsNeeded = 20 - priorityTasks.value.length;
+  if (itemsNeeded > 0) {
+    priorityTasks.value.push(...Array(itemsNeeded).fill(defaultTask()));
   }
 });
 
+// 表示データの計算
 const sortedTasks = computed(() => {
-  return priorityTasks.value.slice(0, 20);
+  return priorityTasks.value.slice(0, 20); // 常に20行に制限
 });
+
+// Assessmentのクラスを取得するメソッド
+const getAssessmentClass = (assessment) => {
+  switch (assessment) {
+    case 'High+':
+      return 'assessment-high-plus';
+    case 'High':
+      return 'assessment-high';
+    case 'Middle':
+      return 'assessment-middle';
+    case 'Low':
+      return 'assessment-low';
+    case 'Review':
+      return 'assessment-review';
+    default:
+      return '';
+  }
+};
 </script>
 
 <style>
@@ -123,5 +168,30 @@ const sortedTasks = computed(() => {
 
 .styled-table .p-datatable {
   border: 1px solid #cccccc;
+}
+
+.assessment-high-plus {
+  background-color: red;
+  color: white;
+}
+
+.assessment-high {
+  background-color: orange;
+  color: white;
+}
+
+.assessment-middle {
+  background-color: yellow;
+  color: black;
+}
+
+.assessment-low {
+  background-color: green;
+  color: white;
+}
+
+.assessment-review {
+  background-color: #4c7c04;
+  color: white;
 }
 </style>

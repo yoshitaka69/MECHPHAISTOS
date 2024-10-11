@@ -67,12 +67,26 @@ class CompanyCodeBomAndTaskSerializer(serializers.ModelSerializer):
 
 
 
+#-------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+from rest_framework import serializers
+from .models import CeListAndTask
 
 class CeListAndTaskSerializer(serializers.ModelSerializer):
-    
     class Meta:
         model = CeListAndTask
-        fields = ['companyCode', 'companyName', 'plant', 'equipment', 'no1HighLevelMachine', 'no1HighPriorityTaskName', 'no2HighLevelMachine', 'no2HighPriorityTaskName','no3HighLevelMachine', 'no3HighPriorityTaskName','no4HighLevelMachine', 'no4HighPriorityTaskName','no5HighLevelMachine', 'no5HighPriorityTaskName','no6HighLevelMachine', 'no6HighPriorityTaskName','no7HighLevelMachine', 'no7HighPriorityTaskName','no8HighLevelMachine', 'no8HighPriorityTaskName','no9HighLevelMachine', 'no9HighPriorityTaskName','no10HighLevelMachine', 'no10HighPriorityTaskName', 'no11HighLevelMachine', 'no11HighPriorityTaskName', 'no12HighLevelMachine', 'no12HighPriorityTaskName','no13HighLevelMachine', 'no13HighPriorityTaskName','no14HighLevelMachine', 'no14HighPriorityTaskName','no15HighLevelMachine', 'no15HighPriorityTaskName','no16HighLevelMachine', 'no16HighPriorityTaskName','no17HighLevelMachine', 'no17HighPriorityTaskName','no18HighLevelMachine', 'no18HighPriorityTaskName','no19HighLevelMachine', 'no19HighPriorityTaskName','no20HighLevelMachine', 'no20HighPriorityTaskName',]
+        # No.1～No.20までの全フィールドをリストに追加
+        fields = [
+            'companyCode', 'companyName',
+            *[f'no{i}Plant' for i in range(1, 21)],
+            *[f'no{i}HighLevelMachine' for i in range(1, 21)],
+            *[f'no{i}HighPriorityTaskName' for i in range(1, 21)],
+            *[f'no{i}Equipment' for i in range(1, 21)],
+            *[f'no{i}PMType' for i in range(1, 21)],
+            *[f'no{i}Cost' for i in range(1, 21)],
+            *[f'no{i}Assessment' for i in range(1, 21)],
+        ]
 
 
 class CompanyCodeCeListAndTaskSerializer(serializers.ModelSerializer):
@@ -82,6 +96,8 @@ class CompanyCodeCeListAndTaskSerializer(serializers.ModelSerializer):
         model = CompanyCode
         fields = ['companyCode', 'CeListAndTaskList']
 
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 

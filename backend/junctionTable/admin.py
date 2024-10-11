@@ -29,18 +29,35 @@ class BomAndTaskAdmin(admin.ModelAdmin):
 
 
 
-
+#----------------------------------------------------------------------------------------------------------------------------------------------]
+# CeListAndTaskモデル
+#----------------------------------------------------------------------------------------------------------------------------------------------
+# 動的フィールドを含むカスタムAdminクラス
 
 class CeListAndTaskAdmin(admin.ModelAdmin):
+    # 一覧表示に使うフィールドのリストを動的に作成
+    list_display = ['companyCode', 'companyName'] + [f'no{i}Plant' for i in range(1, 21)] + \
+                   [f'no{i}HighLevelMachine' for i in range(1, 21)] + \
+                   [f'no{i}HighPriorityTaskName' for i in range(1, 21)] + \
+                   [f'no{i}Equipment' for i in range(1, 21)] + \
+                   [f'no{i}PMType' for i in range(1, 21)] + \
+                   [f'no{i}Cost' for i in range(1, 21)] + \
+                   [f'no{i}Assessment' for i in range(1, 21)]
 
-    list_display = ('companyCode','companyName', 'plant', 'equipment', 'machine', 'no1HighLevelMachine', 'no1HighPriorityTaskName', 'no2HighLevelMachine', 'no2HighPriorityTaskName','no3HighLevelMachine', 'no3HighPriorityTaskName','no4HighLevelMachine', 'no4HighPriorityTaskName','no5HighLevelMachine', 'no5HighPriorityTaskName','no6HighLevelMachine', 'no6HighPriorityTaskName','no17HighLevelMachine', 'no7HighPriorityTaskName','no8HighLevelMachine', 'no8HighPriorityTaskName','no9HighLevelMachine', 'no9HighPriorityTaskName','no10HighLevelMachine', 'no10HighPriorityTaskName', )
-    search_fields = ('companyCode','companyName', 'plant', 'equipment', 'machine', 'no1HighLevelMachine', 'no1HighPriorityTaskName', 'no2HighLevelMachine', 'no2HighPriorityTaskName','no3HighLevelMachine', 'no3HighPriorityTaskName','no4HighLevelMachine', 'no4HighPriorityTaskName','no5HighLevelMachine', 'no5HighPriorityTaskName','no6HighLevelMachine', 'no6HighPriorityTaskName','no17HighLevelMachine', 'no7HighPriorityTaskName','no8HighLevelMachine', 'no8HighPriorityTaskName','no9HighLevelMachine', 'no9HighPriorityTaskName','no10HighLevelMachine', 'no10HighPriorityTaskName',)
-    list_filter = ('companyCode','companyName', 'plant', 'equipment', 'machine', 'no1HighLevelMachine', 'no1HighPriorityTaskName', 'no2HighLevelMachine', 'no2HighPriorityTaskName','no3HighLevelMachine', 'no3HighPriorityTaskName','no4HighLevelMachine', 'no4HighPriorityTaskName','no5HighLevelMachine', 'no5HighPriorityTaskName','no6HighLevelMachine', 'no6HighPriorityTaskName','no17HighLevelMachine', 'no7HighPriorityTaskName','no8HighLevelMachine', 'no8HighPriorityTaskName','no9HighLevelMachine', 'no9HighPriorityTaskName','no10HighLevelMachine', 'no10HighPriorityTaskName', ) # adminで右側にあるフィルターBOXのこと
-    ordering = ('companyCode',) # 表示する順番
-    save_on_top = True #上部にもsaveボタンを配置
+    # フィルタリング用のフィールド
+    list_filter = ['companyCode', 'companyName']
+
+    # 検索用のフィールド
+    search_fields = ['companyCode__code', 'companyName__name'] + \
+                    [f'no{i}Plant' for i in range(1, 21)] + \
+                    [f'no{i}HighLevelMachine' for i in range(1, 21)] + \
+                    [f'no{i}HighPriorityTaskName' for i in range(1, 21)] + \
+                    [f'no{i}Equipment' for i in range(1, 21)] + \
+                    [f'no{i}PMType' for i in range(1, 21)] + \
+                    [f'no{i}Assessment' for i in range(1, 21)]
+#----------------------------------------------------------------------------------------------------------------------------------------------
 
 
-    list_per_page = 50 # １ページあたりに表示するオブジェクト数を指定
 
 
 

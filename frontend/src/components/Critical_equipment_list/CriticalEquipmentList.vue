@@ -112,57 +112,48 @@ function customRendererForCeListNo(instance, td, row, col, prop, value, cellProp
 
 //-------------------------------------------------------------------------
 //以下の関数はAssessment列、NextEventYear列、Situation列、MTTR列のためのカスタムレンダラー関数です。
-//-------------------------------------------------------------------------
-
 function customRendererForAssessment(instance, td, row, col, prop, value, cellProperties) {
     Handsontable.renderers.TextRenderer.apply(this, arguments);
     applyBaseStyle(td);
 
-    const rcaOrReplaceColIndex = 25; // 'RCA or <br>Replace(hard)'列のインデックス
+    const rcaOrReplaceColIndex = 25;
     const rcaOrReplaceValue = instance.getDataAtCell(row, rcaOrReplaceColIndex);
 
-    const probabilityOfFailureColIndex = 16; // 'Probability <br>of failure'列のインデックス
+    const probabilityOfFailureColIndex = 16;
     const probabilityOfFailureValue = instance.getDataAtCell(row, probabilityOfFailureColIndex);
 
-    const coveredFromTaskColIndex = 27; // 'Covered <br>from task'列のインデックス
+    const coveredFromTaskColIndex = 27;
     const coveredFromTaskValue = instance.getDataAtCell(row, coveredFromTaskColIndex);
 
-    // 'Review'かつ'PM Task'の両方の条件が満たされる場合を最優先で処理
+    let newValue = value;
+
     if (coveredFromTaskValue === true && probabilityOfFailureValue === 'Review') {
-        td.style.backgroundColor = '#4c7c04'; // 特定の濃い緑色
-        td.innerText = 'Review'; // セルに"Review"を表示
+        td.style.backgroundColor = '#4c7c04';
+        td.innerText = 'Review';
     } else if (coveredFromTaskValue === true) {
-        // 'PM Task'にチェックが入っていた場合、このセルに'PM Task'を表示
-        value = 'PM Task';
+        td.style.backgroundColor = '#FFFF00';
         td.innerText = 'PM Task';
-        td.style.backgroundColor = '#FFFF00'; // 黄色
     } else if (rcaOrReplaceValue === true) {
-        // 'RCA or <br>Replace(hard)'にチェックが入っていた場合、このセルに'Dealt'を表示
-        value = 'Dealt';
+        td.style.backgroundColor = '#92D050';
         td.innerText = 'Dealt';
-        td.style.backgroundColor = '#92D050'; // 緑色
     } else {
         const impactForProductionColIndex = 15;
         const impactForProductionValue = instance.getDataAtCell(row, impactForProductionColIndex);
 
         if (impactForProductionValue === 'High+' || probabilityOfFailureValue === 'Danger') {
-            td.style.backgroundColor = '#FF0000'; // 赤色
-            td.innerText = 'High+'; // セルに"High+"を表示
+            td.style.backgroundColor = '#FF0000';
+            td.innerText = 'High+';
         } else if (impactForProductionValue === 'High' || probabilityOfFailureValue === 'Measures') {
-            td.style.backgroundColor = '#FFC000'; // オレンジ色
-            td.innerText = 'High'; // セルに"High"を表示
+            td.style.backgroundColor = '#FFC000';
+            td.innerText = 'High';
         } else if (probabilityOfFailureValue === 'Review') {
-            td.style.backgroundColor = '#00B050'; // 濃い緑色
-            td.innerText = 'Review'; // セルに"Review"を表示
+            td.style.backgroundColor = '#00B050';
+            td.innerText = 'Review';
         }
     }
 }
 
-
-
-
 //-------------------------------------------------------------------------
-
 
 function customRendererForNextEventYear(instance, td, row, col, prop, value, cellProperties) {
     Handsontable.renderers.TextRenderer.apply(this, arguments);
@@ -463,7 +454,7 @@ const CriticalEquipmentList = defineComponent({
                 manualRowResize: true,
                 filters: true,
                 dropdownMenu: true,
-                comments: true,
+                comments:   false,
                 fillHandle: {
                     autoInsertRow: true
                 },
@@ -471,9 +462,32 @@ const CriticalEquipmentList = defineComponent({
                 afterChange: (changes, source) => {
                     if (source !== 'loadData' && changes) {
                         changes.forEach(([row, prop, oldValue, newValue]) => {
-                            const relevantColumns = ['levelSetValue', 'mttr', 'possibilityOfContinuousProduction', 'countOfPM02', 'countOfPM03', 'countOfPM04'];
-                            if (relevantColumns.includes(prop)) {
-                                this.emitData();
+                            if (prop === 'impactForProduction' || prop === 'probabilityOfFailure') {
+                                const hotInstance = this.$refs.hotTableComponent.hotInstance;
+                                let assessmentValue = '';
+
+                                const rcaOrReplaceValue = hotInstance.getDataAtCell(row, 25);
+                                const coveredFromTaskValue = hotInstance.getDataAtCell(row, 27);
+                                const probabilityOfFailureValue = hotInstance.getDataAtCell(row, 16);
+                                const impactForProductionValue = hotInstance.getDataAtCell(row, 15);
+
+                                // Assessmentの決定ロジック
+                                if (coveredFromTaskValue === true && probabilityOfFailureValue === 'Review') {
+                                    assessmentValue = 'Review';
+                                } else if (coveredFromTaskValue === true) {
+                                    assessmentValue = 'PM Task';
+                                } else if (rcaOrReplaceValue === true) {
+                                    assessmentValue = 'Dealt';
+                                } else if (impactForProductionValue === 'High+' || probabilityOfFailureValue === 'Danger') {
+                                    assessmentValue = 'High+';
+                                } else if (impactForProductionValue === 'High' || probabilityOfFailureValue === 'Measures') {
+                                    assessmentValue = 'High';
+                                } else if (probabilityOfFailureValue === 'Review') {
+                                    assessmentValue = 'Review';
+                                }
+
+                                // データを更新
+                                hotInstance.setDataAtCell(row, 17, assessmentValue); // 'Assessment'列（インデックス17）にデータをセット
                             }
                         });
                     }
@@ -493,14 +507,14 @@ const CriticalEquipmentList = defineComponent({
     },
 
     methods: {
-            // MTTR値を計算するメソッド
-    getMttrValue(hotInstance, row) {
-        const constructionPeriodColIndex = 5;
-        const partsDeliveryDateColIndex = 6;
-        const constructionPeriod = hotInstance.getDataAtCell(row, constructionPeriodColIndex);
-        const partsDeliveryDate = hotInstance.getDataAtCell(row, partsDeliveryDateColIndex);
-        return Math.max(constructionPeriod, partsDeliveryDate);
-    },
+        // MTTR値を計算するメソッド
+        getMttrValue(hotInstance, row) {
+            const constructionPeriodColIndex = 5;
+            const partsDeliveryDateColIndex = 6;
+            const constructionPeriod = hotInstance.getDataAtCell(row, constructionPeriodColIndex);
+            const partsDeliveryDate = hotInstance.getDataAtCell(row, partsDeliveryDateColIndex);
+            return Math.max(constructionPeriod, partsDeliveryDate);
+        },
         // Handsontableの初期化
         initHandsontable() {
             const container = this.$el;
@@ -584,87 +598,111 @@ const CriticalEquipmentList = defineComponent({
         },
 
         saveData() {
-            const userStore = useUserStore();
-            const userCompanyCode = userStore.companyCode;
+    const userStore = useUserStore();
+    const userCompanyCode = userStore.companyCode;
 
-            if (!userCompanyCode) {
-                console.error('Error: No company code found for the user.');
-                return;
+    if (!userCompanyCode) {
+        console.error('Error: No company code found for the user.');
+        return;
+    }
+
+    const hotInstance = this.$refs.hotTableComponent.hotInstance;
+    const dataToSave = hotInstance.getData();
+
+    // Handsontableから取得したデータを適切な形式に変換し、companyCodeを追加
+    const formattedData = dataToSave.map((row, rowIndex) => {
+        // assessmentを手動で計算
+        const rcaOrReplaceValue = hotInstance.getDataAtCell(rowIndex, 25);
+        const coveredFromTaskValue = hotInstance.getDataAtCell(rowIndex, 27);
+        const probabilityOfFailureValue = hotInstance.getDataAtCell(rowIndex, 16);
+        const impactForProductionValue = hotInstance.getDataAtCell(rowIndex, 15);
+
+        let assessmentValue = row[17]; // 既存の値を保持
+
+        // assessmentのロジックを適用
+        if (coveredFromTaskValue === true && probabilityOfFailureValue === 'Review') {
+            assessmentValue = 'Review';
+        } else if (coveredFromTaskValue === true) {
+            assessmentValue = 'PM Task';
+        } else if (rcaOrReplaceValue === true) {
+            assessmentValue = 'Dealt';
+        } else if (impactForProductionValue === 'High+' || probabilityOfFailureValue === 'Danger') {
+            assessmentValue = 'High+';
+        } else if (impactForProductionValue === 'High' || probabilityOfFailureValue === 'Measures') {
+            assessmentValue = 'High';
+        } else if (probabilityOfFailureValue === 'Review') {
+            assessmentValue = 'Review';
+        }
+
+        return {
+            companyCode: userCompanyCode, // companyCodeを追加
+            ceListNo: row[0], // ceListNo
+            plant: row[1], // Plant
+            equipment: row[2], // Equipment
+            machineName: row[3], // Machine Name
+            levelSetValue: row[4], // Level set value
+            typicalConstPeriod: row[5], // Construction period
+            maxPartsDeliveryTimeInBom: row[6], // Parts delivery date
+            mttr: row[7], // MTTR
+            possibilityOfContinuousProduction: row[8], // Possibility of Continuous Production
+            countOfPM02: row[9], // Count of PM02
+            latestPM02: row[10], // Latest PM02
+            countOfPM03: row[11], // Count of PM03
+            latestPM03: row[12], // Latest PM03
+            countOfPM04: row[13], // Count of PM04
+            latestPM04: row[14], // Latest PM04
+            impactForProduction: row[15], // Impact for Production
+            probabilityOfFailure: row[16], // Probability of Failure
+            assessment: assessmentValue, // 計算したassessmentをセット
+            typicalTaskName: row[18], // Typical Task Name
+            typicalTaskCost: row[19], // Typical Task Cost
+            period: row[20], // Period (最新のイベント日を計算する期間)
+            typicalNextEventDate: row[21], // 次のイベント日付
+            situation: row[22], // Situation
+            bomCode: row[23], // BOMコード
+            bomStock: row[24], // BOMストック
+            rcaOrReplace: row[25], // RCAまたはハード交換
+            sparePartsOrAlternative: row[26], // スペアパーツまたはソフト代替
+            coveredFromTask: row[27], // タスクによりカバー
+            twoways: row[28], // 2つの方法
+            ceDescription: row[29] // CE説明
+        };
+    });
+
+    // POSTリクエストを送信
+    const url = `http://127.0.0.1:8000/api/junctionTable/masterDataTable/`;
+
+    axios
+        .post(url, formattedData, {
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            withCredentials: true
+        })
+        .then((response) => {
+            console.log('Data saved successfully:', response.data);
+            this.alertType = 'success';
+            this.alertMessage = 'データが正常に保存されました。';
+            this.showAlert = true;
+            setTimeout(() => {
+                this.showAlert = false;
+            }, 3000); // 3秒後にアラートを非表示にする
+        })
+        .catch((error) => {
+            console.error('Error saving data:', error);
+            if (error.response) {
+                console.error('Error response data:', error.response.data);
             }
+            this.alertType = 'error';
+            this.alertMessage = 'データの保存に失敗しました。エラーを確認してください。';
+            this.errorMessages = ['入力内容を確認してください。', 'もう一度お試しください。'];
+            this.showAlert = true;
+            setTimeout(() => {
+                this.showAlert = false;
+            }, 5000); // 5秒後にアラートを非表示にする
+        });
+},
 
-            const hotInstance = this.$refs.hotTableComponent.hotInstance;
-            const dataToSave = hotInstance.getData();
-
-            // Handsontableから取得したデータを適切な形式に変換し、companyCodeを追加
-            const formattedData = dataToSave.map((row) => {
-                return {
-                    companyCode: userCompanyCode, // companyCodeを追加
-                    ceListNo: row[0], // ceListNo
-                    plant: row[1], // Plant
-                    equipment: row[2], // Equipment
-                    machineName: row[3], // Machine Name
-                    levelSetValue: row[4], // Level set value
-                    typicalConstPeriod: row[5], // Construction period
-                    maxPartsDeliveryTimeInBom: row[6], // Parts delivery date
-                    mttr: row[7], // MTTR
-                    possibilityOfContinuousProduction: row[8], // Possibility of Continuous Production
-                    countOfPM02: row[9], // Count of PM02
-                    latestPM02: row[10], // Latest PM02
-                    countOfPM03: row[11], // Count of PM03
-                    latestPM03: row[12], // Latest PM03
-                    countOfPM04: row[13], // Count of PM04
-                    latestPM04: row[14], // Latest PM04
-                    impactForProduction: row[15], // Impact for Production
-                    probabilityOfFailure: row[16], // Probability of Failure
-                    assessment: row[17], // Assessment
-                    typicalTaskName: row[18], // Typical Task Name
-                    typicalTaskCost: row[19], // Typical Task Cost
-                    period: row[20], // Period (最新のイベント日を計算する期間)
-                    typicalNextEventDate: row[21], // 次のイベント日付
-                    situation: row[22], // Situation
-                    bomCode: row[23], // BOMコード
-                    bomStock: row[24], // BOMストック
-                    rcaOrReplace: row[25], // RCAまたはハード交換
-                    sparePartsOrAlternative: row[26], // スペアパーツまたはソフト代替
-                    coveredFromTask: row[27], // タスクによりカバー
-                    twoways: row[28], // 2つの方法
-                    ceDescription: row[29] // CE説明
-                };
-            });
-
-            // POSTリクエストを送信
-            const url = `http://127.0.0.1:8000/api/junctionTable/masterDataTable/`;
-
-            axios
-                .post(url, formattedData, {
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    withCredentials: true
-                })
-                .then((response) => {
-                    console.log('Data saved successfully:', response.data);
-                    this.alertType = 'success';
-                    this.alertMessage = 'データが正常に保存されました。';
-                    this.showAlert = true;
-                    setTimeout(() => {
-                        this.showAlert = false;
-                    }, 3000); // 3秒後にアラートを非表示にする
-                })
-                .catch((error) => {
-                    console.error('Error saving data:', error);
-                    if (error.response) {
-                        console.error('Error response data:', error.response.data);
-                    }
-                    this.alertType = 'error';
-                    this.alertMessage = 'データの保存に失敗しました。エラーを確認してください。';
-                    this.errorMessages = ['入力内容を確認してください。', 'もう一度お試しください。'];
-                    this.showAlert = true;
-                    setTimeout(() => {
-                        this.showAlert = false;
-                    }, 5000); // 5秒後にアラートを非表示にする
-                });
-        },
 
         emitData() {
             const hotInstance = this.$refs.hotTableComponent.hotInstance;

@@ -170,85 +170,34 @@ class BomAndTask(models.Model):
 
 
 
+
+
+
 #----------------------------------------------------------------------------------------------------------------------------------------------
-
-
+#
+#----------------------------------------------------------------------------------------------------------------------------------------------
 class CeListAndTask(models.Model):
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='ceListAndTask_companyCode',null=True, blank=True)
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='ceListAndTask_companyName', null=True, blank=True)
-    plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='ceListAndTask_plant',null=True, blank=True)
-    equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='ceListAndTask_equipment',null=True, blank=True)
-    machine = models.ForeignKey(Machine, on_delete=models.CASCADE, related_name='ceListAndTask_machine',null=True, blank=True)
-    
-    no1HighLevelMachine = models.CharField(verbose_name='no1HighLevelMachine',blank=True,null=True,max_length=100)
-    no1HighPriorityTaskName = models.CharField(verbose_name='no1HighPriorityTaskName',blank=True,null=True,max_length=100)
 
-    no2HighLevelMachine = models.CharField(verbose_name='no2HighLevelMachine',blank=True,null=True,max_length=100)
-    no2HighPriorityTaskName = models.CharField(verbose_name='no2HighPriorityTaskName',blank=True,null=True,max_length=100)
-
-    no3HighLevelMachine = models.CharField(verbose_name='no3HighLevelMachine',blank=True,null=True,max_length=100)
-    no3HighPriorityTaskName = models.CharField(verbose_name='no3HighPriorityTaskName',blank=True,null=True,max_length=100)
-
-    no4HighLevelMachine = models.CharField(verbose_name='no4HighLevelMachine',blank=True,null=True,max_length=100)
-    no4HighPriorityTaskName = models.CharField(verbose_name='no4HighPriorityTaskName',blank=True,null=True,max_length=100)
-
-    no5HighLevelMachine = models.CharField(verbose_name='no5HighLevelMachine',blank=True,null=True,max_length=100)
-    no5HighPriorityTaskName = models.CharField(verbose_name='no5HighPriorityTaskName',blank=True,null=True,max_length=100)
-
-    no6HighLevelMachine = models.CharField(verbose_name='no6HighLevelMachine',blank=True,null=True,max_length=100)
-    no6HighPriorityTaskName = models.CharField(verbose_name='no6HighPriorityTaskName',blank=True,null=True,max_length=100)
-
-    no7HighLevelMachine = models.CharField(verbose_name='no7HighLevelMachine',blank=True,null=True,max_length=100)
-    no7HighPriorityTaskName = models.CharField(verbose_name='no7HighPriorityTaskName',blank=True,null=True,max_length=100)
-
-    no8HighLevelMachine = models.CharField(verbose_name='no8HighLevelMachine',blank=True,null=True,max_length=100)
-    no8HighPriorityTaskName = models.CharField(verbose_name='no8HighPriorityTaskName',blank=True,null=True,max_length=100)
-
-    no9HighLevelMachine = models.CharField(verbose_name='no9HighLevelMachine',blank=True,null=True,max_length=100)
-    no9HighPriorityTaskName = models.CharField(verbose_name='no9HighPriorityTaskName',blank=True,null=True,max_length=100)
-
-    no10HighLevelMachine = models.CharField(verbose_name='no10HighLevelMachine',blank=True,null=True,max_length=100)
-    no10HighPriorityTaskName = models.CharField(verbose_name='no10HighPriorityTaskName',blank=True,null=True,max_length=100)
-
-    no11HighLevelMachine = models.CharField(verbose_name='no11HighLevelMachine',blank=True,null=True,max_length=100)
-    no11HighPriorityTaskName = models.CharField(verbose_name='no11HighPriorityTaskName',blank=True,null=True,max_length=100)
-
-    no12HighLevelMachine = models.CharField(verbose_name='no12HighLevelMachine',blank=True,null=True,max_length=100)
-    no12HighPriorityTaskName = models.CharField(verbose_name='no12HighPriorityTaskName',blank=True,null=True,max_length=100)
-
-    no13HighLevelMachine = models.CharField(verbose_name='no13HighLevelMachine',blank=True,null=True,max_length=100)
-    no13HighPriorityTaskName = models.CharField(verbose_name='no13HighPriorityTaskName',blank=True,null=True,max_length=100)
-
-    no14HighLevelMachine = models.CharField(verbose_name='no14HighLevelMachine',blank=True,null=True,max_length=100)
-    no14HighPriorityTaskName = models.CharField(verbose_name='no14HighPriorityTaskName',blank=True,null=True,max_length=100)
-
-    no15HighLevelMachine = models.CharField(verbose_name='no15HighLevelMachine',blank=True,null=True,max_length=100)
-    no15HighPriorityTaskName = models.CharField(verbose_name='no15HighPriorityTaskName',blank=True,null=True,max_length=100)
-
-    no16HighLevelMachine = models.CharField(verbose_name='no16HighLevelMachine',blank=True,null=True,max_length=100)
-    no16HighPriorityTaskName = models.CharField(verbose_name='no16HighPriorityTaskName',blank=True,null=True,max_length=100)
-
-    no17HighLevelMachine = models.CharField(verbose_name='no17HighLevelMachine',blank=True,null=True,max_length=100)
-    no17HighPriorityTaskName = models.CharField(verbose_name='no17HighPriorityTaskName',blank=True,null=True,max_length=100)
-
-    no18HighLevelMachine = models.CharField(verbose_name='no18HighLevelMachine',blank=True,null=True,max_length=100)
-    no18HighPriorityTaskName = models.CharField(verbose_name='no18HighPriorityTaskName',blank=True,null=True,max_length=100)
-
-    no19HighLevelMachine = models.CharField(verbose_name='no19HighLevelMachine',blank=True,null=True,max_length=100)
-    no19HighPriorityTaskName = models.CharField(verbose_name='no19HighPriorityTaskName',blank=True,null=True,max_length=100)
-
-    no20HighLevelMachine = models.CharField(verbose_name='no20HighLevelMachine',blank=True,null=True,max_length=100)
-    no20HighPriorityTaskName = models.CharField(verbose_name='no20HighPriorityTaskName',blank=True,null=True,max_length=100)
-
+    # No.1～No.20に対するフィールドを動的に追加
+    for i in range(1, 21):
+        locals()[f'no{i}Plant'] = models.CharField(verbose_name=f'no{i}Plant', blank=True, null=True, max_length=100)  # Plantを追加
+        locals()[f'no{i}HighLevelMachine'] = models.CharField(verbose_name=f'no{i}HighLevelMachine',blank=True,null=True,max_length=100)
+        locals()[f'no{i}HighPriorityTaskName'] = models.CharField(verbose_name=f'no{i}HighPriorityTaskName',blank=True,null=True,max_length=100)
+        locals()[f'no{i}Equipment'] = models.CharField(verbose_name=f'no{i}Equipment', blank=True, null=True, max_length=100)
+        locals()[f'no{i}PMType'] = models.CharField(verbose_name=f'no{i}PMType', blank=True, null=True, max_length=100)
+        locals()[f'no{i}Cost'] = models.DecimalField(verbose_name=f'no{i}Cost', blank=True, null=True, max_digits=10, decimal_places=2)
+        locals()[f'no{i}Assessment'] = models.CharField(verbose_name=f'no{i}Assessment', blank=True, null=True, max_length=100)
 
     class Meta:
         verbose_name = 'CeList And Task'
         verbose_name_plural = 'CeList And Task'
-        ordering = ('companyCode',) #モデルのクエリセットを取得した際にどのような順番でフィールドを並べ変えるかを決める。
-    
+        ordering = ('companyCode',)
 
     def __str__(self):
         return str('CeList And Task')
+
     
 
 
@@ -292,16 +241,19 @@ def update_ceListAndTask(sender, instance, **kwargs):
     # CeListAndTask のインスタンスを取得または作成し、companyCode も保存
     ce_list_and_task, created = CeListAndTask.objects.get_or_create(companyCode=instance.companyCode)
 
-    # 優先度の高い順に最大20件までのマシンとタスクを設定
+    # 優先度の高い順に最大20件までのマシン、タスク、Plant、Equipment、Assessment、Cost を設定
     for idx, entry in enumerate(assessment_entries[:20], 1):  # 最初の20エントリまで更新
         machine_name = entry.machineName if entry.machineName else "Unknown Machine"  # machineName が存在しない場合の対応
+        plant = entry.plant if entry.plant else "Unknown Plant"  # plant が存在しない場合の対応
+        equipment = entry.equipment if entry.equipment else "Unknown Equipment"  # equipment が存在しない場合の対応
+        assessment = entry.assessment if entry.assessment else "Unknown Assessment"  # assessment が存在しない場合の対応
 
         # Machine モデルから machineName に対応するインスタンスを取得
         machine_instance = Machine.objects.filter(machineName=machine_name).first()
 
-        # machine_instance が存在する場合にのみタスクを取得
+        # machine_instance が存在する場合にのみタスクとCostを取得
         if machine_instance:
-            # TaskListPPM02 から machine インスタンスに対応するタスク名を取得
+            # TaskListPPM02 から machine インスタンスに対応するタスク名と Cost を取得
             task_entries = TaskListPPM02.objects.filter(machineName=machine_instance.id, companyCode=instance.companyCode)
         else:
             task_entries = TaskListPPM02.objects.none()  # 該当する machine_instance がない場合は空のクエリセットを返す
@@ -310,24 +262,36 @@ def update_ceListAndTask(sender, instance, **kwargs):
         if task_entries.exists():
             # 複数のタスクがある場合、すべてのタスク名を連結して1つの文字列にする
             task_names = ', '.join(task.taskName for task in task_entries if task.taskName)
+            # 複数のタスクの Cost の合計を計算
+            total_cost = sum(task.laborCostOfPPM02 for task in task_entries if task.laborCostOfPPM02)
         else:
             task_names = "No Task"
+            total_cost = 0.00  # タスクがない場合のコストは 0
 
-        # ce_list_and_task にマシン名とタスク名を設定
+        # ce_list_and_task にマシン名、タスク名、Plant、Equipment、Assessment、Cost を設定
         setattr(ce_list_and_task, f'no{idx}HighLevelMachine', machine_name)
         setattr(ce_list_and_task, f'no{idx}HighPriorityTaskName', task_names)
+        setattr(ce_list_and_task, f'no{idx}Plant', plant)
+        setattr(ce_list_and_task, f'no{idx}Equipment', equipment)
+        setattr(ce_list_and_task, f'no{idx}Assessment', assessment)
+        setattr(ce_list_and_task, f'no{idx}Cost', total_cost)
 
         # デバッグ用の出力
         if settings.DEBUG:
             print(f'Set no{idx}HighLevelMachine to {machine_name}')
             print(f'Set no{idx}HighPriorityTaskName to {task_names}')
+            print(f'Set no{idx}Plant to {plant}')
+            print(f'Set no{idx}Equipment to {equipment}')
+            print(f'Set no{idx}Assessment to {assessment}')
+            print(f'Set no{idx}Cost to {total_cost}')
 
     # CeListAndTask インスタンスを保存
     ce_list_and_task.save()
 
     # 保存後のデバッグ情報
     if settings.DEBUG:
-        print("CeListAndTask instance updated with new machine and task names.")
+        print("CeListAndTask instance updated with new machine, task, plant, equipment, assessment, and cost values.")
+
 
 
 
