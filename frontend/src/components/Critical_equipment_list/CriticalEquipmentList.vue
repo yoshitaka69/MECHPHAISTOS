@@ -110,6 +110,10 @@ function customRendererForCeListNo(instance, td, row, col, prop, value, cellProp
     });
 }
 
+//-------------------------------------------------------------------------
+//以下の関数はAssessment列、NextEventYear列、Situation列、MTTR列のためのカスタムレンダラー関数です。
+//-------------------------------------------------------------------------
+
 function customRendererForAssessment(instance, td, row, col, prop, value, cellProperties) {
     Handsontable.renderers.TextRenderer.apply(this, arguments);
     applyBaseStyle(td);
@@ -123,37 +127,42 @@ function customRendererForAssessment(instance, td, row, col, prop, value, cellPr
     const coveredFromTaskColIndex = 27; // 'Covered <br>from task'列のインデックス
     const coveredFromTaskValue = instance.getDataAtCell(row, coveredFromTaskColIndex);
 
-    // 'Covered <br>from task'にチェックが入っていた場合、このセルに'PM Task'を表示
-    if (coveredFromTaskValue === true) {
+    // 'Review'かつ'PM Task'の両方の条件が満たされる場合を最優先で処理
+    if (coveredFromTaskValue === true && probabilityOfFailureValue === 'Review') {
+        td.style.backgroundColor = '#4c7c04'; // 特定の濃い緑色
+        td.innerText = 'Review'; // セルに"Review"を表示
+    } else if (coveredFromTaskValue === true) {
+        // 'PM Task'にチェックが入っていた場合、このセルに'PM Task'を表示
         value = 'PM Task';
         td.innerText = 'PM Task';
-    }
-
-    // 'RCA or <br>Replace(hard)'にチェックが入っていた場合、このセルに'Dealt'を表示
-    if (rcaOrReplaceValue === true) {
+        td.style.backgroundColor = '#FFFF00'; // 黄色
+    } else if (rcaOrReplaceValue === true) {
+        // 'RCA or <br>Replace(hard)'にチェックが入っていた場合、このセルに'Dealt'を表示
         value = 'Dealt';
         td.innerText = 'Dealt';
-    }
-
-    if (value === 'Dealt') {
         td.style.backgroundColor = '#92D050'; // 緑色
-    } else if (probabilityOfFailureValue === 'Review') {
-        td.style.backgroundColor = '#00B050'; // 濃い緑色
-    } else if (value === 'PM Task') {
-        td.style.backgroundColor = '#FFFF00'; // 黄色
-    }
+    } else {
+        const impactForProductionColIndex = 15;
+        const impactForProductionValue = instance.getDataAtCell(row, impactForProductionColIndex);
 
-    const impactForProductionColIndex = 15;
-    const impactForProductionValue = instance.getDataAtCell(row, impactForProductionColIndex);
-
-    if (value !== 'Dealt' && value !== 'Review' && value !== 'PM Task') {
         if (impactForProductionValue === 'High+' || probabilityOfFailureValue === 'Danger') {
             td.style.backgroundColor = '#FF0000'; // 赤色
+            td.innerText = 'High+'; // セルに"High+"を表示
         } else if (impactForProductionValue === 'High' || probabilityOfFailureValue === 'Measures') {
             td.style.backgroundColor = '#FFC000'; // オレンジ色
+            td.innerText = 'High'; // セルに"High"を表示
+        } else if (probabilityOfFailureValue === 'Review') {
+            td.style.backgroundColor = '#00B050'; // 濃い緑色
+            td.innerText = 'Review'; // セルに"Review"を表示
         }
     }
 }
+
+
+
+
+//-------------------------------------------------------------------------
+
 
 function customRendererForNextEventYear(instance, td, row, col, prop, value, cellProperties) {
     Handsontable.renderers.TextRenderer.apply(this, arguments);

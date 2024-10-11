@@ -169,6 +169,10 @@ class BomAndTask(models.Model):
 
 
 
+
+#----------------------------------------------------------------------------------------------------------------------------------------------
+
+
 class CeListAndTask(models.Model):
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='ceListAndTask_companyCode',null=True, blank=True)
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='ceListAndTask_companyName', null=True, blank=True)
@@ -289,6 +293,12 @@ def update_ceListAndTask(sender, instance, **kwargs):
 
     if settings.DEBUG:
         print("CeListAndTask instance updated with new machine and task names.")
+
+
+
+
+
+#----------------------------------------------------------------------------------------------------------------------------------------------
 
 
 
