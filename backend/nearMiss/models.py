@@ -71,8 +71,6 @@ class NearMiss(models.Model):
 
     #def save(self, *args, **kwargs):
         #super().save(*args, **kwargs)
-
-        # 追加の処理を呼び出し
         #update_total_of_near_miss(self.companyCode_id)
         #update_total_of_action_items(self.companyCode_id)
         #update_total_of_solved_action_items(self.companyCode_id)
@@ -134,6 +132,9 @@ class SafetyIndicators(models.Model):
             self.safetyIndicators = 'Undefined'
 
         super().save(*args, **kwargs)
+
+
+
 
 
 
@@ -217,6 +218,7 @@ def update_danger_area(company_code_id):
             safety_indicator.dangerArea = most_common_place['placeOfOccurrence']
             safety_indicator.save()
         print(f"Updated SafetyIndicators for CompanyCode {company_code_id}: Danger Area = {most_common_place['placeOfOccurrence']}")
+
 
 
 

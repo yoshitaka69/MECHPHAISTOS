@@ -2,6 +2,7 @@ from django.db import models
 from accounts.models import CompanyCode,CompanyName,Plant
 from repairingCost.models import ActualPM02,ActualPM03,ActualPM04,ActualPM05
 
+
 #このモデルはsignal.pyを設定しているから注意
 #項目が多くなるが、将来的にいろいろな企業が参加してくることを考慮し、ここは細かく設定するぞ！
 class CalTablePlannedPM02(models.Model):
@@ -32,6 +33,7 @@ class CalTablePlannedPM02(models.Model):
 
 
 
+
 class CalTableActualPM02(models.Model):
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='calTableActualPM02_companyCode', null=True, blank=True)
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='calTableActualPM02_companyName', null=True, blank=True)
@@ -54,6 +56,8 @@ class CalTableActualPM02(models.Model):
         verbose_name_plural = 'CalTableActualPM02'
     def __str__(self):
         return str('CalTableActualPM02')
+
+
 
 
 
@@ -82,6 +86,8 @@ class CalTablePlannedPM03(models.Model):
         return str('CalTablePlannedPM03')
 
 
+
+
 class CalTableActualPM03(models.Model):
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='calTableActualPM03_companyCode', null=True, blank=True)
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='calTableActualPM03_companyName', null=True, blank=True)
@@ -107,6 +113,8 @@ class CalTableActualPM03(models.Model):
         return str('CalTableActualPM03')
 
 
+
+
 class CalTableActualPM04(models.Model):
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='calTableActualPM04_companyCode', null=True, blank=True)
     companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='calTableActualPM04_companyName', null=True, blank=True)
@@ -130,6 +138,8 @@ class CalTableActualPM04(models.Model):
         verbose_name_plural = 'CalTableActualPM04'
     def __str__(self):
         return str('CalTableActualPM04')
+
+
 
 
 

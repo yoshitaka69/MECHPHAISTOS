@@ -90,24 +90,10 @@
                     <TabPanel header="Task list">
                         <div class="row">
                             <div class="col-12 lg:col-6 xl:col-6">
-                                <div class="card card-mb0">
-                                    <div class="flex justify-content-between mb-3" style="height: 150px">
-                                        <Card_predict_cost />
-                                    </div>
-                                </div>
+                                <Card_predict_cost />
                             </div>
                             <div class="col-12 lg:col-6 xl:col-6">
-                                <div class="card card-mb0">
-                                    <div class="flex justify-content-between mb-3" style="height: 150px">
-                                        <div>
-                                            <span class="block text-500 font-medium mb-3">Next month task event</span>
-                                            <div class="text-900 font-medium text-xl">28441</div>
-                                        </div>
-                                        <div class="flex align-items-center justify-content-center bg-cyan-100 border-round" style="width: 2.5rem; height: 2.5rem">
-                                            <i class="pi pi-inbox text-cyan-500 text-xl"></i>
-                                        </div>
-                                    </div>
-                                </div>
+                                <Nextmonth_High_cost_event />
                             </div>
                         </div>
                         <div class="col-12 xl:col-12">
@@ -120,7 +106,9 @@
                                         <Gap_of_repairing_cost />
                                     </div>
                                 </div>
+                                <Pandora />
                             </div>
+                           
                         </div>
                         <div>
                             <Task_list />
@@ -164,13 +152,18 @@ import PM04_actual_table from '@/components/Repairing_cost/PM04_actual_table.vue
 import PM05_actual_graph from '@/components/Repairing_cost/PM05_actual_graph.vue';
 import PM05_actual_table from '@/components/Repairing_cost/PM05_actual_table.vue';
 import Task_list from '@/components/Task_of_maintenance/Task_list.vue';
-import Gap_of_repairing_cost from '@/components/Repairing_cost/Gap_of_repairing_cost.vue';
+
+import Gap_of_repairing_cost from '@/components/Task_of_maintenance/Gap_of_repairing_cost.vue';
 import Display_repairing_cost from '@/components/Repairing_cost/Cards/Display_repairing_cost.vue';
+
+import Nextmonth_High_cost_event from '@/components/Task_of_maintenance/Cards/Nextmonth_High_cost_event.vue';
 import Card_predict_cost from '@/components/Task_of_maintenance/Cards/Card_predict_cost.vue';
 
 //Simulation
 import Simulation_table from '@/components/Simulations/Simulation_table.vue';
 import SimulationGraph from '@/components/Simulations/Simulation_graph.vue';
+
+import Pandora from '@/components/Mechphaistos_Ai/Pandora.vue';
 
 export default {
     components: {
@@ -189,9 +182,11 @@ export default {
         Task_list,
         Gap_of_repairing_cost,
         Display_repairing_cost,
+        Nextmonth_High_cost_event,
         Card_predict_cost,
         Simulation_table,
-        SimulationGraph
+        SimulationGraph,
+        Pandora,
     },
     data() {
         return {
@@ -236,10 +231,10 @@ h3 {
 .pm03-actual-cost-label,
 .pm04-actual-cost-label,
 .pm05-actual-cost-label {
-    font-weight: bold;  /* 太字に設定 */
-    font-size: 2rem;  /* フォントサイズを調整 */
-    color: #2c3e50;  /* 目立つ色を設定 */
-    margin-bottom: 0.5rem;  /* 下に余白を追加 */
+    font-weight: bold; /* 太字に設定 */
+    font-size: 2rem; /* フォントサイズを調整 */
+    color: #2c3e50; /* 目立つ色を設定 */
+    margin-bottom: 0.5rem; /* 下に余白を追加 */
 }
 
 /* テーブル配置用のスタイル */
@@ -258,5 +253,4 @@ h3 {
 .card.fixed-height .Message {
     margin-top: auto; /* 最後にメッセージを固定 */
 }
-
 </style>
