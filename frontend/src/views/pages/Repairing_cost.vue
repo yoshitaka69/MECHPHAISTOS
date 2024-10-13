@@ -117,6 +117,8 @@
                             </div>
                         </div>
                     </TabPanel>
+
+                <!--Tab3 simulation-->
                     <TabPanel header="Simulations">
                         <SimulationGraph :costData="costData" />
                         <div class="text-center">
@@ -135,13 +137,14 @@
 </template>
 
 <script>
-import Total_graph from '@/components/Repairing_cost/Total_graph.vue';
+//Tab1 Repairing cost
 
-//Task List
+import Total_graph from '@/components/Repairing_cost/Total_graph.vue';
 import Total_cost_table from '@/components/Task_of_maintenance/Total_cost_table.vue';
 import Planned_vs_actual_year_graph from '@/components/Task_of_maintenance/Planned_vs_actual_year_graph.vue';
 
-//repairing cost
+//Tab2 Task list
+import Pandora from '@/components/Mechphaistos_Ai/Pandora.vue';
 import Actual_summary_table from '@/components/Repairing_cost/Actual_summary_table.vue';
 import PM02_actual_graph from '@/components/Repairing_cost/PM02_actual_graph.vue';
 import PM02_actual_table from '@/components/Repairing_cost/PM02_actual_table.vue';
@@ -159,23 +162,28 @@ import Display_repairing_cost from '@/components/Repairing_cost/Cards/Display_re
 import Nextmonth_High_cost_event from '@/components/Task_of_maintenance/Cards/Nextmonth_High_cost_event.vue';
 import Card_predict_cost from '@/components/Task_of_maintenance/Cards/Card_predict_cost.vue';
 
-//Simulation
+//Tab3 simulation
 import Simulation_table from '@/components/Simulations/Simulation_table.vue';
 import SimulationGraph from '@/components/Simulations/Simulation_graph.vue';
 
-import Pandora from '@/components/Mechphaistos_Ai/Pandora.vue';
+
 
 export default {
     components: {
+        //Tab1 Repairing cost
         Total_graph,
         Total_cost_table,
         Planned_vs_actual_year_graph,
         Actual_summary_table,
+
+        //Tab2 Task list
         PM02_actual_graph,
         PM02_actual_table,
         PM03_actual_graph,
         PM03_actual_table,
         PM04_actual_graph,
+
+        //Tab3 simulation
         PM04_actual_table,
         PM05_actual_graph,
         PM05_actual_table,

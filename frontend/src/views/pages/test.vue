@@ -1,529 +1,808 @@
 <template>
-    <div class="table-container custom-work-order-table-v2">
-        <p class="description-text">
-            This is the Work Order page. Here, you can issue work orders for maintenance tasks such as repair requests, modification work, and inspections. <br />The more detailed you fill out the work order form, the more accurate the equipment
-            information and equipment lifespan data will be.
-        </p>
-        <div class="header-container-v2">
-            <DataTable
-                v-model:filters="filters"
-                :value="sortedItems"
-                :loading="loading"
-                paginator
-                showGridlines
-                :rows="serverOptions.rowsPerPage"
-                :total-records="serverItemsLength"
-                :lazy="true"
-                :resizable-columns="true"
-                :global-filter-fields="['workOrderNo', 'registrationDate', 'plant', 'equipment', 'workOrderDesc', 'status', 'title', 'failureTypes', 'failureModes', 'failureDescription', 'failureDate', 'description']"
-                filter-display="menu"
-                @page="onPage"
-                @sort="onSort"
-                @filter="onFilter"
-                :rows-per-page-options="[5, 10, 20, 50]"
-                class="p-datatable-custom custom-work-order-table-v2"
-                :sort-field="sortField"
-                :sort-order="sortOrder"
-                style="width: 100%"
-            >
-                <template #header>
-                    <div class="header-content">
-                        <span class="p-input-icon-left">
-                            <i class="pi pi-search" />
-                            <InputText v-model="filters['global'].value" placeholder="Keyword Search" />
-                        </span>
-                        <Button type="button" label="New Work Order" @click="showNewEntryForm" class="new-work-order-button" />
-                    </div>
-                </template>
-                <!-- Work Order No 列 -->
-                <Column field="workOrderNo" sortable filter filterMatchMode="contains">
-                    <template #header>
-                        <div style="text-align: center; font-weight: bold">Work Order<br />No</div>
-                    </template>
-                    <template #filter="{ filterModel }">
-                        <InputText v-model="filterModel.value" type="text" placeholder="Search by Work Order No" />
-                    </template>
-                </Column>
-
-                <!-- Registration Date 列 -->
-                <Column field="registrationDate" sortable filter filterMatchMode="contains">
-                    <template #header>
-                        <div style="text-align: center; font-weight: bold">Registration<br />Date</div>
-                    </template>
-                    <template #filter="{ filterModel }">
-                        <InputText v-model="filterModel.value" type="text" placeholder="Search by Registration Date" />
-                    </template>
-                </Column>
-
-                <!-- Plant 列 -->
-                <Column field="plant" header="Plant" sortable filter filterMatchMode="contains">
-                    <template #header>
-                        <div style="text-align: center; font-weight: bold">Plant</div>
-                    </template>
-                    <template #filter="{ filterModel }">
-                        <InputText v-model="filterModel.value" type="text" placeholder="Search by Plant" />
-                    </template>
-                </Column>
-
-                <!-- Equipment 列 -->
-                <Column field="equipment" header="Equipment" sortable filter filterMatchMode="contains">
-                    <template #header>
-                        <div style="text-align: center; font-weight: bold">Equipment</div>
-                    </template>
-                    <template #filter="{ filterModel }">
-                        <InputText v-model="filterModel.value" type="text" placeholder="Search by Equipment" />
-                    </template>
-                </Column>
-
-                <!-- Work Order Description 列 -->
-                <Column field="workOrderDesc" sortable filter filterMatchMode="contains">
-                    <template #header>
-                        <div style="text-align: center; font-weight: bold">Work Order<br />Description</div>
-                    </template>
-                    <template #filter="{ filterModel }">
-                        <InputText v-model="filterModel.value" type="text" placeholder="Search by Work Order Description" />
-                    </template>
-                </Column>
-
-                <!-- Status 列 -->
-                <Column field="status" header="Status" sortable filter filterMatchMode="contains">
-                    <template #body="slotProps">
-                        <Tag :value="slotProps.data.status" :class="getStatusLabel(slotProps.data.status)" />
-                    </template>
-                    <template #filter="{ filterModel }">
-                        <Dropdown v-model="filterModel.value" :options="statuses" optionLabel="label" optionValue="value" placeholder="Select a Status" />
-                    </template>
-                </Column>
-
-                <!-- Title 列 -->
-                <Column field="title" header="Title" sortable filter filterMatchMode="contains">
-                    <template #header>
-                        <div style="text-align: center; font-weight: bold">Title</div>
-                    </template>
-                    <template #filter="{ filterModel }">
-                        <InputText v-model="filterModel.value" type="text" placeholder="Search by Title" />
-                    </template>
-                </Column>
-
-                <!-- Failure Types 列 -->
-                <Column field="failureTypes" header="Failure Types" sortable filter filterMatchMode="contains">
-                    <template #header>
-                        <div style="text-align: center; font-weight: bold">Failure Types</div>
-                    </template>
-                    <template #filter="{ filterModel }">
-                        <InputText v-model="filterModel.value" type="text" placeholder="Search by Failure Types" />
-                    </template>
-                </Column>
-
-                <!-- Failure Modes 列 -->
-                <Column field="failureModes" header="Failure Modes" sortable filter filterMatchMode="contains">
-                    <template #header>
-                        <div style="text-align: center; font-weight: bold">Failure Modes</div>
-                    </template>
-                    <template #filter="{ filterModel }">
-                        <InputText v-model="filterModel.value" type="text" placeholder="Search by Failure Modes" />
-                    </template>
-                </Column>
-
-                <!-- Failure Description 列 -->
-                <Column field="failureDescription" header="Failure Description" sortable filter filterMatchMode="contains">
-                    <template #header>
-                        <div style="text-align: center; font-weight: bold">Failure Description</div>
-                    </template>
-                    <template #filter="{ filterModel }">
-                        <InputText v-model="filterModel.value" type="text" placeholder="Search by Failure Description" />
-                    </template>
-                </Column>
-
-                <!-- Failure Date 列 -->
-                <Column field="failureDate" sortable filter filterMatchMode="contains">
-                    <template #header>
-                        <div style="text-align: center; font-weight: bold">Failure<br />Date</div>
-                    </template>
-                    <template #filter="{ filterModel }">
-                        <InputText v-model="filterModel.value" type="text" placeholder="Search by Failure Date" />
-                    </template>
-                </Column>
-
-                <!-- Remark 列 -->
-                <Column field="remark" header="Remark" sortable filter filterMatchMode="contains">
-                    <template #header>
-                        <div style="text-align: center; font-weight: bold">Remark</div>
-                    </template>
-                    <template #filter="{ filterModel }">
-                        <InputText v-model="filterModel.value" type="text" placeholder="Search by Remark" />
-                    </template>
-                </Column>
-
-                <!-- Picture 1 列 -->
-                <Column field="picture1" header="Picture 1">
-                    <template #header>
-                        <div style="text-align: center; font-weight: bold">Picture 1</div>
-                    </template>
-                    <template #body="slotProps">
-                        <span v-if="slotProps.data.picture1">
-                            <img :src="slotProps.data.picture1" class="thumbnail" alt="Picture 1" />
-                        </span>
-                        <span v-else>No picture</span>
-                    </template>
-                </Column>
-
-                <!-- Picture 2 列 -->
-                <Column field="picture2" header="Picture 2">
-                    <template #header>
-                        <div style="text-align: center; font-weight: bold">Picture 2</div>
-                    </template>
-                    <template #body="slotProps">
-                        <span v-if="slotProps.data.picture2">
-                            <img :src="slotProps.data.picture2" class="thumbnail" alt="Picture 2" />
-                        </span>
-                        <span v-else>No picture</span>
-                    </template>
-                </Column>
-
-                <!-- Operation 列 -->
-                <Column header="Operation">
-                    <template #header>
-                        <div style="text-align: center; font-weight: bold">Operation</div>
-                    </template>
-                    <template #body="slotProps">
-                        <div>
-                            <i class="pi pi-pencil" @click="editItem(slotProps.data)" style="margin-right: 10px; cursor: pointer"></i>
-                            <i class="pi pi-trash" @click="confirmDelete(slotProps.data)" style="cursor: pointer"></i>
-                        </div>
-                    </template>
-                </Column>
-            </DataTable>
-
-            <!-- 削除確認モーダル -->
-            <Dialog v-model:visible="isDeleteModalVisible" modal>
-                <template #header>削除確認</template>
-                <div>本当に {{ currentEntry?.workOrderNo }} を削除しますか？</div>
-                <template #footer>
-                    <Button label="いいえ" @click="isDeleteModalVisible = false" />
-                    <Button label="はい" @click="deleteItem" class="p-button-danger" />
-                </template>
-            </Dialog>
+    <div id="TaskList">
+        <!-- companyCode 表示 -->
+        <div class="company-code-container">
+            <span>Company Code: {{ companyCode }}</span>
         </div>
-        <WorkOrderForm v-if="isModalVisible" :visible="isModalVisible" :entry="currentEntry" @submit="onSubmit" @cancel="onCancel" @update:visible="isModalVisible = $event" />
+
+        <!-- Simulation ボタンの追加 -->
+        <div class="simulation-buttons-container">
+            <button @click="handleSimulation(1)" :disabled="!isSimulationActive" class="simulation-button">Simulation 1</button>
+            <button @click="handleSimulation(2)" :disabled="!isSimulationActive" class="simulation-button">Simulation 2</button>
+            <button @click="handleSimulation(3)" :disabled="!isSimulationActive" class="simulation-button">Simulation 3</button>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="color-box" style="background-color: #f0a0a0"></div>
+                <span>Form input format is incorrect</span>
+            </div>
+            <div class="legend-item">
+                <div class="color-box" style="background-color: #f0f0f0"></div>
+                <span>Input not allowed. Value is automatically filled.</span>
+            </div>
+        </div>
+
+        <!-- 行数選択ドロップダウン -->
+        <div class="row-count-container">
+            <span>表示する行数:</span>
+            <select v-model="rowsToShow" @change="updateRowCount">
+                <option value="10">10行</option>
+                <option value="30">30行</option>
+                <option value="50">50行</option>
+                <option value="100">100行</option>
+            </select>
+        </div>
+
+        <!-- テーブル追加 -->
+        <div class="tables-container">
+            <div id="monthlyCostTable">
+                <hot-table ref="monthlyCostTableComponent" :settings="monthlyCostSettings"></hot-table>
+            </div>
+            <div id="totalCostTable">
+                <hot-table ref="totalCostTableComponent" :settings="totalCostSettings"></hot-table>
+            </div>
+        </div>
+
+        <hot-table ref="hotTableComponent" :settings="hotSettings"></hot-table>
+
+        <!-- Calculationボタンの追加 -->
+        <br />
+        <button @click="calculateCosts" class="controls">Calculation</button>
     </div>
 </template>
 
-<script setup>
-import { ref, onMounted, computed } from 'vue';
-import axios from 'axios';
-import { useUserStore } from '@/stores/userStore'; // Piniaストアをインポート
-import InputText from 'primevue/inputtext';
-import Button from 'primevue/button';
-import Tag from 'primevue/tag';
-import Dropdown from 'primevue/dropdown';
-import WorkOrderForm from '@/components/Work_order/Work_order_form.vue'; // WorkOrderFormをインポート
+<script>
+import Handsontable from 'handsontable'; // Handsontableのインポート
+import { defineComponent } from 'vue'; // Vueのコンポーネント定義に必要なインポート
+import { HotTable } from '@handsontable/vue3'; // HandsontableとVueを統合するためのインポート
+import { registerAllModules } from 'handsontable/registry'; // Handsontableの全モジュールを登録
+import 'handsontable/dist/handsontable.full.css'; // HandsontableのCSSファイルをインポート
+import axios from 'axios'; // API通信に使用するaxiosライブラリをインポート
+import { useUserStore } from '@/stores/userStore'; // ユーザーストアからcompanyCodeを取得するために使用
+import Button from 'primevue/button'; // PrimeVueのボタンコンポーネント
+import moment from 'moment'; // 日付計算を容易にするためのmoment.jsをインポート
 
-const userStore = useUserStore(); // Piniaストアを使用
-const products = ref([]); // サーバーから取得するWork Orderのリスト
-const statuses = ref([
-    { label: 'Completed', value: 'COMPLETED' },
-    { label: 'Ongoing', value: 'Ongoing' },
-    { label: 'Delayed', value: 'Delayed' }
-]);
+// Handsontableのすべてのモジュールを登録
+registerAllModules();
 
-const currentEntry = ref(null); // 編集または削除するエントリー
-const isModalVisible = ref(false); // モーダル表示の状態
-const isDeleteModalVisible = ref(false); // 削除確認モーダルの表示状態
-const isEditing = ref(false); // 編集中かどうかのフラグ
-const serverItemsLength = computed(() => products.value.length); // サーバー上のアイテム数
-const serverOptions = ref({ page: 1, rowsPerPage: 30 });
-const loading = ref(false); // ローディング状態の管理
-const sortField = ref(null); // ソート対象のフィールド
-const sortOrder = ref(null); // ソート順序
-const filters = ref({
-    global: { value: null, matchMode: 'contains' },
-    workOrderNo: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
-    registrationDate: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
-    plant: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
-    equipment: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
-    workOrderDesc: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
-    status: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
-    title: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
-    failureTypes: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
-    failureModes: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
-    failureDescription: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
-    failureDate: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
-    remark: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] }
-});
+const TaskListComponent = defineComponent({
+    data() {
+        return {
+            isSimulationActive: false, // シミュレーションボタンの有効/無効状態を管理
+            hotSettings: {
+                data: [], // 初期データとして空の配列を指定
+                colHeaders: this.generateColHeaders(), // ヘッダーを生成する関数を呼び出す
+                columns: [
+                    {
+                        data: 'taskListNo', // タスクリスト番号列
+                        type: 'text',
+                        readOnly: true, // 読み取り専用
+                        renderer: this.taskListNoRenderer // 独自のレンダラーを使用してリンクを作成
+                    },
+                    {
+                        data: 'taskName', // タスク名列
+                        type: 'text'
+                    },
+                    {
+                        data: 'plant', // プラント名列
+                        type: 'text'
+                    },
+                    {
+                        data: 'equipment', // 設備列
+                        type: 'text'
+                    },
+                    {
+                        data: 'machineName', // 機械名列
+                        type: 'text'
+                    },
+                    {
+                        data: 'pmType', // PMタイプ列（ドロップダウンメニュー）
+                        type: 'dropdown',
+                        source: ['PM01', 'PM02', 'PM03', 'PM04', 'PM05'], // 選択肢
+                        strict: true,
+                        allowInvalid: false
+                    },
+                    {
+                        data: 'maintenanceType', // 保全タイプ列（ドロップダウンメニュー）
+                        type: 'dropdown',
+                        source: ['Overhaul', 'Regular Maintenance', 'Inspection and Check', 'Adjustment', 'Parts Replacement', 'Calibration', 'Cleaning', 'Lubrication', 'Balancing', 'Testing and Trial Operation'],
+                        strict: true,
+                        allowInvalid: false
+                    },
+                    {
+                        data: 'latestEventDate', // 最新のイベント日付列
+                        type: 'date',
+                        dateFormat: 'YYYY-MM-DD', // 日付フォーマット
+                        correctFormat: false // 正しいフォーマットでなくても許可
+                    },
+                    {
+                        data: 'taskPeriod', // タスク周期列（数値）
+                        type: 'numeric'
+                    },
+                    {
+                        data: 'taskLaborCost', // タスクの労働コスト列
+                        type: 'numeric'
+                    },
+                    {
+                        data: 'bomCode', // BOMコード列
+                        type: 'text'
+                    },
+                    {
+                        data: 'bomCost', // BOMコスト列
+                        type: 'numeric'
+                    },
+                    {
+                        data: 'totalCost', // 合計コスト列
+                        type: 'numeric',
+                        readOnly: true // 読み取り専用
+                    },
+                    {
+                        data: 'nextEventDate', // 次回イベント日列
+                        type: 'text',
+                        readOnly: true // 読み取り専用
+                    },
+                    {
+                        data: 'situation', // 状況列
+                        type: 'text',
+                        readOnly: true
+                    },
+                    {
+                        data: 'thisYear',
+                        type: 'checkbox',
+                        className: 'htCenter'
+                    },
+                    {
+                        data: 'thisYear1later',
+                        type: 'checkbox',
+                        className: 'htCenter'
+                    },
+                    {
+                        data: 'thisYear2later',
+                        type: 'checkbox',
+                        className: 'htCenter'
+                    },
+                    {
+                        data: 'thisYear3later',
+                        type: 'checkbox',
+                        className: 'htCenter'
+                    },
+                    {
+                        data: 'thisYear4later',
+                        type: 'checkbox',
+                        className: 'htCenter'
+                    },
+                    {
+                        data: 'thisYear5later',
+                        type: 'checkbox',
+                        className: 'htCenter'
+                    },
+                    {
+                        data: 'thisYear6later',
+                        type: 'checkbox',
+                        className: 'htCenter'
+                    },
+                    {
+                        data: 'thisYear7later',
+                        type: 'checkbox',
+                        className: 'htCenter'
+                    },
+                    {
+                        data: 'thisYear8later',
+                        type: 'checkbox',
+                        className: 'htCenter'
+                    },
+                    {
+                        data: 'thisYear9later',
+                        type: 'checkbox',
+                        className: 'htCenter'
+                    },
+                    {
+                        data: 'thisYear10later',
+                        type: 'checkbox',
+                        className: 'htCenter'
+                    }
+                ],
 
-onMounted(async () => {
-    const response = await axios.get(`http://127.0.0.1:8000/api/workOrder/workOrderByCompany/?format=json&companyCode=${userStore.companyCode}`);
-    const flattenedData = response.data.flatMap((company) => company.workOrderList);
-    products.value = flattenedData; // データをproductsにセット
-});
+                // 列ヘッダーのスタイル設定
+                afterGetColHeader: (col, TH) => {
+                    if (col === -1) return;
+                    TH.style.backgroundColor = '#FFFFCC';
+                    TH.style.color = 'black';
+                    TH.style.fontWeight = 'bold';
+                },
+                afterChange: (changes, source) => {
+                    if (source === 'edit' || source === 'autofill') {
+                        let isChanged = false; // 変更があったかを確認するフラグ
+                        changes.forEach(([row, prop, oldValue, newValue]) => {
+                            if (['taskLaborCost', 'bomCost'].includes(prop)) {
+                                this.calculateTotalCost(row); // コストが変わった場合、合計コストを再計算
+                                isChanged = true; // 変更があったことを記録
+                            }
+                            if (['latestEventDate', 'taskPeriod'].includes(prop)) {
+                                this.calculateNextEventDate(row); // イベント日またはタスク期間が変わった場合、次回イベント日を再計算
+                                this.calculateYears(row); // 年次チェックボックスを更新
+                                isChanged = true; // 変更があったことを記録
+                            }
 
-const sortedItems = computed(() => {
-    let items = [...products.value];
-    if (sortField.value) {
-        items.sort((a, b) => {
-            let result = 0;
-            if (a[sortField.value] < b[sortField.value]) result = -1;
-            else if (a[sortField.value] > b[sortField.value]) result = 1;
-            return sortOrder.value === 1 ? result : -result;
-        });
-    }
-    while (items.length < serverOptions.value.rowsPerPage) {
-        items.push({
-            id: '',
-            workOrderNo: '',
-            registrationDate: null,
-            plant: '',
-            equipment: '',
-            workOrderDesc: '',
-            status: '',
-            title: '',
-            failureTypes: [],
-            failureModes: [],
-            failureDescription: '',
-            failureDate: null,
-            remark: '',
-            picture1: null,
-            picture2: null
-        });
-    }
-    return items;
-});
+                            // 年次チェックボックスの変更も確認
+                            if (this.isYearCheckboxChanged(row)) {
+                                isChanged = true; // 年次チェックボックスが変更された場合
+                            }
+                        });
 
-// 削除確認モーダルを表示
-const confirmDelete = (item) => {
-    currentEntry.value = { ...item }; // 削除するエントリーをセット
-    isDeleteModalVisible.value = true; // 削除確認モーダルを表示
-};
+                        // 変更があった場合にシミュレーションボタンを有効化
+                        if (isChanged) {
+                            this.isSimulationActive = true; // シミュレーションボタンを有効化
+                        }
+                    }
+                },
 
-// データ削除処理
-const deleteItem = async () => {
-    try {
-        await axios.delete(`http://127.0.0.1:8000/api/workOrder/workOrder/${currentEntry.value.id}/`);
-        products.value = products.value.filter((item) => item.id !== currentEntry.value.id); // リストから削除
-        isDeleteModalVisible.value = false; // モーダルを閉じる
-        currentEntry.value = null; // currentEntryをリセット
-        console.log('Deleted item successfully');
-    } catch (error) {
-        console.error('Error deleting item:', error);
-    }
-};
+                cells: function (row, col, prop) {
+                    const cellProperties = {};
+                    const readOnlyColumns = ['taskListNo', 'situation', 'totalCost', 'nextEventDate'];
 
-// ソート処理
-const onSort = (event) => {
-    sortField.value = event.sortField;
-    sortOrder.value = event.sortOrder;
-};
+                    if (readOnlyColumns.includes(this.columns[col].data)) {
+                        cellProperties.readOnly = true;
+                    }
+                    return cellProperties;
+                },
 
-// フィルター処理
-const onFilter = (event) => {
-    filters.value = event.filters;
-};
+                afterRenderer: function (TD, row, col, prop, value, cellProperties) {
+                    const readOnlyColumns = ['taskListNo', 'situation', 'totalCost', 'nextEventDate'];
 
-// 編集アイテムを設定し、モーダルを開く
-const editItem = (item) => {
-    const existingEntry = products.value.find((i) => i.workOrderNo === item.workOrderNo);
-    if (existingEntry) {
-        currentEntry.value = { ...existingEntry };
-        isEditing.value = true;
-        isModalVisible.value = true;
-        console.log('Editing existing item:', currentEntry.value);
-    } else {
-        console.error('Work Order No not found:', item.workOrderNo);
-    }
-};
+                    if (readOnlyColumns.includes(cellProperties.prop)) {
+                        TD.style.backgroundColor = '#f5f5f5';
+                        TD.style.color = 'black';
+                    }
 
-// 保存・更新処理
-const onSubmit = (entry) => {
-    if (isEditing.value) {
-        const item = products.value.find((i) => i.id === entry.id);
-        if (item) {
-            Object.assign(item, entry); // エントリーを更新
+                    if (prop === 'situation' && value === 'delay') {
+                        TD.style.backgroundColor = '#ffcccc';
+                        TD.style.color = 'black';
+                    }
+                },
+
+                rowHeaders: true,
+                width: '100%',
+                height: 'auto',
+                contextMenu: true,
+                autoWrapRow: true,
+                autoWrapCol: true,
+                fixedColumnsStart: 2,
+                manualColumnFreeze: true,
+                manualColumnResize: true,
+                manualRowResize: true,
+                filters: true,
+                dropdownMenu: true,
+                comments: true,
+                fillHandle: {
+                    autoInsertRow: true
+                },
+                licenseKey: 'non-commercial-and-evaluation'
+            },
+            dataStore: [],
+            companyCode: '',
+            rowsToShow: 10,
+
+            // 警告解消のため monthlyCostSettings の定義
+            monthlyCostSettings: {
+                data: Array.from({ length: 4 }, () => Array(13).fill('')), // 4行に変更（Base + Simulation1, 2, 3）
+                columns: Array.from({ length: 13 }, (_, i) => ({
+                    data: i,
+                    type: 'numeric',
+                    className: 'htCenter' // セルを中央に配置
+                })),
+                colHeaders: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Total'], // 列のヘッダー
+                rowHeaders: ['Base Monthly Total', 'Simulation1', 'Simulation2', 'Simulation3', 'Gap with Simulation1', 'Gap with Simulation2', 'Gap with Simulation3'],
+
+                width: '100%',
+                height: 150,
+                readOnly: true, // 読み取り専用
+                contextMenu: true,
+                autoWrapRow: true,
+                autoWrapCol: true,
+                autoColumnSize: true,
+                autoRowSize: true,
+                rowHeaderWidth: 150, // 行ヘッダーの幅を150pxに変更
+                licenseKey: 'non-commercial-and-evaluation'
+            },
+
+            // 警告解消のため totalCostSettings の定義
+            totalCostSettings: {
+                data: Array.from({ length: 4 }, () => Array(11).fill('')), // 4行に変更（Base + Simulation1, 2, 3）
+                columns: Array.from({ length: 11 }, (_, i) => ({
+                    data: i,
+                    type: 'numeric',
+                    className: 'htCenter' // セルを中央に配置
+                })),
+                colHeaders: Array.from({ length: 11 }, (_, i) => `${moment().year() + i}`), // 現在の年から11年間のヘッダーを生成
+                rowHeaders: ['Base Yearly Total', 'Simulation1', 'Simulation2', 'Simulation3', 'Gap with Simulation1', 'Gap with Simulation2', 'Gap with Simulation3'],
+                width: '100%',
+                height: 150,
+                readOnly: true, // 読み取り専用
+                contextMenu: true,
+                autoWrapRow: true,
+                autoWrapCol: true,
+                autoColumnSize: true,
+                autoRowSize: true,
+                rowHeaderWidth: 150, // 行ヘッダーの幅を150pxに変更
+                licenseKey: 'non-commercial-and-evaluation'
+            }
+        };
+    },
+
+    watch: {
+        // Vueのdataプロパティにあるテーブルデータの変更を監視
+        tableData: {
+            handler(newVal, oldVal) {
+                this.checkSimulationButtonStatus(newVal, oldVal);
+            },
+            deep: true // データの深い変更も監視
         }
-        isEditing.value = false;
-    } else {
-        products.value.push({ ...entry, id: products.value.length + 1 });
+    },
+
+    created() {
+        this.getDataAxios(); // コンポーネント作成時にデータを取得
+    },
+
+    methods: {
+        // Simulation ボタンが押されたときの処理
+        handleSimulation(simulationNumber) {
+            this.calculateCostsForSimulation(simulationNumber);
+        },
+
+        calculateCostsForSimulation(simulationRowIndex) {
+            const hotInstance = this.$refs.hotTableComponent.hotInstance;
+            const currentYear = moment().year();
+            const endYear = currentYear + 10;
+
+            // 月次コスト計算
+            let monthlyCosts = new Array(12).fill(0);
+            hotInstance.getData().forEach((row, rowIndex) => {
+                const latestEventDate = hotInstance.getDataAtRowProp(rowIndex, 'latestEventDate');
+                const taskPeriod = parseInt(hotInstance.getDataAtRowProp(rowIndex, 'taskPeriod'));
+                const totalCost = parseFloat(hotInstance.getDataAtRowProp(rowIndex, 'totalCost'));
+
+                if (latestEventDate && moment(latestEventDate, 'YYYY-MM-DD', true).isValid() && !isNaN(taskPeriod) && !isNaN(totalCost)) {
+                    let checkDate = moment(latestEventDate, 'YYYY-MM-DD');
+                    while (checkDate.isSameOrBefore(moment().endOf('year'))) {
+                        const eventYear = checkDate.year();
+                        const eventMonth = checkDate.month();
+
+                        if (eventYear === currentYear) {
+                            monthlyCosts[eventMonth] += totalCost;
+                        }
+                        checkDate.add(taskPeriod, 'days');
+                    }
+                }
+            });
+            const totalMonthlyCost = monthlyCosts.reduce((a, b) => a + b, 0);
+            monthlyCosts.push(totalMonthlyCost);
+
+            // 月次コストをSimulation行に反映
+            let currentMonthlyData = this.$refs.monthlyCostTableComponent.hotInstance.getData();
+            currentMonthlyData[simulationRowIndex] = monthlyCosts;
+            this.$refs.monthlyCostTableComponent.hotInstance.loadData(currentMonthlyData);
+
+            // ギャップを計算して表示
+            if (simulationRowIndex > 0) {
+                // Simulation1, 2, 3のときのみ計算
+                let baseMonthlyCosts = currentMonthlyData[0]; // Base Monthly Total行
+                let gapMonthlyCosts = baseMonthlyCosts.map((baseCost, index) => baseCost - monthlyCosts[index]);
+
+                currentMonthlyData[simulationRowIndex + 3] = gapMonthlyCosts; // ギャップ行に反映
+                this.$refs.monthlyCostTableComponent.hotInstance.loadData(currentMonthlyData);
+            }
+
+            // 年次コスト計算
+            let yearlyCosts = new Array(11).fill(0);
+            hotInstance.getData().forEach((row, rowIndex) => {
+                const latestEventDate = hotInstance.getDataAtRowProp(rowIndex, 'latestEventDate');
+                const taskPeriod = parseInt(hotInstance.getDataAtRowProp(rowIndex, 'taskPeriod'));
+                const totalCost = parseFloat(hotInstance.getDataAtRowProp(rowIndex, 'totalCost'));
+
+                if (latestEventDate && moment(latestEventDate, 'YYYY-MM-DD', true).isValid() && !isNaN(taskPeriod) && !isNaN(totalCost)) {
+                    let checkDate = moment(latestEventDate, 'YYYY-MM-DD');
+                    while (checkDate.year() <= endYear) {
+                        const eventYear = checkDate.year();
+                        if (eventYear >= currentYear && eventYear <= endYear) {
+                            yearlyCosts[eventYear - currentYear] += totalCost;
+                        }
+                        checkDate.add(taskPeriod, 'days');
+                    }
+                }
+            });
+
+            let currentYearlyData = this.$refs.totalCostTableComponent.hotInstance.getData();
+            currentYearlyData[simulationRowIndex] = yearlyCosts; // シミュレーション行に反映
+            this.$refs.totalCostTableComponent.hotInstance.loadData(currentYearlyData);
+
+            // ギャップを計算して表示
+            if (simulationRowIndex > 0) {
+                // Simulation1, 2, 3のときのみ計算
+                let baseYearlyCosts = currentYearlyData[0]; // Base Yearly Total行
+                let gapYearlyCosts = baseYearlyCosts.map((baseCost, index) => baseCost - yearlyCosts[index]);
+
+                currentYearlyData[simulationRowIndex + 3] = gapYearlyCosts; // ギャップ行に反映
+                this.$refs.totalCostTableComponent.hotInstance.loadData(currentYearlyData);
+            }
+
+            console.log(`Simulation ${simulationRowIndex} Costs Updated`);
+
+            // 計算結果をPOST
+            this.postSimulationData(simulationRowIndex, monthlyCosts, yearlyCosts);
+        },
+
+        // Simulation結果をPOSTする関数
+        postSimulationData(simulationRowIndex, monthlyCosts, yearlyCosts) {
+            const userStore = useUserStore();
+            const companyCode = userStore.companyCode; // PiniaからcompanyCodeを取得
+
+            const simulationData = {
+                companyCode: companyCode,
+                simulationNumber: simulationRowIndex,
+                monthlyCosts: monthlyCosts,
+                yearlyCosts: yearlyCosts
+            };
+
+            axios
+                .post('/api/simulation', simulationData)
+                .then((response) => {
+                    console.log(`Simulation ${simulationRowIndex} data posted successfully:`, response.data);
+                })
+                .catch((error) => {
+                    console.error(`Failed to post Simulation ${simulationRowIndex} data:`, error);
+                });
+        },
+
+        // ここにシミュレーションの処理を追加
+        // 月次コスト計算
+        calculateMonthlyCosts() {
+            const hotInstance = this.$refs.hotTableComponent.hotInstance;
+            const currentYear = moment().year();
+            const currentMonth = moment().month();
+            let monthlyCosts = new Array(12).fill(0);
+
+            hotInstance.getData().forEach((row, rowIndex) => {
+                const latestEventDate = hotInstance.getDataAtRowProp(rowIndex, 'latestEventDate');
+                const taskPeriod = parseInt(hotInstance.getDataAtRowProp(rowIndex, 'taskPeriod'));
+                const totalCost = parseFloat(hotInstance.getDataAtRowProp(rowIndex, 'totalCost'));
+
+                if (latestEventDate && moment(latestEventDate, 'YYYY-MM-DD', true).isValid() && !isNaN(taskPeriod) && !isNaN(totalCost)) {
+                    let checkDate = moment(latestEventDate, 'YYYY-MM-DD');
+
+                    while (checkDate.isSameOrBefore(moment().endOf('year'))) {
+                        const eventYear = checkDate.year();
+                        const eventMonth = checkDate.month();
+
+                        if (eventYear === currentYear && eventMonth >= currentMonth) {
+                            monthlyCosts[eventMonth] += totalCost;
+                        }
+
+                        checkDate.add(taskPeriod, 'days');
+                    }
+                }
+            });
+
+            const total = monthlyCosts.reduce((a, b) => a + b, 0);
+            monthlyCosts.push(total);
+
+            // Simulation1~3のデータを保持
+            let currentData = this.$refs.monthlyCostTableComponent.hotInstance.getData();
+            currentData[0] = monthlyCosts; // ベース行を更新
+            this.$refs.monthlyCostTableComponent.hotInstance.loadData(currentData);
+
+            console.log('Monthly Costs Updated:', monthlyCosts);
+        },
+
+        calculateTotalCostsPerYear() {
+            const hotInstance = this.$refs.hotTableComponent.hotInstance;
+            const currentYear = moment().year();
+            const endYear = currentYear + 10;
+            let yearlyCosts = new Array(11).fill(0);
+
+            hotInstance.getData().forEach((row, rowIndex) => {
+                const latestEventDate = hotInstance.getDataAtRowProp(rowIndex, 'latestEventDate');
+                const taskPeriod = parseInt(hotInstance.getDataAtRowProp(rowIndex, 'taskPeriod'));
+                const totalCost = parseFloat(hotInstance.getDataAtRowProp(rowIndex, 'totalCost'));
+
+                if (latestEventDate && moment(latestEventDate, 'YYYY-MM-DD', true).isValid() && !isNaN(taskPeriod) && !isNaN(totalCost)) {
+                    let checkDate = moment(latestEventDate, 'YYYY-MM-DD');
+
+                    while (checkDate.year() <= endYear) {
+                        const eventYear = checkDate.year();
+
+                        if (eventYear >= currentYear && eventYear <= endYear) {
+                            yearlyCosts[eventYear - currentYear] += totalCost;
+                        }
+
+                        checkDate.add(taskPeriod, 'days');
+                    }
+                }
+            });
+
+            let currentData = this.$refs.totalCostTableComponent.hotInstance.getData();
+            currentData[0] = yearlyCosts; // ベース行を更新
+            this.$refs.totalCostTableComponent.hotInstance.loadData(currentData);
+
+            console.log('Yearly Costs Updated:', yearlyCosts);
+        },
+
+        // 新しいコスト計算関数を呼び出す
+        calculateCosts() {
+            this.calculateMonthlyCosts(); // 月次コストを計算
+            this.calculateTotalCostsPerYear(); // 年次コストを計算
+        },
+
+        generateColHeaders() {
+            const currentYear = new Date().getFullYear();
+            const futureYears = Array.from({ length: 11 }, (_, index) => (currentYear + index).toString());
+
+            return [
+                'TaskListNo',
+                'TaskName',
+                'Plant',
+                'Equipment',
+                'MachineName',
+                'PM <br> type',
+                'Maintenance <br> type',
+                'LatestEvent<br>Date',
+                'Task<br>Period',
+                'TaskLabor<br>Cost',
+                'BomCode',
+                'BomCost',
+                'TotalCost',
+                'Next Even<br>Date',
+                'Situation',
+                ...futureYears
+            ];
+        },
+
+        taskListNoRenderer(instance, td, row, col, prop, value, cellProperties) {
+            Handsontable.renderers.TextRenderer.apply(this, arguments);
+            if (value) {
+                const link = document.createElement('a');
+                link.href = `/task_list_detail/${value}`;
+                link.target = '_blank';
+                link.textContent = value;
+                link.style.color = 'blue';
+                td.innerHTML = '';
+                td.appendChild(link);
+            }
+        },
+
+        updateRowCount() {
+            const hotInstance = this.$refs.hotTableComponent.hotInstance;
+            const newData = this.dataStore.slice(0, this.rowsToShow);
+            hotInstance.loadData(newData);
+        },
+
+        getDataAxios() {
+            const userStore = useUserStore();
+            const userCompanyCode = userStore.companyCode;
+
+            if (!userCompanyCode) {
+                console.error('Error: No company code found for the user.');
+                return;
+            }
+
+            const url = `http://127.0.0.1:8000/api/task/taskListByCompany/?format=json&companyCode=${userCompanyCode}`;
+
+            axios
+                .get(url, {
+                    headers: { 'Content-Type': 'application/json' },
+                    withCredentials: true
+                })
+                .then((response) => {
+                    const taskListData = response.data.flatMap((companyData) => companyData.taskList);
+
+                    if (response.data.length > 0) {
+                        this.companyCode = response.data[0].companyCode;
+                    }
+
+                    this.dataStore = taskListData;
+
+                    if (taskListData.length < 15) {
+                        const blankRows = Array.from({ length: 15 - taskListData.length }, () => ({}));
+                        this.dataStore = this.dataStore.concat(blankRows);
+                    }
+
+                    this.$refs.hotTableComponent.hotInstance.updateSettings({
+                        data: this.dataStore
+                    });
+                })
+                .catch((error) => {
+                    console.error('Error fetching data:', error);
+                });
+        },
+
+        calculateTotalCost(row) {
+            const hotInstance = this.$refs.hotTableComponent.hotInstance;
+            const taskLaborCost = parseFloat(hotInstance.getDataAtRowProp(row, 'taskLaborCost')) || 0;
+            const bomCost = parseFloat(hotInstance.getDataAtRowProp(row, 'bomCost')) || 0;
+            const totalCost = taskLaborCost + bomCost;
+            hotInstance.setDataAtRowProp(row, 'totalCost', totalCost);
+        },
+
+        calculateNextEventDate(row) {
+            const hotInstance = this.$refs.hotTableComponent.hotInstance;
+            const latestEventDate = hotInstance.getDataAtRowProp(row, 'latestEventDate');
+            const taskPeriod = hotInstance.getDataAtRowProp(row, 'taskPeriod');
+
+            if (!taskPeriod || taskPeriod === 0) {
+                hotInstance.setDataAtRowProp(row, 'nextEventDate', '');
+                this.calculateSituation(row);
+                return;
+            }
+
+            if (latestEventDate) {
+                const nextEventDate = moment(latestEventDate).add(taskPeriod, 'days').format('YYYY-MM-DD');
+                hotInstance.setDataAtRowProp(row, 'nextEventDate', nextEventDate);
+                this.calculateSituation(row);
+            }
+        },
+
+        calculateYears(row) {
+            const hotInstance = this.$refs.hotTableComponent.hotInstance;
+            const latestEventDate = hotInstance.getDataAtRowProp(row, 'latestEventDate');
+            const taskPeriod = hotInstance.getDataAtRowProp(row, 'taskPeriod');
+            const startYear = moment().year();
+            const endYear = startYear + 10;
+
+            if (taskPeriod && taskPeriod <= 365) {
+                for (let i = 0; i <= 10; i++) {
+                    hotInstance.setDataAtRowProp(row, `thisYear${i === 0 ? '' : `${i}later`}`, true);
+                }
+                return;
+            }
+
+            for (let i = 0; i <= 10; i++) {
+                hotInstance.setDataAtRowProp(row, `thisYear${i === 0 ? '' : `${i}later`}`, false);
+            }
+
+            if (!latestEventDate || !taskPeriod) return;
+
+            let currentEventDate = moment(latestEventDate);
+            while (currentEventDate.year() <= endYear) {
+                const currentYear = currentEventDate.year();
+                if (currentYear >= startYear && currentYear <= endYear) {
+                    const yearIndex = currentYear - startYear;
+                    hotInstance.setDataAtRowProp(row, `thisYear${yearIndex === 0 ? '' : `${yearIndex}later`}`, true);
+                }
+                currentEventDate.add(taskPeriod, 'days');
+            }
+        },
+
+        calculateSituation(row) {
+            const hotInstance = this.$refs.hotTableComponent.hotInstance;
+            const nextEventDate = hotInstance.getDataAtRowProp(row, 'nextEventDate');
+            const today = moment().format('YYYY-MM-DD');
+
+            if (nextEventDate && moment(nextEventDate).isBefore(today)) {
+                hotInstance.setDataAtRowProp(row, 'situation', 'delay');
+            } else {
+                hotInstance.setDataAtRowProp(row, 'situation', '');
+            }
+        },
+        // シミュレーションボタンの有効化を確認する関数
+        checkSimulationButtonStatus(newVal, oldVal) {
+            for (let i = 0; i < newVal.length; i++) {
+                if (newVal[i].latestEventDate !== oldVal[i].latestEventDate || newVal[i].taskPeriod !== oldVal[i].taskPeriod || newVal[i].taskLaborCost !== oldVal[i].taskLaborCost || this.isYearCheckboxChanged(newVal[i])) {
+                    this.isSimulationActive = true;
+                    return; // 条件を満たしたら即座に有効化して終了
+                }
+            }
+        },
+
+        isYearCheckboxChanged(row) {
+            const currentYear = moment().year();
+            for (let i = 0; i <= 10; i++) {
+                const yearProp = `thisYear${i === 0 ? '' : `${i}later`}`;
+                if (row[yearProp] !== undefined && row[yearProp]) {
+                    return true;
+                }
+            }
+            return false;
+        },
+
+        handleTableChange(changes) {
+            changes.forEach(([row, prop, oldValue, newValue]) => {
+                if (oldValue !== newValue) {
+                    this.tableData[row][prop] = newValue; // Vueのdataプロパティに値を反映
+                }
+            });
+        },
+        mounted() {
+            // 変更監視のための設定
+            const hotInstance = this.$refs.hotTableComponent.hotInstance;
+            hotInstance.addHook('afterChange', this.handleTableChange);
+        }
+    },
+    components: {
+        HotTable,
+        Button
     }
-    isModalVisible.value = false;
-};
+});
 
-// モーダルを閉じる
-const onCancel = () => {
-    isModalVisible.value = false;
-};
-
-// 新規エントリーフォームを表示
-const showNewEntryForm = () => {
-    currentEntry.value = {
-        workOrderNo: '',
-        registrationDate: null,
-        plant: '',
-        equipment: '',
-        workOrderDesc: '',
-        status: '',
-        title: '',
-        failureTypes: [],
-        failureModes: [],
-        failureDescription: '',
-        failureDate: null,
-        remark: '',
-        picture1: null,
-        picture2: null
-    };
-    isModalVisible.value = true;
-};
-
-// ページ処理
-const onPage = (event) => {
-    serverOptions.value.page = event.page + 1;
-    serverOptions.value.rowsPerPage = event.rows;
-};
-
-// フィルターをクリア
-const clearFilter = () => {
-    filters.value = {
-        global: { value: null, matchMode: 'contains' },
-        workOrderNo: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
-        registrationDate: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
-        plant: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
-        equipment: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
-        workOrderDesc: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
-        status: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
-        title: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
-        failureTypes: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
-        failureModes: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
-        failureDescription: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
-        failureDate: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
-        remark: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] }
-    };
-};
-
-const getStatusLabel = (status) => {
-    switch (status) {
-        case 'COMPLETED':
-            return 'status-completed';
-        case 'Ongoing':
-            return 'status-ongoing';
-        case 'Delayed':
-            return 'status-delayed';
-        default:
-            return null;
-    }
-};
+export default TaskListComponent;
 </script>
 
-<style>
-/* テーブル全体の文字を太字に設定 */
-.table-container.custom-work-order-table-v2 {
-    font-weight: bold; /* テーブル内の全ての文字を太字に */
+<style scoped>
+#TaskList {
+    padding: 20px;
 }
 
-/* Completed ステータスのスタイル */
-.table-container.custom-work-order-table-v2 .status-completed {
-    background-color: #39ff14 !important; /* 蛍光グリーン */
-    color: white !important; /* 白文字 */
-    padding: 5px 10px; /* タグのサイズ調整 */
-    border-radius: 5px; /* 角を丸く */
-    font-size: 14px !important; /* フォントサイズ調整 */
-    font-weight: bold !important; /* 太字 */
+.company-code-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 10px;
+    font-weight: bold;
 }
 
-/* Ongoing ステータスのスタイル */
-.table-container.custom-work-order-table-v2 .status-ongoing {
-    background-color: #00ffff !important; /* 蛍光ブルー */
-    color: black !important;
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-size: 14px !important;
-    font-weight: bold !important; /* 太字 */
+.row-count-container {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
 }
 
-/* Delayed ステータスのスタイル */
-.table-container.custom-work-order-table-v2 .status-delayed {
-    background-color: #ff0000 !important; /* 赤色 */
-    color: white !important; /* 白文字 */
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-size: 14px !important;
-    font-weight: bold !important; /* 太字 */
+.row-count-container span {
+    margin-right: 10px;
+    font-weight: bold;
 }
 
-/* On Hold ステータスのスタイル */
-.table-container.custom-work-order-table-v2 .status-on-hold {
-    background-color: #ffd700 !important; /* ゴールド */
-    color: black !important;
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-size: 14px !important;
-    font-weight: bold !important; /* 太字 */
+.button-container {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
 }
 
-/* Temp Completed ステータスのスタイル */
-.table-container.custom-work-order-table-v2 .status-temp-completed {
-    background-color: #ff6347 !important; /* トマト色 */
-    color: white !important;
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-size: 14px !important;
-    font-weight: bold !important; /* 太字 */
+.legend {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
 }
 
-/* Help ステータスのスタイル */
-.table-container.custom-work-order-table-v2 .status-help {
-    background-color: #ff4500 !important; /* オレンジレッド */
-    color: white !important;
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-size: 14px !important;
-    font-weight: bold !important; /* 太字 */
-    animation: blink 2s step-start infinite; /* 点滅アニメーション */
-    animation-iteration-count: 4;
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin-right: 15px;
 }
 
-/* テーブルヘッダーのスタイル */
-.table-container.custom-work-order-table-v2 .p-datatable-thead > tr > th {
-    background-color: #b2d8b2 !important; /* ヘッダー背景色 */
-    color: black !important;
-    font-weight: bold !important; /* ヘッダー文字も太字に */
+.color-box {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    border: 1px solid #000;
 }
 
-/* テーブル本体のスタイル */
-.table-container.custom-work-order-table-v2 .p-datatable {
-    border: none; /* テーブルの黒枠線を削除 */
+.blue-button {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: white;
 }
 
-/* 奇数行の背景色 */
-.table-container.custom-work-order-table-v2 .p-datatable-tbody > tr:nth-child(odd) > td {
-    background-color: #ffffff !important; /* 白色 */
+.green-button {
+    background-color: #28a745;
+    border-color: #28a745;
+    color: white;
 }
 
-/* 偶数行の背景色 */
-.table-container.custom-work-order-table-v2 .p-datatable-tbody > tr:nth-child(even) > td {
-    background-color: #d3d3d3 !important; /* 灰色 */
+.orange-button {
+    background-color: #ff7f0e;
+    border-color: #ff7f0e;
+    color: white;
 }
 
-/* テーブルセルのスタイル */
-.table-container.custom-work-order-table-v2 .p-datatable-tbody > tr > td {
-    border-right: none; /* 右側の境界線を削除 */
-}
-
-/* ヘッダーとセルのスタイル */
-.table-container.custom-work-order-table-v2 .p-datatable-thead > tr > th,
-.table-container.custom-work-order-table-v2 .p-datatable-tbody > tr > td {
-    font-weight: bold !important; /* テーブル全体を太字に */
-}
-
-/* サムネイル画像のスタイル */
-.thumbnail {
-    width: 100px; /* サムネイルのサイズ */
-    height: auto; /* アスペクト比を維持 */
-    border: 1px solid #ccc; /* 枠線 */
+.row-input {
+    width: 150px;
     padding: 5px;
-    cursor: pointer; /* カーソルをポインターに */
+    margin-right: 10px;
 }
 
-/* サムネイルのホバー時のスタイル */
-.thumbnail:hover {
-    border-color: #999; /* ホバー時の枠線色 */
+.read-only-cell {
+    background-color: #f5f5f5;
+    color: black;
 }
 </style>

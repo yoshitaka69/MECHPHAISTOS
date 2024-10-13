@@ -43,16 +43,59 @@ const years = Array.from({ length: 10 }, (_, i) => thisYear + i);
 const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 const monthlyLayout = { 
-  title: 'Monthly Cost Graph',
-  xaxis: { title: 'Month', tickvals: Array.from({ length: 12 }, (_, i) => i), ticktext: months },
-  yaxis: { rangemode: 'tozero' }
+  title: {
+    text: 'Monthly Cost Graph',
+    font: {
+      size: 24,       // タイトルのフォントサイズを大きく
+      weight: 'bold'  // タイトルを太字に
+    }
+  },
+  xaxis: { 
+    title: 'Month', 
+    tickvals: Array.from({ length: 12 }, (_, i) => i), 
+    ticktext: months 
+  },
+  yaxis: { 
+    title: 'Cost', 
+    rangemode: 'tozero', 
+    showline: true,      // y軸のラインを表示
+    showgrid: true,      // y軸のグリッドを表示
+    zeroline: true       // y=0 のラインを表示
+  },
+  paper_bgcolor: '#fffde7',  // グラフ全体の背景色を薄い黄色に
+  plot_bgcolor: '#ffffff',   // プロット領域の背景色を白色に
+  showlegend: true           // 凡例を常に表示
 };
+
 const totalCostLayout = { 
-  title: 'Total Cost Graph',
-  xaxis: { title: 'Year', tickvals: Array.from({ length: 10 }, (_, i) => thisYear + i), ticktext: years },
-  yaxis: { rangemode: 'tozero' }
+  title: {
+    text: 'Total Cost Graph',
+    font: {
+      size: 24,       // タイトルのフォントサイズを大きく
+      weight: 'bold'  // タイトルを太字に
+    }
+  },
+  xaxis: { 
+    title: 'Year', 
+    tickvals: Array.from({ length: 10 }, (_, i) => thisYear + i), 
+    ticktext: years 
+  },
+  yaxis: { 
+    title: 'Total Cost', 
+    rangemode: 'tozero', 
+    showline: true,      // y軸のラインを表示
+    showgrid: true,      // y軸のグリッドを表示
+    zeroline: true       // y=0 のラインを表示
+  },
+  paper_bgcolor: '#fffde7',  // グラフ全体の背景色を薄い黄色に
+  plot_bgcolor: '#ffffff',   // プロット領域の背景色を白色に
+  showlegend: true           // 凡例を常に表示
 };
-const config = { responsive: true };
+
+const config = { 
+  responsive: true,
+  displayModeBar: false  // 右上の設定ツールバーを非表示にする
+};
 
 const monthlyBenefit = ref([]);
 const yearlyBenefit = ref([]);
@@ -91,6 +134,7 @@ const processPPMData = (data) => {
   const ppmData = [];
   data.forEach(item => {
     item.EventYearPPMList.forEach(event => {
+      const plantName = item.plant; // バックエンドから取得した plant 名
       for (let i = 0; i < 10; i++) {
         const yearKey = `PPM${i}YearCost`;
         if (event[yearKey] !== undefined) {
@@ -100,11 +144,15 @@ const processPPMData = (data) => {
           });
         }
       }
+      totalCostBaseData.value.push({
+        x: ppmData.map(d => d.x),
+        y: ppmData.map(d => d.y),
+        type: 'scatter',
+        mode: 'lines+markers',
+        name: `${plantName} Base Data`  // Plant名 + "Base Data"
+      });
     });
   });
-  totalCostBaseData.value = [
-    { x: ppmData.map(d => d.x), y: ppmData.map(d => d.y), type: 'scatter', mode: 'lines+markers', name: 'Base Data' }
-  ];
   drawTotalCostChart();
   console.log('Total Cost Base Data:', totalCostBaseData.value);
 };
@@ -113,6 +161,7 @@ const processMonthlyData = (data) => {
   const monthlyBase = [];
   data.forEach(company => {
     company.summedPlannedCostList.forEach(record => {
+      const plantName = record.plant; // バックエンドから取得した plant 名
       if (record.year === thisYear) {
         monthlyBase.push({
           x: months,
@@ -132,7 +181,7 @@ const processMonthlyData = (data) => {
           ],
           type: 'scatter',
           mode: 'lines+markers',
-          name: record.plant
+          name: `${plantName} Base Data`  // Plant名 + "Base Data"
         });
       }
     });
@@ -182,6 +231,11 @@ watch(
 );
 </script>
 
+
+
+
+
+
 <style>
 .graphs-container {
   display: flex;
@@ -190,6 +244,7 @@ watch(
 }
 .graph {
   width: 48%;
+  background-color: #fffde7; /* 薄い黄色 */
 }
 .benefits-container {
   display: flex;
