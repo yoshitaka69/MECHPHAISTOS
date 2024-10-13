@@ -1,7 +1,14 @@
 <template>
   <div class="bubble-comment">
     <div class="comment-bubble">
-      {{ comment }}
+      <p>
+        {{ comment }} 予算の見直しを行うには
+        <!-- リンククリック時にタブを切り替える -->
+        <a href="javascript:void(0)" @click="goToSimulationTab" style="color: blue; text-decoration: underline;">
+          Simulationシステム
+        </a>
+        を活用ください。
+      </p>
       <div class="comment-arrow"></div>
     </div>
     <div class="image-container">
@@ -15,6 +22,7 @@
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import { useUserStore } from '@/stores/userStore'; // Piniaのストアをインポート
+import { useRouter } from 'vue-router';
 
 // Viteではimportを使用して画像を読み込む
 import imageSrc from '@/assets/pandora.jpg'; // 正しい画像のインポート方法
@@ -22,9 +30,17 @@ import imageSrc from '@/assets/pandora.jpg'; // 正しい画像のインポー�
 const comment = ref(''); // 吹き出しのコメント
 const userStore = useUserStore(); // Piniaストアからユーザーストアを取得
 const companyCode = userStore.companyCode; // PiniaストアからcompanyCodeを取得
+const router = useRouter();
 
 // 現在の年を取得
 const currentYear = new Date().getFullYear();
+
+// タブを3番目に切り替えるメソッド
+const goToSimulationTab = () => {
+  // タブのindexを3番目に設定
+  localStorage.setItem('repairingCostTabIndex', 2); // 3番目のタブ (indexは2)
+  window.location.reload(); // タブ変更後にページをリロード
+};
 
 // パーセンテージ差を計算する関数
 const calculatePercentageDifference = (actual, budget) => {

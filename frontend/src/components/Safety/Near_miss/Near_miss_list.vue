@@ -505,40 +505,55 @@ const clearFilter = () => {
 .measures-a {
     background-color: red;
     color: black; /* 文字の色を黒に統一 */
-    font-weight: bold;
+    font-weight: bold !important; /* フォントを太字に強制 */
+    font-size: 16px !important; /* フォントサイズを一回り大きく設定 */
+    font-family: 'Arial', sans-serif; /* 任意のフォントを指定 */
 }
 
 .measures-b {
     background-color: orange;
     color: black; /* 文字の色を黒に統一 */
-    font-weight: bold;
+    font-weight: bold !important; /* フォントを太字に強制 */
+    font-size: 16px !important; /* フォントサイズを一回り大きく設定 */
+    font-family: 'Arial', sans-serif; /* 任意のフォントを指定 */
 }
 
 .measures-c {
     background-color: yellow;
     color: black; /* 文字の色を黒に統一 */
-    font-weight: bold;
+    font-weight: bold !important; /* フォントを太字に強制 */
+    font-size: 16px !important; /* フォントサイズを一回り大きく設定 */
+    font-family: 'Arial', sans-serif; /* 任意のフォントを指定 */
 }
 
 .measures-d {
     background-color: lightgreen;
     color: black; /* 文字の色を黒に統一 */
-    font-weight: bold;
+    font-weight: bold !important; /* フォントを太字に強制 */
+    font-size: 16px !important; /* フォントサイズを一回り大きく設定 */
+    font-family: 'Arial', sans-serif; /* 任意のフォントを指定 */
 }
 
 .measures-e {
     background-color: green;
     color: black; /* 文字の色を黒に統一 */
-    font-weight: bold;
+    font-weight: bold !important; /* フォントを太字に強制 */
+    font-size: 16px !important; /* フォントサイズを一回り大きく設定 */
+    font-family: 'Arial', sans-serif; /* 任意のフォントを指定 */
 }
 
 /* 横長のスタイルを適用し、文字の色を黒に変更 */
 .wide-tag {
     display: inline-block;
-    padding: 0.5rem 2rem; /* 上下と左右のパディングを調整 */
-    min-width: 120px; /* 最小幅を設定して横長にする */
-    text-align: center; /* テキストを中央揃えにする */
-    border-radius: 10px; /* 少し丸みを帯びたデザインに */
-    color: black; /* 文字の色を黒に統一 */
+    padding: 0.5rem 2rem;
+    min-width: 120px;
+    text-align: center;
+    border-radius: 10px;
+    color: black;
+    font-weight: bold !important; /* 太字を強制 */
+    font-size: 16px !important; /* フォントサイズを一回り大きく設定 */
+    font-family: 'Arial', sans-serif; /* 任意のフォントを指定 */
 }
+
+
 </style>
