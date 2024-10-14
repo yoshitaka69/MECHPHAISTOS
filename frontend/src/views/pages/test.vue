@@ -12,6 +12,13 @@
             <button @click="handleSimulation(3)" :disabled="!isSimulationActive" class="simulation-button">Simulation 3</button>
         </div>
 
+        <!-- POST用ボタン -->
+        <div class="simulation-post-button-container">
+            <button @click="postSimulationData(1)" class="simulation-post-button">Post Simulation 1</button>
+            <button @click="postSimulationData(2)" class="simulation-post-button">Post Simulation 2</button>
+            <button @click="postSimulationData(3)" class="simulation-post-button">Post Simulation 3</button>
+        </div>
+
         <div class="legend">
             <div class="legend-item">
                 <div class="color-box" style="background-color: #f0a0a0"></div>
@@ -386,7 +393,6 @@ const TaskListComponent = defineComponent({
 
             // ギャップを計算して表示
             if (simulationRowIndex > 0) {
-                // Simulation1, 2, 3のときのみ計算
                 let baseMonthlyCosts = currentMonthlyData[0]; // Base Monthly Total行
                 let gapMonthlyCosts = baseMonthlyCosts.map((baseCost, index) => baseCost - monthlyCosts[index]);
 
@@ -419,7 +425,6 @@ const TaskListComponent = defineComponent({
 
             // ギャップを計算して表示
             if (simulationRowIndex > 0) {
-                // Simulation1, 2, 3のときのみ計算
                 let baseYearlyCosts = currentYearlyData[0]; // Base Yearly Total行
                 let gapYearlyCosts = baseYearlyCosts.map((baseCost, index) => baseCost - yearlyCosts[index]);
 
@@ -428,25 +433,25 @@ const TaskListComponent = defineComponent({
             }
 
             console.log(`Simulation ${simulationRowIndex} Costs Updated`);
-
-            // 計算結果をPOST
-            this.postSimulationData(simulationRowIndex, monthlyCosts, yearlyCosts);
         },
 
-        // Simulation結果をPOSTする関数
-        postSimulationData(simulationRowIndex, monthlyCosts, yearlyCosts) {
+        // Post Simulationボタンを押した際のPOST処理
+        postSimulationData(simulationRowIndex) {
             const userStore = useUserStore();
             const companyCode = userStore.companyCode; // PiniaからcompanyCodeを取得
+
+            // 現在のタスクリストデータを取得
+            const hotInstance = this.$refs.hotTableComponent.hotInstance;
+            const taskListData = hotInstance.getData(); // TaskListのデータ全体
 
             const simulationData = {
                 companyCode: companyCode,
                 simulationNumber: simulationRowIndex,
-                monthlyCosts: monthlyCosts,
-                yearlyCosts: yearlyCosts
+                taskList: taskListData // TaskListの全データをPOST
             };
 
             axios
-                .post('/api/simulation', simulationData)
+                .post(`http://127.0.0.1:8000/api/simulation/no${simulationRowIndex}simulations/`, simulationData)
                 .then((response) => {
                     console.log(`Simulation ${simulationRowIndex} data posted successfully:`, response.data);
                 })
