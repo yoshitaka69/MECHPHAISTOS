@@ -2,6 +2,27 @@
     <div id="TaskList">
         <!-- Toastの表示 -->
         <Toast />
+        <!-- Loading ダイアログ -->
+        <Dialog v-model:visible="isLoading" modal :closable="false" header="Loading">
+            <div class="loading-content">
+                <ProgressSpinner />
+                <p>Loading simulation data, please wait...</p>
+            </div>
+        </Dialog>
+
+        <!-- 確認モーダル -->
+        <Dialog v-model:visible="isConfirmModalVisible" header="Confirm Update" modal>
+            <p>Are you sure you want to update the TaskList with the current simulation data?</p>
+            <div class="modal-footer">
+                <Button label="No" @click="isConfirmModalVisible = false" class="p-button-text" />
+                <Button label="Yes" @click="confirmUpdate" class="p-button-primary" />
+            </div>
+        </Dialog>
+
+        <!-- Simulation → TaskList ボタン -->
+        <div class="simulation-to-tasklist-container">
+            <button @click="showConfirmModal" class="simulation-to-tasklist-btn">Simulation → TaskList</button>
+        </div>
 
         <!-- テーブル追加 -->
         <div class="tables-container">
@@ -67,7 +88,8 @@
         <!-- Calculationボタンの追加 -->
 
         <br />
-        <button @click="calculateCosts" class="calculation-button">Calculation</button>
+        <!-- Calculationボタン -->
+        <button @click="handleCalculation" class="calculation-button">Calculation</button>
     </div>
 </template>
 <script>
@@ -81,6 +103,8 @@ import { useUserStore } from '@/stores/userStore'; // ユーザーストアか�
 import Button from 'primevue/button'; // PrimeVueのボタンコンポーネント
 import moment from 'moment'; // 日付計算を容易にするためのmoment.jsをインポート
 import { useToast } from 'primevue/usetoast'; // Toast用のフックをインポート
+import Dialog from 'primevue/dialog'; // ダイアログコンポーネント
+import ProgressSpinner from 'primevue/progressspinner'; // プログレススピナー
 
 // Handsontableのすべてのモジュールを登録
 registerAllModules();
@@ -89,6 +113,9 @@ const TaskListComponent = defineComponent({
     data() {
         return {
             isSimulationActive: false, // シミュレーションボタンの有効/無効状態を管理
+            isLoading: false, // ローディング状態
+            isConfirmModalVisible: false, // 確認モーダルの表示制御
+            selectedSimulation: null, // 選択されたシミュレーション番号
             hotSettings: {
                 data: [], // 初期データとして空の配列を指定
                 colHeaders: this.generateColHeaders(), // ヘッダーを生成する関数を呼び出す
@@ -406,9 +433,30 @@ const TaskListComponent = defineComponent({
     },
 
     methods: {
-        // Simulation ボタンが押されたときの処理
+        handleCalculation() {
+            // まず計算を行い、その後でデータをemitする
+            this.calculateCosts(); // 元の計算処理を呼び出す
+            this.emitTableData(); // 計算が完了した後にデータをemit
+        },
         handleSimulation(simulationNumber) {
-            this.calculateCostsForSimulation(simulationNumber);
+            // シミュレーションを実行した後にデータをemit
+            this.calculateCostsForSimulation(simulationNumber); // 元のシミュレーション計算を呼び出す
+            this.emitTableData(simulationNumber); // 計算が完了した後にデータをemit
+        },
+        emitTableData(simulationNumber = null) {
+            const monthlyData = this.$refs.monthlyCostTableComponent.hotInstance.getDataAtRow(0); // Jan～Total
+            const totalCostData = this.$refs.totalCostTableComponent.hotInstance.getDataAtRow(0); // thisYear～thisYear10later
+
+            const costData = {
+                simulationNumber,
+                monthlyCostData: monthlyData.slice(0, 12), // Jan～Decまでのデータを抽出
+                totalCostData: totalCostData.slice(0, 11) // thisYear～thisYear10laterまでのデータを抽出
+            };
+
+            console.log('Emitting cost data:', costData); // 出力内容を確認
+
+            // 親コンポーネントにデータをemit
+            this.$emit('update-cost-data', costData);
         },
 
         calculateCostsForSimulation(simulationRowIndex) {
@@ -499,11 +547,11 @@ const TaskListComponent = defineComponent({
             // 送信するデータをマッピング
             const mappedData = taskListData.map((rowData) => {
                 // taskOfPeriodが数値でない場合は0にデフォルト設定
-                const taskOfPeriod = parseInt(rowData[7], 10);
+                const taskOfPeriod = parseInt(rowData[8], 10); // taskPeriodが8番目にあると仮定
                 const validTaskOfPeriod = isNaN(taskOfPeriod) ? 0 : taskOfPeriod;
 
                 // 日付をYYYY-MM-DD形式に変換
-                let typicalLatestDate = rowData[6];
+                let typicalLatestDate = rowData[7]; // latestEventDateのインデックス
                 if (typicalLatestDate && moment(typicalLatestDate, 'YYYY-MM-DD', true).isValid()) {
                     typicalLatestDate = moment(typicalLatestDate).format('YYYY-MM-DD');
                 } else {
@@ -519,11 +567,11 @@ const TaskListComponent = defineComponent({
                     machineName: rowData[4],
                     PMType: rowData[5],
                     maintenanceType: rowData[6], // ここでmaintenanceTypeを確認
-                    typicalLatestDate: rowData[7], // latestEventDate
-                    taskOfPeriod: validTaskOfPeriod, // taskPeriod
-                    totalLaborCost: parseFloat(rowData[8]) || 0, // taskLaborCost
-                    bomCode: rowData[9], // bomCode
-                    bomCost: parseFloat(rowData[10]) || 0 // bomCost
+                    typicalLatestDate: typicalLatestDate, // latestEventDate
+                    taskOfPeriod: validTaskOfPeriod, // taskPeriodを8番目から取得
+                    totalLaborCost: parseFloat(rowData[9]) || 0, // taskLaborCost
+                    bomCode: rowData[10], // bomCode
+                    bomCost: parseFloat(rowData[11]) || 0 // bomCost
                 };
             });
 
@@ -703,6 +751,8 @@ const TaskListComponent = defineComponent({
         },
 
         loadSimulation(simulationNumber) {
+            this.isLoading = true; // ローディング開始
+
             const userStore = useUserStore();
             const companyCode = userStore.companyCode; // PiniaからcompanyCodeを取得
 
@@ -733,6 +783,9 @@ const TaskListComponent = defineComponent({
                 .catch((error) => {
                     console.error(`Failed to load Simulation ${simulationNumber} data:`, error);
                     this.toast.add({ severity: 'error', summary: 'Error', detail: `Failed to load Simulation ${simulationNumber} data`, life: 3000 });
+                })
+                .finally(() => {
+                    this.isLoading = false; // 処理が終わったらローディング終了
                 });
         },
 
@@ -857,6 +910,84 @@ const TaskListComponent = defineComponent({
                 hotInstance.setDataAtRowProp(row, 'situation', '');
             }
         },
+
+        // 確認モーダルを表示
+        showConfirmModal() {
+            this.isConfirmModalVisible = true;
+        },
+
+        // 更新の確認処理
+        confirmUpdate() {
+            this.isConfirmModalVisible = false; // モーダルを閉じる
+            this.saveData(); // データをPOSTする
+        },
+
+        // SimulationデータをTaskListにPOSTする
+        saveData() {
+            try {
+                const userStore = useUserStore();
+                const userCompanyCode = userStore.companyCode;
+
+                if (!userCompanyCode) {
+                    console.error('Error: No company code found for the user.');
+                    return;
+                }
+
+                const hotInstance = this.$refs.hotTableComponent.hotInstance;
+                const dataToSave = hotInstance.getData();
+
+                const formattedData = dataToSave.map((row) => {
+                    return {
+                        companyCode: userCompanyCode, // 会社コード
+                        taskListNo: row[0] || null, // タスクリスト番号（空の場合はnull）
+                        taskName: row[1], // タスク名
+                        plant: row[2], // プラント名
+                        equipment: row[3], // 設備
+                        machineName: row[4], // 機械名
+                        pmType: row[5], // PMタイプ
+                        maintenanceType: row[6], // 保全タイプ
+                        latestEventDate: row[7], // 最新のイベント日付
+                        taskPeriod: row[8], // タスク周期
+                        taskLaborCost: row[9], // タスクの労働コスト
+                        bomCode: row[10], // BOMコード
+                        bomCost: row[11], // BOMコスト
+                        totalCost: row[12], // 合計コスト
+                        nextEventDate: row[13], // 次回イベント日付
+                        situation: row[14], // 状況
+                        thisYear: row[15] !== null ? row[15] : false, // 今年
+                        thisYear1later: row[16] !== null ? row[16] : false, // 来年
+                        thisYear2later: row[17] !== null ? row[17] : false, // 2年後
+                        thisYear3later: row[18] !== null ? row[18] : false, // 3年後
+                        thisYear4later: row[19] !== null ? row[19] : false, // 4年後
+                        thisYear5later: row[20] !== null ? row[20] : false, // 5年後
+                        thisYear6later: row[21] !== null ? row[21] : false, // 6年後
+                        thisYear7later: row[22] !== null ? row[22] : false, // 7年後
+                        thisYear8later: row[23] !== null ? row[23] : false, // 8年後
+                        thisYear9later: row[24] !== null ? row[24] : false, // 9年後
+                        thisYear10later: row[25] !== null ? row[25] : false // 10年後
+                    };
+                });
+
+                const url = `http://127.0.0.1:8000/api/task/taskList/`;
+
+                axios
+                    .post(url, formattedData, {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        withCredentials: true
+                    })
+                    .then((response) => {
+                        this.toast.add({ severity: 'success', summary: 'Success', detail: 'TaskList updated successfully!', life: 3000 });
+                    })
+                    .catch((error) => {
+                        this.toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to update TaskList. Please check the error.', life: 5000 });
+                    });
+            } catch (err) {
+                console.error('An error occurred in saveData:', err);
+            }
+        },
+
         // シミュレーションボタンの有効化を確認する関数
         checkSimulationButtonStatus(newVal, oldVal) {
             for (let i = 0; i < newVal.length; i++) {
@@ -900,7 +1031,9 @@ const TaskListComponent = defineComponent({
     },
     components: {
         HotTable,
-        Button
+        Button,
+        Dialog,
+        ProgressSpinner
     }
 });
 
@@ -988,5 +1121,47 @@ export default TaskListComponent;
 
 .calculation-button:hover {
     background-color: #e55335; /* ホバー時に少し暗くなる */
+}
+
+.loading-content {
+    text-align: center;
+    padding: 20px;
+}
+
+/* Loading ダイアログ */
+.loading-content {
+    text-align: center;
+    padding: 20px;
+}
+
+/* Simulation → TaskList ボタン */
+.simulation-to-tasklist-container {
+    display: flex;
+    justify-content: space-between;
+    margin: 20px 0;
+}
+
+.simulation-to-tasklist-btn {
+    padding: 10px 20px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.simulation-to-tasklist-btn:hover {
+    background-color: #218838;
+}
+
+/* モーダルフッター */
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.p-button-primary {
+    background-color: #007bff;
 }
 </style>
