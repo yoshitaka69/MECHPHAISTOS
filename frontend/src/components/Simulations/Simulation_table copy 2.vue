@@ -1,10 +1,17 @@
 <template>
     <div id="TaskList">
-        <!-- companyCode 表示 -->
-        <div class="company-code-container">
-            <span>Company Code: {{ companyCode }}</span>
-        </div>
+        <!-- Toastの表示 -->
+        <Toast />
 
+        <!-- テーブル追加 -->
+        <div class="tables-container">
+            <div id="monthlyCostTable">
+                <hot-table ref="monthlyCostTableComponent" :settings="monthlyCostSettings"></hot-table>
+            </div>
+            <div id="totalCostTable">
+                <hot-table ref="totalCostTableComponent" :settings="totalCostSettings"></hot-table>
+            </div>
+        </div>
         <!-- Simulation ボタンの追加 -->
         <div class="simulation-buttons-container">
             <button @click="handleSimulation(1)" :disabled="!isSimulationActive" class="simulation-button">Simulation 1</button>
@@ -12,6 +19,20 @@
             <button @click="handleSimulation(3)" :disabled="!isSimulationActive" class="simulation-button">Simulation 3</button>
         </div>
 
+        <!-- 説明文の追加 -->
+        <p class="simulation-description">* Simulation buttons cannot be pressed unless some data, such as the base date, has been changed.</p>
+
+        <!-- Post Simulation データのボタン -->
+        <div class="post-simulation-container">
+            <button @click="postSimulationData(1)" class="post-simulation-btn">Post Simulation 1 Data</button>
+            <button @click="postSimulationData(2)" class="post-simulation-btn">Post Simulation 2 Data</button>
+            <button @click="postSimulationData(3)" class="post-simulation-btn">Post Simulation 3 Data</button>
+        </div>
+
+        <!-- companyCode 表示 -->
+        <div class="company-code-container">
+            <span>Company Code: {{ companyCode }}</span>
+        </div>
         <div class="legend">
             <div class="legend-item">
                 <div class="color-box" style="background-color: #f0a0a0"></div>
@@ -34,24 +55,14 @@
             </select>
         </div>
 
-        <!-- テーブル追加 -->
-        <div class="tables-container">
-            <div id="monthlyCostTable">
-                <hot-table ref="monthlyCostTableComponent" :settings="monthlyCostSettings"></hot-table>
-            </div>
-            <div id="totalCostTable">
-                <hot-table ref="totalCostTableComponent" :settings="totalCostSettings"></hot-table>
-            </div>
-        </div>
-
         <hot-table ref="hotTableComponent" :settings="hotSettings"></hot-table>
 
         <!-- Calculationボタンの追加 -->
+
         <br />
-        <button @click="calculateCosts" class="controls">Calculation</button>
+        <button @click="calculateCosts" class="calculation-button">Calculation</button>
     </div>
 </template>
-
 <script>
 import Handsontable from 'handsontable'; // Handsontableのインポート
 import { defineComponent } from 'vue'; // Vueのコンポーネント定義に必要なインポート
@@ -62,6 +73,7 @@ import axios from 'axios'; // API通信に使用するaxiosライブラリをイ
 import { useUserStore } from '@/stores/userStore'; // ユーザーストアからcompanyCodeを取得するために使用
 import Button from 'primevue/button'; // PrimeVueのボタンコンポーネント
 import moment from 'moment'; // 日付計算を容易にするためのmoment.jsをインポート
+import { useToast } from 'primevue/usetoast'; // Toast用のフックをインポート
 
 // Handsontableのすべてのモジュールを登録
 registerAllModules();
@@ -386,7 +398,6 @@ const TaskListComponent = defineComponent({
 
             // ギャップを計算して表示
             if (simulationRowIndex > 0) {
-                // Simulation1, 2, 3のときのみ計算
                 let baseMonthlyCosts = currentMonthlyData[0]; // Base Monthly Total行
                 let gapMonthlyCosts = baseMonthlyCosts.map((baseCost, index) => baseCost - monthlyCosts[index]);
 
@@ -419,7 +430,6 @@ const TaskListComponent = defineComponent({
 
             // ギャップを計算して表示
             if (simulationRowIndex > 0) {
-                // Simulation1, 2, 3のときのみ計算
                 let baseYearlyCosts = currentYearlyData[0]; // Base Yearly Total行
                 let gapYearlyCosts = baseYearlyCosts.map((baseCost, index) => baseCost - yearlyCosts[index]);
 
@@ -428,30 +438,58 @@ const TaskListComponent = defineComponent({
             }
 
             console.log(`Simulation ${simulationRowIndex} Costs Updated`);
-
-            // 計算結果をPOST
-            this.postSimulationData(simulationRowIndex, monthlyCosts, yearlyCosts);
         },
 
-        // Simulation結果をPOSTする関数
-        postSimulationData(simulationRowIndex, monthlyCosts, yearlyCosts) {
+        // Post Simulationボタンを押した際のPOST処理
+        postSimulationData(simulationRowIndex) {
             const userStore = useUserStore();
             const companyCode = userStore.companyCode; // PiniaからcompanyCodeを取得
 
-            const simulationData = {
-                companyCode: companyCode,
-                simulationNumber: simulationRowIndex,
-                monthlyCosts: monthlyCosts,
-                yearlyCosts: yearlyCosts
-            };
+            const hotInstance = this.$refs.hotTableComponent.hotInstance;
+            const taskListData = hotInstance.getData(); // TaskListのデータ全体を取得
 
+            // 送信するデータをマッピング
+            const mappedData = taskListData.map((rowData, index) => {
+                // taskOfPeriodが数値でない場合は0にデフォルト設定
+                const taskOfPeriod = parseInt(rowData[7], 10);
+                const validTaskOfPeriod = isNaN(taskOfPeriod) ? 0 : taskOfPeriod;
+
+                // 日付をYYYY-MM-DD形式に変換
+                let latestEventDate = rowData[6];
+                if (latestEventDate && moment(latestEventDate, 'YYYY-MM-DD', true).isValid()) {
+                    latestEventDate = moment(latestEventDate).format('YYYY-MM-DD'); // moment.jsで日付フォーマット
+                } else {
+                    latestEventDate = null; // 無効な日付はnullに設定
+                }
+
+                return {
+                    companyCode: companyCode, // companyCodeは同じ
+                    taskListNo: rowData[0], // taskListNoを取得
+                    typicalTaskName: rowData[1], // タスク名
+                    plant: rowData[2], // プラント名
+                    equipment: rowData[3], // 設備名
+                    machineName: rowData[4], // 機械名
+                    PMType: rowData[5], // PMタイプ
+                    typicalLatestDate: latestEventDate, // 最新イベント日付 (YYYY-MM-DD形式)
+                    taskOfPeriod: validTaskOfPeriod, // タスク期間 (整数に変換)
+                    totalLaborCost: parseFloat(rowData[8]) || 0, // 労働コスト
+                    bomCode: rowData[9], // BOMコード
+                    bomCost: parseFloat(rowData[10]) || 0 // BOMコスト
+                };
+            });
+
+            // データを送信
             axios
-                .post('/api/simulation', simulationData)
+                .post(`http://127.0.0.1:8000/api/simulation/no${simulationRowIndex}simulations/`, mappedData)
                 .then((response) => {
+                    // POST成功時に成功メッセージを表示
+                    this.toast.add({ severity: 'success', summary: 'Success', detail: 'Simulation data posted successfully!', life: 3000 });
                     console.log(`Simulation ${simulationRowIndex} data posted successfully:`, response.data);
                 })
                 .catch((error) => {
-                    console.error(`Failed to post Simulation ${simulationRowIndex} data:`, error);
+                    // POST失敗時にエラーメッセージを表示
+                    this.toast.add({ severity: 'error', summary: 'Error', detail: `Failed to post Simulation ${simulationRowIndex} data`, life: 3000 });
+                    console.error(`Failed to post Simulation ${simulationRowIndex} data:`, error.response.data);
                 });
         },
 
@@ -718,6 +756,13 @@ const TaskListComponent = defineComponent({
             hotInstance.addHook('afterChange', this.handleTableChange);
         }
     },
+
+    setup() {
+        const toast = useToast(); // Toastフックの利用
+        return {
+            toast
+        };
+    },
     components: {
         HotTable,
         Button
@@ -732,6 +777,16 @@ export default TaskListComponent;
     padding: 20px;
 }
 
+.tables-container {
+    display: flex; /* 横並び配置 */
+    gap: 20px; /* テーブル間のスペース */
+}
+
+#monthlyCostTable,
+#totalCostTable {
+    width: 50%; /* テーブルの幅を50%ずつに設定 */
+}
+
 .company-code-container {
     display: flex;
     justify-content: flex-end;
@@ -739,11 +794,43 @@ export default TaskListComponent;
     font-weight: bold;
 }
 
-.row-count-container {
+.simulation-buttons-container,
+.post-simulation-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
     margin-bottom: 15px;
+}
+
+.simulation-button,
+.post-simulation-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.simulation-button {
+    background-color: #007bff;
+    color: white;
+}
+
+.post-simulation-btn {
+    background-color: #28a745;
+    color: white;
+}
+
+.simulation-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.row-count-container {
     display: flex;
     align-items: center;
     justify-content: flex-end;
+    margin-bottom: 15px;
 }
 
 .row-count-container span {
@@ -751,17 +838,10 @@ export default TaskListComponent;
     font-weight: bold;
 }
 
-.button-container {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 20px;
-}
-
 .legend {
-    margin-bottom: 10px;
     display: flex;
     align-items: center;
+    margin-bottom: 10px;
 }
 
 .legend-item {
@@ -775,6 +855,11 @@ export default TaskListComponent;
     height: 20px;
     margin-right: 10px;
     border: 1px solid #000;
+}
+
+.read-only-cell {
+    background-color: #f5f5f5;
+    color: black;
 }
 
 .blue-button {
@@ -801,8 +886,25 @@ export default TaskListComponent;
     margin-right: 10px;
 }
 
-.read-only-cell {
-    background-color: #f5f5f5;
-    color: black;
+.simulation-description {
+    font-size: 12px;
+    color: #666; /* グレー色で目立たせない */
+    margin-top: 5px; /* ボタンとの間に少し間隔を空ける */
+}
+
+/* Calculationボタンのデザイン */
+.calculation-button {
+    background-color: #ff6347;  /* 鮮やかなオレンジ色 */
+    color: white;
+    border: none;
+    border-radius: 5px;  /* ボタンの角を丸く */
+    padding: 10px 20px;  /* パディングでボタンを大きく */
+    font-size: 16px;  /* フォントサイズを調整 */
+    cursor: pointer;
+    transition: background-color 0.3s ease;  /* マウスホバー時の背景色変更をスムーズに */
+}
+
+.calculation-button:hover {
+    background-color: #e55335;  /* ホバー時に少し暗くなる */
 }
 </style>

@@ -10,6 +10,7 @@ class No1Simulation(models.Model):
     equipment = models.CharField(max_length=255, null=True, blank=True)  # 設備名
     machineName = models.CharField(max_length=255, null=True, blank=True)  # 機械名
     PMType = models.CharField(max_length=255, null=True, blank=True)  # PMタイプ
+    maintenanceType = models.CharField(max_length=255, null=True, blank=True)  # 機械名
     typicalLatestDate = models.DateField(null=True, blank=True)  # 最終日付
     taskOfPeriod = models.IntegerField(null=True, blank=True)  # 期間タスク
     totalLaborCost = models.FloatField(null=True, blank=True)  
@@ -28,6 +29,7 @@ class No2Simulation(models.Model):
     equipment = models.CharField(max_length=255, null=True, blank=True)  # 設備名
     machineName = models.CharField(max_length=255, null=True, blank=True)  # 機械名
     PMType = models.CharField(max_length=255, null=True, blank=True)  # PMタイプ
+    maintenanceType = models.CharField(max_length=255, null=True, blank=True)  # 機械名
     typicalLatestDate = models.DateField(null=True, blank=True)  # 最終日付
     taskOfPeriod = models.IntegerField(null=True, blank=True)  # 期間タスク
     totalLaborCost = models.FloatField(null=True, blank=True)  
@@ -46,6 +48,7 @@ class No3Simulation(models.Model):
     equipment = models.CharField(max_length=255, null=True, blank=True)  # 設備名
     machineName = models.CharField(max_length=255, null=True, blank=True)  # 機械名
     PMType = models.CharField(max_length=255, null=True, blank=True)  # PMタイプ
+    maintenanceType = models.CharField(max_length=255, null=True, blank=True)  # 機械名
     typicalLatestDate = models.DateField(null=True, blank=True)  # 最終日付
     taskOfPeriod = models.IntegerField(null=True, blank=True)  # 期間タスク
     totalLaborCost = models.FloatField(null=True, blank=True)  

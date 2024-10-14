@@ -1,10 +1,17 @@
 <template>
     <div id="TaskList">
-        <!-- companyCode 表示 -->
-        <div class="company-code-container">
-            <span>Company Code: {{ companyCode }}</span>
-        </div>
+        <!-- Toastの表示 -->
+        <Toast />
 
+        <!-- テーブル追加 -->
+        <div class="tables-container">
+            <div id="monthlyCostTable">
+                <hot-table ref="monthlyCostTableComponent" :settings="monthlyCostSettings"></hot-table>
+            </div>
+            <div id="totalCostTable">
+                <hot-table ref="totalCostTableComponent" :settings="totalCostSettings"></hot-table>
+            </div>
+        </div>
         <!-- Simulation ボタンの追加 -->
         <div class="simulation-buttons-container">
             <button @click="handleSimulation(1)" :disabled="!isSimulationActive" class="simulation-button">Simulation 1</button>
@@ -12,13 +19,27 @@
             <button @click="handleSimulation(3)" :disabled="!isSimulationActive" class="simulation-button">Simulation 3</button>
         </div>
 
-        <!-- POST用ボタン -->
-        <div class="simulation-post-button-container">
-            <button @click="postSimulationData(1)" class="simulation-post-button">Post Simulation 1</button>
-            <button @click="postSimulationData(2)" class="simulation-post-button">Post Simulation 2</button>
-            <button @click="postSimulationData(3)" class="simulation-post-button">Post Simulation 3</button>
+        <!-- Load Simulation ボタンの追加 -->
+        <div class="load-simulation-container">
+            <button @click="loadSimulation(1)" class="load-simulation-btn">Load Simulation 1</button>
+            <button @click="loadSimulation(2)" class="load-simulation-btn">Load Simulation 2</button>
+            <button @click="loadSimulation(3)" class="load-simulation-btn">Load Simulation 3</button>
         </div>
 
+        <!-- 説明文の追加 -->
+        <p class="simulation-description">* Simulation buttons cannot be pressed unless some data, such as the base date, has been changed.</p>
+
+        <!-- Post Simulation データのボタン -->
+        <div class="post-simulation-container">
+            <button @click="postSimulationData(1)" class="post-simulation-btn">Post Simulation 1 Data</button>
+            <button @click="postSimulationData(2)" class="post-simulation-btn">Post Simulation 2 Data</button>
+            <button @click="postSimulationData(3)" class="post-simulation-btn">Post Simulation 3 Data</button>
+        </div>
+
+        <!-- companyCode 表示 -->
+        <div class="company-code-container">
+            <span>Company Code: {{ companyCode }}</span>
+        </div>
         <div class="legend">
             <div class="legend-item">
                 <div class="color-box" style="background-color: #f0a0a0"></div>
@@ -41,24 +62,14 @@
             </select>
         </div>
 
-        <!-- テーブル追加 -->
-        <div class="tables-container">
-            <div id="monthlyCostTable">
-                <hot-table ref="monthlyCostTableComponent" :settings="monthlyCostSettings"></hot-table>
-            </div>
-            <div id="totalCostTable">
-                <hot-table ref="totalCostTableComponent" :settings="totalCostSettings"></hot-table>
-            </div>
-        </div>
-
         <hot-table ref="hotTableComponent" :settings="hotSettings"></hot-table>
 
         <!-- Calculationボタンの追加 -->
+
         <br />
-        <button @click="calculateCosts" class="controls">Calculation</button>
+        <button @click="calculateCosts" class="calculation-button">Calculation</button>
     </div>
 </template>
-
 <script>
 import Handsontable from 'handsontable'; // Handsontableのインポート
 import { defineComponent } from 'vue'; // Vueのコンポーネント定義に必要なインポート
@@ -69,6 +80,7 @@ import axios from 'axios'; // API通信に使用するaxiosライブラリをイ
 import { useUserStore } from '@/stores/userStore'; // ユーザーストアからcompanyCodeを取得するために使用
 import Button from 'primevue/button'; // PrimeVueのボタンコンポーネント
 import moment from 'moment'; // 日付計算を容易にするためのmoment.jsをインポート
+import { useToast } from 'primevue/usetoast'; // Toast用のフックをインポート
 
 // Handsontableのすべてのモジュールを登録
 registerAllModules();
@@ -291,48 +303,89 @@ const TaskListComponent = defineComponent({
             companyCode: '',
             rowsToShow: 10,
 
-            // 警告解消のため monthlyCostSettings の定義
+            // monthlyCostSettings
             monthlyCostSettings: {
-                data: Array.from({ length: 4 }, () => Array(13).fill('')), // 4行に変更（Base + Simulation1, 2, 3）
+                data: Array.from({ length: 4 }, () => Array(13).fill('')),
                 columns: Array.from({ length: 13 }, (_, i) => ({
                     data: i,
                     type: 'numeric',
-                    className: 'htCenter' // セルを中央に配置
-                })),
-                colHeaders: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Total'], // 列のヘッダー
-                rowHeaders: ['Base Monthly Total', 'Simulation1', 'Simulation2', 'Simulation3', 'Gap with Simulation1', 'Gap with Simulation2', 'Gap with Simulation3'],
+                    className: 'htCenter',
+                    renderer: function (instance, td, row, col, prop, value, cellProperties) {
+                        Handsontable.renderers.NumericRenderer.apply(this, arguments);
 
+                        const gapRowHeaders = ['Gap with Simulation1', 'Gap with Simulation2', 'Gap with Simulation3'];
+
+                        // 行ヘッダーを取得し、Gapの行でのみチェックする
+                        const rowHeader = instance.getRowHeader(row);
+
+                        if (gapRowHeaders.includes(rowHeader)) {
+                            // 数値かつ負の値の場合、赤色にする
+                            if (!isNaN(value) && parseFloat(value) < 0) {
+                                td.style.color = 'red';
+                            }
+                            // 数値かつ正の値の場合、青色にする
+                            else if (!isNaN(value) && parseFloat(value) > 0) {
+                                td.style.color = 'blue';
+                            } else {
+                                td.style.color = ''; // デフォルト色に戻す
+                            }
+                        }
+                    }
+                })),
+                colHeaders: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Total'],
+                rowHeaders: ['Base Monthly Total', 'Simulation1', 'Simulation2', 'Simulation3', 'Gap with Simulation1', 'Gap with Simulation2', 'Gap with Simulation3'],
                 width: '100%',
                 height: 150,
-                readOnly: true, // 読み取り専用
+                readOnly: true,
                 contextMenu: true,
                 autoWrapRow: true,
                 autoWrapCol: true,
                 autoColumnSize: true,
                 autoRowSize: true,
-                rowHeaderWidth: 150, // 行ヘッダーの幅を150pxに変更
+                rowHeaderWidth: 150,
                 licenseKey: 'non-commercial-and-evaluation'
             },
 
             // 警告解消のため totalCostSettings の定義
             totalCostSettings: {
-                data: Array.from({ length: 4 }, () => Array(11).fill('')), // 4行に変更（Base + Simulation1, 2, 3）
+                data: Array.from({ length: 4 }, () => Array(11).fill('')),
                 columns: Array.from({ length: 11 }, (_, i) => ({
                     data: i,
                     type: 'numeric',
-                    className: 'htCenter' // セルを中央に配置
+                    className: 'htCenter',
+                    renderer: function (instance, td, row, col, prop, value, cellProperties) {
+                        Handsontable.renderers.NumericRenderer.apply(this, arguments);
+
+                        const gapRowHeaders = ['Gap with Simulation1', 'Gap with Simulation2', 'Gap with Simulation3'];
+
+                        // 行ヘッダーを取得し、Gapの行でのみチェックする
+                        const rowHeader = instance.getRowHeader(row);
+
+                        if (gapRowHeaders.includes(rowHeader)) {
+                            // 数値かつ負の値の場合、赤色にする
+                            if (!isNaN(value) && parseFloat(value) < 0) {
+                                td.style.color = 'red';
+                            }
+                            // 数値かつ正の値の場合、青色にする
+                            else if (!isNaN(value) && parseFloat(value) > 0) {
+                                td.style.color = 'blue';
+                            } else {
+                                td.style.color = ''; // デフォルト色に戻す
+                            }
+                        }
+                    }
                 })),
-                colHeaders: Array.from({ length: 11 }, (_, i) => `${moment().year() + i}`), // 現在の年から11年間のヘッダーを生成
+                colHeaders: Array.from({ length: 11 }, (_, i) => `${moment().year() + i}`),
                 rowHeaders: ['Base Yearly Total', 'Simulation1', 'Simulation2', 'Simulation3', 'Gap with Simulation1', 'Gap with Simulation2', 'Gap with Simulation3'],
                 width: '100%',
                 height: 150,
-                readOnly: true, // 読み取り専用
+                readOnly: true,
                 contextMenu: true,
                 autoWrapRow: true,
                 autoWrapCol: true,
                 autoColumnSize: true,
                 autoRowSize: true,
-                rowHeaderWidth: 150, // 行ヘッダーの幅を150pxに変更
+                rowHeaderWidth: 150,
                 licenseKey: 'non-commercial-and-evaluation'
             }
         };
@@ -440,23 +493,51 @@ const TaskListComponent = defineComponent({
             const userStore = useUserStore();
             const companyCode = userStore.companyCode; // PiniaからcompanyCodeを取得
 
-            // 現在のタスクリストデータを取得
             const hotInstance = this.$refs.hotTableComponent.hotInstance;
-            const taskListData = hotInstance.getData(); // TaskListのデータ全体
+            const taskListData = hotInstance.getData(); // TaskListのデータ全体を取得
 
-            const simulationData = {
-                companyCode: companyCode,
-                simulationNumber: simulationRowIndex,
-                taskList: taskListData // TaskListの全データをPOST
-            };
+            // 送信するデータをマッピング
+            const mappedData = taskListData.map((rowData) => {
+                // taskOfPeriodが数値でない場合は0にデフォルト設定
+                const taskOfPeriod = parseInt(rowData[7], 10);
+                const validTaskOfPeriod = isNaN(taskOfPeriod) ? 0 : taskOfPeriod;
 
+                // 日付をYYYY-MM-DD形式に変換
+                let typicalLatestDate = rowData[6];
+                if (typicalLatestDate && moment(typicalLatestDate, 'YYYY-MM-DD', true).isValid()) {
+                    typicalLatestDate = moment(typicalLatestDate).format('YYYY-MM-DD');
+                } else {
+                    typicalLatestDate = null; // 無効な日付はnullに設定
+                }
+
+                return {
+                    companyCode: companyCode,
+                    taskListNo: rowData[0],
+                    typicalTaskName: rowData[1],
+                    plant: rowData[2],
+                    equipment: rowData[3],
+                    machineName: rowData[4],
+                    PMType: rowData[5],
+                    maintenanceType: rowData[6], // ここでmaintenanceTypeを確認
+                    typicalLatestDate: rowData[7], // latestEventDate
+                    taskOfPeriod: validTaskOfPeriod, // taskPeriod
+                    totalLaborCost: parseFloat(rowData[8]) || 0, // taskLaborCost
+                    bomCode: rowData[9], // bomCode
+                    bomCost: parseFloat(rowData[10]) || 0 // bomCost
+                };
+            });
+
+            console.log('Mapped Data for POST:', mappedData);
+
+            // データを送信
             axios
-                .post(`http://127.0.0.1:8000/api/simulation/no${simulationRowIndex}simulations/`, simulationData)
+                .post(`http://127.0.0.1:8000/api/simulation/no${simulationRowIndex}simulations/`, mappedData)
                 .then((response) => {
-                    console.log(`Simulation ${simulationRowIndex} data posted successfully:`, response.data);
+                    this.toast.add({ severity: 'success', summary: 'Success', detail: 'Simulation data posted successfully!', life: 3000 });
                 })
                 .catch((error) => {
-                    console.error(`Failed to post Simulation ${simulationRowIndex} data:`, error);
+                    this.toast.add({ severity: 'error', summary: 'Error', detail: `Failed to post Simulation ${simulationRowIndex} data`, life: 3000 });
+                    console.error(`Failed to post Simulation ${simulationRowIndex} data:`, error.response.data);
                 });
         },
 
@@ -621,6 +702,93 @@ const TaskListComponent = defineComponent({
                 });
         },
 
+        loadSimulation(simulationNumber) {
+            const userStore = useUserStore();
+            const companyCode = userStore.companyCode; // PiniaからcompanyCodeを取得
+
+            // APIリクエスト
+            const url = `http://127.0.0.1:8000/api/simulation/no${simulationNumber}simulationsByCompany/?companyCode=${companyCode}`;
+            axios
+                .get(url)
+                .then((response) => {
+                    // APIレスポンスを確認するためにデバッグ出力
+                    console.log('API Response:', response.data);
+
+                    // companyCode に一致するデータを探す
+                    const companyData = response.data.find((company) => company.companyCode === companyCode);
+
+                    if (companyData && companyData[`no${simulationNumber}SimulationList`]) {
+                        const simulationData = companyData[`no${simulationNumber}SimulationList`];
+
+                        // 取得したデータが正しいか確認
+                        console.log(`Simulation ${simulationNumber} Data:`, simulationData);
+
+                        this.loadDataToTable(simulationData); // テーブルにデータをロード
+                        this.runSimulationAfterLoad(simulationNumber); // シミュレーション処理を実行
+                    } else {
+                        console.error(`No data found for companyCode: ${companyCode}`);
+                        this.toast.add({ severity: 'error', summary: 'Error', detail: `No data found for Simulation ${simulationNumber}`, life: 3000 });
+                    }
+                })
+                .catch((error) => {
+                    console.error(`Failed to load Simulation ${simulationNumber} data:`, error);
+                    this.toast.add({ severity: 'error', summary: 'Error', detail: `Failed to load Simulation ${simulationNumber} data`, life: 3000 });
+                });
+        },
+
+        loadDataToTable(simulationData) {
+            const hotInstance = this.$refs.hotTableComponent.hotInstance;
+
+            // データをテーブルの形式に合わせる
+            const formattedData = simulationData.map((item) => ({
+                taskListNo: item.taskListNo, // TaskListNo
+                taskName: item.typicalTaskName, // TaskName
+                plant: item.plant, // Plant
+                equipment: item.equipment, // Equipment
+                machineName: item.machineName, // MachineName
+                pmType: item.PMType, // PMType (カラム名: pmType)
+                maintenanceType: item.maintenanceType, // MaintenanceType
+                latestEventDate: item.typicalLatestDate, // LatestEventDate
+                taskPeriod: item.taskOfPeriod, // TaskPeriod
+                taskLaborCost: item.totalLaborCost, // TaskLaborCost
+                bomCode: item.bomCode, // BomCode
+                bomCost: item.bomCost // BomCost
+            }));
+
+            // データをテーブルにロード
+            hotInstance.loadData(formattedData);
+            this.isSimulationActive = true; // Simulationボタンを有効にする
+            console.log('Simulation data loaded to table:', formattedData);
+
+            // データをロードした後、計算系の関数を呼び出して更新
+            this.updateCalculatedColumns();
+        },
+
+        updateCalculatedColumns() {
+            const hotInstance = this.$refs.hotTableComponent.hotInstance;
+
+            hotInstance.getData().forEach((row, rowIndex) => {
+                // totalCostの計算
+                this.calculateTotalCost(rowIndex);
+
+                // NextEventDateの計算
+                this.calculateNextEventDate(rowIndex);
+
+                // situationの計算
+                this.calculateSituation(rowIndex);
+
+                // 年次（thisYear～thisYear10）の計算
+                this.calculateYears(rowIndex);
+            });
+
+            console.log('Calculated columns updated after loading data.');
+        },
+
+        runSimulationAfterLoad(simulationNumber) {
+            this.calculateCostsForSimulation(simulationNumber);
+            console.log(`Simulation ${simulationNumber} processing done after loading data.`);
+        },
+
         calculateTotalCost(row) {
             const hotInstance = this.$refs.hotTableComponent.hotInstance;
             const taskLaborCost = parseFloat(hotInstance.getDataAtRowProp(row, 'taskLaborCost')) || 0;
@@ -723,6 +891,13 @@ const TaskListComponent = defineComponent({
             hotInstance.addHook('afterChange', this.handleTableChange);
         }
     },
+
+    setup() {
+        const toast = useToast(); // Toastフックの利用
+        return {
+            toast
+        };
+    },
     components: {
         HotTable,
         Button
@@ -737,6 +912,16 @@ export default TaskListComponent;
     padding: 20px;
 }
 
+.tables-container {
+    display: flex; /* 横並び配置 */
+    gap: 20px; /* テーブル間のスペース */
+}
+
+#monthlyCostTable,
+#totalCostTable {
+    width: 50%; /* テーブルの幅を50%ずつに設定 */
+}
+
 .company-code-container {
     display: flex;
     justify-content: flex-end;
@@ -744,70 +929,64 @@ export default TaskListComponent;
     font-weight: bold;
 }
 
-.row-count-container {
-    margin-bottom: 15px;
+.simulation-buttons-container,
+.post-simulation-container,
+.load-simulation-container {
     display: flex;
-    align-items: center;
-    justify-content: flex-end;
-}
-
-.row-count-container span {
-    margin-right: 10px;
-    font-weight: bold;
-}
-
-.button-container {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
+    justify-content: space-between;
     margin-top: 20px;
+    margin-bottom: 15px;
 }
 
-.legend {
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
+.simulation-button,
+.post-simulation-btn,
+.load-simulation-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
 }
 
-.legend-item {
-    display: flex;
-    align-items: center;
-    margin-right: 15px;
-}
-
-.color-box {
-    width: 20px;
-    height: 20px;
-    margin-right: 10px;
-    border: 1px solid #000;
-}
-
-.blue-button {
+.simulation-button {
     background-color: #007bff;
-    border-color: #007bff;
     color: white;
 }
 
-.green-button {
+.post-simulation-btn {
     background-color: #28a745;
-    border-color: #28a745;
     color: white;
 }
 
-.orange-button {
-    background-color: #ff7f0e;
-    border-color: #ff7f0e;
+.load-simulation-btn {
+    background-color: #ffa500; /* ロードボタンはオレンジ色 */
     color: white;
 }
 
-.row-input {
-    width: 150px;
-    padding: 5px;
-    margin-right: 10px;
+.simulation-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
 }
 
-.read-only-cell {
-    background-color: #f5f5f5;
-    color: black;
+.simulation-description {
+    font-size: 12px;
+    color: #666; /* グレー色で目立たせない */
+    margin-top: 5px; /* ボタンとの間に少し間隔を空ける */
+}
+
+/* Calculationボタンのデザイン */
+.calculation-button {
+    background-color: #ff6347; /* 鮮やかなオレンジ色 */
+    color: white;
+    border: none;
+    border-radius: 5px; /* ボタンの角を丸く */
+    padding: 10px 20px; /* パディングでボタンを大きく */
+    font-size: 16px; /* フォントサイズを調整 */
+    cursor: pointer;
+    transition: background-color 0.3s ease; /* マウスホバー時の背景色変更をスムーズに */
+}
+
+.calculation-button:hover {
+    background-color: #e55335; /* ホバー時に少し暗くなる */
 }
 </style>
