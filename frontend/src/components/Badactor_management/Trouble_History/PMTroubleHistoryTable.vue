@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="unique-trouble-datatable-container-v2">
     <DataTable 
       v-model:filters="filters" 
       :value="filteredTroubles" 
@@ -9,11 +9,12 @@
       filterDisplay="menu"
       :globalFilterFields="['pmType']"
       @filter="onFilter"
+      class="unique-trouble-datatable-v2"
     >
       <template #header>
-        <div class="flex justify-between">
+        <div class="flex justify-between unique-header-v2">
           <Button type="button" icon="pi pi-filter-slash" label="Clear" outlined @click="clearFilter()" />
-          <div>
+          <div class="unique-search-container-v2">
             <i class="pi pi-search" />
             <InputText v-model="filters.global.value" placeholder="Keyword Search" />
           </div>
@@ -155,7 +156,70 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.p-datatable .p-datatable-thead > tr > th {
-  background-color: #d3e0ea !important; /* ヘッダーの背景色を統一 */
+/* データテーブル全体のコンテナ */
+.unique-trouble-datatable-container-v2 {
+  margin: 20px; /* コンテナにマージンを追加 */
+  padding: 10px;
+  border: 1px solid #ccc; /* 全体の境界線を追加 */
+  border-radius: 8px; /* 角を少し丸くする */
+  background-color: #f5f5f5; /* 背景色を柔らかく */
 }
+
+/* テーブルのヘッダー部分 */
+.unique-header-v2 {
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #ddd; /* ヘッダーとコンテンツを分ける境界線 */
+}
+
+/* サーチボックスのコンテナ */
+.unique-search-container-v2 {
+  display: flex;
+  align-items: center;
+}
+
+.unique-search-container-v2 i {
+  margin-right: 5px;
+}
+
+/* テーブル全体のデザイン */
+.unique-trouble-datatable-v2 .p-datatable-thead > tr > th {
+  background-color: #d3e0ea !important; /* ヘッダーの背景色を統一 */
+  font-weight: bold; /* ヘッダーのテキストを太字に */
+  text-align: center; /* ヘッダーのテキストを中央揃え */
+  padding: 12px; /* 余白を広げる */
+}
+
+/* 各列のセルのデザイン */
+.unique-trouble-datatable-v2 .p-datatable-tbody > tr > td {
+  padding: 10px; /* 各セルの余白を調整 */
+  text-align: center; /* テキストを中央揃え */
+}
+
+/* 奇数行と偶数行の色分け */
+.unique-trouble-datatable-v2 .p-datatable-tbody > tr:nth-child(odd) {
+  background-color: #f9f9f9; /* 奇数行の背景色 */
+}
+
+.unique-trouble-datatable-v2 .p-datatable-tbody > tr:nth-child(even) {
+  background-color: #ffffff; /* 偶数行の背景色 */
+}
+
+/* テーブルに境界線を追加 */
+.unique-trouble-datatable-v2 .p-datatable-tbody > tr > td,
+.unique-trouble-datatable-v2 .p-datatable-thead > tr > th {
+  border: 1px solid #ddd; /* 各セルに境界線 */
+}
+
+/* ボタンのカスタマイズ */
+.unique-trouble-datatable-container-v2 .p-button {
+  background-color: #007bff;
+  color: white;
+  border-radius: 4px;
+}
+
+.unique-trouble-datatable-container-v2 .p-button:hover {
+  background-color: #0056b3;
+}
+
 </style>

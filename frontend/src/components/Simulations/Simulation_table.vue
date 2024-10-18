@@ -770,11 +770,24 @@ const TaskListComponent = defineComponent({
                     if (companyData && companyData[`no${simulationNumber}SimulationList`]) {
                         const simulationData = companyData[`no${simulationNumber}SimulationList`];
 
-                        // 取得したデータが正しいか確認
-                        console.log(`Simulation ${simulationNumber} Data:`, simulationData);
+                        // データをテーブルにロード
+                        this.loadDataToTable(simulationData);
 
-                        this.loadDataToTable(simulationData); // テーブルにデータをロード
-                        this.runSimulationAfterLoad(simulationNumber); // シミュレーション処理を実行
+                        // シミュレーション処理を実行
+                        this.runSimulationAfterLoad(simulationNumber);
+
+                        // **ロードしたデータをemitしてグラフを更新させる**
+                        const monthlyData = this.$refs.monthlyCostTableComponent.hotInstance.getDataAtRow(simulationNumber); // Monthlyデータ
+                        const totalCostData = this.$refs.totalCostTableComponent.hotInstance.getDataAtRow(simulationNumber); // TotalCostデータ
+
+                        const costData = {
+                            simulationNumber,
+                            monthlyCostData: monthlyData.slice(0, 12), // Jan～Decまでのデータ
+                            totalCostData: totalCostData.slice(0, 11) // thisYear～thisYear10laterまでのデータ
+                        };
+
+                        console.log(`Emitting loaded simulation ${simulationNumber} data:`, costData);
+                        this.$emit('update-cost-data', costData); // 親コンポーネントにデータをemit
                     } else {
                         console.error(`No data found for companyCode: ${companyCode}`);
                         this.toast.add({ severity: 'error', summary: 'Error', detail: `No data found for Simulation ${simulationNumber}`, life: 3000 });

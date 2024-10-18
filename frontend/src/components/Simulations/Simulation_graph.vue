@@ -211,6 +211,7 @@ onMounted(() => {
     fetchMonthlyData();
 });
 
+
 watch(
   () => props.costData,
   (newData) => {
@@ -222,10 +223,17 @@ watch(
         return;
       }
 
+      // Baseデータとの差分を計算
       yearlyBenefit.value = calculateBenefit(totalCostBaseData.value[0].y, totalCostRawData);
       monthlyBenefit.value = calculateBenefit(monthlyBaseData.value[0].y, monthlyCostData);
 
       const simName = simulationNumber !== null ? `Simulation ${simulationNumber}` : 'Simulation';
+
+      // 既存のシミュレーションデータを削除
+      totalCostData.value = totalCostData.value.filter(item => item.name !== `Total Cost - ${simName}`);
+      monthlyData.value = monthlyData.value.filter(item => item.name !== `Monthly Cost - ${simName}`);
+
+      // 新しいデータを追加
       totalCostData.value.push({
         x: years,
         y: totalCostRawData,
@@ -234,6 +242,7 @@ watch(
         line: { dash: 'dot' },
         name: `Total Cost - ${simName}`
       });
+
       monthlyData.value.push({
         x: months,
         y: monthlyCostData,
@@ -243,12 +252,15 @@ watch(
         name: `Monthly Cost - ${simName}`
       });
 
+      // グラフを再描画
       drawTotalCostChart();
       drawMonthlyChart();
     }
   },
   { immediate: true }
 );
+
+
 
 </script>
 

@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <DataTable :value="displayedTaskPlan" :rows="10" paginator :stripedRows="true" class="task-table">
+  <div class="unique-task-table-wrapper">
+    <DataTable :value="displayedTaskPlan" :rows="10" paginator :stripedRows="true" class="unique-task-table">
       <Column field="date" header="Date" />
       <Column field="pmType" header="PM Type" />
       <Column field="pMContent" header="Prevent Maintenance Content" />
@@ -9,6 +9,8 @@
     </DataTable>
   </div>
 </template>
+
+
 
 <script>
 import { ref, computed, onMounted } from 'vue';
@@ -141,20 +143,41 @@ export default {
 </script>
 
 <style>
-.task-table .p-datatable-thead > tr > th {
-  background-color: #ffe5b4; /* 薄い橙色 */
-  color: #333; /* テキストカラーをダークに */
+/* このスタイルは unique-task-table クラスにのみ適用されます */
+.unique-task-table-wrapper .p-datatable-thead > tr > th {
+  background-color: #ffcc80; /* 薄い橙色を強調 */
+  color: #333; /* ダークなテキストカラー */
+  font-weight: bold; /* ヘッダーを太字に */
+  text-align: center; /* ヘッダーのテキストを中央揃え */
+  padding: 10px;
 }
 
-.task-table .p-datatable-tbody > tr:nth-child(odd) > td {
-  background-color: #ffffff; /* 奇数行は白色 */
+.unique-task-table-wrapper .p-datatable-tbody > tr > td {
+  font-weight: bold; /* テーブルの内容を太字に */
+  border-bottom: 1px solid #ddd; /* 各行にボーダーを追加 */
+  padding: 10px;
+  vertical-align: middle; /* テキストの中央揃え */
 }
 
-.task-table .p-datatable-tbody > tr:nth-child(even):not(:first-child) > td {
-  background-color: #d3d3d3; /* 偶数行から灰色 */
+.unique-task-table-wrapper .p-datatable-tbody > tr:nth-child(odd) > td {
+  background-color: #f9f9f9; /* 奇数行を少し淡い色に */
 }
 
-.task-table .p-datatable-tbody > tr:hover > td {
-  background-color: #f1f1f1; /* ホバー時の背景色 */
+.unique-task-table-wrapper .p-datatable-tbody > tr:nth-child(even) > td {
+  background-color: #f0f0f0; /* 偶数行を少し濃い灰色に */
 }
+
+.unique-task-table-wrapper .p-datatable-tbody > tr:hover > td {
+  background-color: #e0f7fa; /* ホバー時に青系の色で強調 */
+}
+
+.unique-task-table-wrapper .p-datatable-tbody > tr > td:last-child {
+  text-align: right; /* コストのカラムを右揃え */
+}
+
+.unique-task-table-wrapper .p-paginator {
+  margin-top: 10px; /* ページネーションのスペースを確保 */
+}
+
+
 </style>

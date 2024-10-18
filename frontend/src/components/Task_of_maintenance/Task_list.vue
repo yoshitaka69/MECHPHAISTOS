@@ -255,7 +255,7 @@ const TaskListComponent = defineComponent({
                 manualRowResize: true,
                 filters: true,
                 dropdownMenu: true,
-                comments: true,
+                comments: false,  // コメント機能をオフにする
                 fillHandle: {
                     autoInsertRow: true
                 },

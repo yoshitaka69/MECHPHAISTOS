@@ -146,6 +146,8 @@ import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 
 
+
+
 //i18n
 import { createI18n } from 'vue-i18n';
 import ja from './i18n/ja.json';
@@ -315,6 +317,7 @@ registerAllValidators();
 // register all plugins at once
 // or, register all of Handsontable's modules at once
 registerAllModules();
+
 
 
 app.use(i18n);

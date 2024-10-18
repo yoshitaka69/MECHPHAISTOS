@@ -89,3 +89,54 @@ class GanttTestListView(APIView):
         tasks = GanttTest.objects.all()
         serializer = GanttTestSerializer(tasks, many=True)
         return Response(serializer.data)
+    
+
+
+
+# views.py----------------------------------------------
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from .models import Category, SubCategory, Item
+
+@api_view(['GET'])
+def get_tree_data(request):
+    # すべてのカテゴリを取得
+    categories = Category.objects.all()
+
+    # カテゴリが存在しない場合は空のリストを返す
+    if not categories.exists():
+        return Response([])
+
+    # ツリー構造のデータを作成
+    data = []
+    for category in categories:
+        category_data = {
+            'name': category.name,  # カテゴリ名を取得
+            'children': []
+        }
+
+        # カテゴリに属するサブカテゴリを取得
+        subcategories = SubCategory.objects.filter(category=category)
+        for subcategory in subcategories:
+            subcategory_data = {
+                'name': subcategory.name,  # サブカテゴリ名を取得
+                'children': []
+            }
+
+            # サブカテゴリに属するアイテムを取得
+            items = Item.objects.filter(subcategory=subcategory)
+            for item in items:
+                item_data = {
+                    'name': item.name,  # アイテム名を取得
+                    'age': item.age     # アイテムの年齢を取得
+                }
+                subcategory_data['children'].append(item_data)  # アイテムをサブカテゴリに追加
+
+            category_data['children'].append(subcategory_data)  # サブカテゴリをカテゴリに追加
+
+        data.append(category_data)
+
+    return Response(data)  # 最終的なツリーデータを返す
+
+
+

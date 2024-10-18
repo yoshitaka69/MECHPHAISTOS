@@ -1,8 +1,8 @@
 <template>
-  <div class="ce-list-container">
+  <div class="unique-ce-list-container-v2">
     <DataTable
       :value="paginatedCeList"
-      class="custom-header striped-rows bordered-table"
+      class="unique-custom-header-v2 unique-striped-rows-v2 unique-bordered-table-v2"
       :rows="30"
       :paginator="true"
       :totalRecords="totalRecords"
@@ -27,6 +27,7 @@
     </DataTable>
   </div>
 </template>
+
 
 <script>
 import axios from 'axios';
@@ -99,42 +100,58 @@ export default {
 </script>
 
 <style>
-.ce-list-container {
-  margin: 20px; /* ここでリスト全体にマージンを追加 */
+/* このスタイルは unique-ce-list-container-v2 にのみ適用されます */
+.unique-ce-list-container-v2 {
+  margin: 20px; /* リスト全体にマージンを追加 */
 }
 
-.custom-header .p-datatable-thead > tr > th {
+/* テーブル全体を縮小 */
+.unique-ce-list-container-v2 .unique-custom-header-v2 {
+  width: 90%; /* テーブルを一回り小さく */
+  margin: 0 auto; /* テーブルをモーダルの中央に配置 */
+}
+
+/* テーブルヘッダーをユニークにスタイリング */
+.unique-custom-header-v2 .p-datatable-thead > tr > th {
   background-color: #2d3a4f;
   color: white;
-  white-space: pre-line; /* 改行をサポートするために追加 */
+  white-space: pre-line; /* 改行サポート */
+  font-weight: bold; /* ヘッダーのフォントを太字に */
+  font-size: 0.9rem; /* フォントサイズを少し小さく */
 }
 
-.striped-rows .p-datatable-tbody > tr:nth-child(odd) {
+/* 奇数行と偶数行のストライプ効果 */
+.unique-striped-rows-v2 .p-datatable-tbody > tr:nth-child(odd) {
   background-color: #f9f9f9;
+  font-weight: bold; /* 奇数行のフォントを太字に */
+  font-size: 0.9rem; /* ボディのフォントサイズを小さく */
 }
 
-.striped-rows .p-datatable-tbody > tr:nth-child(even) {
+.unique-striped-rows-v2 .p-datatable-tbody > tr:nth-child(even) {
   background-color: #e0e0e0;
+  font-weight: bold; /* 偶数行のフォントを太字に */
+  font-size: 0.9rem; /* ボディのフォントサイズを小さく */
 }
 
-/* Add this CSS to support multiline headers */
-.custom-header .p-column-title {
-  white-space: pre-line;
-}
-
-/* CSS for selected row */
-.selected-row {
+/* 選択された行のスタイリング */
+.unique-custom-header-v2 .selected-row {
   color: red;
   font-weight: bold;
+  font-size: 0.9rem; /* 選択された行のフォントサイズも調整 */
 }
 
-/* CSS for bordered table */
-.bordered-table {
+/* 境界線付きのテーブルスタイリング */
+.unique-bordered-table-v2 {
   border: 1px solid #ddd;
 }
 
-.bordered-table .p-datatable-thead > tr > th,
-.bordered-table .p-datatable-tbody > tr > td {
+.unique-bordered-table-v2 .p-datatable-thead > tr > th,
+.unique-bordered-table-v2 .p-datatable-tbody > tr > td {
   border: 1px solid #ddd;
+  padding: 10px; /* セルに余白を追加 */
+  font-size: 0.9rem; /* 全体のフォントサイズを小さく */
+  text-align: center; /* テキストを中央揃え */
 }
+
+
 </style>

@@ -7,12 +7,8 @@ export const useUserStore = defineStore('user', {
     userName: 'Taro Yamada',
     email: 'TaroYamada@test.com',
     companyCode: '001-testChemical-001',
-    favoriteHistoryPossibility: 3,  // 3番目のヒストリーデータをお気に入りに設定
+    country: 'JPN'  // 新しいプロパティ: 国コードをデフォルトで'JPN'に設定
 
-    // 各設定のインパクトに対するお気に入りの履歴インデックス
-    favoriteHistoryImpactLow: 4,    // Low設定のお気に入り履歴インデックス
-    favoriteHistoryImpactMiddle: 5, // Middle設定のお気に入り履歴インデックス
-    favoriteHistoryImpactHigh: 6,   // High設定のお気に入り履歴インデックス
   }),
   actions: {
     async fetchUser(userName, email) {
@@ -42,37 +38,5 @@ export const useUserStore = defineStore('user', {
       }
     },
 
-    // お気に入りの履歴インデックスを設定するアクション
-    setFavoriteHistoryPossibility(index) {
-      this.favoriteHistoryPossibility = index;
-    },
-
-    // お気に入りの履歴インデックスを取得するアクション
-    getFavoriteHistoryPossibility() {
-      return this.favoriteHistoryPossibility;
-    },
-
-    // インパクトごとのお気に入り履歴インデックスを設定するアクション
-    setFavoriteHistoryImpact(setting, index) {
-      if (setting === 1) {
-        this.favoriteHistoryImpactLow = index;
-      } else if (setting === 2) {
-        this.favoriteHistoryImpactMiddle = index;
-      } else if (setting === 3) {
-        this.favoriteHistoryImpactHigh = index;
-      }
-    },
-
-    // インパクトごとのお気に入り履歴インデックスを取得するアクション
-    getFavoriteHistoryImpact(setting) {
-      if (setting === 1) {
-        return this.favoriteHistoryImpactLow;
-      } else if (setting === 2) {
-        return this.favoriteHistoryImpactMiddle;
-      } else if (setting === 3) {
-        return this.favoriteHistoryImpactHigh;
-      }
-      return null;
-    }
   },
 });

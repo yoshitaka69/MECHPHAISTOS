@@ -10,24 +10,33 @@
                                 <Castor />
                             </div>
                         </div>
-                        <div class="component-container">
-                            <PrecisionAndAccuracy />
+
+                        <!-- 修正箇所: ボタンをPrecisionAndAccuracyの上に配置 -->
+                        <div class="button-container">
                             <button @click="openCeListWindow" class="ce-list-button">Show CeList</button>
                         </div>
+
+                        <div class="component-container">
+                            <PrecisionAndAccuracy />
+                        </div>
+
                         <div class="table-container">
                             <TroubleHistoryTable />
                             <PreventMaintenanceTable />
                         </div>
                     </TabPanel>
+
                     <TabPanel header="FTA Analysis">
-                        <p class="line-height-3 m-0">FTA Analysis content goes here.</p>
+                        <p class="line-height-3 m-0"></p>
                         <div class="fta-container">
+
                             <Tree />
                             <HierarchicalEdgeBundling />
                         </div>
                     </TabPanel>
+
                     <TabPanel header="Trouble History">
-                        <p class="line-height-3 m-0">Trouble History content goes here.</p>
+                        <p class="line-height-3 m-0"></p>
                         <TroubleTimeline />
                         <Mechphaistos_Ai />
                     </TabPanel>
@@ -52,6 +61,8 @@ import HierarchicalEdgeBundling from '@/components/Badactor_management/Hierarchi
 import Mechphaistos_Ai from '@/components/Mechphaistos_Ai/Mechphaistos_Ai.vue';
 import CeList from '@/components/Badactor_management/Precision_and_Accuracy/CeList.vue';
 import Castor from '@/components/Mechphaistos_Ai/Castor.vue';
+
+
 
 export default {
     components: {
@@ -91,7 +102,6 @@ export default {
                 this.ceListWindow.document.write('<div id="ceList"></div>');
                 this.ceListWindow.document.close();
 
-                // 既存のスタイルシートを新しいウィンドウにコピー
                 const stylesheets = Array.from(document.styleSheets);
                 stylesheets.forEach((stylesheet) => {
                     if (stylesheet.href) {
@@ -130,8 +140,14 @@ export default {
 
 .component-container {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start; /* 子要素を上に揃える */
+    justify-content: center; /* PrecisionAndAccuracyを中央に配置 */
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.button-container {
+    display: flex;
+    justify-content: flex-end; /* ボタンを右に寄せる */
     margin-bottom: 1rem;
 }
 
@@ -144,7 +160,6 @@ export default {
     cursor: pointer;
     height: auto; /* ボタンの高さを自動に設定 */
     line-height: 1.5; /* ボタン内のテキストの行間を調整 */
-    align-self: flex-start; /* ボタン自身を上に揃える */
 }
 
 .ce-list-button:hover {
@@ -167,12 +182,14 @@ export default {
 
 .fta-container {
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    justify-content: space-between; /* 並列に配置 */
+    align-items: flex-start; /* 子要素を上に揃える */
+    gap: 1rem; /* 各コンポーネント間にスペースを追加 */
+    margin-bottom: 2rem;
 }
 
 .fta-container > * {
-    margin-bottom: 2rem;
+    flex: 1; /* 子要素が均等に幅を取る */
 }
 
 .fta-container > *:last-child {
