@@ -1,8 +1,9 @@
 from django.db.models import Prefetch
 from rest_framework.response import Response
 from rest_framework import viewsets, status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import action
 
+# 使用するモデル
 from .models import (
     NearMiss, 
     CompanyCode, 
@@ -11,6 +12,7 @@ from .models import (
     CustomUser
 )
 
+# 使用するシリアライザ
 from .serializers import (
     NearMissSerializer, 
     CompanyNearMissSerializer,
@@ -19,106 +21,158 @@ from .serializers import (
     TrendSafetyIndicatorsSerializer, 
     CompanyTrendSafetyIndicatorsSerializer
 )
-
-
-
 #----------------------------------------------------------------------------------------------------------------------------------------------
 
 class NearMissViewSet(viewsets.ModelViewSet):
     queryset = NearMiss.objects.all()
     serializer_class = NearMissSerializer
 
-@api_view(['POST'])
-def create_near_miss(request):
-    if request.method == 'POST':
-        serializer = NearMissSerializer(data=request.data)
-        if serializer.is_valid():
+    def create(self, request, *args, **kwargs):
+        data = request.data
+        print(f"Received data: {data}")
+
+        # companyCode を取得
+        company_code_str = data.get('companyCode')
+
+        # companyCode が存在しない場合はエラーレスポンスを返す
+        if not company_code_str:
+            return Response(
+                {"error": "companyCode is required."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        print(f"Received companyCode: {company_code_str}")
+
+        # companyCode を CompanyCode オブジェクトとして取得する
+        try:
+            company_code_obj = CompanyCode.objects.get(companyCode=company_code_str)
+        except CompanyCode.DoesNotExist:
+            return Response(
+                {"error": f"CompanyCode '{company_code_str}' does not exist."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # 新規NearMissの作成処理
+        print("Creating a new NearMiss.")
+
+        # `nearMissNo`はPOSTデータから受け取らず、モデルで自動生成
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        created_near_miss = self.perform_create(serializer)
+
+        # 作成されたNearMissオブジェクトから`nearMissNo`を取得して返す
+        return Response({
+            "nearMissNo": created_near_miss.nearMissNo,
+            "message": "NearMiss created successfully."
+        }, status=status.HTTP_201_CREATED)
+
+    # 新規作成時の保存処理
+    def perform_create(self, serializer):
+        try:
+            # NearMissの保存処理。ここでsaveメソッドが呼ばれ、nearMissNoが生成される
             near_miss = serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            print(f"Successfully created NearMiss: {near_miss}")
+            return near_miss  # nearMissオブジェクトを返す
+        except Exception as e:
+            print(f"Error during serializer.save(): {e}")
+            raise e
+
+    # 更新時の保存処理
+    def perform_update(self, serializer):
+        try:
+            # NearMissの更新処理
+            near_miss = serializer.save()
+            print(f"Successfully updated NearMiss: {near_miss}")
+        except Exception as e:
+            print(f"Error during serializer.save(): {e}")
+            raise e
 
 
 
 
 
-import logging
-from rest_framework import viewsets, status
-from rest_framework.response import Response
-from .models import CompanyCode, NearMiss
-from .serializers import CompanyNearMissSerializer, NearMissSerializer
-
-# ログを設定
-logger = logging.getLogger(__name__)
-
+# CompanyCode に基づく NearMiss の ViewSet
 class CompanyNearMissViewSet(viewsets.ModelViewSet):
-    queryset = CompanyCode.objects.all()
-    serializer_class = CompanyNearMissSerializer
+    queryset = CompanyCode.objects.all()  # CompanyCode の全データを対象にするクエリセット
+    serializer_class = CompanyNearMissSerializer  # 使用するシリアライザを設定
 
+    # クエリパラメータに基づいてフィルタリングされた NearMiss データを取得
     def get_queryset(self):
-        queryset = CompanyCode.objects.prefetch_related('nearMiss_companyCode').all()
-        company_code = self.request.query_params.get('companyCode', None)
+        company_code = self.request.query_params.get('companyCode', None)  # companyCode をクエリパラメータから取得
+        queryset = CompanyCode.objects.prefetch_related('nearMiss_companyCode').all()  # 関連する NearMiss データをプリフェッチ
         if company_code:
-            queryset = queryset.filter(companyCode=company_code)
+            queryset = queryset.filter(companyCode=company_code)  # companyCode に基づいてフィルタリング
         return queryset
 
-    def create(self, request, *args, **kwargs):
-        company_code_value = request.data.get('companyCode')
 
-        # companyCode が存在するかチェック
-        if not company_code_value:
-            logger.error('Error: companyCode is missing from request data.')
-            return Response({'error': 'Company code is required'}, status=status.HTTP_400_BAD_REQUEST)
 
+    # 新しいアクション：companyCode に対応する nearMissList の最後の nearMissNo を取得
+    @action(detail=False, methods=['get'], url_path='last-near-miss-no')
+    def get_last_near_miss_no(self, request):
+        company_code = request.query_params.get('companyCode', None)
+        if not company_code:
+            return Response({"error": "companyCode is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # companyCode に一致するオブジェクトを取得
         try:
-            # companyCode の取得
-            company_code = CompanyCode.objects.get(companyCode=company_code_value)
-            logger.info(f'Company code found: {company_code}')
+            company_obj = CompanyCode.objects.get(companyCode=company_code)
         except CompanyCode.DoesNotExist:
-            logger.error(f'Error: Invalid company code {company_code_value}')
-            return Response({'error': f'Invalid company code: {company_code_value}'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": f"CompanyCode '{company_code}' does not exist."}, status=status.HTTP_404_NOT_FOUND)
 
-        # NearMissNo の生成ロジック
-        existing_near_miss_nos = NearMiss.objects.filter(companyCode=company_code).values_list('nearMissNo', flat=True).order_by('nearMissNo')
-        logger.debug(f'Existing NearMissNos: {list(existing_near_miss_nos)}')
+        # companyCode に紐づく NearMissList を取得
+        near_miss_list = NearMiss.objects.filter(companyCode=company_obj).order_by('-nearMissNo')
 
-        # 使用されている番号のセットを作成
-        used_numbers = set(int(nm.split('-')[-1]) for nm in existing_near_miss_nos if nm.split('-')[-1].isdigit())
-        logger.debug(f'Used numbers: {used_numbers}')
-
-        # 未使用の番号を探す
-        new_number = None
-        for i in range(1, len(used_numbers) + 2):
-            if i not in used_numbers:
-                new_number = i
-                break
-
-        # 最大の番号に +1 する
-        if new_number is None:
-            new_number = max(used_numbers) + 1 if used_numbers else 1
-        logger.info(f'New number generated: {new_number}')
-
-        # NearMissNo をフォーマット
-        near_miss_no = f"NearMissNo-{str(new_number).zfill(5)}"
-        logger.info(f'Generated NearMissNo: {near_miss_no}')
-
-        # データのコピー
-        near_miss_data = request.data.copy()
-        near_miss_data['companyCode'] = company_code_value
-        near_miss_data['nearMissNo'] = near_miss_no  # 生成した NearMissNo を設定
-
-        # シリアライズして保存
-        serializer = NearMissSerializer(data=near_miss_data)
-        if serializer.is_valid():
-            serializer.save()
-            logger.info('Data successfully saved.')
-            return Response({
-                'data': serializer.data,
-                'lastNearMissNo': near_miss_no  # NearMissNo をレスポンスに含める
-            }, status=status.HTTP_201_CREATED)
+        if near_miss_list.exists():
+            last_near_miss_no = near_miss_list.first().nearMissNo  # 最新の nearMissNo を取得
         else:
-            logger.error(f'Serializer validation failed: {serializer.errors}')
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            last_near_miss_no = None  # 該当する nearMissList がない場合
 
+        return Response({
+            "lastNearMissNo": last_near_miss_no
+        }, status=status.HTTP_200_OK)
+    
+
+
+    # companyCode と nearMissNo で NearMiss データを削除するためのアクション
+    @action(detail=False, methods=['delete'], url_path='delete-by-code-and-no')
+    def delete_by_code_and_no(self, request):
+        company_code = request.query_params.get('companyCode')  # クエリパラメータから companyCode を取得
+        near_miss_no = request.query_params.get('nearMissNo')  # クエリパラメータから nearMissNo を取得
+
+        # companyCode または nearMissNo が存在しない場合はエラーレスポンスを返す
+        if not company_code or not near_miss_no:
+            return Response(
+                {"error": "companyCode and nearMissNo are required."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # companyCode に一致するオブジェクトを取得
+        try:
+            company_code_obj = CompanyCode.objects.get(companyCode=company_code)
+        except CompanyCode.DoesNotExist:
+            # companyCode が存在しない場合、404エラーレスポンスを返す
+            return Response(
+                {"error": f"CompanyCode '{company_code}' does not exist."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        # companyCode と nearMissNo に一致する NearMiss を取得
+        try:
+            near_miss = NearMiss.objects.get(companyCode=company_code_obj, nearMissNo=near_miss_no)
+        except NearMiss.DoesNotExist:
+            # nearMissNo が存在しない場合、404エラーレスポンスを返す
+            return Response(
+                {"error": f"NearMiss with nearMissNo '{near_miss_no}' does not exist for companyCode '{company_code}'."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        # NearMiss を削除
+        near_miss.delete()
+        return Response(
+            {"message": f"NearMiss '{near_miss_no}' for companyCode '{company_code}' has been deleted."},
+            status=status.HTTP_204_NO_CONTENT
+        )
+    
 
 
 

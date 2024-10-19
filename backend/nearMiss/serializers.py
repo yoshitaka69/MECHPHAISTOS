@@ -28,6 +28,7 @@ class NearMissSerializer(serializers.ModelSerializer):
             'measures', 'actionItems', 'solvedActionItems', 'createdDay'
         ]
 
+    # createメソッドを明示的に実装する
     def create(self, validated_data):
         company_code_data = validated_data.pop('companyCode', None)
         if company_code_data:
@@ -56,11 +57,7 @@ class NearMissSerializer(serializers.ModelSerializer):
         )
         return near_miss
 
-    def to_representation(self, instance):
-        representation = super().to_representation(instance)
-        representation['companyCode'] = instance.companyCode.companyCode if instance.companyCode else None
-        representation['userName'] = UserSerializer(instance.userName).data if instance.userName else None
-        return representation
+
 
 class CompanyNearMissSerializer(serializers.ModelSerializer):
     nearMissList = NearMissSerializer(many=True, read_only=True, source='nearMiss_companyCode')

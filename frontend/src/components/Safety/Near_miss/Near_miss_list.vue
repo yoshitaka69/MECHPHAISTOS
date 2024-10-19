@@ -127,41 +127,11 @@
             </DataTable>
 
             <!-- 削除確認モーダル -->
-            <Dialog header="Delete Confirmation" v-model:visible="showDeleteDialog" :modal="true" :closable="false">
+            <Dialog header="Delete Confirmation" v-model:visible="showDeleteDialog" :modal="true">
                 <p>Are you sure you want to delete this item?</p>
-                <div class="flex justify-content-end">
-                    <Button label="No" icon="pi pi-times" @click="showDeleteDialog = false" class="p-button-text" />
-                    <Button label="Yes" icon="pi pi-check" @click="deleteItemConfirmed" class="p-button-danger" />
-                </div>
+                <Button label="No" @click="showDeleteDialog = false" class="p-button-text" />
+                <Button label="Yes" @click="deleteNearMiss" class="p-button-danger" />
             </Dialog>
-        </div>
-
-        <div class="edit-item" v-if="isEditing">
-            <h3>Edit Near Miss Entry</h3>
-            <form @submit.prevent="submitEdit">
-                <label>
-                    NearMiss No:
-                    <input type="text" v-model="editingItem.nearMissNo" readonly />
-                </label>
-                <label>
-                    Name:
-                    <input type="text" v-model="editingItem.userName.userName" />
-                </label>
-                <label>
-                    Department:
-                    <input type="text" v-model="editingItem.department" />
-                </label>
-                <label>
-                    Date of Occurrence:
-                    <input type="date" v-model="editingItem.dateOfOccurrence" />
-                </label>
-                <label>
-                    Measures:
-                    <input type="text" v-model="editingItem.measures" />
-                </label>
-                <button type="submit">Save</button>
-                <button type="button" @click="cancelEdit">Cancel</button>
-            </form>
         </div>
     </div>
 </template>
@@ -186,6 +156,9 @@ const serverOptions = ref({
     page: 1,
     rowsPerPage: 10
 });
+
+
+
 const loading = ref(false);
 const isEditing = ref(false); // 編集モードかどうか
 const editingItem = ref({}); // 編集対象のデータ
@@ -199,6 +172,13 @@ const filters = ref({
     description: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }] },
     solvedActionItems: { value: null, matchMode: FilterMatchMode.EQUALS }
 });
+
+// 新しいタブでフォームを開く処理
+const openNewEntry = () => {
+    isEditing.value = false;  // 新規作成モード
+    window.open('/near_miss_input_form', '_blank'); // 新しいタブでフォームを開く
+};
+
 
 const getMeasuresClass = (measures) => {
     switch (measures) {
@@ -221,35 +201,53 @@ const getMeasuresClass = (measures) => {
 const showDeleteDialog = ref(false);
 const itemToDelete = ref(null);
 
-const confirmDelete = (item) => {
-    itemToDelete.value = item;
+const confirmDelete = (nearMiss) => {
+    console.log('nearMiss', nearMiss); // ここで削除対象のデータを確認
+    itemToDelete.value = nearMiss;
     showDeleteDialog.value = true;
 };
 
 
-// 編集モードで既存エントリをロードしてフォームを開く関数
 const editItem = (item) => {
-    isEditing.value = true; // 編集モードをオン
-    Object.assign(editingItem.value, item); // クリックしたデータをセット
-    localStorage.setItem('editingItem', JSON.stringify(editingItem.value)); // データを保存
-    
-    // フォームを開くためのロジック（例: 新しいタブ、モーダルなど）
-    window.open('/near_miss_input_form', '_blank');
+    console.log('Editing item:', item);  // デバッグ用に item の内容を出力
+    // 必要なフィールドを formState に設定
+    formState.NearMissNo = item.nearMissNo || '';  
+    formState.Name = item.userName && item.userName.userName ? item.userName.userName : '';  
+    formState.Department = item.department || '';  
+    formState.Date = item.dateOfOccurrence || '';  
+    formState.Where = item.placeOfOccurrence || '';  
+    formState.TypeOfAccIdent = item.typeOfAccident || '';  
+    formState.Factor = item.factor || '';  
+    formState.InjuredLv = item.injuredLv || '';  
+    formState.EquipmentDamageLv = item.equipmentDamageLv || '';  
+    formState.AffectOfEnviroment = item.affectOfEnviroment || '';  
+    formState.NewsCoverage = item.newsCoverage || '';  
+    formState.ActionItems = item.actionItems || '';  
+    formState.SolvedActionItems = item.solvedActionItems || false;  
+    formState.Description = item.description || '';  
+
+    console.log('Updated formState:', formState);  // デバッグ用に formState の内容を出力
 };
 
 
 
-const deleteItemConfirmed = async () => {
+
+// 削除処理
+const deleteNearMiss = async () => {
     if (itemToDelete.value) {
+        const companyCode = userStore.companyCode; // PiniaからcompanyCodeを取得
+        if (!companyCode) {
+            console.error('CompanyCode is missing:', companyCode); // companyCodeが取得できない場合のログ
+            return;
+        }
         try {
-            const deleteUrl = `http://127.0.0.1:8000/api/nearMiss/delete/?companyCode=${companyCode}&nearMissNo=${itemToDelete.value.nearMissNo}`;
+            const deleteUrl = `http://127.0.0.1:8000/api/nearMiss/nearMissByCompany/delete-by-code-and-no/?companyCode=${companyCode}&nearMissNo=${itemToDelete.value.nearMissNo}`;
             await axios.delete(deleteUrl);
-            itemsFromApi.value = itemsFromApi.value.filter((i) => i.nearMissNo !== itemToDelete.value.nearMissNo); // ローカルで削除
+            fetchData(); // 削除後にリストを再取得
             showDeleteDialog.value = false;
             itemToDelete.value = null;
-            console.log('Item deleted successfully');
         } catch (error) {
-            console.error('Failed to delete item:', error);
+            console.error('Error deleting near miss:', error);
         }
     }
 };
@@ -375,70 +373,15 @@ const submitEdit = async () => {
     }
 };
 
-
 const cancelEdit = () => {
     isEditing.value = false;
     console.log('Edit cancelled');
 };
 
-
-
-const deleteItem = async (item) => {
-    console.log('Deleting item:', item);
-    const deleteUrl = `http://127.0.0.1:8000/api/nearMiss/${item.id}/`;
-    console.log(`Delete URL: ${deleteUrl}`);
-    try {
-        await axios.delete(deleteUrl);
-        itemsFromApi.value = itemsFromApi.value.filter((i) => i.id !== item.id);
-        console.log('Item deleted successfully');
-    } catch (error) {
-        console.error('Failed to delete item:', error);
-    }
-};
-
-
-// 新規エントリ作成用のフォームを開く関数
-const openNewEntry = () => {
-    isEditing.value = false; // 編集モードを解除（新規モード）
-    editingItem.value = {
-        nearMissNo: '',
-        userName: { userName: '' },
-        department: '',
-        dateOfOccurrence: '',
-        placeOfOccurrence: '',
-        typeOfAccident: '',
-        description: '',
-        factor: '',
-        injuredLv: '',
-        equipmentDamageLv: '',
-        affectOfEnviroment: '',
-        newsCoverage: '',
-        measures: '',
-        actionItems: '',
-        solvedActionItems: false,
-        updateDay: ''
-    };
-    
-    // フォームを開くためのロジック（例: 新しいタブ、モーダルなど）
-    window.open('/near_miss_input_form', '_blank');
-};
-
-
 const onPage = (event) => {
     serverOptions.value.page = event.page + 1;
     serverOptions.value.rowsPerPage = event.rows;
     fetchData();
-};
-
-const clearFilter = () => {
-    filters.value = {
-        global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-        nearMissNo: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
-        'userName.userName': { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
-        department: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
-        description: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }] },
-        solvedActionItems: { value: null, matchMode: FilterMatchMode.EQUALS }
-    };
 };
 </script>
 
@@ -554,6 +497,4 @@ const clearFilter = () => {
     font-size: 16px !important; /* フォントサイズを一回り大きく設定 */
     font-family: 'Arial', sans-serif; /* 任意のフォントを指定 */
 }
-
-
 </style>

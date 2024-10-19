@@ -14,7 +14,7 @@
             <WorldClock />
           </div>
           <div class="section mechphaistos-ai-section">
-            <Mechphaistos_Ai />
+            <Mechphaistos />
           </div>
           <div class="section news-and-weather">
             <News_content class="news-content" />
@@ -33,7 +33,7 @@ import Weather from '@/components/Weather/Weather.vue';
 import MainCalendar from '@/components/Calendar/MainCalendar.vue';
 import MiniCalendar from '@/components/Calendar/MiniCalendar.vue';
 import { INITIAL_EVENTS } from '@/components/Calendar/event-utils';
-import Mechphaistos_Ai from '@/components/Mechphaistos_Ai/Mechphaistos_Ai.vue';
+import Mechphaistos from '@/components/Mechphaistos_Ai/Mechphaistos.vue';
 
 export default {
   components: {
@@ -42,7 +42,7 @@ export default {
     Weather,
     MainCalendar,
     MiniCalendar,
-    Mechphaistos_Ai,
+    Mechphaistos,
   },
   data() {
     return {

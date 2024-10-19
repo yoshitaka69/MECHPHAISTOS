@@ -44,27 +44,27 @@ class NearMiss(models.Model):
     # saveメソッドをオーバーライドして、nearMissNoが未設定の場合に自動的に番号を生成する
     def save(self, *args, **kwargs):
         if not self.nearMissNo:
-            # 既存の NearMissNo を取得し、番号を自動生成するロジック
+            # 同じcompanyCodeに関連する既存のNearMissNoを取得
             existing_near_miss_nos = NearMiss.objects.filter(companyCode=self.companyCode).values_list('nearMissNo', flat=True).order_by('nearMissNo')
 
-            # 未使用の番号を探す
+            # NearMissNoの数値部分を抽出し、使用されていない最小の番号を探す
             used_numbers = set(int(nm.split('-')[-1]) for nm in existing_near_miss_nos if nm.split('-')[-1].isdigit())
             new_number = None
 
-            # 未使用の番号を探す
+            # 1から始めて、未使用の番号を探す
             for i in range(1, len(used_numbers) + 2):
                 if i not in used_numbers:
                     new_number = i
                     break
 
-            # 最大の番号を取得し、その次の番号を生成
+            # もし新しい番号が見つからなければ、デフォルトで1を設定
             if new_number is None:
                 new_number = max(used_numbers) + 1 if used_numbers else 1
 
-            # 番号をフォーマットして設定
+            # フォーマットされたnearMissNoを設定する（例: NearMissNo-00001）
             self.nearMissNo = f"NearMissNo-{str(new_number).zfill(5)}"
 
-        # オーバーライドしたsaveメソッドで親クラスのsaveも実行
+        # 親クラスのsaveメソッドを呼び出して保存処理を実行
         super(NearMiss, self).save(*args, **kwargs)
 
         

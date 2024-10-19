@@ -1,6 +1,6 @@
 <template>
-    <div>
-        <div>
+    <div class="card card-light-yellow mb-0">
+        <div class="flex justify-content-between mb-3" style="height: 150px">
             <span class="block text-500 font-medium mb-3">Number of near misses</span>
             <div class="large-bold-text">{{ nearMissTotal }}件</div>
         </div>
