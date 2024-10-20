@@ -470,6 +470,8 @@ export default {
         const submitForm = async () => {
             try {
                 const companyCode = userStore.companyCode;
+                const nearMissNo = formState.NearMissNo || null; // nearMissNo が未定義の場合に null を代入
+
                 if (!companyCode) {
                     throw new Error('CompanyCode is missing.');
                 }
@@ -489,29 +491,32 @@ export default {
                     solvedActionItems: formState.SolvedActionItems,
                     measures: calculateCategory(),
                     description: formState.Description,
-                    companyCode: companyCode
+                    companyCode: companyCode,
+                    nearMissNo: nearMissNo // 更新時に nearMissNo を送信
                 };
-                if (isEditing.value) {
-                    await axios.put(`http://127.0.0.1:8000/api/nearMiss/${formState.NearMissNo}/`, postData);
+
+                let response;
+
+                if (nearMissNo) {
+                    // nearMissNo が存在する場合は更新 (PUT)
+                    response = await axios.put(`http://127.0.0.1:8000/api/nearMiss/nearMissList/${nearMissNo}/`, postData);
                 } else {
-                    await axios.post('http://127.0.0.1:8000/api/nearMiss/nearMissList/', postData);
+                    // nearMissNo が存在しない場合は新規作成 (POST)
+                    response = await axios.post('http://127.0.0.1:8000/api/nearMiss/nearMissList/', postData);
                 }
 
                 // 成功時にアラートを表示
                 alertType.value = 'success';
-                alertMessage.value = 'Near Miss has been saved successfully!';
+                alertMessage.value = `Near Miss has been ${nearMissNo ? 'updated' : 'saved'} successfully!`;
                 showAlert.value = true;
-
-                console.log('showAlert after submit:', showAlert.value); // アラートの表示状態を確認
 
                 resetForm(); // フォームをリセット
             } catch (error) {
-                // エラー処理
                 alertType.value = 'error';
-                alertMessage.value = 'Failed to save the Near Miss entry.';
+                alertMessage.value = `Failed to ${nearMissNo ? 'update' : 'save'} the Near Miss entry.`;
                 showAlert.value = true;
 
-                console.log('showAlert on error:', showAlert.value); // エラー時のアラートの表示状態を確認
+                console.error('Error during form submission:', error);
             }
         };
 

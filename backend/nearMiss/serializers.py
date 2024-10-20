@@ -57,6 +57,52 @@ class NearMissSerializer(serializers.ModelSerializer):
         )
         return near_miss
 
+    # updateメソッドを追加してネストされたフィールドも更新できるようにする
+    def update(self, instance, validated_data):
+        # companyCode の更新処理
+        company_code_data = validated_data.pop('companyCode', None)
+        if company_code_data:
+            company_code = CompanyCode.objects.filter(companyCode=company_code_data).first()
+            if not company_code:
+                company_code = CompanyCode.objects.create(companyCode=company_code_data)
+            instance.companyCode = company_code
+
+        # userName の更新処理
+        user_data = validated_data.pop('userName', None)
+        if user_data:
+            user_name = user_data.get('userName')
+            email = user_data.get('email', None)
+
+            user, created = CustomUser.objects.get_or_create(userName=user_name)
+            if created:
+                user.email = email
+                user.save()
+            elif email and user.email != email:
+                user.email = email
+                user.save()
+
+            instance.userName = user  # userオブジェクトを更新
+
+        # その他のフィールドの更新処理
+        instance.department = validated_data.get('department', instance.department)
+        instance.dateOfOccurrence = validated_data.get('dateOfOccurrence', instance.dateOfOccurrence)
+        instance.placeOfOccurrence = validated_data.get('placeOfOccurrence', instance.placeOfOccurrence)
+        instance.typeOfAccident = validated_data.get('typeOfAccident', instance.typeOfAccident)
+        instance.description = validated_data.get('description', instance.description)
+        instance.factor = validated_data.get('factor', instance.factor)
+        instance.injuredLv = validated_data.get('injuredLv', instance.injuredLv)
+        instance.equipmentDamageLv = validated_data.get('equipmentDamageLv', instance.equipmentDamageLv)
+        instance.affectOfEnviroment = validated_data.get('affectOfEnviroment', instance.affectOfEnviroment)
+        instance.newsCoverage = validated_data.get('newsCoverage', instance.newsCoverage)
+        instance.measures = validated_data.get('measures', instance.measures)
+        instance.actionItems = validated_data.get('actionItems', instance.actionItems)
+        instance.solvedActionItems = validated_data.get('solvedActionItems', instance.solvedActionItems)
+
+        # インスタンスを保存して更新
+        instance.save()
+
+        return instance
+
 
 
 class CompanyNearMissSerializer(serializers.ModelSerializer):
