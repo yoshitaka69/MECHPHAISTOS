@@ -274,7 +274,6 @@ export default {
                 // 編集モードの場合、APIからデータを取得してフォームに設定する
                 const response = await fetchNearMissData(props.nearMissNo);
                 if (response) {
-                    // フォームのフィールドごとにデータをマッピング
                     formState.NearMissNo = response.nearMissNo;
                     formState.Date = new Date(response.dateOfOccurrence); // 日付の変換
                     formState.Name = response.userName.userName; // ネストされたデータを展開
@@ -289,12 +288,14 @@ export default {
                     formState.ActionItems = response.actionItems;
                     formState.SolvedActionItems = response.solvedActionItems;
                     formState.Description = response.description;
+
+                    console.log('編集モード: NearMissNo =', formState.NearMissNo); // 編集時のNearMissNoをログに表示
                 }
-                console.log('Initialized form with nearMissNo:', formState.NearMissNo);
             } else {
                 // 新規作成の場合、NearMissNo を +1
                 lastNearMissNo.value = await getLastNearMissNo();
-                console.log('Initialized form with new nearMissNo:', lastNearMissNo.value);
+                formState.NearMissNo = lastNearMissNo.value; // 新規作成時のNearMissNoをセット
+                console.log('新規作成モード: 新しい NearMissNo =', lastNearMissNo.value); // 新規作成時のNearMissNoをログに表示
             }
         };
 
@@ -337,6 +338,9 @@ export default {
             if (queryIsEditing && queryNearMissNo) {
                 isEditing.value = true;
 
+                // 編集モードであることをログに出力
+                console.log('フォームが編集モードで開かれました: NearMissNo =', queryNearMissNo);
+
                 // データを取得してフォームに反映
                 const nearMissData = await fetchNearMissData(companyCode, queryNearMissNo);
                 if (nearMissData) {
@@ -356,9 +360,14 @@ export default {
                     formState.Description = nearMissData.description;
                 }
             } else {
+                // 新規作成モードであることをログに出力
+                console.log('フォームが新規作成モードで開かれました');
+
                 formState.NearMissNo = await getLastNearMissNo(); // 新規作成モードの場合の NearMissNo の設定
+                console.log('新規NearMissNo =', formState.NearMissNo);
             }
         });
+
         const lastNearMissNo = ref('001-testChemical-000001');
         const formState = reactive({
             NearMissNo: '',
@@ -468,58 +477,56 @@ export default {
         };
 
         const submitForm = async () => {
-    try {
-        const companyCode = userStore.companyCode;
-        const nearMissNo = formState.NearMissNo || null; // nearMissNo が未定義の場合に null を代入
+            try {
+                const companyCode = userStore.companyCode;
 
-        if (!companyCode) {
-            throw new Error('CompanyCode is missing.');
-        }
+                if (!companyCode) {
+                    throw new Error('CompanyCode is missing.');
+                }
 
-        const postData = {
-            userName: { userName: formState.Name, email: formState.Email },
-            department: formState.Department,
-            dateOfOccurrence: moment(formState.Date).format('YYYY-MM-DD'),
-            placeOfOccurrence: formState.Where,
-            typeOfAccident: formState.TypeOfAccIdent,
-            factor: formState.Factor,
-            injuredLv: formState.InjuredLv,
-            equipmentDamageLv: formState.EquipmentDamageLv,
-            affectOfEnviroment: formState.AffectOfEnviroment,
-            newsCoverage: formState.NewsCoverage,
-            actionItems: formState.ActionItems,
-            solvedActionItems: formState.SolvedActionItems,
-            measures: calculateCategory(),
-            description: formState.Description,
-            companyCode: companyCode,
-            nearMissNo: nearMissNo // 更新時に nearMissNo を送信
+                const postData = {
+                    userName: { userName: formState.Name, email: formState.Email },
+                    department: formState.Department,
+                    dateOfOccurrence: moment(formState.Date).format('YYYY-MM-DD'),
+                    placeOfOccurrence: formState.Where,
+                    typeOfAccident: formState.TypeOfAccIdent,
+                    factor: formState.Factor,
+                    injuredLv: formState.InjuredLv,
+                    equipmentDamageLv: formState.EquipmentDamageLv,
+                    affectOfEnviroment: formState.AffectOfEnviroment,
+                    newsCoverage: formState.NewsCoverage,
+                    actionItems: formState.ActionItems,
+                    solvedActionItems: formState.SolvedActionItems,
+                    measures: calculateCategory(),
+                    description: formState.Description,
+                    companyCode: companyCode
+                };
+
+                let response;
+
+                if (isEditing.value) {
+                    // 編集モード (PUT)
+                    response = await axios.post('http://127.0.0.1:8000/api/nearMiss/nearMissList/', postData);
+                    console.log('編集モードでPUTリクエストを送信:', postData);
+                } else {
+                    // 新規作成モード (POST)
+                    response = await axios.post('http://127.0.0.1:8000/api/nearMiss/nearMissList/', postData);
+                    console.log('新規作成モードでPOSTリクエストを送信:', postData);
+                    resetForm(); // 新規作成後のみフォームをリセット
+                }
+
+                // 成功時にアラートを表示
+                alertType.value = 'success';
+                alertMessage.value = `Near Miss has been ${isEditing.value ? 'updated' : 'saved'} successfully!`;
+                showAlert.value = true;
+            } catch (error) {
+                alertType.value = 'error';
+                alertMessage.value = `Failed to ${isEditing.value ? 'update' : 'save'} the Near Miss entry.`;
+                showAlert.value = true;
+
+                console.error('Error during form submission:', error);
+            }
         };
-
-        let response;
-
-        if (nearMissNo) {
-            // nearMissNo が存在する場合は更新 (PUT)
-            response = await axios.put(`http://127.0.0.1:8000/api/nearMiss/nearMissList/${nearMissNo}/`, postData);
-        } else {
-            // nearMissNo が存在しない場合は新規作成 (POST)
-            response = await axios.post('http://127.0.0.1:8000/api/nearMiss/nearMissList/', postData);
-        }
-
-        // 成功時にアラートを表示
-        alertType.value = 'success';
-        alertMessage.value = `Near Miss has been ${nearMissNo ? 'updated' : 'saved'} successfully!`;
-        showAlert.value = true;
-
-        resetForm(); // フォームをリセット
-    } catch (error) {
-        alertType.value = 'error';
-        alertMessage.value = `Failed to ${nearMissNo ? 'update' : 'save'} the Near Miss entry.`;
-        showAlert.value = true;
-
-        console.error('Error during form submission:', error);
-    }
-};
-
 
         return {
             lastNearMissNo,

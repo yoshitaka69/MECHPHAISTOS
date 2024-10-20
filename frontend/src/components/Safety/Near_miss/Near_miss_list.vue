@@ -147,7 +147,6 @@ import Calendar from 'primevue/calendar';
 import Tag from 'primevue/tag';
 import Dialog from 'primevue/dialog';
 
-
 const itemsFromApi = ref([]);
 const serverItemsLength = ref(0);
 const serverOptions = ref({
@@ -168,7 +167,6 @@ const filters = ref({
     solvedActionItems: { value: null, matchMode: FilterMatchMode.EQUALS }
 });
 
-
 const formState = reactive({
     NearMissNo: '',
     Name: '',
@@ -186,14 +184,11 @@ const formState = reactive({
     Description: ''
 });
 
-
-
 // 新しいタブでフォームを開く処理
 const openNewEntry = () => {
-    isEditing.value = false;  // 新規作成モード
+    isEditing.value = false; // 新規作成モード
     window.open('/near_miss_input_form', '_blank'); // 新しいタブでフォームを開く
 };
-
 
 const getMeasuresClass = (measures) => {
     switch (measures) {
@@ -222,28 +217,27 @@ const confirmDelete = (nearMiss) => {
     showDeleteDialog.value = true;
 };
 
-
 const editItem = (item) => {
-    console.log('Editing item:', item);  // デバッグ用に item の内容を出力
+    console.log('Editing item:', item); // デバッグ用に item の内容を出力
 
     // nearMissNoが正しく渡されているか確認
-    console.log('nearMissNo:', item.nearMissNo);  
+    console.log('nearMissNo:', item.nearMissNo);
 
     // フォームデータを設定
-    formState.NearMissNo = item.nearMissNo || '';  
-    formState.Name = item.userName && item.userName.userName ? item.userName.userName : '';  
-    formState.Department = item.department || '';  
-    formState.Date = item.dateOfOccurrence || null;  
-    formState.Where = item.placeOfOccurrence || '';  
-    formState.TypeOfAccIdent = item.typeOfAccident || '';  
-    formState.Factor = item.factor || '';  
-    formState.InjuredLv = item.injuredLv || '';  
-    formState.EquipmentDamageLv = item.equipmentDamageLv || '';  
-    formState.AffectOfEnviroment = item.affectOfEnviroment || '';  
-    formState.NewsCoverage = item.newsCoverage || '';  
-    formState.ActionItems = item.actionItems || '';  
-    formState.SolvedActionItems = item.solvedActionItems || false;  
-    formState.Description = item.description || '';  
+    formState.NearMissNo = item.nearMissNo || '';
+    formState.Name = item.userName && item.userName.userName ? item.userName.userName : '';
+    formState.Department = item.department || '';
+    formState.Date = item.dateOfOccurrence || null;
+    formState.Where = item.placeOfOccurrence || '';
+    formState.TypeOfAccIdent = item.typeOfAccident || '';
+    formState.Factor = item.factor || '';
+    formState.InjuredLv = item.injuredLv || '';
+    formState.EquipmentDamageLv = item.equipmentDamageLv || '';
+    formState.AffectOfEnviroment = item.affectOfEnviroment || '';
+    formState.NewsCoverage = item.newsCoverage || '';
+    formState.ActionItems = item.actionItems || '';
+    formState.SolvedActionItems = item.solvedActionItems || false;
+    formState.Description = item.description || '';
 
     // 編集モードを有効にしてフォームを表示
     isEditing.value = true; // 編集モードを設定
@@ -251,11 +245,6 @@ const editItem = (item) => {
     // 編集モードとnearMissNoをクエリパラメータとして渡す
     window.open(`/near_miss_input_form?nearMissNo=${nearMissNo}&isEditing=true`, '_blank');
 };
-
-
-
-
-
 
 // 削除処理
 const deleteNearMiss = async () => {
@@ -383,8 +372,6 @@ const onSort = (event) => {
 const onFilter = (event) => {
     filters.value = event.filters;
 };
-
-
 
 const onPage = (event) => {
     serverOptions.value.page = event.page + 1;
