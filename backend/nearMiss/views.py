@@ -31,17 +31,17 @@ class NearMissViewSet(viewsets.ModelViewSet):
     serializer_class = NearMissSerializer
 
     def get_object(self):
-        near_miss_no = self.kwargs.get('nearMissNo')
+        near_miss_no = self.kwargs.get('pk')  # URLのパスから<id>を取得する
         company_code_str = self.request.data.get('companyCode')
-        
+
         if not near_miss_no or not company_code_str:
             raise Http404("NearMissNo or CompanyCode missing")
 
         try:
-            # companyCode と nearMissNo で NearMiss を取得
             return NearMiss.objects.get(companyCode__companyCode=company_code_str, nearMissNo=near_miss_no)
         except NearMiss.DoesNotExist:
             raise Http404("NearMiss not found with given NearMissNo and CompanyCode")
+
 
     def create(self, request, *args, **kwargs):
         data = request.data
@@ -99,13 +99,14 @@ class NearMissViewSet(viewsets.ModelViewSet):
         company_code_str = data.get('companyCode')
         near_miss_no = data.get('nearMissNo')
 
+        # companyCode と nearMissNo の両方が必要
         if not company_code_str or not near_miss_no:
             return Response(
                 {"error": "companyCode and nearMissNo are required for update."},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        # companyCode と nearMissNo で NearMiss を取得
+        # NearMissオブジェクトを取得する
         try:
             near_miss = NearMiss.objects.get(companyCode__companyCode=company_code_str, nearMissNo=near_miss_no)
         except NearMiss.DoesNotExist:
@@ -114,8 +115,8 @@ class NearMissViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_404_NOT_FOUND
             )
 
-        # 既存のNearMissオブジェクトに対してシリアライザを使って更新
-        serializer = self.get_serializer(near_miss, data=data)
+        # シリアライザを使って既存オブジェクトを更新
+        serializer = self.get_serializer(near_miss, data=data, partial=True)  # partial=Trueで全フィールド更新しなくてもOKにする
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
 
@@ -123,6 +124,7 @@ class NearMissViewSet(viewsets.ModelViewSet):
             "nearMissNo": near_miss.nearMissNo,
             "message": "NearMiss updated successfully."
         }, status=status.HTTP_200_OK)
+
 
     # 更新時の保存処理
     def perform_update(self, serializer):

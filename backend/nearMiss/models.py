@@ -44,38 +44,38 @@ class NearMiss(models.Model):
     # saveメソッドをオーバーライドして、nearMissNoが未設定の場合に自動的に番号を生成する
     def save(self, *args, **kwargs):
         if not self.nearMissNo:
-            # 同じcompanyCodeに関連する既存のNearMissNoを取得
+            # 既存の NearMissNo を取得し、番号を自動生成するロジック
             existing_near_miss_nos = NearMiss.objects.filter(companyCode=self.companyCode).values_list('nearMissNo', flat=True).order_by('nearMissNo')
 
-            # NearMissNoの数値部分を抽出し、使用されていない最小の番号を探す
+            # 未使用の番号を探す
             used_numbers = set(int(nm.split('-')[-1]) for nm in existing_near_miss_nos if nm.split('-')[-1].isdigit())
             new_number = None
 
-            # 1から始めて、未使用の番号を探す
+            # 未使用の番号を探す
             for i in range(1, len(used_numbers) + 2):
                 if i not in used_numbers:
                     new_number = i
                     break
 
-            # もし新しい番号が見つからなければ、デフォルトで1を設定
+            # 最大の番号を取得し、その次の番号を生成
             if new_number is None:
                 new_number = max(used_numbers) + 1 if used_numbers else 1
 
-            # フォーマットされたnearMissNoを設定する（例: NearMissNo-00001）
+            # 番号をフォーマットして設定
             self.nearMissNo = f"NearMissNo-{str(new_number).zfill(5)}"
 
-        # 親クラスのsaveメソッドを呼び出して保存処理を実行
+        # オーバーライドしたsaveメソッドで親クラスのsaveも実行
         super(NearMiss, self).save(*args, **kwargs)
 
         
 
-    #def save(self, *args, **kwargs):
-        #super().save(*args, **kwargs)
-        #update_total_of_near_miss(self.companyCode_id)
-        #update_total_of_action_items(self.companyCode_id)
-        #update_total_of_solved_action_items(self.companyCode_id)
-        #update_count_of_level_a(self.companyCode_id)
-        #update_danger_area(self.companyCode_id)
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        update_total_of_near_miss(self.companyCode_id)
+        update_total_of_action_items(self.companyCode_id)
+        update_total_of_solved_action_items(self.companyCode_id)
+        update_count_of_level_a(self.companyCode_id)
+        update_danger_area(self.companyCode_id)
 
 
 
@@ -138,8 +138,32 @@ class SafetyIndicators(models.Model):
 
 
 
+class TrendSafetyIndicators(models.Model):
+    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='trendSafetyIndicators_companyCode',null=True, blank=True)
+    companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE,related_name='trendSafetyIndicators_companyName', null=True, blank=True)
+
+    safetyIndicators = models.ForeignKey(SafetyIndicators, on_delete=models.CASCADE,related_name='trendSafetyIndicators_companyName', null=True, blank=True)
+    lastUpdateDay = models.DateField(verbose_name='lastUpdateDay', null=True,blank=True, default=timezone.now)
+
+
+
+    class Meta:
+        verbose_name = 'Trend Safety Indicators'
+        verbose_name_plural = 'Trend Safety Indicators'
+        ordering = ('companyCode',)
+
+    def __str__(self):
+        return f"{self.companyCode}"
+
+
+
+
+
+
+#------------------------------------------------------------------#
 # update_total_of_near_miss 関数
 # この関数はモデルの外部に配置し、スタンドアローンの関数として扱います。 CHECK OK
+#------------------------------------------------------------------#
 def update_total_of_near_miss(company_code_id):
     total_near_miss_count = NearMiss.objects.filter(companyCode_id=company_code_id).count()
     safety_indicator, created = SafetyIndicators.objects.get_or_create(
@@ -154,7 +178,9 @@ def update_total_of_near_miss(company_code_id):
 
 
 
+#------------------------------------------------------------------#
 #action itemsのトータル数をカウントする。 CHECK OK
+#------------------------------------------------------------------#
 def update_total_of_action_items(company_code_id):
     action_items_count = NearMiss.objects.filter(companyCode_id=company_code_id).count()
     safety_indicator, created = SafetyIndicators.objects.get_or_create(
@@ -169,7 +195,9 @@ def update_total_of_action_items(company_code_id):
 
 
 
+#------------------------------------------------------------------#
 #solved action itemsのトータル数をカウントする。 CHECK OK
+#------------------------------------------------------------------#
 def update_total_of_solved_action_items(company_code_id):
     # ここでのカウントロジックは、NearMissのsolvedActionItemsをどのように扱っているかによります
     # 例えば、solvedActionItemsがブール値フィールドであれば、filter()で条件を指定する
@@ -185,7 +213,9 @@ def update_total_of_solved_action_items(company_code_id):
 
 
 
+#-----------------------------------------------------------------------------------------------------#
 # この関数は SafetyIndicators モデルの外部に配置し、スタンドアローンの関数として扱います。 CHECK OK
+#-----------------------------------------------------------------------------------------------------#
 def update_count_of_level_a(company_code_id):
     level_a_count = NearMiss.objects.filter(companyCode_id=company_code_id, measures='A').count()
     safety_indicator, created = SafetyIndicators.objects.get_or_create(
@@ -199,7 +229,11 @@ def update_count_of_level_a(company_code_id):
 
 
 
+
+
+#-----------------------------------------------------------------------------------------------------#
 #danger Area 算出関数　CHECK OK
+#-----------------------------------------------------------------------------------------------------#
 def update_danger_area(company_code_id):
     # companyCodeに基づいてNearMissインスタンスのplaceOfOccurrenceを集計
     most_common_place = NearMiss.objects.filter(companyCode_id=company_code_id) \
@@ -222,21 +256,5 @@ def update_danger_area(company_code_id):
 
 
 
-class TrendSafetyIndicators(models.Model):
-    companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='trendSafetyIndicators_companyCode',null=True, blank=True)
-    companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE,related_name='trendSafetyIndicators_companyName', null=True, blank=True)
-
-    safetyIndicators = models.ForeignKey(SafetyIndicators, on_delete=models.CASCADE,related_name='trendSafetyIndicators_companyName', null=True, blank=True)
-    lastUpdateDay = models.DateField(verbose_name='lastUpdateDay', null=True,blank=True, default=timezone.now)
-
-
-
-    class Meta:
-        verbose_name = 'Trend Safety Indicators'
-        verbose_name_plural = 'Trend Safety Indicators'
-        ordering = ('companyCode',)
-
-    def __str__(self):
-        return f"{self.companyCode}"
 
 

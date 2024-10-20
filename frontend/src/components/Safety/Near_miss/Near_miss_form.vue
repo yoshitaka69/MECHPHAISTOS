@@ -485,9 +485,10 @@ export default {
                 }
 
                 const postData = {
+                    nearMissNo: formState.NearMissNo, // NearMissNoを追加
                     userName: { userName: formState.Name, email: formState.Email },
                     department: formState.Department,
-                    dateOfOccurrence: moment(formState.Date).format('YYYY-MM-DD'),
+                    dateOfOccurrence: moment(formState.Date).format('YYYY-MM-DD'), // 日付のフォーマット変換
                     placeOfOccurrence: formState.Where,
                     typeOfAccident: formState.TypeOfAccIdent,
                     factor: formState.Factor,
@@ -499,14 +500,15 @@ export default {
                     solvedActionItems: formState.SolvedActionItems,
                     measures: calculateCategory(),
                     description: formState.Description,
-                    companyCode: companyCode
+                    companyCode: companyCode // 会社コード
                 };
 
                 let response;
 
                 if (isEditing.value) {
                     // 編集モード (PUT)
-                    response = await axios.post('http://127.0.0.1:8000/api/nearMiss/nearMissList/', postData);
+                    const url = `http://127.0.0.1:8000/api/nearMiss/nearMissList/${formState.NearMissNo}/`; // nearMissNoをURLに含める
+                    response = await axios.put(url, postData); // PUTリクエストに変更
                     console.log('編集モードでPUTリクエストを送信:', postData);
                 } else {
                     // 新規作成モード (POST)
