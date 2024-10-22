@@ -1,17 +1,30 @@
 <template>
-    <div class="card card-light-yellow mb-0">
-        <div class="flex justify-content-between mb-3" style="height: 150px">
+    <div class="card card-light-yellow mb-0 custom-height"> <!-- 背景色を黄色にし、カスタム高さを指定 -->
+        <div class="flex-column justify-content-between mb-3" style="height: auto;">
+            <!-- 縦に並べるため、flex-columnを使用 -->
             <span class="block text-500 font-medium mb-3">Action Items</span>
             <!-- countOfActionItemsの表示 -->
-            <div class="large-bold-text">Action Items: {{ countOfActionItems }} &nbsp;&nbsp;Solved Action Items: {{ countOfSolvedActionItems }}</div>
-            <!-- rateOfActionItemsの表示 -->
-            <div class="large-bold-text">Rate of Action Items: {{ rateOfActionItems }}%</div>
-        </div>
-        <div class="icon-container">
-            <div class="flex align-items-center justify-content-center bg-orange-100 border-round" style="width: 2.5rem; height: 2.5rem">
-                <i class="pi pi-map-marker text-orange-500 text-xl"></i>
+            <div class="flex align-items-center mb-3"> <!-- アイコンとテキストを横並びに -->
+                <i class="pi pi-exclamation-circle text-orange-500 text-4xl mr-2"></i> <!-- アイコンを大きく -->
+                <div class="normal-bold-text"> <!-- フォントサイズを元に戻しました -->
+                    Action Items: {{ countOfActionItems }} &nbsp;&nbsp;Solved Action Items: {{ countOfSolvedActionItems }}
+                </div>
             </div>
-            <i class="pi pi-thumbs-up swing" style="font-size: 3rem; margin-left: 1rem"></i>
+            <!-- rateOfActionItemsの表示 -->
+            <div class="flex align-items-center"> <!-- アイコンとテキストを横並びに -->
+                <i class="pi pi-check-circle text-green-500 text-4xl mr-2"></i> <!-- アイコンを大きく -->
+                <div class="normal-bold-text"> <!-- フォントサイズを元に戻しました -->
+                    Rate of Action Items: {{ rateOfActionItems }}%
+                </div>
+            </div>
+        </div>
+
+        <div class="icon-container mt-4">
+            <!-- アイコンコンテナ -->
+            <div class="flex align-items-center justify-content-center bg-orange-100 border-round" style="width: 4rem; height: 4rem">
+                <i class="pi pi-map-marker text-orange-500 text-2xl"></i> <!-- サイズアップ -->
+            </div>
+            <i class="pi pi-thumbs-up swing" style="font-size: 4rem; margin-left: 1rem"></i> <!-- アイコンを大きく -->
         </div>
     </div>
 </template>
@@ -33,11 +46,11 @@ export default {
         updateFontSize() {
             const card = this.$el.querySelector('.card');
             const textElements = this.$el.querySelectorAll('.large-bold-text');
-            const maxFontSize = 18; // 最大のフォントサイズを設定します。
+            const maxFontSize = 24; // 最大のフォントサイズを大きく設定します。
 
             if (card && textElements.length > 0) {
-                let fontSize = card.offsetHeight * 0.05; // Adjust this value as needed
-                fontSize = fontSize > maxFontSize ? maxFontSize : fontSize; // フォントサイズが最大値を超えていたら、最大値に設定します。
+                let fontSize = card.offsetHeight * 0.06; // 調整
+                fontSize = fontSize > maxFontSize ? maxFontSize : fontSize; // フォントサイズの上限を調整します。
 
                 textElements.forEach((element) => {
                     element.style.fontSize = `${fontSize}px`;
@@ -59,10 +72,8 @@ export default {
                 });
                 const dataList = response.data;
 
-                // 対象のcompanyCodeを持つオブジェクトを見つける
                 const targetData = dataList.find((data) => data.companyCode === userStore.companyCode);
 
-                // 対象のsafetyIndicatorsListが存在し、要素があるかをチェック
                 if (targetData && targetData.safetyIndicatorsList && targetData.safetyIndicatorsList.length > 0) {
                     const firstItem = targetData.safetyIndicatorsList[0];
                     countOfActionItems.value = firstItem.countOfActionItems;
@@ -84,6 +95,39 @@ export default {
 </script>
 
 <style scoped>
+/* カードの高さを設定 */
+.custom-height {
+    height: 250px; /* カスタム高さを指定 */
+}
+
+/* 背景色を黄色に設定 */
+.card-light-yellow {
+    background-color: #fffae6; /* 淡い黄色の背景色 */
+}
+
+.large-bold-text {
+    font-size: 2rem; /* タイトルのフォントサイズ */
+    font-weight: bold; /* 太字 */
+}
+
+.normal-bold-text {
+    font-size: 1.5rem; /* Action Items部分のフォントサイズを元に戻す */
+    font-weight: bold; /* 太字 */
+}
+
+.block.text-500.font-medium.mb-3 {
+    font-weight: bold; /* 見出しを太字に設定 */
+    font-size: 2.5rem; /* フォントサイズをさらに大きく */
+    color: black; /* 文字色を黒に設定 */
+}
+
+.icon-container {
+    display: flex;
+    align-items: center;
+    margin-top: 1rem; /* 余白を追加 */
+}
+
+/* アイコンのアニメーション */
 .swing {
     display: inline-block;
     animation: swing ease-in-out 1s infinite alternate;
@@ -98,36 +142,9 @@ export default {
     }
 }
 
-.vibrate {
-    display: inline-block;
-    animation: vibrate 0.5s infinite alternate;
-}
-
-@keyframes vibrate {
-    0% {
-        transform: translateY(-5px);
-    }
-    100% {
-        transform: translateY(5px);
-    }
-}
-
-.large-bold-text {
-    font-size: 1.5rem; /* 更に大きいフォントサイズに調整 */
-    font-weight: bold; /* 太字 */
-}
-
-.block.text-500.font-medium.mb-3 {
-    font-weight: bold;
-    /* 太字に設定 */
-    font-size: 1.3em;
-    /* 現在のフォントサイズの2倍 */
-    color: black;
-    /* 文字色を黒に設定 */
-}
-
-.icon-container {
-    display: flex;
-    align-items: center;
+/* アイコンとテキストを横並びにするためのスタイル */
+.pi-exclamation-circle,
+.pi-check-circle {
+    margin-right: 10px; /* アイコンとテキストの間に余白 */
 }
 </style>

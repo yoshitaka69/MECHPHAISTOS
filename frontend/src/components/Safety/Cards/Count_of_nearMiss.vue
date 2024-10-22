@@ -1,10 +1,16 @@
 <template>
-    <div class="card card-light-yellow mb-0">
-        <div class="flex justify-content-between mb-3" style="height: 150px">
+    <div class="card card-light-yellow custom-height"> <!-- 背景色を黄色に変更 -->
+        <div class="flex-column justify-content-between mb-3" style="height: auto;">
+            <!-- 縦に並べるため、flex-columnを使用 -->
             <span class="block text-500 font-medium mb-3">Number of near misses</span>
-            <div class="large-bold-text">{{ nearMissTotal }}件</div>
+            <div class="flex align-items-center"> <!-- アイコンと件数を横並びに -->
+                <i class="pi pi-exclamation-circle text-orange-500 text-3xl mr-2"></i> <!-- 任意のアイコンを左側に追加 -->
+                <div class="large-bold-text">{{ nearMissTotal }}件</div>
+            </div>
         </div>
-        <div class="flex align-items-center justify-content-center bg-orange-100 border-round" style="width: 2.5rem; height: 2.5rem">
+
+        <!-- アイコンとスタイルの調整 -->
+        <div class="icon-wrapper flex align-items-center justify-content-center bg-orange-100 border-round">
             <i class="pi pi-map-marker text-orange-500 text-xl"></i>
         </div>
     </div>
@@ -46,14 +52,42 @@ export default {
 </script>
 
 <style scoped>
+/* カードの高さを設定 */
+.custom-height {
+    height: 250px; /* カスタム高さを指定 */
+}
+
+/* 背景色を黄色に設定 */
+.card-light-yellow {
+    background-color: #fffae6; /* 淡い黄色の背景色 */
+}
+
 .large-bold-text {
-    font-size: 2rem; /* 更に大きいフォントサイズに調整 */
+    font-size: 4rem; /* 件数を大きく強調 */
     font-weight: bold; /* 太字 */
+    margin-top: 1rem; /* 上に余白を追加して改行の間隔を調整 */
 }
 
 .block.text-500.font-medium.mb-3 {
-    font-weight: bold; /* 太字に設定 */
-    font-size: 1.5em; /* 現在のフォントサイズの2倍 */
+    font-weight: bold; /* 見出しを太字に設定 */
+    font-size: 2rem; /* フォントサイズを大きく */
     color: black; /* 文字色を黒に設定 */
+}
+
+/* アイコンを中央に配置 */
+.icon-wrapper {
+    width: 3rem; 
+    height: 3rem;
+    margin-top: 1rem; /* 余白を追加 */
+}
+
+.pi-map-marker {
+    font-size: 2rem; /* アイコンサイズ */
+    color: orange; /* アイコンの色 */
+}
+
+/* アイコンと件数を横並びにするためのスタイル */
+.pi-exclamation-circle {
+    margin-right: 10px; /* アイコンとテキストの間に余白 */
 }
 </style>

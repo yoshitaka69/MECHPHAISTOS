@@ -10,35 +10,76 @@ class WorkOrderAdmin(admin.ModelAdmin):
 
 
 
+
+
 class WorkPermissionAdmin(admin.ModelAdmin):
+    # 管理画面で表示するフィールドを指定
     list_display = (
-        'workOrderNo', 'companyCode', 'companyName', 'plant', 'equipment', 'taskName', 
-        'constructionPeriod', 'personInCharge', 'contractor', 'status', 'gasDetection', 
-        'oxygenDeficiency', 'valve1', 'valve2', 'valve3', 'valve4', 'valve5', 
-        'breaker1', 'breaker2', 'breaker3', 'breaker4', 'breaker5', 
+        'workOrderNo', 'companyCode', 'plant', 'equipment', 
+        'status', 'taskName', 'personInCharge', 
+        'contractor', 'gasDetection', 'oxygenDeficiency', 
         'onSiteSafety', 'approver', 'createdAt', 'updatedAt'
     )
-    search_fields = (
-        'workOrderNo__workOrderNo', 'companyCode__companyCode', 'companyName__companyName', 
-        'plant__plant', 'equipment', 'taskName', 'personInCharge', 'contractor', 'status', 
-        'approver'
-    )
-    list_filter = ('status', 'plant', 'equipment', 'gasDetection', 'oxygenDeficiency', 'onSiteSafety')
-    ordering = ('workOrderNo', 'createdAt')
-    save_on_top = True #上部にもsaveボタンを配置
 
-    list_per_page = 50 # １ページあたりに表示するオブジェクト数を指定
+    # 管理画面で検索可能なフィールド
+    search_fields = ('workOrderNo__workOrderNo', 'plant', 'taskName', 'personInCharge', 'contractor', 'approver')
+
+    # フィルタリング機能を追加
+    list_filter = ('plant', 'status', 'gasDetection', 'oxygenDeficiency', 'onSiteSafety')
+
+    # 編集可能なフィールドを指定
+    fieldsets = (
+        (None, {
+            'fields': (
+                'companyCode', 'plant', 'equipment', 'workOrderNo', 'status',
+                'taskName', 'constructionPeriod', 'personInCharge', 'contractor', 
+                'gasDetection', 'oxygenDeficiency', 'onSiteSafety', 'approver'
+            )
+        }),
+        ('Valve Inputs and Approvals', {
+            'fields': ('valveInputs', 'valveApprovals'),
+        }),
+        ('Breaker Inputs and Approvals', {
+            'fields': ('breakerInputs', 'breakerApprovals'),
+        }),
+        ('Timestamps', {
+            'fields': ('createdAt', 'updatedAt'),
+        }),
+    )
+    # 編集画面で読み取り専用のフィールド
+    readonly_fields = ('createdAt', 'updatedAt')
+
+
 
 
 
 class WorkOrderManagementAdmin(admin.ModelAdmin):
-    list_display = ('companyCode','companyName','plant', 'equipment', )
-    search_fields = ('companyCode','companyName','plant', 'equipment',)
-    list_filter = ('companyCode','companyName','plant', 'equipment',) # adminで右側にあるフィルターBOXのこと
-    ordering = ('companyCode',) # 表示する順番
-    save_on_top = True #上部にもsaveボタンを配置
+    # 管理画面で表示するフィールドのリスト
+    list_display = (
+        'companyCode', 'plant', 'equipment', 
+        'valve1_approval_rate', 'valve2_approval_rate', 'valve3_approval_rate', 
+        'valve4_approval_rate', 'valve5_approval_rate', 
+        'breaker1_approval_rate', 'breaker2_approval_rate', 'breaker3_approval_rate', 
+        'breaker4_approval_rate', 'breaker5_approval_rate', 'last_updated'
+    )
+    
+    # 編集可能なフィールドのリスト
+    list_editable = (
+        'valve1_approval_rate', 'valve2_approval_rate', 'valve3_approval_rate', 
+        'valve4_approval_rate', 'valve5_approval_rate', 
+        'breaker1_approval_rate', 'breaker2_approval_rate', 'breaker3_approval_rate', 
+        'breaker4_approval_rate', 'breaker5_approval_rate'
+    )
+    
+    # フィルターオプション
+    list_filter = ('companyCode', 'plant', 'last_updated')
 
-    list_per_page = 50 # １ページあたりに表示するオブジェクト数を指定
+    # 検索可能なフィールド
+    search_fields = ('companyCode__name', 'plant', 'equipment')
+
+    # ページング（1ページあたりの表示件数）
+    list_per_page = 25
+
 
 
 

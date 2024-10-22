@@ -31,35 +31,20 @@ class CompanyCodeWorkOrderSerializer(serializers.ModelSerializer):
         
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#---------------------------------------------------------------------------------------------------------------
-
 class WorkPermissionSerializer(serializers.ModelSerializer):
     class Meta:
         model = WorkPermission
         fields = '__all__'
 
 class CompanyCodeWorkPermissionSerializer(serializers.ModelSerializer):
-    workOrderPermissionList = WorkPermissionSerializer(many=True, read_only=True, source='workOrderMission_companyCode')
+    workOrderPermissionList = WorkPermissionSerializer(many=True, read_only=True, source='workPermission_companyCode')
 
     class Meta:
         model = CompanyCode
         fields = ['companyCode', 'workOrderPermissionList']
 
 
+#---------------------------------------------------------------------------------------------------------------
 
 
 class WorkOrderManagementSerializer(serializers.ModelSerializer):

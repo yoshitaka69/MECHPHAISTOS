@@ -92,35 +92,31 @@ class WorkOrder(models.Model):
 
 
 from django.utils import timezone
+from django.db import models
 
 class WorkPermission(models.Model):
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='workPermission_companyCode', null=True, blank=True)
-    companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='workPermission_companyName', null=True, blank=True)
-    plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='workPermission_plant', null=True, blank=True)
+    plant = models.CharField(max_length=100, null=True, blank=True)  # Changed to CharField
     equipment = models.CharField(max_length=100, null=True, blank=True)
 
     workOrderNo = models.ForeignKey(WorkOrder, on_delete=models.CASCADE, related_name='workPermission_workOrder', null=True, blank=True)
     status = models.CharField(max_length=100, null=True, blank=True)
     
-    # 新しく追加するフィールド
+    # Additional fields
     taskName = models.CharField(max_length=255, null=True, blank=True)
     constructionPeriod = models.CharField(max_length=100, null=True, blank=True)
     personInCharge = models.CharField(max_length=255, null=True, blank=True)
 
-    # SafetyRequest のフィールドを統合
     contractor = models.CharField(max_length=100, null=True, blank=True)
     gasDetection = models.BooleanField(default=False)
     oxygenDeficiency = models.BooleanField(default=False)
-    valve1 = models.BooleanField(default=False)
-    valve2 = models.BooleanField(default=False)
-    valve3 = models.BooleanField(default=False)
-    valve4 = models.BooleanField(default=False)
-    valve5 = models.BooleanField(default=False)
-    breaker1 = models.BooleanField(default=False)
-    breaker2 = models.BooleanField(default=False)
-    breaker3 = models.BooleanField(default=False)
-    breaker4 = models.BooleanField(default=False)
-    breaker5 = models.BooleanField(default=False)
+
+    # Storing valve and breaker input and approval separately as JSON fields
+    valveInputs = models.JSONField(null=True, blank=True, default=dict)  # For valve 1-5 input states
+    valveApprovals = models.JSONField(null=True, blank=True, default=dict)  # For valve 1-5 approval states
+    breakerInputs = models.JSONField(null=True, blank=True, default=dict)  # For breaker 1-5 input states
+    breakerApprovals = models.JSONField(null=True, blank=True, default=dict)  # For breaker 1-5 approval states
+
     onSiteSafety = models.BooleanField(default=False)
     approver = models.CharField(max_length=100, null=True, blank=True)
     
@@ -133,25 +129,93 @@ class WorkPermission(models.Model):
 
     def __str__(self):
         return f'Work Permission: {self.workOrderNo}'
+    
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)  # まずは通常通り保存
 
-
+        # companyCodeとplantに基づいてWorkOrderManagementを取得
+        work_order_management, created = WorkOrderManagement.objects.get_or_create(
+            companyCode=self.companyCode,
+            plant=self.plant
+        )
+        # 承認率を更新
+        work_order_management.update_approval_rates()
 
 #----------------------------------------------------------------------------------------------------------------------------
 
 
+from django.utils import timezone
+from django.db import models
+
 class WorkOrderManagement(models.Model):
     companyCode = models.ForeignKey(CompanyCode, on_delete=models.CASCADE, related_name='workOrderManagement_companyCode', null=True, blank=True)
-    companyName = models.ForeignKey(CompanyName, on_delete=models.CASCADE, related_name='workOrderManagement_companyName', null=True, blank=True)
-    plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='workOrderManagement_plant', null=True, blank=True)
+    plant = models.CharField(max_length=100, null=True, blank=True)
     equipment = models.CharField(max_length=100, null=True, blank=True)
+    
+    # Approval percentages for valves and breakers
+    valve1_approval_rate = models.FloatField(default=0.0)
+    valve2_approval_rate = models.FloatField(default=0.0)
+    valve3_approval_rate = models.FloatField(default=0.0)
+    valve4_approval_rate = models.FloatField(default=0.0)
+    valve5_approval_rate = models.FloatField(default=0.0)
+    breaker1_approval_rate = models.FloatField(default=0.0)
+    breaker2_approval_rate = models.FloatField(default=0.0)
+    breaker3_approval_rate = models.FloatField(default=0.0)
+    breaker4_approval_rate = models.FloatField(default=0.0)
+    breaker5_approval_rate = models.FloatField(default=0.0)
 
+    last_updated = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name_plural = 'Work Order Management'
         ordering = ('companyCode',)
-    def __str__(self):
-        return str('Work Order Management')
 
+    def __str__(self):
+        return f"Work Order Management for {self.companyCode} (Last Updated: {self.last_updated})"
+
+    def update_approval_rates(self):
+        # 指定された companyCode と plant に基づいて、WorkPermission の全件数を取得
+        total_permissions = WorkPermission.objects.filter(companyCode=self.companyCode, plant=self.plant).count()
+
+        # total_permissions が 0 より大きい場合、承認率を計算
+        if total_permissions > 0:
+            # 各バルブ (valve1～valve5) の承認件数を集計し、承認率を計算
+            self.valve1_approval_rate = WorkPermission.objects.filter(
+                companyCode=self.companyCode, plant=self.plant, valveApprovals__valve1=True).count() / total_permissions * 100
+            self.valve2_approval_rate = WorkPermission.objects.filter(
+                companyCode=self.companyCode, plant=self.plant, valveApprovals__valve2=True).count() / total_permissions * 100
+            self.valve3_approval_rate = WorkPermission.objects.filter(
+                companyCode=self.companyCode, plant=self.plant, valveApprovals__valve3=True).count() / total_permissions * 100
+            self.valve4_approval_rate = WorkPermission.objects.filter(
+                companyCode=self.companyCode, plant=self.plant, valveApprovals__valve4=True).count() / total_permissions * 100
+            self.valve5_approval_rate = WorkPermission.objects.filter(
+                companyCode=self.companyCode, plant=self.plant, valveApprovals__valve5=True).count() / total_permissions * 100
+
+            # 各ブレーカー (breaker1～breaker5) の承認件数を集計し、承認率を計算
+            self.breaker1_approval_rate = WorkPermission.objects.filter(
+                companyCode=self.companyCode, plant=self.plant, breakerApprovals__breaker1=True).count() / total_permissions * 100
+            self.breaker2_approval_rate = WorkPermission.objects.filter(
+                companyCode=self.companyCode, plant=self.plant, breakerApprovals__breaker2=True).count() / total_permissions * 100
+            self.breaker3_approval_rate = WorkPermission.objects.filter(
+                companyCode=self.companyCode, plant=self.plant, breakerApprovals__breaker3=True).count() / total_permissions * 100
+            self.breaker4_approval_rate = WorkPermission.objects.filter(
+                companyCode=self.companyCode, plant=self.plant, breakerApprovals__breaker4=True).count() / total_permissions * 100
+            self.breaker5_approval_rate = WorkPermission.objects.filter(
+                companyCode=self.companyCode, plant=self.plant, breakerApprovals__breaker5=True).count() / total_permissions * 100
+
+            # ログ出力：承認率の計算結果をターミナルに出力
+            print(f"Updated approval rates for companyCode: {self.companyCode}, plant: {self.plant}")
+            print(f"Valve Approval Rates: valve1={self.valve1_approval_rate:.2f}%, valve2={self.valve2_approval_rate:.2f}%, "
+                f"valve3={self.valve3_approval_rate:.2f}%, valve4={self.valve4_approval_rate:.2f}%, valve5={self.valve5_approval_rate:.2f}%")
+            print(f"Breaker Approval Rates: breaker1={self.breaker1_approval_rate:.2f}%, breaker2={self.breaker2_approval_rate:.2f}%, "
+                f"breaker3={self.breaker3_approval_rate:.2f}%, breaker4={self.breaker4_approval_rate:.2f}%, breaker5={self.breaker5_approval_rate:.2f}%")
+
+        else:
+            # ログ出力：承認率の計算が行われなかった場合
+            print(f"No work permissions found for companyCode: {self.companyCode}, plant: {self.plant}")
+
+        # 最後に変更を保存
+        self.save()
 
 
 

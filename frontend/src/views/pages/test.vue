@@ -1,529 +1,384 @@
 <template>
-    <div class="table-container">
-        <div class="header-container">
-            <DataTable
-                v-model:filters="filters"
-                :value="sortedItems"
-                :loading="loading"
-                paginator
-                showGridlines
-                :rows="serverOptions.rowsPerPage"
-                :total-records="serverItemsLength"
-                :lazy="true"
-                :resizable-columns="true"
-                :global-filter-fields="['nearMissNo', 'userName.userName', 'department', 'description']"
-                filter-display="menu"
-                @page="onPage"
-                @sort="onSort"
-                @filter="onFilter"
-                :rows-per-page-options="[5, 10, 20, 50]"
-                class="p-datatable-custom custom-near-miss-table"
-                :sort-field="sortField"
-                :sort-order="sortOrder"
-                style="width: 100%"
-            >
-                <!-- ヘッダーとカラム定義 -->
-                <template #header>
-                    <div class="flex justify-between items-center">
-                        <span class="p-input-icon-left">
-                            <i class="pi pi-search" />
-                            <InputText v-model="filters['global'].value" placeholder="Keyword Search" />
-                        </span>
-                        <Button type="button" label="New Entry" @click="openNewEntry" />
-                    </div>
+    <div class="table-container custom-work-order-table-v3">
+        <p class="page-description">This is the Work Permission Page.</p>
+        <!-- Company Codeの表示 -->
+        <div class="company-code-display">Company Code: {{ userStore.companyCode }}</div>
+
+        <DataTable
+            v-model:filters="filters"
+            :value="formattedItems"
+            :loading="loading"
+            paginator
+            showGridlines
+            :rows="serverOptions.rowsPerPage"
+            :total-records="serverItemsLength"
+            :lazy="true"
+            :resizable-columns="true"
+            :global-filter-fields="['workOrderNo', 'taskName', 'constructionPeriod', 'plant', 'equipment', 'personInCharge', 'status']"
+            filter-display="menu"
+            @page="onPage"
+            @sort="onSort"
+            @filter="onFilter"
+            :rows-per-page-options="[10, 20, 50]"
+            class="p-datatable-custom custom-work-order-table-v3"
+            :sort-field="sortField"
+            :sort-order="sortOrder"
+            style="width: 100%"
+        >
+            <!-- ヘッダー内に検索バーとボタンを配置 -->
+            <template #header>
+                <div class="header-content-v3">
+                    <span class="p-input-icon-left">
+                        <i class="pi pi-search" />
+                        <InputText v-model="filters['global'].value" placeholder="Keyword Search" />
+                    </span>
+                    <Button type="button" label="Create Work Permission" @click="openNewEntryForm" class="create-work-permission-button" />
+                </div>
+            </template>
+
+            <!-- テーブル列の定義 -->
+            <Column field="workOrderNo" header="Work Order No" sortable filter filterMatchMode="contains">
+                <template #filter="{ filterModel }">
+                    <InputText v-model="filterModel.value" type="text" placeholder="Search by Work Order No" />
                 </template>
-                <!-- カラム定義 -->
-                <Column field="nearMissNo" header="NearMiss No." sortable filter filterMatchMode="contains">
-                    <template #filter="{ filterModel }">
-                        <InputText v-model="filterModel.value" type="text" placeholder="Search by NearMiss No." />
-                    </template>
-                </Column>
-                <Column field="userName.userName" header="Name" sortable filter filterMatchMode="contains">
-                    <template #body="slotProps">
-                        {{ slotProps.data.userName.userName }}
-                    </template>
-                    <template #filter="{ filterModel }">
-                        <InputText v-model="filterModel.value" type="text" placeholder="Search by Name" />
-                    </template>
-                </Column>
-                <Column field="department" header="Department" sortable filter filterMatchMode="contains">
-                    <template #filter="{ filterModel }">
-                        <InputText v-model="filterModel.value" type="text" placeholder="Search by Department" />
-                    </template>
-                </Column>
-                <Column field="dateOfOccurrence" header="Date" sortable filter filterMatchMode="contains">
-                    <template #filter="{ filterModel }">
-                        <Calendar v-model="filterModel.value" dateFormat="yy-mm-dd" placeholder="Select a Date" />
-                    </template>
-                </Column>
-                <Column field="placeOfOccurrence" header="Where?" sortable filter filterMatchMode="contains">
-                    <template #filter="{ filterModel }">
-                        <InputText v-model="filterModel.value" type="text" placeholder="Search by Place of Occurrence" />
-                    </template>
-                </Column>
-                <Column field="typeOfAccident" header="Type of Accident" sortable filter filterMatchMode="contains">
-                    <template #filter="{ filterModel }">
-                        <InputText v-model="filterModel.value" type="text" placeholder="Search by Type of Accident" />
-                    </template>
-                </Column>
-                <Column field="description" header="Description" sortable filter filterMatchMode="contains">
-                    <template #filter="{ filterModel }">
-                        <InputText v-model="filterModel.value" type="text" placeholder="Search by Description" />
-                    </template>
-                </Column>
-                <Column field="factor" header="Factor" sortable filter filterMatchMode="contains">
-                    <template #filter="{ filterModel }">
-                        <InputText v-model="filterModel.value" type="text" placeholder="Search by Factor" />
-                    </template>
-                </Column>
-                <Column field="injuredLv" header="Injured Lv." sortable filter filterMatchMode="contains">
-                    <template #filter="{ filterModel }">
-                        <InputText v-model="filterModel.value" type="text" placeholder="Search by Injured Lv." />
-                    </template>
-                </Column>
-                <Column field="equipmentDamageLv" header="Equipment Damage Lv." sortable filter filterMatchMode="contains">
-                    <template #filter="{ filterModel }">
-                        <InputText v-model="filterModel.value" type="text" placeholder="Search by Equipment Damage Lv." />
-                    </template>
-                </Column>
-                <Column field="affectOfEnviroment" header="Effect on Environment" sortable filter filterMatchMode="contains">
-                    <template #filter="{ filterModel }">
-                        <InputText v-model="filterModel.value" type="text" placeholder="Search by Effect on Environment" />
-                    </template>
-                </Column>
-                <Column field="newsCoverage" header="News Coverage" sortable filter filterMatchMode="contains">
-                    <template #filter="{ filterModel }">
-                        <InputText v-model="filterModel.value" type="text" placeholder="Search by News Coverage" />
-                    </template>
-                </Column>
-                <Column field="measures" header="Measures">
-                    <template #body="slotProps">
-                        <Tag :value="slotProps.data.measures" :class="getMeasuresClass(slotProps.data.measures)" class="wide-tag" />
-                    </template>
-                </Column>
-                <Column field="actionItems" header="Action Items" sortable filter filterMatchMode="contains">
-                    <template #filter="{ filterModel }">
-                        <InputText v-model="filterModel.value" type="text" placeholder="Search by Action Items" />
-                    </template>
-                </Column>
-                <Column field="solvedActionItems" header="Solved Action Items">
-                    <template #body="slotProps">
-                        <input type="checkbox" :checked="slotProps.data.solvedActionItems" readonly />
-                    </template>
-                </Column>
-                <Column field="updateDay" header="Update Day" sortable filter filterMatchMode="contains">
-                    <template #filter="{ filterModel }">
-                        <InputText v-model="filterModel.value" type="text" placeholder="Search by Update Day" />
-                    </template>
-                </Column>
-                <Column header="Operation">
-                    <template #body="slotProps">
-                        <div>
-                            <i class="pi pi-pencil" @click="editItem(slotProps.data)" style="margin-right: 10px; cursor: pointer"></i>
-                            <i class="pi pi-trash" @click="confirmDelete(slotProps.data)" style="cursor: pointer"></i>
-                        </div>
-                    </template>
-                </Column>
-            </DataTable>
+            </Column>
 
-            <!-- 削除確認モーダル -->
-            <Dialog header="Delete Confirmation" v-model:visible="showDeleteDialog" :modal="true">
-                <p>Are you sure you want to delete this item?</p>
-                <Button label="No" @click="showDeleteDialog = false" class="p-button-text" />
-                <Button label="Yes" @click="deleteNearMiss" class="p-button-danger" />
-            </Dialog>
-        </div>
+            <Column field="taskName" header="Task Name" sortable filter filterMatchMode="contains">
+                <template #filter="{ filterModel }">
+                    <InputText v-model="filterModel.value" type="text" placeholder="Search by Task Name" />
+                </template>
+            </Column>
 
-        <div class="edit-item" v-if="isEditing">
-            <h3>Edit Near Miss Entry</h3>
-            <form @submit.prevent="submitEdit">
-                <label>
-                    NearMiss No:
-                    <input type="text" v-model="editingItem.nearMissNo" readonly />
-                </label>
-                <label>
-                    Name:
-                    <input type="text" v-model="editingItem.userName.userName" />
-                </label>
-                <label>
-                    Department:
-                    <input type="text" v-model="editingItem.department" />
-                </label>
-                <label>
-                    Date of Occurrence:
-                    <input type="date" v-model="editingItem.dateOfOccurrence" />
-                </label>
-                <label>
-                    Measures:
-                    <input type="text" v-model="editingItem.measures" />
-                </label>
-                <button type="submit">Save</button>
-                <button type="button" @click="cancelEdit">Cancel</button>
-            </form>
-        </div>
+            <Column field="constructionPeriod" header="Construction Period" sortable filter filterMatchMode="contains">
+                <template #filter="{ filterModel }">
+                    <InputText v-model="filterModel.value" type="text" placeholder="Search by Construction Period" />
+                </template>
+            </Column>
+
+            <Column field="plant" header="Plant" sortable filter filterMatchMode="contains">
+                <template #filter="{ filterModel }">
+                    <InputText v-model="filterModel.value" type="text" placeholder="Search by Plant" />
+                </template>
+            </Column>
+
+            <Column field="equipment" header="Equipment" sortable filter filterMatchMode="contains">
+                <template #filter="{ filterModel }">
+                    <InputText v-model="filterModel.value" type="text" placeholder="Search by Equipment" />
+                </template>
+            </Column>
+
+            <Column field="personInCharge" header="Person In Charge" sortable filter filterMatchMode="contains">
+                <template #filter="{ filterModel }">
+                    <InputText v-model="filterModel.value" type="text" placeholder="Search by Person In Charge" />
+                </template>
+            </Column>
+
+            <Column field="contractor" header="Contractor" sortable filter filterMatchMode="contains">
+                <template #filter="{ filterModel }">
+                    <InputText v-model="filterModel.value" type="text" placeholder="Search by Contractor" />
+                </template>
+            </Column>
+
+            <Column field="gasDetection" header="Gas Detection" sortable filter>
+                <template #body="slotProps">
+                    <Tag :value="slotProps.data.gasDetection ? 'YES' : 'NO'" />
+                </template>
+            </Column>
+
+            <Column field="oxygenDeficiency" header="Oxygen Deficiency" sortable filter>
+                <template #body="slotProps">
+                    <Tag :value="slotProps.data.oxygenDeficiency ? 'YES' : 'NO'" />
+                </template>
+            </Column>
+
+            <!-- Valvesの情報 -->
+            <Column field="valves" header="Valves" sortable filter>
+              <template #body="slotProps">
+  <div>
+    Valve1: 
+    <Tag 
+      :value="slotProps.data.valveInputs && slotProps.data.valveInputs.valve1 ? 'On' : 'Off'"
+      :class="slotProps.data.valveInputs && slotProps.data.valveInputs.valve1 ? 'tag-red' : 'tag-blue'"
+    />
+    Valve2: 
+    <Tag 
+      :value="slotProps.data.valveInputs && slotProps.data.valveInputs.valve2 ? 'On' : 'Off'"
+      :class="slotProps.data.valveInputs && slotProps.data.valveInputs.valve2 ? 'tag-red' : 'tag-blue'"
+    />
+    Valve3: 
+    <Tag 
+      :value="slotProps.data.valveInputs && slotProps.data.valveInputs.valve3 ? 'On' : 'Off'"
+      :class="slotProps.data.valveInputs && slotProps.data.valveInputs.valve3 ? 'tag-red' : 'tag-blue'"
+    />
+    Valve4: 
+    <Tag 
+      :value="slotProps.data.valveInputs && slotProps.data.valveInputs.valve4 ? 'On' : 'Off'"
+      :class="slotProps.data.valveInputs && slotProps.data.valveInputs.valve4 ? 'tag-red' : 'tag-blue'"
+    />
+    Valve5: 
+    <Tag 
+      :value="slotProps.data.valveInputs && slotProps.data.valveInputs.valve5 ? 'On' : 'Off'"
+      :class="slotProps.data.valveInputs && slotProps.data.valveInputs.valve5 ? 'tag-red' : 'tag-blue'"
+    />
+  </div>
+</template>
+
+            </Column>
+
+            <!-- Breakersの情報 -->
+            <Column field="breakers" header="Breakers" sortable filter>
+              <template #body="slotProps">
+  <div>
+    Breaker1: 
+    <Tag 
+      :value="slotProps.data.breakerInputs && slotProps.data.breakerInputs.breaker1 ? 'On' : 'Off'"
+      :class="slotProps.data.breakerInputs && slotProps.data.breakerInputs.breaker1 ? 'tag-red' : 'tag-blue'"
+    />
+    Breaker2: 
+    <Tag 
+      :value="slotProps.data.breakerInputs && slotProps.data.breakerInputs.breaker2 ? 'On' : 'Off'"
+      :class="slotProps.data.breakerInputs && slotProps.data.breakerInputs.breaker2 ? 'tag-red' : 'tag-blue'"
+    />
+    Breaker3: 
+    <Tag 
+      :value="slotProps.data.breakerInputs && slotProps.data.breakerInputs.breaker3 ? 'On' : 'Off'"
+      :class="slotProps.data.breakerInputs && slotProps.data.breakerInputs.breaker3 ? 'tag-red' : 'tag-blue'"
+    />
+    Breaker4: 
+    <Tag 
+      :value="slotProps.data.breakerInputs && slotProps.data.breakerInputs.breaker4 ? 'On' : 'Off'"
+      :class="slotProps.data.breakerInputs && slotProps.data.breakerInputs.breaker4 ? 'tag-red' : 'tag-blue'"
+    />
+    Breaker5: 
+    <Tag 
+      :value="slotProps.data.breakerInputs && slotProps.data.breakerInputs.breaker5 ? 'On' : 'Off'"
+      :class="slotProps.data.breakerInputs && slotProps.data.breakerInputs.breaker5 ? 'tag-red' : 'tag-blue'"
+    />
+  </div>
+</template>
+
+            </Column>
+
+            <Column field="onSiteSafety" header="On-Site Safety" sortable filter>
+                <template #body="slotProps">
+                    <Tag :value="slotProps.data.onSiteSafety ? 'Yes' : 'No'" />
+                </template>
+            </Column>
+
+            <Column field="approver" header="Approver" sortable filter>
+                <template #filter="{ filterModel }">
+                    <InputText v-model="filterModel.value" type="text" placeholder="Search by Approver" />
+                </template>
+            </Column>
+
+            <Column field="createdAt" header="Created At" sortable filter>
+                <template #body="slotProps">
+                    <span>{{ new Date(slotProps.data.createdAt).toLocaleString() }}</span>
+                </template>
+            </Column>
+
+            <Column field="updatedAt" header="Updated At" sortable filter>
+                <template #body="slotProps">
+                    <span>{{ new Date(slotProps.data.updatedAt).toLocaleString() }}</span>
+                </template>
+            </Column>
+        </DataTable>
     </div>
 </template>
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
-import { useUserStore } from '@/stores/userStore'; // Pinia storeのインポート
-import { FilterMatchMode, FilterOperator } from 'primevue/api';
+import { useUserStore } from '@/stores/userStore'; // Piniaストアをインポート
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
-import Checkbox from 'primevue/checkbox';
-import Dropdown from 'primevue/dropdown';
-import Calendar from 'primevue/calendar';
 import Tag from 'primevue/tag';
-import Dialog from 'primevue/dialog';
+import Dropdown from 'primevue/dropdown';
 
-const itemsFromApi = ref([]);
-const serverItemsLength = ref(0);
-const serverOptions = ref({
-    page: 1,
-    rowsPerPage: 10
-});
-const loading = ref(false);
-const isEditing = ref(false); // 編集モードかどうか
-const editingItem = ref({}); // 編集対象のデータ
-const sortField = ref(null);
-const sortOrder = ref(null);
-const filters = ref({
-    global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    nearMissNo: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
-    'userName.userName': { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
-    department: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
-    description: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }] },
-    solvedActionItems: { value: null, matchMode: FilterMatchMode.EQUALS }
-});
+// PiniaストアからcompanyCodeを取得
+const userStore = useUserStore();
 
-const getMeasuresClass = (measures) => {
-    switch (measures) {
-        case 'A':
-            return 'measures-a'; // 一番危険
-        case 'B':
-            return 'measures-b';
-        case 'C':
-            return 'measures-c';
-        case 'D':
-            return 'measures-d';
-        case 'E':
-            return 'measures-e'; // 一番安全
-        default:
-            return '';
-    }
+const products = ref([]); // データ格納用
+const loading = ref(true); // ローディング状態管理
+
+// ステータスのオプション
+const statuses = ref([
+    { label: 'Completed', value: 'COMPLETED' },
+    { label: 'Ongoing', value: 'Ongoing' },
+    { label: 'Delayed', value: 'Delayed' }
+]);
+
+// データ整形のための関数
+const formatData = (data) => {
+    const companyData = data.find((company) => company.companyCode === userStore.companyCode);
+    return companyData ? companyData.workOrderPermissionList : [];
 };
 
-// 削除対象とモーダルの状態を管理
-const showDeleteDialog = ref(false);
-const itemToDelete = ref(null);
-
-const confirmDelete = (nearMiss) => {
-  console.log("nearMiss", nearMiss);  // ここで削除対象のデータを確認
-  itemToDelete.value = nearMiss;
-  showDeleteDialog.value = true;
-};
-
-// 編集モードで既存エントリをロードしてフォームを開く関数
-const editItem = (item) => {
-    isEditing.value = true; // 編集モードをオン
-    Object.assign(editingItem.value, item); // クリックしたデータをセット
-    localStorage.setItem('editingItem', JSON.stringify(editingItem.value)); // データを保存
-
-    // フォームを開くためのロジック（例: 新しいタブ、モーダルなど）
-    window.open('/near_miss_input_form', '_blank');
-};
-
-// 削除処理
-const deleteNearMiss = async () => {
-  if (itemToDelete.value) {
-    const companyCode = userStore.companyCode;  // PiniaからcompanyCodeを取得
-    if (!companyCode) {
-      console.error('CompanyCode is missing:', companyCode);  // companyCodeが取得できない場合のログ
-      return;
-    }
+// データ取得処理
+onMounted(async () => {
     try {
-      const deleteUrl = `http://127.0.0.1:8000/api/nearMiss/nearMissByCompany/delete-by-code-and-no/?companyCode=${companyCode}&nearMissNo=${itemToDelete.value.nearMissNo}`;
-      await axios.delete(deleteUrl);
-      fetchData ();  // 削除後にリストを再取得
-      showDeleteDialog.value = false;
-      itemToDelete.value = null;
+        // APIエンドポイントにクエリパラメータとしてcompanyCodeを渡す
+        const response = await axios.get(`http://127.0.0.1:8000/api/workOrder/workPermissionByCompany/?companyCode=${userStore.companyCode}`);
+
+        // 取得したデータを整形してproductsにセット
+        products.value = formatData(response.data);
+        console.log('取得したデータ:', products.value);
     } catch (error) {
-      console.error('Error deleting near miss:', error);
-    }
-  }
-};
-
-
-const userStore = useUserStore(); // Pinia storeの使用
-const companyCode = userStore.companyCode; // companyCodeの取得
-
-const fetchData = async () => {
-    loading.value = true;
-    console.log('Fetching data...');
-    console.log(`API URL: http://127.0.0.1:8000/api/nearMiss/nearMissByCompany/?format=json&companyCode=${companyCode}&page=${serverOptions.value.page}&limit=${serverOptions.value.rowsPerPage}`);
-    try {
-        const response = await axios.get(`http://127.0.0.1:8000/api/nearMiss/nearMissByCompany/?format=json&companyCode=${companyCode}&page=${serverOptions.value.page}&limit=${serverOptions.value.rowsPerPage}`);
-        console.log('API response:', response.data);
-
-        // nearMissListを抽出
-        const nearMissList = response.data.flatMap((company) => company.nearMissList);
-        console.log('Extracted nearMissList:', nearMissList);
-
-        if (nearMissList.length > 0) {
-            itemsFromApi.value = nearMissList.map((item) => ({
-                id: item.id,
-                nearMissNo: item.nearMissNo,
-                userName: { userName: item.userName.userName }, // userNameを正しく表示
-                department: item.department,
-                dateOfOccurrence: item.dateOfOccurrence,
-                placeOfOccurrence: item.placeOfOccurrence,
-                typeOfAccident: item.typeOfAccident,
-                description: item.description,
-                factor: item.factor,
-                injuredLv: item.injuredLv,
-                equipmentDamageLv: item.equipmentDamageLv,
-                affectOfEnviroment: item.affectOfEnviroment,
-                newsCoverage: item.newsCoverage,
-                measures: item.measures,
-                actionItems: item.actionItems,
-                solvedActionItems: item.solvedActionItems,
-                updateDay: item.updateDay,
-                operation: item.operation
-            }));
-            serverItemsLength.value = nearMissList.length;
-        } else {
-            console.warn('API returned no data.');
-            itemsFromApi.value = []; // データがない場合の処理
-            serverItemsLength.value = 0;
-        }
-        console.log('Items from API:', itemsFromApi.value);
-    } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('データ取得エラー:', error);
     } finally {
-        loading.value = false;
-    }
-};
-
-onMounted(() => {
-    // データのフェッチ処理
-    fetchData(); // Near Miss リストをサーバーから取得
-
-    // ローカルストレージから編集対象データを取得
-    const editingItemData = localStorage.getItem('editingItem');
-    if (editingItemData) {
-        Object.assign(editingItem.value, JSON.parse(editingItemData)); // 編集アイテムのデータをセット
-        console.log('Editing item loaded from localStorage:', editingItem.value);
+        loading.value = false; // データ取得後にローディングを終了
     }
 });
 
-const sortedItems = computed(() => {
-    let items = [...itemsFromApi.value];
-    if (sortField.value) {
-        items.sort((a, b) => {
-            let result = 0;
-            if (a[sortField.value] < b[sortField.value]) result = -1;
-            else if (a[sortField.value] > b[sortField.value]) result = 1;
-            return sortOrder.value === 1 ? result : -result;
-        });
-    }
-    // 空の行を追加する処理
-    while (items.length < serverOptions.value.rowsPerPage) {
+// 常に10行表示するようにデータを整形する
+const formattedItems = computed(() => {
+    let items = [...products.value];
+
+    // 10行未満の場合は空の行を追加
+    while (items.length < 10) {
         items.push({
-            id: '',
-            nearMissNo: '',
-            userName: { userName: '' },
-            department: '',
-            dateOfOccurrence: '',
-            placeOfOccurrence: '',
-            typeOfAccident: '',
-            description: '',
-            factor: '',
-            injuredLv: '',
-            equipmentDamageLv: '',
-            affectOfEnviroment: '',
-            newsCoverage: '',
-            measures: '',
-            actionItems: '',
-            solvedActionItems: false,
-            updateDay: '',
-            operation: ''
+            workOrderNo: '',
+            taskName: '',
+            constructionPeriod: '',
+            plant: '',
+            equipment: '',
+            personInCharge: '',
+            status: '',
+            contractor: '',
+            valves: {},
+            breakers: {},
+            gasDetection: false,
+            oxygenDeficiency: false,
+            onSiteSafety: false,
+            approver: '',
+            createdAt: '',
+            updatedAt: '',
+            companyCode: '',
+            companyName: ''
         });
     }
+
     return items;
 });
 
+// ソート・フィルタリング・ページネーション等の設定
+const filters = ref({
+    global: { value: null, matchMode: 'contains' },
+    workOrderNo: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
+    taskName: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
+    constructionPeriod: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
+    plant: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
+    equipment: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
+    personInCharge: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
+    status: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
+    contractor: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] }
+});
+
+const serverItemsLength = computed(() => products.value.length);
+const serverOptions = ref({
+    page: 1,
+    rowsPerPage: 10 // 初期表示の行数を10に設定
+});
+const sortField = ref(null);
+const sortOrder = ref(null);
+
+// ソート処理
 const onSort = (event) => {
     sortField.value = event.sortField;
     sortOrder.value = event.sortOrder;
 };
 
+// フィルタ処理
 const onFilter = (event) => {
     filters.value = event.filters;
 };
 
-const submitEdit = async () => {
-    try {
-        await axios.put(`http://127.0.0.1:8000/api/nearMiss/${editingItem.value.nearMissNo}/`, editingItem.value);
-        // 成功した場合にフロントエンドのデータを更新
-        const index = itemsFromApi.value.findIndex((item) => item.nearMissNo === editingItem.value.nearMissNo);
-        if (index !== -1) {
-            itemsFromApi.value[index] = { ...editingItem.value };
-        }
-        isEditing.value = false; // 編集モードを終了
-    } catch (error) {
-        console.error('Failed to update item:', error);
+// 新規作成フォームを開く関数
+const openNewEntryForm = () => {
+    window.open('/Work_permission_form', '_blank');
+};
+
+// ステータスに応じたクラスを動的に適用
+const getStatusClass = (status) => {
+    switch (status) {
+        case 'COMPLETED':
+            return 'tag-success'; // 緑
+        case 'Ongoing':
+            return 'tag-warning'; // 黄
+        case 'Delayed':
+            return 'tag-danger'; // 赤
+        default:
+            return '';
     }
-};
-
-const cancelEdit = () => {
-    isEditing.value = false;
-    console.log('Edit cancelled');
-};
-
-// 新規エントリ作成用のフォームを開く関数
-const openNewEntry = () => {
-    isEditing.value = false; // 編集モードを解除（新規モード）
-    editingItem.value = {
-        nearMissNo: '',
-        userName: { userName: '' },
-        department: '',
-        dateOfOccurrence: '',
-        placeOfOccurrence: '',
-        typeOfAccident: '',
-        description: '',
-        factor: '',
-        injuredLv: '',
-        equipmentDamageLv: '',
-        affectOfEnviroment: '',
-        newsCoverage: '',
-        measures: '',
-        actionItems: '',
-        solvedActionItems: false,
-        updateDay: ''
-    };
-
-    // フォームを開くためのロジック（例: 新しいタブ、モーダルなど）
-    window.open('/near_miss_input_form', '_blank');
-};
-
-const onPage = (event) => {
-    serverOptions.value.page = event.page + 1;
-    serverOptions.value.rowsPerPage = event.rows;
-    fetchData();
 };
 </script>
 
 <style>
-.table-container {
-    width: 100%;
-    height: 100%;
+/* ステータスごとのカスタムクラス */
+.tag-success {
+    background-color: #28a745;
+    color: #fff;
+}
+
+.tag-warning {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.tag-danger {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+/* companyCode表示用のスタイル */
+.company-code-display {
+    margin-left: 20px;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+/* その他のスタイル */
+.page-description {
+    font-size: 16px;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.custom-work-order-table-v3 .header-container-v3 {
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
 }
 
-.header-container {
-    flex: 0 1 auto;
-    width: 100%;
+.custom-work-order-table-v3 .create-work-permission-button {
+    margin-left: auto;
 }
 
-.p-datatable-custom .p-datatable-thead > tr > th {
-    background-color: #ffdab9; /* 薄いオレンジ色 */
-    color: black; /* テキストの色を黒に設定 */
+.custom-work-order-table-v3 .p-datatable-thead > tr > th {
+    background-color: #f2b2b2 !important;
+    color: black !important;
 }
 
-/* CSSで交互に背景色を設定 */
-.custom-near-miss-table .p-datatable-tbody > tr:nth-child(odd) {
-    background-color: #ffffff !important; /* 白色 */
+.custom-work-order-table-v3 .p-datatable {
+    border: none;
 }
 
-.custom-near-miss-table .p-datatable-tbody > tr:nth-child(even) {
-    background-color: #d3d3d3 !important; /* 薄い灰色 */
+.custom-work-order-table-v3 .p-datatable-tbody > tr:nth-child(odd) > td {
+    background-color: #ffffff !important;
 }
 
-.p-input-icon-left .pi {
-    left: 10px;
+.custom-work-order-table-v3 .p-datatable-tbody > tr:nth-child(even) > td {
+    background-color: #d3d3d3 !important;
 }
 
-/* テーブルの本文の文字を太字にする */
-.custom-near-miss-table .p-datatable-tbody > tr > td {
-    font-weight: bold;
+.tag-red {
+  background-color: red;
+  color: white;
 }
 
-/* テーブルのヘッダーの文字を太字にする */
-.p-datatable-thead > tr > th {
-    font-weight: bold;
-}
-
-/* 特定のカラムに対して、ヘッダーのテキストを2行にするスタイル */
-.p-datatable-thead th {
-    white-space: normal; /* テキストを折り返し */
-    text-align: center; /* テキストを中央揃え（オプション） */
-}
-
-/* Injured Lv, Equipment Damage Lv, Effect on Environmentのカラムに対応する */
-.p-datatable-thead th[aria-label='Injured Lv.'] {
-    white-space: normal;
-}
-
-.p-datatable-thead th[aria-label='Equipment Damage Lv.'] {
-    white-space: normal;
-}
-
-.p-datatable-thead th[aria-label='Effect on Environment'] {
-    white-space: normal;
-}
-
-.measures-a {
-    background-color: red;
-    color: black; /* 文字の色を黒に統一 */
-    font-weight: bold !important; /* フォントを太字に強制 */
-    font-size: 16px !important; /* フォントサイズを一回り大きく設定 */
-    font-family: 'Arial', sans-serif; /* 任意のフォントを指定 */
-}
-
-.measures-b {
-    background-color: orange;
-    color: black; /* 文字の色を黒に統一 */
-    font-weight: bold !important; /* フォントを太字に強制 */
-    font-size: 16px !important; /* フォントサイズを一回り大きく設定 */
-    font-family: 'Arial', sans-serif; /* 任意のフォントを指定 */
-}
-
-.measures-c {
-    background-color: yellow;
-    color: black; /* 文字の色を黒に統一 */
-    font-weight: bold !important; /* フォントを太字に強制 */
-    font-size: 16px !important; /* フォントサイズを一回り大きく設定 */
-    font-family: 'Arial', sans-serif; /* 任意のフォントを指定 */
-}
-
-.measures-d {
-    background-color: lightgreen;
-    color: black; /* 文字の色を黒に統一 */
-    font-weight: bold !important; /* フォントを太字に強制 */
-    font-size: 16px !important; /* フォントサイズを一回り大きく設定 */
-    font-family: 'Arial', sans-serif; /* 任意のフォントを指定 */
-}
-
-.measures-e {
-    background-color: green;
-    color: black; /* 文字の色を黒に統一 */
-    font-weight: bold !important; /* フォントを太字に強制 */
-    font-size: 16px !important; /* フォントサイズを一回り大きく設定 */
-    font-family: 'Arial', sans-serif; /* 任意のフォントを指定 */
-}
-
-/* 横長のスタイルを適用し、文字の色を黒に変更 */
-.wide-tag {
-    display: inline-block;
-    padding: 0.5rem 2rem;
-    min-width: 120px;
-    text-align: center;
-    border-radius: 10px;
-    color: black;
-    font-weight: bold !important; /* 太字を強制 */
-    font-size: 16px !important; /* フォントサイズを一回り大きく設定 */
-    font-family: 'Arial', sans-serif; /* 任意のフォントを指定 */
+.tag-blue {
+  background-color: blue;
+  color: white;
 }
 </style>

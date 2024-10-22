@@ -1,87 +1,188 @@
 <template>
   <div class="table-container custom-work-order-table-v3">
-    <p class="page-description">
-      This is the Work Permission Page.
-    </p>
-    <div class="header-container-v3">
+      <p class="page-description">This is the Work Permission Page.</p>
+      <!-- Company Codeの表示 -->
+      <div class="company-code-display">Company Code: {{ userStore.companyCode }}</div>
+
       <DataTable
-        v-model:filters="filters"
-        :value="sortedItems"
-        :loading="loading"
-        paginator
-        showGridlines
-        :rows="serverOptions.rowsPerPage"
-        :total-records="serverItemsLength"
-        :lazy="true"
-        :resizable-columns="true"
-        :global-filter-fields="['workOrderNo', 'taskName', 'constructionPeriod', 'plant', 'equipment', 'personInCharge', 'status']"
-        filter-display="menu"
-        @page="onPage"
-        @sort="onSort"
-        @filter="onFilter"
-        :rows-per-page-options="[5, 10, 20, 50]"
-        class="p-datatable-custom custom-work-order-table-v3"
-        :sort-field="sortField"
-        :sort-order="sortOrder"
-        style="width: 100%;"
+          v-model:filters="filters"
+          :value="formattedItems"
+          :loading="loading"
+          paginator
+          showGridlines
+          :rows="serverOptions.rowsPerPage"
+          :total-records="serverItemsLength"
+          :lazy="true"
+          :resizable-columns="true"
+          :global-filter-fields="['workOrderNo', 'taskName', 'constructionPeriod', 'plant', 'equipment', 'personInCharge', 'status']"
+          filter-display="menu"
+          @page="onPage"
+          @sort="onSort"
+          @filter="onFilter"
+          :rows-per-page-options="[10, 20, 50]"
+          class="p-datatable-custom custom-work-order-table-v3"
+          :sort-field="sortField"
+          :sort-order="sortOrder"
+          style="width: 100%"
       >
-        <template #header>
-          <div class="header-content-v3">
-            <span class="p-input-icon-left">
-              <i class="pi pi-search" />
-              <InputText v-model="filters['global'].value" placeholder="Keyword Search" />
-            </span>
-            <Button type="button" label="Create Work Permission" @click="openNewEntryForm" class="create-work-permission-button" />
-          </div>
-        </template>
-        <Column field="workOrderNo" header="Work Order No" sortable filter filterMatchMode="contains">
-          <template #filter="{ filterModel }">
-            <InputText v-model="filterModel.value" type="text" placeholder="Search by Work Order No" />
+          <!-- ヘッダー内に検索バーとボタンを配置 -->
+          <template #header>
+              <div class="header-content-v3">
+                  <span class="p-input-icon-left">
+                      <i class="pi pi-search" />
+                      <InputText v-model="filters['global'].value" placeholder="Keyword Search" />
+                  </span>
+                  <Button type="button" label="Create Work Permission" @click="openNewEntryForm" class="create-work-permission-button" />
+              </div>
           </template>
-        </Column>
-        <Column field="taskName" header="Task Name" sortable filter filterMatchMode="contains">
-          <template #filter="{ filterModel }">
-            <InputText v-model="filterModel.value" type="text" placeholder="Search by Task Name" />
-          </template>
-        </Column>
-        <Column field="constructionPeriod" header="Construction Period" sortable filter filterMatchMode="contains">
-          <template #filter="{ filterModel }">
-            <InputText v-model="filterModel.value" type="text" placeholder="Search by Construction Period" />
-          </template>
-        </Column>
-        <Column field="plant" header="Plant" sortable filter filterMatchMode="contains">
-          <template #filter="{ filterModel }">
-            <InputText v-model="filterModel.value" type="text" placeholder="Search by Plant" />
-          </template>
-        </Column>
-        <Column field="equipment" header="Equipment" sortable filter filterMatchMode="contains">
-          <template #filter="{ filterModel }">
-            <InputText v-model="filterModel.value" type="text" placeholder="Search by Equipment" />
-          </template>
-        </Column>
-        <Column field="personInCharge" header="Person In Charge" sortable filter filterMatchMode="contains">
-          <template #filter="{ filterModel }">
-            <InputText v-model="filterModel.value" type="text" placeholder="Search by Person In Charge" />
-          </template>
-        </Column>
-        <Column field="status" header="Status" sortable filter filterMatchMode="contains">
-          <template #body="slotProps">
-            <Tag :value="slotProps.data.status" :severity="getStatusLabel(slotProps.data.status)" />
-          </template>
-          <template #filter="{ filterModel }">
-            <Dropdown v-model="filterModel.value" :options="statuses" optionLabel="label" optionValue="value" placeholder="Select a Status" />
-          </template>
-        </Column>
-        <Column header="Operation">
-          <template #body="slotProps">
-            <div>
-              <i class="pi pi-pencil" @click="editItem(slotProps.data)" style="margin-right: 10px; cursor: pointer;"></i>
-              <i class="pi pi-trash" @click="deleteItem(slotProps.data)" style="cursor: pointer;"></i>
-            </div>
-          </template>
-        </Column>
+
+          <!-- テーブル列の定義 -->
+          <Column field="workOrderNo" header="Work Order No" sortable filter filterMatchMode="contains">
+              <template #filter="{ filterModel }">
+                  <InputText v-model="filterModel.value" type="text" placeholder="Search by Work Order No" />
+              </template>
+          </Column>
+
+          <Column field="taskName" header="Task Name" sortable filter filterMatchMode="contains">
+              <template #filter="{ filterModel }">
+                  <InputText v-model="filterModel.value" type="text" placeholder="Search by Task Name" />
+              </template>
+          </Column>
+
+          <Column field="constructionPeriod" header="Construction Period" sortable filter filterMatchMode="contains">
+              <template #filter="{ filterModel }">
+                  <InputText v-model="filterModel.value" type="text" placeholder="Search by Construction Period" />
+              </template>
+          </Column>
+
+          <Column field="plant" header="Plant" sortable filter filterMatchMode="contains">
+              <template #filter="{ filterModel }">
+                  <InputText v-model="filterModel.value" type="text" placeholder="Search by Plant" />
+              </template>
+          </Column>
+
+          <Column field="equipment" header="Equipment" sortable filter filterMatchMode="contains">
+              <template #filter="{ filterModel }">
+                  <InputText v-model="filterModel.value" type="text" placeholder="Search by Equipment" />
+              </template>
+          </Column>
+
+          <Column field="personInCharge" header="Person In Charge" sortable filter filterMatchMode="contains">
+              <template #filter="{ filterModel }">
+                  <InputText v-model="filterModel.value" type="text" placeholder="Search by Person In Charge" />
+              </template>
+          </Column>
+
+          <Column field="contractor" header="Contractor" sortable filter filterMatchMode="contains">
+              <template #filter="{ filterModel }">
+                  <InputText v-model="filterModel.value" type="text" placeholder="Search by Contractor" />
+              </template>
+          </Column>
+
+          <Column field="gasDetection" header="Gas Detection" sortable filter>
+              <template #body="slotProps">
+                  <Tag :value="slotProps.data.gasDetection ? 'YES' : 'NO'" />
+              </template>
+          </Column>
+
+          <Column field="oxygenDeficiency" header="Oxygen Deficiency" sortable filter>
+              <template #body="slotProps">
+                  <Tag :value="slotProps.data.oxygenDeficiency ? 'YES' : 'NO'" />
+              </template>
+          </Column>
+
+          <!-- Valvesの情報 -->
+          <Column field="valves" header="Valves" sortable filter>
+            <template #body="slotProps">
+<div>
+  Valve1: 
+  <Tag 
+    :value="slotProps.data.valveInputs && slotProps.data.valveInputs.valve1 ? 'On' : 'Off'"
+    :class="slotProps.data.valveInputs && slotProps.data.valveInputs.valve1 ? 'tag-red' : 'tag-blue'"
+  />
+  Valve2: 
+  <Tag 
+    :value="slotProps.data.valveInputs && slotProps.data.valveInputs.valve2 ? 'On' : 'Off'"
+    :class="slotProps.data.valveInputs && slotProps.data.valveInputs.valve2 ? 'tag-red' : 'tag-blue'"
+  />
+  Valve3: 
+  <Tag 
+    :value="slotProps.data.valveInputs && slotProps.data.valveInputs.valve3 ? 'On' : 'Off'"
+    :class="slotProps.data.valveInputs && slotProps.data.valveInputs.valve3 ? 'tag-red' : 'tag-blue'"
+  />
+  Valve4: 
+  <Tag 
+    :value="slotProps.data.valveInputs && slotProps.data.valveInputs.valve4 ? 'On' : 'Off'"
+    :class="slotProps.data.valveInputs && slotProps.data.valveInputs.valve4 ? 'tag-red' : 'tag-blue'"
+  />
+  Valve5: 
+  <Tag 
+    :value="slotProps.data.valveInputs && slotProps.data.valveInputs.valve5 ? 'On' : 'Off'"
+    :class="slotProps.data.valveInputs && slotProps.data.valveInputs.valve5 ? 'tag-red' : 'tag-blue'"
+  />
+</div>
+</template>
+
+          </Column>
+
+          <!-- Breakersの情報 -->
+          <Column field="breakers" header="Breakers" sortable filter>
+            <template #body="slotProps">
+<div>
+  Breaker1: 
+  <Tag 
+    :value="slotProps.data.breakerInputs && slotProps.data.breakerInputs.breaker1 ? 'On' : 'Off'"
+    :class="slotProps.data.breakerInputs && slotProps.data.breakerInputs.breaker1 ? 'tag-red' : 'tag-blue'"
+  />
+  Breaker2: 
+  <Tag 
+    :value="slotProps.data.breakerInputs && slotProps.data.breakerInputs.breaker2 ? 'On' : 'Off'"
+    :class="slotProps.data.breakerInputs && slotProps.data.breakerInputs.breaker2 ? 'tag-red' : 'tag-blue'"
+  />
+  Breaker3: 
+  <Tag 
+    :value="slotProps.data.breakerInputs && slotProps.data.breakerInputs.breaker3 ? 'On' : 'Off'"
+    :class="slotProps.data.breakerInputs && slotProps.data.breakerInputs.breaker3 ? 'tag-red' : 'tag-blue'"
+  />
+  Breaker4: 
+  <Tag 
+    :value="slotProps.data.breakerInputs && slotProps.data.breakerInputs.breaker4 ? 'On' : 'Off'"
+    :class="slotProps.data.breakerInputs && slotProps.data.breakerInputs.breaker4 ? 'tag-red' : 'tag-blue'"
+  />
+  Breaker5: 
+  <Tag 
+    :value="slotProps.data.breakerInputs && slotProps.data.breakerInputs.breaker5 ? 'On' : 'Off'"
+    :class="slotProps.data.breakerInputs && slotProps.data.breakerInputs.breaker5 ? 'tag-red' : 'tag-blue'"
+  />
+</div>
+</template>
+
+          </Column>
+
+          <Column field="onSiteSafety" header="On-Site Safety" sortable filter>
+              <template #body="slotProps">
+                  <Tag :value="slotProps.data.onSiteSafety ? 'Yes' : 'No'" />
+              </template>
+          </Column>
+
+          <Column field="approver" header="Approver" sortable filter>
+              <template #filter="{ filterModel }">
+                  <InputText v-model="filterModel.value" type="text" placeholder="Search by Approver" />
+              </template>
+          </Column>
+
+          <Column field="createdAt" header="Created At" sortable filter>
+              <template #body="slotProps">
+                  <span>{{ new Date(slotProps.data.createdAt).toLocaleString() }}</span>
+              </template>
+          </Column>
+
+          <Column field="updatedAt" header="Updated At" sortable filter>
+              <template #body="slotProps">
+                  <span>{{ new Date(slotProps.data.updatedAt).toLocaleString() }}</span>
+              </template>
+          </Column>
       </DataTable>
-    </div>
   </div>
 </template>
 
@@ -94,46 +195,73 @@ import Button from 'primevue/button';
 import Tag from 'primevue/tag';
 import Dropdown from 'primevue/dropdown';
 
+// PiniaストアからcompanyCodeを取得
+const userStore = useUserStore();
 
-const userStore = useUserStore(); // Piniaストアを使用
+const products = ref([]); // データ格納用
+const loading = ref(true); // ローディング状態管理
 
-const products = ref([]);
+// ステータスのオプション
 const statuses = ref([
-    { label: 'Completed', value: 'COMPLETED' },
-    { label: 'Ongoing', value: 'Ongoing' },
-    { label: 'Delayed', value: 'Delayed' }
+  { label: 'Completed', value: 'COMPLETED' },
+  { label: 'Ongoing', value: 'Ongoing' },
+  { label: 'Delayed', value: 'Delayed' }
 ]);
 
-const isAddingNew = ref(false);
-const isEditing = ref(false);
-const newEntry = ref({
-    workOrderNo: '',
-    taskName: '',
-    constructionPeriod: '',
-    plant: '',
-    equipment: '',
-    personInCharge: '',
-    status: ''
-});
-const editingItem = ref({});
+// データ整形のための関数
+const formatData = (data) => {
+  const companyData = data.find((company) => company.companyCode === userStore.companyCode);
+  return companyData ? companyData.workOrderPermissionList : [];
+};
 
+// データ取得処理
 onMounted(async () => {
-    // axiosを使用してデータを取得
-    const response = await axios.get(`http://127.0.0.1:8000/api/workOrder/workOrderByCompany/?format=json&companyCode=${userStore.companyCode}`);
-    // 取得したデータをフラットな配列に変換
-    const flattenedData = response.data.flatMap(company => company.workOrderList);
-    products.value = flattenedData; // 変換したデータをproductsにセット
-    console.log('flattenedData', flattenedData);
+  try {
+      // APIエンドポイントにクエリパラメータとしてcompanyCodeを渡す
+      const response = await axios.get(`http://127.0.0.1:8000/api/workOrder/workPermissionByCompany/?companyCode=${userStore.companyCode}`);
+
+      // 取得したデータを整形してproductsにセット
+      products.value = formatData(response.data);
+      console.log('取得したデータ:', products.value);
+  } catch (error) {
+      console.error('データ取得エラー:', error);
+  } finally {
+      loading.value = false; // データ取得後にローディングを終了
+  }
 });
 
-const serverItemsLength = computed(() => products.value.length);
-const serverOptions = ref({
-  page: 1,
-  rowsPerPage: 30,  // 初期表示の列数を30に設定
+// 常に10行表示するようにデータを整形する
+const formattedItems = computed(() => {
+  let items = [...products.value];
+
+  // 10行未満の場合は空の行を追加
+  while (items.length < 10) {
+      items.push({
+          workOrderNo: '',
+          taskName: '',
+          constructionPeriod: '',
+          plant: '',
+          equipment: '',
+          personInCharge: '',
+          status: '',
+          contractor: '',
+          valves: {},
+          breakers: {},
+          gasDetection: false,
+          oxygenDeficiency: false,
+          onSiteSafety: false,
+          approver: '',
+          createdAt: '',
+          updatedAt: '',
+          companyCode: '',
+          companyName: ''
+      });
+  }
+
+  return items;
 });
-const loading = ref(false);
-const sortField = ref(null);
-const sortOrder = ref(null);
+
+// ソート・フィルタリング・ページネーション等の設定
 const filters = ref({
   global: { value: null, matchMode: 'contains' },
   workOrderNo: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
@@ -143,156 +271,114 @@ const filters = ref({
   equipment: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
   personInCharge: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
   status: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] },
+  contractor: { operator: 'and', constraints: [{ value: null, matchMode: 'startsWith' }] }
 });
 
-const sortedItems = computed(() => {
-  let items = [...products.value];
-  if (sortField.value) {
-    items.sort((a, b) => {
-      let result = 0;
-      if (a[sortField.value] < b[sortField.value]) result = -1;
-      else if (a[sortField.value] > b[sortField.value]) result = 1;
-      return sortOrder.value === 1 ? result : -result;
-    });
-  }
-  while (items.length < serverOptions.value.rowsPerPage) {
-    items.push({
-      id: '',
-      workOrderNo: '',
-      taskName: '',
-      constructionPeriod: '',
-      plant: '',
-      equipment: '',
-      personInCharge: '',
-      status: '',
-    });
-  }
-  return items;
+const serverItemsLength = computed(() => products.value.length);
+const serverOptions = ref({
+  page: 1,
+  rowsPerPage: 10 // 初期表示の行数を10に設定
 });
+const sortField = ref(null);
+const sortOrder = ref(null);
 
+// ソート処理
 const onSort = (event) => {
   sortField.value = event.sortField;
   sortOrder.value = event.sortOrder;
 };
 
+// フィルタ処理
 const onFilter = (event) => {
   filters.value = event.filters;
 };
 
-const editItem = (item) => {
-  isEditing.value = true;
-  editingItem.value = { ...item };
-  console.log('Editing item:', editingItem.value);
-};
-
-const submitEntry = (entry) => {
-  if (isEditing.value) {
-    const item = products.value.find(i => i.id === entry.id);
-    if (item) {
-      Object.assign(item, entry);
-    }
-    isEditing.value = false;
-  } else {
-    products.value.push({ ...entry, id: products.value.length + 1 });
-    isAddingNew.value = false;
-  }
-};
-
-const cancelEntry = () => {
-  isEditing.value = false;
-  isAddingNew.value = false;
-};
-
-const deleteItem = (item) => {
-  products.value = products.value.filter(i => i.id !== item.id);
-  console.log('Item deleted successfully');
-};
-
-const showNewEntryForm = () => {
-  isAddingNew.value = true;
-  newEntry.value = {
-    workOrderNo: '',
-    taskName: '',
-    constructionPeriod: '',
-    plant: '',
-    equipment: '',
-    personInCharge: '',
-    status: ''
-  };
-};
-
-const onPage = (event) => {
-  serverOptions.value.page = event.page + 1;
-  serverOptions.value.rowsPerPage = event.rows;
-};
-
-const getStatusLabel = (status) => {
-    switch (status) {
-        case 'COMPLETED':
-            return 'success';
-
-        case 'Ongoing':
-            return 'warning';
-
-        case 'Delayed':
-            return 'danger';
-
-        default:
-            return null;
-    }
-};
-
-const updateVisible = (value) => {
-  isAddingNew.value = isEditing.value = value;
-};
-
-// 新規追加関数
+// 新規作成フォームを開く関数
 const openNewEntryForm = () => {
   window.open('/Work_permission_form', '_blank');
 };
 
+// ステータスに応じたクラスを動的に適用
+const getStatusClass = (status) => {
+  switch (status) {
+      case 'COMPLETED':
+          return 'tag-success'; // 緑
+      case 'Ongoing':
+          return 'tag-warning'; // 黄
+      case 'Delayed':
+          return 'tag-danger'; // 赤
+      default:
+          return '';
+  }
+};
 </script>
 
 <style>
-.page-description {
-    font-size: 16px; /* 説明文のフォントサイズ */
-    margin-bottom: 15px; /* リストとの間に隙間を追加 */
-    color: #333;
+/* ステータスごとのカスタムクラス */
+.tag-success {
+  background-color: #28a745;
+  color: #fff;
 }
 
-.custom-work-order-table-v3 .header-content-v3 {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px; /* リストとボタンの間に隙間を追加 */
+.tag-warning {
+  background-color: #ffc107;
+  color: #212529;
+}
+
+.tag-danger {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+/* companyCode表示用のスタイル */
+.company-code-display {
+  margin-left: 20px;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+/* その他のスタイル */
+.page-description {
+  font-size: 16px;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.custom-work-order-table-v3 .header-container-v3 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
 }
 
 .custom-work-order-table-v3 .create-work-permission-button {
-    margin-left: auto; /* ボタンを右上に配置 */
+  margin-left: auto;
 }
 
 .custom-work-order-table-v3 .p-datatable-thead > tr > th {
-  background-color: #f2b2b2 !important; /* ヘッダーの色を薄い赤色に変更 */
-  color: black !important; /* ヘッダーの文字色を黒に変更 */
+  background-color: #f2b2b2 !important;
+  color: black !important;
 }
 
 .custom-work-order-table-v3 .p-datatable {
-  border: none; /* 黒い枠線を削除 */
+  border: none;
 }
 
 .custom-work-order-table-v3 .p-datatable-tbody > tr:nth-child(odd) > td {
-  background-color: #ffffff !important; /* 奇数行は白色 */
+  background-color: #ffffff !important;
 }
 
 .custom-work-order-table-v3 .p-datatable-tbody > tr:nth-child(even) > td {
-  background-color: #d3d3d3 !important; /* 偶数行は明るい灰色 */
+  background-color: #d3d3d3 !important;
 }
 
-.custom-work-order-table-v3 .p-datatable-tbody > tr > td {
-  border-right: none;
+.tag-red {
+background-color: red;
+color: white;
 }
 
-.custom-work-order-table-v3 .p-datatable-thead > tr > th {
-  border-right: none;
+.tag-blue {
+background-color: blue;
+color: white;
 }
 </style>
