@@ -15,14 +15,14 @@ class WorkOrderAdmin(admin.ModelAdmin):
 class WorkPermissionAdmin(admin.ModelAdmin):
     # 管理画面で表示するフィールドを指定
     list_display = (
-        'workOrderNo', 'companyCode', 'plant', 'equipment', 
+        'workOrderNo','workPermissionNo', 'companyCode', 'plant', 'equipment', 
         'status', 'taskName', 'personInCharge', 
         'contractor', 'gasDetection', 'oxygenDeficiency', 
         'onSiteSafety', 'approver', 'createdAt', 'updatedAt'
     )
 
     # 管理画面で検索可能なフィールド
-    search_fields = ('workOrderNo__workOrderNo', 'plant', 'taskName', 'personInCharge', 'contractor', 'approver')
+    search_fields = ('workOrderNo', 'plant', 'taskName', 'personInCharge', 'contractor', 'approver')
 
     # フィルタリング機能を追加
     list_filter = ('plant', 'status', 'gasDetection', 'oxygenDeficiency', 'onSiteSafety')
@@ -75,7 +75,7 @@ class WorkOrderManagementAdmin(admin.ModelAdmin):
     list_filter = ('companyCode', 'plant', 'last_updated')
 
     # 検索可能なフィールド
-    search_fields = ('companyCode__name', 'plant', 'equipment')
+    search_fields = ('companyCode', 'plant', 'equipment')
 
     # ページング（1ページあたりの表示件数）
     list_per_page = 25

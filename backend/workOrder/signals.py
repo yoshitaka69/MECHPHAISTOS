@@ -2,6 +2,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from .models import WorkOrder, ScheduleForCalendar
 
+
 @receiver(post_save, sender=WorkOrder)
 def create_or_update_schedule_for_calendar(sender, instance, created, **kwargs):
     # WorkOrderが保存されたときにScheduleForCalendarを作成または更新

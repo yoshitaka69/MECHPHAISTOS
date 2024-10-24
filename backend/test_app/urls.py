@@ -3,8 +3,17 @@ from rest_framework.routers import DefaultRouter
 from .views import ProductViewSet, GanttTestListView  # GanttTestListViewをインポート
 from .views import get_tree_data
 
+# urls.py
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import EventViewSet
+
 router = DefaultRouter()
+router.register(r'events', EventViewSet)
+
 router.register(r'products', ProductViewSet)
+
+
 
 urlpatterns = [
     path('', include(router.urls)),

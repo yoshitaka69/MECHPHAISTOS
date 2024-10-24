@@ -14,7 +14,7 @@
           :total-records="serverItemsLength"
           :lazy="true"
           :resizable-columns="true"
-          :global-filter-fields="['workOrderNo', 'taskName', 'constructionPeriod', 'plant', 'equipment', 'personInCharge', 'status']"
+          :global-filter-fields="['workPermissionNo', 'workOrderNo', 'taskName', 'constructionPeriod', 'plant', 'equipment', 'personInCharge', 'status']"
           filter-display="menu"
           @page="onPage"
           @sort="onSort"
@@ -36,150 +36,145 @@
               </div>
           </template>
 
-          <!-- テーブル列の定義 -->
+          <!-- workPermissionNoカラムを追加 -->
+          <Column field="workPermissionNo" header="Work Permission No" sortable filter filterMatchMode="contains">
+              <template #filter="{ filterModel }">
+                  <InputText v-model="filterModel.value" type="text" placeholder="Search by Work Permission No" />
+              </template>
+          </Column>
+
+          <!-- Work Order Noカラム -->
           <Column field="workOrderNo" header="Work Order No" sortable filter filterMatchMode="contains">
               <template #filter="{ filterModel }">
                   <InputText v-model="filterModel.value" type="text" placeholder="Search by Work Order No" />
               </template>
           </Column>
 
+          <!-- Task Nameカラム -->
           <Column field="taskName" header="Task Name" sortable filter filterMatchMode="contains">
               <template #filter="{ filterModel }">
                   <InputText v-model="filterModel.value" type="text" placeholder="Search by Task Name" />
               </template>
           </Column>
 
+          <!-- Construction Periodカラム -->
           <Column field="constructionPeriod" header="Construction Period" sortable filter filterMatchMode="contains">
               <template #filter="{ filterModel }">
                   <InputText v-model="filterModel.value" type="text" placeholder="Search by Construction Period" />
               </template>
           </Column>
 
+          <!-- Plantカラム -->
           <Column field="plant" header="Plant" sortable filter filterMatchMode="contains">
               <template #filter="{ filterModel }">
                   <InputText v-model="filterModel.value" type="text" placeholder="Search by Plant" />
               </template>
           </Column>
 
+          <!-- Equipmentカラム -->
           <Column field="equipment" header="Equipment" sortable filter filterMatchMode="contains">
               <template #filter="{ filterModel }">
                   <InputText v-model="filterModel.value" type="text" placeholder="Search by Equipment" />
               </template>
           </Column>
 
+          <!-- Person In Chargeカラム -->
           <Column field="personInCharge" header="Person In Charge" sortable filter filterMatchMode="contains">
               <template #filter="{ filterModel }">
                   <InputText v-model="filterModel.value" type="text" placeholder="Search by Person In Charge" />
               </template>
           </Column>
 
+          <!-- Contractorカラム -->
           <Column field="contractor" header="Contractor" sortable filter filterMatchMode="contains">
               <template #filter="{ filterModel }">
                   <InputText v-model="filterModel.value" type="text" placeholder="Search by Contractor" />
               </template>
           </Column>
 
+          <!-- Gas Detectionカラム -->
           <Column field="gasDetection" header="Gas Detection" sortable filter>
               <template #body="slotProps">
-                  <Tag :value="slotProps.data.gasDetection ? 'YES' : 'NO'" />
+                  <Tag :value="slotProps.data.gasDetection ? 'YES' : 'NO'" :class="slotProps.data.gasDetection ? 'tag-red' : 'tag-blue'" />
               </template>
           </Column>
 
+          <!-- Oxygen Deficiencyカラム -->
           <Column field="oxygenDeficiency" header="Oxygen Deficiency" sortable filter>
               <template #body="slotProps">
-                  <Tag :value="slotProps.data.oxygenDeficiency ? 'YES' : 'NO'" />
+                  <Tag :value="slotProps.data.oxygenDeficiency ? 'YES' : 'NO'" :class="slotProps.data.oxygenDeficiency ? 'tag-red' : 'tag-blue'" />
               </template>
           </Column>
 
-          <!-- Valvesの情報 -->
+          <!-- Valvesカラム -->
           <Column field="valves" header="Valves" sortable filter>
-            <template #body="slotProps">
-<div>
-  Valve1: 
-  <Tag 
-    :value="slotProps.data.valveInputs && slotProps.data.valveInputs.valve1 ? 'On' : 'Off'"
-    :class="slotProps.data.valveInputs && slotProps.data.valveInputs.valve1 ? 'tag-red' : 'tag-blue'"
-  />
-  Valve2: 
-  <Tag 
-    :value="slotProps.data.valveInputs && slotProps.data.valveInputs.valve2 ? 'On' : 'Off'"
-    :class="slotProps.data.valveInputs && slotProps.data.valveInputs.valve2 ? 'tag-red' : 'tag-blue'"
-  />
-  Valve3: 
-  <Tag 
-    :value="slotProps.data.valveInputs && slotProps.data.valveInputs.valve3 ? 'On' : 'Off'"
-    :class="slotProps.data.valveInputs && slotProps.data.valveInputs.valve3 ? 'tag-red' : 'tag-blue'"
-  />
-  Valve4: 
-  <Tag 
-    :value="slotProps.data.valveInputs && slotProps.data.valveInputs.valve4 ? 'On' : 'Off'"
-    :class="slotProps.data.valveInputs && slotProps.data.valveInputs.valve4 ? 'tag-red' : 'tag-blue'"
-  />
-  Valve5: 
-  <Tag 
-    :value="slotProps.data.valveInputs && slotProps.data.valveInputs.valve5 ? 'On' : 'Off'"
-    :class="slotProps.data.valveInputs && slotProps.data.valveInputs.valve5 ? 'tag-red' : 'tag-blue'"
-  />
-</div>
-</template>
-
-          </Column>
-
-          <!-- Breakersの情報 -->
-          <Column field="breakers" header="Breakers" sortable filter>
-            <template #body="slotProps">
-<div>
-  Breaker1: 
-  <Tag 
-    :value="slotProps.data.breakerInputs && slotProps.data.breakerInputs.breaker1 ? 'On' : 'Off'"
-    :class="slotProps.data.breakerInputs && slotProps.data.breakerInputs.breaker1 ? 'tag-red' : 'tag-blue'"
-  />
-  Breaker2: 
-  <Tag 
-    :value="slotProps.data.breakerInputs && slotProps.data.breakerInputs.breaker2 ? 'On' : 'Off'"
-    :class="slotProps.data.breakerInputs && slotProps.data.breakerInputs.breaker2 ? 'tag-red' : 'tag-blue'"
-  />
-  Breaker3: 
-  <Tag 
-    :value="slotProps.data.breakerInputs && slotProps.data.breakerInputs.breaker3 ? 'On' : 'Off'"
-    :class="slotProps.data.breakerInputs && slotProps.data.breakerInputs.breaker3 ? 'tag-red' : 'tag-blue'"
-  />
-  Breaker4: 
-  <Tag 
-    :value="slotProps.data.breakerInputs && slotProps.data.breakerInputs.breaker4 ? 'On' : 'Off'"
-    :class="slotProps.data.breakerInputs && slotProps.data.breakerInputs.breaker4 ? 'tag-red' : 'tag-blue'"
-  />
-  Breaker5: 
-  <Tag 
-    :value="slotProps.data.breakerInputs && slotProps.data.breakerInputs.breaker5 ? 'On' : 'Off'"
-    :class="slotProps.data.breakerInputs && slotProps.data.breakerInputs.breaker5 ? 'tag-red' : 'tag-blue'"
-  />
-</div>
-</template>
-
-          </Column>
-
-          <Column field="onSiteSafety" header="On-Site Safety" sortable filter>
               <template #body="slotProps">
-                  <Tag :value="slotProps.data.onSiteSafety ? 'Yes' : 'No'" />
+                  <div>
+                      Valve1:
+                      <Tag :value="slotProps.data.valveInputs && slotProps.data.valveInputs.valve1 ? 'On' : 'Off'" :class="slotProps.data.valveInputs && slotProps.data.valveInputs.valve1 ? 'tag-red' : 'tag-blue'" />
+                      Valve2:
+                      <Tag :value="slotProps.data.valveInputs && slotProps.data.valveInputs.valve2 ? 'On' : 'Off'" :class="slotProps.data.valveInputs && slotProps.data.valveInputs.valve2 ? 'tag-red' : 'tag-blue'" />
+                      Valve3:
+                      <Tag :value="slotProps.data.valveInputs && slotProps.data.valveInputs.valve3 ? 'On' : 'Off'" :class="slotProps.data.valveInputs && slotProps.data.valveInputs.valve3 ? 'tag-red' : 'tag-blue'" />
+                      Valve4:
+                      <Tag :value="slotProps.data.valveInputs && slotProps.data.valveInputs.valve4 ? 'On' : 'Off'" :class="slotProps.data.valveInputs && slotProps.data.valveInputs.valve4 ? 'tag-red' : 'tag-blue'" />
+                      Valve5:
+                      <Tag :value="slotProps.data.valveInputs && slotProps.data.valveInputs.valve5 ? 'On' : 'Off'" :class="slotProps.data.valveInputs && slotProps.data.valveInputs.valve5 ? 'tag-red' : 'tag-blue'" />
+                  </div>
               </template>
           </Column>
 
+          <!-- Breakersカラム -->
+          <Column field="breakers" header="Breakers" sortable filter>
+              <template #body="slotProps">
+                  <div>
+                      Breaker1:
+                      <Tag :value="slotProps.data.breakerInputs && slotProps.data.breakerInputs.breaker1 ? 'On' : 'Off'" :class="slotProps.data.breakerInputs && slotProps.data.breakerInputs.breaker1 ? 'tag-red' : 'tag-blue'" />
+                      Breaker2:
+                      <Tag :value="slotProps.data.breakerInputs && slotProps.data.breakerInputs.breaker2 ? 'On' : 'Off'" :class="slotProps.data.breakerInputs && slotProps.data.breakerInputs.breaker2 ? 'tag-red' : 'tag-blue'" />
+                      Breaker3:
+                      <Tag :value="slotProps.data.breakerInputs && slotProps.data.breakerInputs.breaker3 ? 'On' : 'Off'" :class="slotProps.data.breakerInputs && slotProps.data.breakerInputs.breaker3 ? 'tag-red' : 'tag-blue'" />
+                      Breaker4:
+                      <Tag :value="slotProps.data.breakerInputs && slotProps.data.breakerInputs.breaker4 ? 'On' : 'Off'" :class="slotProps.data.breakerInputs && slotProps.data.breakerInputs.breaker4 ? 'tag-red' : 'tag-blue'" />
+                      Breaker5:
+                      <Tag :value="slotProps.data.breakerInputs && slotProps.data.breakerInputs.breaker5 ? 'On' : 'Off'" :class="slotProps.data.breakerInputs && slotProps.data.breakerInputs.breaker5 ? 'tag-red' : 'tag-blue'" />
+                  </div>
+              </template>
+          </Column>
+
+          <!-- On-Site Safetyカラム -->
+          <Column field="onSiteSafety" header="On-site Safety" sortable filter>
+              <template #body="slotProps">
+                  <Tag :value="slotProps.data.onSiteSafety ? 'YES' : 'NO'" :class="slotProps.data.onSiteSafety ? 'tag-red' : 'tag-blue'" />
+              </template>
+          </Column>
+
+          <!-- Approverカラム -->
           <Column field="approver" header="Approver" sortable filter>
               <template #filter="{ filterModel }">
                   <InputText v-model="filterModel.value" type="text" placeholder="Search by Approver" />
               </template>
           </Column>
 
+          <!-- Created Atカラム -->
           <Column field="createdAt" header="Created At" sortable filter>
               <template #body="slotProps">
                   <span>{{ new Date(slotProps.data.createdAt).toLocaleString() }}</span>
               </template>
           </Column>
 
+          <!-- Updated Atカラム -->
           <Column field="updatedAt" header="Updated At" sortable filter>
               <template #body="slotProps">
                   <span>{{ new Date(slotProps.data.updatedAt).toLocaleString() }}</span>
+              </template>
+          </Column>
+
+          <!-- Operationsカラム -->
+          <Column field="operations" header="Operations" body-class="text-center">
+              <template #body="slotProps">
+                  <i class="pi pi-pencil" @click="editEntry(slotProps.data)" style="margin-right: 10px; cursor: pointer"></i>
+                  <i class="pi pi-trash" @click="confirmDelete(slotProps.data)" style="cursor: pointer"></i>
               </template>
           </Column>
       </DataTable>
@@ -298,6 +293,18 @@ const openNewEntryForm = () => {
   window.open('/Work_permission_form', '_blank');
 };
 
+// 編集の処理
+const editEntry = (entry) => {
+  console.log('Editing entry:', entry);
+  // 編集画面を開く処理を追加
+};
+
+// 削除の処理
+const deleteEntry = (entry) => {
+  console.log('Deleting entry:', entry);
+  // 削除の処理を追加
+};
+
 // ステータスに応じたクラスを動的に適用
 const getStatusClass = (status) => {
   switch (status) {
@@ -373,12 +380,12 @@ const getStatusClass = (status) => {
 }
 
 .tag-red {
-background-color: red;
-color: white;
+  background-color: red;
+  color: white;
 }
 
 .tag-blue {
-background-color: blue;
-color: white;
+  background-color: blue;
+  color: white;
 }
 </style>

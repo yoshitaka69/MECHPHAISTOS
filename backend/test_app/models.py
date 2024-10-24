@@ -55,4 +55,15 @@ class Item(models.Model):
     def __str__(self):
         return self.name
 
+
+class Event(models.Model):
+    title = models.CharField(max_length=200)
+    start = models.DateTimeField()
+    end = models.DateTimeField(null=True, blank=True)
+    background_color = models.CharField(max_length=7, default='#3788d8')  # 色コード
+    border_color = models.CharField(max_length=7, default='#3788d8')
+
+    def __str__(self):
+        return self.title
+
 #------------------------------------------------

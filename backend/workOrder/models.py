@@ -100,6 +100,8 @@ class WorkPermission(models.Model):
     equipment = models.CharField(max_length=100, null=True, blank=True)
 
     workOrderNo = models.ForeignKey(WorkOrder, on_delete=models.CASCADE, related_name='workPermission_workOrder', null=True, blank=True)
+    # 新しいフィールド: workPermissionNo (連番)
+    workPermissionNo = models.CharField(max_length=20, unique=True, null=True, blank=True)
     status = models.CharField(max_length=100, null=True, blank=True)
     
     # Additional fields
@@ -131,15 +133,26 @@ class WorkPermission(models.Model):
         return f'Work Permission: {self.workOrderNo}'
     
     def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)  # まずは通常通り保存
+        # workPermissionNo の生成
+        if not self.workPermissionNo:  # 初めて保存する際に連番を生成
+            last_permission = WorkPermission.objects.filter(companyCode=self.companyCode).order_by('createdAt').last()
+            if last_permission:
+                last_number = int(last_permission.workPermissionNo.split('-')[-1])
+                new_number = last_number + 1
+            else:
+                new_number = 1
+            # 新しい連番を companyCode に基づいて生成
+            self.workPermissionNo = f"{self.companyCode.companyCode}-{new_number:05d}"
 
-        # companyCodeとplantに基づいてWorkOrderManagementを取得
+        super().save(*args, **kwargs)  # 通常の保存処理
+
+        # WorkOrderManagement の更新処理
         work_order_management, created = WorkOrderManagement.objects.get_or_create(
             companyCode=self.companyCode,
             plant=self.plant
         )
-        # 承認率を更新
         work_order_management.update_approval_rates()
+
 
 #----------------------------------------------------------------------------------------------------------------------------
 
